@@ -1,0 +1,76 @@
+declare function require(name:string): any;
+
+let initialized = false
+    , config: any
+    , callbacks: { 'new_article': '', 'saffron_log': any }
+    , database: any
+
+const _isInitialized = async (): Promise<boolean> => {
+    if(!initialized)
+        throw new Error('Saffron has not been initialized yet! Please use saffron.initialize() to initialize Saffron with your settings. Read more here: https://github.com/poiw-org/saffron/wiki')
+
+    return initialized
+}
+
+/**
+ * Initialize saffron with the given configuration file.
+ * It will also connect to the database if it is given and add a route to the server instance if it given.
+ * @param configFilePath If a file is not passed, then saffron will use the default configuration file located in ./configFiles/saffron.example.json
+ * @see https://github.com/poiw-org/saffron/wiki
+ */
+const initialize = async (configFilePath: string = '../../saffron.json'): Promise<void> => {
+    // Import configFile
+    try{
+        config = require(configFilePath)
+    }catch (e) {
+        Error("Either the saffron.json file is missing or is malformed. Please consult the documentation at #INCLUDE DOCS URL#")
+    }
+
+    if(config.database && config.database.dialect !== 'none') {
+        // connect to database
+    }
+
+    initialized = true
+}
+
+/**
+ * Starts a Saffron instance.
+ */
+const start = async (): Promise<void> => {
+    await _isInitialized()
+    if(configFile.mode === 'main'){
+        // start scheduler (and a worker maybe)
+    }
+    else if(configFile.mode === 'worker'){
+        // start only a worker
+    }
+}
+
+/**
+ * Stops the saffron instance
+ * If mode equals 'main' then the scheduler will stop giving jobs to the workers.
+ * else if mode equals 'worker' then the worker will stop getting future jobs and disconnect from the main saffron instance.
+ * @param force_stop If true then scheduler will clear all active jobs and stop all the workers. If mode is 'worker' then the worker will abandon the current job.
+ */
+const stop = async (force_stop: boolean): Promise<void> => {
+    await _isInitialized()
+
+
+}
+
+/**
+ * Register a new callback for a specific event.
+ * @param event Acceptable values: ['new_article', 'saffron_log']
+ * @param callback The callback that will be used to pass the data
+ */
+const on = async (event: 'new_article' | 'saffron_log', callback: Promise<any>): Promise<any> => {
+    callbacks[event] = await callback
+}
+ 
+export default {
+    initialize,
+    start,
+    stop,
+    on,
+
+}
