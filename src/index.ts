@@ -3,7 +3,7 @@ declare function require(name:string): any;
 let log: Array<any>
 
 // Module imports
-import toolbox from "./src/modules/toolbox"
+import toolbox from "./modules/toolbox"
 // This is a centralized array that collects all the logs and errors, so that the report handler can easily collect and report them.
 
 
