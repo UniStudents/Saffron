@@ -1,18 +1,15 @@
-declare function require(name:string): any;
-
-let log: Array<any>,
-    handlers: {
-            [key: string]: any
-        }
-
 // Module imports
 import toolbox from "./modules/toolbox"
+import {Database} from "./modules/database"
+import {Config} from "./components/config"
+
+declare function require(name:string): any;
+
 // This is a centralized array that collects all the logs and errors, so that the report handler can easily collect and report them.
-
-let loadConfig = {
-
-}
-
+let log: Array<any>
+    , handlers: { [key: string]: any }
+    , loadConfig = {}
+    , db: Database
 
 export = {
     /**
@@ -20,26 +17,17 @@ export = {
      * It will also connect to the database if it is given and add a route to the server instance if it given.
      * @param config The config file path or object
      * @see https://github.com/poiw-org/saffron/wiki
-    */
+     */
     initialize: (config: any = undefined) => {
         toolbox.termlog("info","News and announcements aggregation framework.")
 
-        if(typeof config === "string"){
-            try {
-                config = require(config);
-            } catch (error) {
-                toolbox.termlog("install-error",`Saffron couldn\'t load the configuration file from the path specified.\n${error}\n`)
-                throw new Error
-            }
-        }else if(!config) {
-            try {
-                config = require("../../saffron.json")
-            } catch (error) {
-                toolbox.report(error)
-                toolbox.termlog("install-error","You did not supply any configuration. Initialization aborted")
-                throw new Error
-            }
+
+        // TODO - Change to config.database.name
+        let database = Database.getInstance()
+        if(database == null){
+            throw new Error("Database driver is not valid")
         }
+        db = database
 
         setInterval(async () => log = handlers.log && log ? handlers.report(log) : [], config.reporting_interval || 1000)
     },
