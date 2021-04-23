@@ -1,35 +1,71 @@
 import toolbox from "../../modules/toolbox"
+import  { Config }  from "../../components/config"
 import { Article } from "../../components/articles"
 
 import MongoClient from 'mongodb'
 import {nanoid} from "nanoid";
 
 abstract class Database {
-    declare config: object
 
-    protected constructor(config: object) {
-        this.config = config
-    }
-
+    /**
+     * Connect to database
+     */
     abstract connect(): Promise<boolean>
+
+    /**
+     * If connection is lost with database.
+     * @param callback The callback that will be fired.
+     */
     abstract onConnectionLost(callback: () => void): Promise<void>
-    abstract getArticles(options: object): Promise<Array<Article>| null>
-    abstract getArticle(article_id: string): Promise<Article | null>
+
+    /**
+     * Get an array of articles.
+     * @param options See documentation
+     * @see https://github.com/poiw-org/saffron/wiki
+     */
+    abstract getArticles(options: object | null): Promise<Array<Article>| null>
+
+    /**
+     * Return an article based on id or null if it is not found
+     * @param id The article's id
+     */
+    abstract getArticle(id: string): Promise<Article | null>
+
+    /**
+     * Add a new article on the database
+     * @param article The article object to add
+     */
     abstract pushArticle(article: Article): Promise<string>
+
+    /**
+     * Update an article based on article.id and override all the other values
+     * @param article The article object that will be updated
+     */
     abstract updateArticle(article: Article): Promise<void>
-    abstract deleteArticle(article_id: string): Promise<void>
+
+    /**
+     * Delete a specific article.
+     * @param id The id of the article that will be deleted
+     */
+    abstract deleteArticle(id: string): Promise<void>
+
+    static getInstance(config: object): Database | null {
+        switch(Config.load().database.driver){
+            case "mongodb":
+                return new MongoDB()
+        }
+
+        return null
+    }
 }
 
 class MongoDB extends Database {
 
     declare client: MongoClient.MongoClient
 
-    constructor(config: object) { super(config) }
-
     async connect(): Promise<boolean> {
         try {
-            // @ts-ignore
-            this.client = await MongoClient.connect(this.config.database.url, {
+            this.client = await MongoClient.connect(Config.load().database.config.url, {
                 "useUnifiedTopology" : true,
                 "useNewUrlParser" : true
             })
@@ -65,7 +101,7 @@ class MongoDB extends Database {
         return null
     }
 
-    async getArticles(options: object): Promise<Array<Article> | null> {
+    async getArticles(options: object | null = null): Promise<Array<Article> | null> {
         return null
     }
 
@@ -92,6 +128,4 @@ class MongoDB extends Database {
 
 }
 
-export default {
-    MongoDB
-}
+export { Database }
