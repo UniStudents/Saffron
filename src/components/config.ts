@@ -1,13 +1,22 @@
 import toolbox from "../modules/toolbox"
+import _ from "lodash"
 
-export class Config {
-    database: any = {
-        driver: "",
-        config: Object,
+interface _config {
+    database:{
+        driver: string,
+        config: any
     }
-    workers = {
-        instances: 3
+    
+}
+
+export class Config{
+    _config: _config = {
+        database:{
+            driver: "",
+            config: {}
+        }
     }
+    
 
     private static instance: Config
 
@@ -38,10 +47,7 @@ export class Config {
                 throw new Error
             }
         }
-        // @ts-ignore
-        for(let key: string in config){
-            this.database = config[key]
-        
-        }
+        this._config = _.mergeWith({}, this._config, config, (o, s) => s ? s : o)
+
     }
 }
