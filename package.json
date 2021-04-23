@@ -4,9 +4,11 @@
   "description": "<img src=\"https://digitalpress.fra1.cdn.digitaloceanspaces.com/09fn19m/2021/04/saffron-1.png\" width=\"200\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;News &amp; announcements aggregation framework. <br/><br/> <h6>Made in colaboration with: <br/><a href=\"https://unistudents.gr\"><img src=\"https://unistudents.gr/wp-content/uploads/2020/09/logo2-1024x341-1.png\" width=\"200\" /></a></h6>",
   "main": "src/index.ts",
   "dependencies": {
+    "@types/mongodb": "^3.6.12",
     "chalk": "^4.1.1",
     "mongodb": "^3.6.6",
-    "typescript": "^4.2.4"
+    "typescript": "^4.2.4",
+    "nanoid": "^3.1.22"
   },
   "scripts": {
     "start": "npx ts-node src/index.ts",
