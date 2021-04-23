@@ -9,7 +9,8 @@
     "typescript": "^4.2.4"
   },
   "scripts": {
-    "start": "npx ts-node src/index.ts"
+    "start": "npx ts-node src/index.ts",
+    "dev": "tsc && cd test && node index.js"
   },
   "repository": {
     "type": "git",
