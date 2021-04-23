@@ -1,3 +1,5 @@
 {
-    "reporting_interval":5000
+    reporting:{
+        interval: 5000
+    }
 }

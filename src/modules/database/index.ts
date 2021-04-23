@@ -2,7 +2,7 @@ import toolbox from "../../modules/toolbox"
 import { Article } from "../../components/articles"
 
 import MongoClient from 'mongodb'
-import { nanoid } from 'nanoid'
+import {nanoid} from "nanoid";
 
 abstract class Database {
     declare config: object
