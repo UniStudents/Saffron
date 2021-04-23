@@ -3,6 +3,7 @@ import toolbox from "./modules/toolbox"
 import {Database} from "./modules/database"
 import {Config} from "./components/config"
 import {Scheduler} from "./modules/scheduler";
+import {Grid} from "./modules/grid";
 
 declare function require(name:string): any;
 
@@ -11,6 +12,7 @@ let log: Array<any>
     , handlers: { [key: string]: any }
     , loadConfig = {}
     , db: Database
+    , grid: Grid
     , scheduler: Scheduler
 
 export = {
@@ -33,6 +35,10 @@ export = {
         }
         db = database
 
+        // Initialize and start grid
+        grid = new Grid(db)
+        grid.connect().then(null)
+
         // Initialize scheduler
         scheduler = new Scheduler(db)
 
@@ -41,8 +47,8 @@ export = {
     /**
      * Starts a Saffron instance.
      */
-    start: () => {
-        scheduler.start().then(null)
+    start: async () => {
+        await scheduler.start()
     },
     /**
      * Stops the saffron instance
@@ -50,8 +56,8 @@ export = {
      * else if mode equals 'worker' then the worker will stop getting future jobs and disconnect from the main saffron instance.
      * @param force_stop If true then scheduler will clear all active jobs and stop all the workers. If mode is 'worker' then the worker will abandon the current job.
      */
-    stop: (force_stop: boolean) => {
-
+    stop: async (force_stop: boolean) => {
+        await scheduler.stop()
     },
     /**
      * Register a new callback for a specific event.

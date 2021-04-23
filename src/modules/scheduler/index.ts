@@ -9,6 +9,10 @@ export class Scheduler {
     }
 
     async start(): Promise<void> {
-        
+
+    }
+
+    async stop(): Promise<void> {
+
     }
 }

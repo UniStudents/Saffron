@@ -20,11 +20,11 @@ export class Config{
 
     private static instance: Config
 
-    static load(config: object | string | undefined = undefined): Config{
+    static load(config: object | string | undefined = undefined): _config{
         if(this.instance == null)
             this.instance = new Config(config)
 
-        return this.instance
+        return this.instance._config
     }
 
     private constructor(config: object | string | undefined) {

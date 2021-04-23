@@ -5,6 +5,8 @@ import { Article } from "../../components/articles"
 import MongoClient from 'mongodb'
 import {nanoid} from "nanoid";
 
+let config = Config.load()
+
 abstract class Database {
 
     /**
@@ -50,7 +52,7 @@ abstract class Database {
     abstract deleteArticle(id: string): Promise<void>
 
     static getInstance(): Database | null {
-        switch(Config.load().database.driver){
+        switch(config.database.driver){
             case "mongodb":
                 return new MongoDB()
         }
@@ -65,7 +67,7 @@ class MongoDB extends Database {
 
     async connect(): Promise<boolean> {
         try {
-            this.client = await MongoClient.connect(Config.load().database.config.url, {
+            this.client = await MongoClient.connect(config.database.config.url, {
                 "useUnifiedTopology" : true,
                 "useNewUrlParser" : true
             })
