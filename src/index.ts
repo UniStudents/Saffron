@@ -2,6 +2,7 @@
 import toolbox from "./modules/toolbox"
 import {Database} from "./modules/database"
 import {Config} from "./components/config"
+import {Scheduler} from "./modules/scheduler";
 
 declare function require(name:string): any;
 
@@ -10,6 +11,7 @@ let log: Array<any>
     , handlers: { [key: string]: any }
     , loadConfig = {}
     , db: Database
+    , scheduler: Scheduler
 
 export = {
     /**
@@ -21,13 +23,18 @@ export = {
     initialize: (config: any = undefined) => {
         toolbox.termlog("info","News and announcements aggregation framework.")
 
+        // Load config file
+        Config.load(config)
 
-        // TODO - Change to config.database.name
+        // Initialize database
         let database = Database.getInstance()
         if(database == null){
             throw new Error("Database driver is not valid")
         }
         db = database
+
+        // Initialize scheduler
+        scheduler = new Scheduler(db)
 
         setInterval(async () => log = handlers.log && log ? handlers.report(log) : [], config.reporting_interval || 1000)
     },
@@ -35,7 +42,7 @@ export = {
      * Starts a Saffron instance.
      */
     start: () => {
-
+        scheduler.start().then(null)
     },
     /**
      * Stops the saffron instance

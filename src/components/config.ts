@@ -1,8 +1,8 @@
 import toolbox from "../modules/toolbox"
 
 export class Config {
-    database: object = {
-        driver: String,
+    database: any = {
+        driver: "",
         config: Object,
     }
     workers = {
