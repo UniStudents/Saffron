@@ -1,7 +1,5 @@
-// export default (listener, articles) => {
-//     listener.on("new-job", (job) =>{
-//         articles.set("Asdas",{
+import Database from "../database/index"
 
-//         })
-//     })
-// }
+export class Workers{
+
+}

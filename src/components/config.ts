@@ -1,26 +1,26 @@
-import toolbox from "../modules/toolbox"
+import Logger from "../modules/logger"
 import _ from "lodash"
+import path from "path"
 
-interface _config {
-    database:{
-        driver: string,
-        config: any
-    }
-    
+interface _type {
+    [key: string]: any
 }
 
-export class Config{
-    _config: _config = {
+export default class Config{
+    _config: _type = {
         database:{
             driver: "",
             config: {}
+        },
+        sources:{
+            path: "../../../sources"
         }
     }
     
-
+    public static isHydrated: boolean = false
     private static instance: Config
 
-    static load(config: object | string | undefined = undefined): _config{
+    static load(config: object | string | undefined = undefined): _type{
         if(this.instance == null)
             this.instance = new Config(config)
 
@@ -33,21 +33,25 @@ export class Config{
          */
         if(typeof config === "string"){
             try {
-                config = require(config);
-            } catch (error) {
-                toolbox.termlog("install-error",`Saffron couldn\'t load the configuration file from the path specified.\n${error}\n`)
+                if(path.isAbsolute(config))
+                    config = require(config);
+                else
+                    config = require((config.startsWith('./') ? '.' : '../') + config)
+                } catch (error) {
+                    Logger("install-error",`Saffron couldn\'t load the configuration file from the path specified.\n${error}\n`)
                 throw new Error
             }
         }else if(!config) {
             try {
                 config = require("../../saffron.json")
             } catch (error) {
-                toolbox.report(error)
-                toolbox.termlog("install-error","You did not supply any configuration or the supplied configuration file is improperly configured.")
+                Logger("install-error","You did not supply any configuration or the supplied configuration file is improperly configured.")
                 throw new Error
             }
         }
         this._config = _.mergeWith({}, this._config, config, (o, s) => s ? s : o)
-
+        console.log(this._config);
+        
+        Config.isHydrated = true
     }
 }

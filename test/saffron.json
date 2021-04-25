@@ -1,5 +1,8 @@
 {
-    reporting:{
-        interval: 5000
+    "database":{
+        "driver": "memory"
+    },
+    "sources":{
+        "path": "./test/sources"
     }
 }

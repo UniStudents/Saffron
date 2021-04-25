@@ -1,5 +1,5 @@
 
-export class Source {
+export default class Source {
     declare id: string
 
     constructor(id: string) {

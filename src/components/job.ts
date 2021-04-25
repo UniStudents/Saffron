@@ -1,4 +1,4 @@
-export class Job {
+export default class Job {
     declare id: string
 
     constructor(id: string) {

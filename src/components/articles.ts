@@ -1,6 +1,6 @@
-import { Source } from "./source";
+import Source from "./source";
 
-export class Article {
+export default class Article {
     declare id: string
     declare source: Source
 

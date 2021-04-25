@@ -1,7 +1,7 @@
-import {Database} from "./database";
-import {Job} from "../components/job";
+import Database from "./database";
+import Job from "../components/job";
 
-export class Grid {
+export default class Grid {
 
     declare offLoadDB: Database
 
@@ -31,5 +31,9 @@ export class Grid {
 
     async onNewJob(callback: () => any): Promise<void> {
         // For workers so they can be notified to call reserve for a new job
+    }
+
+    async finishJob(id: string): Promise<void> {
+        // worker finished the job
     }
 }

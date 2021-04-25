@@ -1,9 +1,9 @@
 // Module imports
-import toolbox from "./modules/toolbox"
-import {Database} from "./modules/database"
-import {Config} from "./components/config"
-import {Scheduler} from "./modules/scheduler";
-import {Grid} from "./modules/grid";
+import Logger from "./modules/logger"
+import Database from "./modules/database/index"
+import Config from "./components/config"
+import Scheduler from "./modules/scheduler";
+import Grid from "./modules/grid";
 
 declare function require(name:string): any;
 
@@ -11,7 +11,7 @@ declare function require(name:string): any;
 let log: Array<any>
     , handlers: { [key: string]: any }
     , loadConfig = {}
-    , db: Database
+    , db: any
     , grid: Grid
     , scheduler: Scheduler
 
@@ -22,8 +22,8 @@ export = {
      * @param config The config file path or object
      * @see https://github.com/poiw-org/saffron/wiki
      */
-    initialize: (config: any = undefined) => {
-        toolbox.termlog("info","News and announcements aggregation framework.")
+    initialize: async (config: any = undefined) => {
+        Logger("info","News and announcements aggregation framework.")
 
         // Load config file
         Config.load(config)
@@ -34,15 +34,16 @@ export = {
             throw new Error("Database driver is not valid")
         }
         db = database
+        await db.connect()
+            .then(()=>Logger("step", "Successfully connected to the offload database."))
 
         // Initialize and start grid
         grid = new Grid(db)
-        grid.connect().then(null)
+        await grid.connect()
+            .then(()=>Logger("step", "The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."))
 
         // Initialize scheduler
         scheduler = new Scheduler(db)
-
-        setInterval(async () => log = handlers.log && log ? handlers.report(log) : [], config.reporting_interval || 1000)
     },
     /**
      * Starts a Saffron instance.
@@ -65,6 +66,6 @@ export = {
      * @param callback The callback that will be used to pass the data
      */
     on: (event: string, callback: any) => {
-        handlers[event] = callback
+        return
     }
 }
