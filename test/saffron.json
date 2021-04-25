@@ -3,6 +3,6 @@
         "driver": "memory"
     },
     "sources":{
-        "path": "./test/sources"
+        "path": "/test/sources"
     }
 }

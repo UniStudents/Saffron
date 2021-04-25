@@ -1,20 +1,39 @@
 import Database from "./database";
 import Job from "../components/job";
+import Events from "./events";
+
+let dummyStorage: Job[] = [],
+    events = Events.getAntennae()
 
 export default class Grid {
 
-    declare offLoadDB: Database
+    private static instance: Grid
 
-    constructor(offLoadDb: Database) {
-        this.offLoadDB = offLoadDb
+    static getInstance(): Grid {
+        if(this.instance == null)
+            this.instance = new Grid()
+
+        return this.instance
     }
 
-    async connect() {
+    declare offload: Database
+
+    private constructor() {
+        this.offload = Database.getInstance()!!
+    }
+
+    async connect(): Promise<void> {
         // connect with other workers or scheduler
     }
 
     async pushJob(job: Job): Promise<void> {
         // Scheduler to push a new job
+        dummyStorage.push(job)
+        events.emit("new-job", job)
+    }
+
+    async clearAllJobs(): Promise<void> {
+
     }
 
     async getJobs(): Promise<Array<Job> | null> {
@@ -23,17 +42,7 @@ export default class Grid {
         return null
     }
 
-    async reserve(): Promise<Job | null> {
-        // Worker to reserve a job that is assigned to it
-
-        return null
-    }
-
-    async onNewJob(callback: () => any): Promise<void> {
-        // For workers so they can be notified to call reserve for a new job
-    }
-
-    async finishJob(id: string): Promise<void> {
+    async finishJob(job_id: string): Promise<void> {
         // worker finished the job
     }
 }

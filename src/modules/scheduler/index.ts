@@ -1,21 +1,35 @@
 import Database from "../database";
 import Config from "../../components/config";
-import Logger from "../../modules/logger"
+import Logger from "../../middleware/logger"
+import Events from "../events";
+import {nanoid} from "nanoid";
+import Job from "../../components/job";
+
+const fs = require('fs');
+const path = process.cwd();
+
 export default class Scheduler {
 
     private declare offload: Database
 
-    constructor(offLoadDB: Database) {
-        this.offload = offLoadDB
+    constructor() {
+        this.offload = Database.getInstance()!!
+        Events.getAntennae().on("start", () => {
+            this.start().then(null)
+        })
+        Events.getAntennae().on("stop", (force: boolean) => {
+            this.stop(force).then(null)
+        })
     }
 
-    private scanSourceFiles: Promise<void | object> = new Promise((loaded, failed)=>{
-        let sourcesPath = Config.load().sources.path
+    private scanSourceFiles(): Promise<object[]> {
+        return new Promise((loaded, failed) => {
+            let sourcesPath = Config.load().sources.path
 
             fs.readdir(path + sourcesPath, (err: object, files: object[]) => {
                 let acceptedFiles = new RegExp(/.*js/)
 
-                if(!files){
+                if (!files) {
                     Logger("install-error", "No source files were found")
                     throw Error
                 }
@@ -27,23 +41,30 @@ export default class Scheduler {
                     ...require(`${path + sourcesPath}/${file}`)
                 }))
 
-                sources.forEach((source: any)=>{
-                    if(!source.baseURL) throw new Error('Please specify a baseURL.')
+                sources.forEach((source: any) => {
+                    if (!source.baseURL) throw new Error('Please specify a baseURL.')
                     // if(new RegExp('^(http|https)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,6}(/\S*)?$').test(baseURL)) throw new Error('You specified an invalid baseURL')
-                    if(!['api','portal'].includes(source.type)) throw new Error('A source\'s "api" value must be either "api" or "portal"')
+                    if (!['api', 'portal'].includes(source.type)) throw new Error('A source\'s "api" value must be either "api" or "portal"')
                 })
                 loaded(sources)
             })
         })
+    }
 
     async start(): Promise<void> {
+        let sources = await this.scanSourceFiles()
+        // TODO - Override for specific source
 
+        setInterval(async () => {
+            // check if is time for new job
+        }, 2 * 60 * 1000) // 2 minutes
+
+        Events.getAntennae().on("finish-job", async (job_id: string) => {
+            // Issue new job for this source
+        })
     }
 
-    async stop(): Promise<void> {
-
+    async stop(force: boolean): Promise<void> {
+        // if force == true then clear db from the existing jobs
     }
 }
-
-const fs = require('fs');
-const path = process.cwd();

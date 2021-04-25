@@ -1,4 +1,4 @@
-import Logger from "../modules/logger"
+import Logger from "../middleware/logger"
 import _ from "lodash"
 import path from "path"
 
@@ -14,8 +14,16 @@ export default class Config{
         },
         sources:{
             path: "../../../sources"
+        },
+        mode: "main",
+        workers: {
+            nodes: 0 // Start zero workers
+        },
+        scheduler: {
+            intervalBetweenNewJobs: 60 * 60 * 1000
         }
     }
+
     
     public static isHydrated: boolean = false
     private static instance: Config
@@ -50,8 +58,6 @@ export default class Config{
             }
         }
         this._config = _.mergeWith({}, this._config, config, (o, s) => s ? s : o)
-        console.log(this._config);
-        
         Config.isHydrated = true
     }
 }

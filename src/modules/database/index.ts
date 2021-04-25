@@ -1,5 +1,5 @@
-import Database from "./database";
-import Config from "../../components/config";
+import Database from "./database"
+import Config from "../../components/config"
 import MongoDB from "./drivers/mongodb"
 import Memory from "./drivers/memory"
 

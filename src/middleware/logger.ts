@@ -1,6 +1,9 @@
 import chalk from 'chalk'
+import Events from "../modules/events";
 
 export default (type: string, data: any) => {
+    Events.getAntennae().emit("log", type, data)
+
     switch(type) {
         case "install-error":
             console.log(chalk.red(" | "))

@@ -1,5 +1,5 @@
 import MongoClient from "mongodb";
-import Logger from "../../logger";
+import Logger from "../../../middleware/logger";
 import Article from "../../../components/articles";
 import {nanoid} from "nanoid";
 import Database from "../database";
