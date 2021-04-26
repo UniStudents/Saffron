@@ -72,13 +72,13 @@ export default class Scheduler {
             await Grid.getInstance().deleteJob(job_id)
 
             // Find source
-            let source = sources.find((source: Source) => { return source.id === job!!.source_id })
+            let source = sources.find((source: Source) => { return source.id === job!!.source.id })
             if(source == null) throw Error('Worker finished job for a source that does not exist.')
 
             let interval = source.intervalBetweenNewScan ? source.intervalBetweenNewScan : Config.load().scheduler.intervalBetweenNewJobs
 
             let new_job = new Job(source.id + '_' + nanoid(10) + '_' + Date.now())
-            new_job.source_id = source.id
+            new_job.source = source
             // nextRetry = The time the job finished (just now) + interval + randomTIme
             new_job.nextRetry = Date.now() + interval + this.getRandomTime(source.id)
 
