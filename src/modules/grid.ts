@@ -42,6 +42,15 @@ export default class Grid {
         return null
     }
 
+    async getJob(id: string): Promise<Job | null> {
+        // For scheduler to get a job with specific id
+        return null
+    }
+
+    async deleteJob(id: string): Promise<void> {
+        // for scheduler to delete a job with specific id
+    }
+
     async finishJob(job_id: string): Promise<void> {
         // worker finished the job
     }

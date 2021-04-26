@@ -4,6 +4,8 @@ import Logger from "../../middleware/logger"
 import Events from "../events";
 import {nanoid} from "nanoid";
 import Job from "../../components/job";
+import Source from "../../components/source";
+import Grid from "../grid";
 
 const fs = require('fs');
 const path = process.cwd();
@@ -22,7 +24,7 @@ export default class Scheduler {
         })
     }
 
-    private scanSourceFiles(): Promise<object[]> {
+    private scanSourceFiles(): Promise<Source[]> {
         return new Promise((loaded, failed) => {
             let sourcesPath = Config.load().sources.path
 
@@ -41,26 +43,46 @@ export default class Scheduler {
                     ...require(`${path + sourcesPath}/${file}`)
                 }))
 
-                sources.forEach((source: any) => {
-                    if (!source.baseURL) throw new Error('Please specify a baseURL.')
-                    // if(new RegExp('^(http|https)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,6}(/\S*)?$').test(baseURL)) throw new Error('You specified an invalid baseURL')
-                    if (!['api', 'portal'].includes(source.type)) throw new Error('A source\'s "api" value must be either "api" or "portal"')
-                })
+                let mSources: Source[] = []
+                sources.forEach(async (source: any) => mSources.push(await Source.parseFileObject(source)))
                 loaded(sources)
             })
         })
     }
 
+    private getRandomTime(source_id: string): number {
+        // return a random number between -3 minutes to + 3 minutes in milliseconds
+        return 0
+    }
+
     async start(): Promise<void> {
         let sources = await this.scanSourceFiles()
-        // TODO - Override for specific source
+        Logger("step", `Loaded ${sources.length} sources`)
 
+        // Check if is time for new job
         setInterval(async () => {
-            // check if is time for new job
+
         }, 2 * 60 * 1000) // 2 minutes
 
+        // Issue new job for this source
         Events.getAntennae().on("finish-job", async (job_id: string) => {
-            // Issue new job for this source
+            // Get job from grid
+            let job = await Grid.getInstance().getJob(job_id)
+            if(job == null) throw Error("Worker finished a job but send invalid job id.")
+            await Grid.getInstance().deleteJob(job_id)
+
+            // Find source
+            let source = sources.find((source: Source) => { return source.id === job!!.source_id })
+            if(source == null) throw Error('Worker finished job for a source that does not exist.')
+
+            let interval = source.intervalBetweenNewScan ? source.intervalBetweenNewScan : Config.load().scheduler.intervalBetweenNewJobs
+
+            let new_job = new Job(source.id + '_' + nanoid(10) + '_' + Date.now())
+            new_job.source_id = source.id
+            // nextRetry = The time the job finished (just now) + interval + randomTIme
+            new_job.nextRetry = Date.now() + interval + this.getRandomTime(source.id)
+
+            await Grid.getInstance().pushJob(new_job)
         })
     }
 
