@@ -1,6 +1,8 @@
 import Database from "../database";
 import Config from "../../components/config";
+
 import Logger from "../../middleware/logger"
+import {LoggerTypes} from "../../middleware/LoggerTypes";
 import Events from "../events";
 import {nanoid} from "nanoid";
 import Job from "../../components/job";
@@ -30,7 +32,7 @@ export default class Scheduler {
                 let acceptedFiles = new RegExp(/.*js/)
 
                 if (!files) {
-                    Logger("install-error", "No source files were found")
+                    Logger(LoggerTypes.INSTALL_ERROR, "No source files were found")
                     throw Error
                 }
 

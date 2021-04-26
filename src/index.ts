@@ -1,5 +1,6 @@
 // Module imports
 import Logger from "./middleware/logger"
+import {LoggerTypes} from "./middleware/LoggerTypes"
 import Database from "./modules/database/index"
 import Config from "./components/config"
 import Scheduler from "./modules/scheduler";
@@ -10,10 +11,7 @@ import Worker from "./modules/workers";
 declare function require(name:string): any;
 
 // This is a centralized array that collects all the logs and errors, so that the report handler can easily collect and report them.
-let log: Array<any>
-    , handlers: { [key: string]: any }
-    , loadConfig = {}
-    , db: any
+let  db: any
     , grid: any
     , scheduler: Scheduler
     , antennae = Events.getAntennae()
@@ -27,7 +25,7 @@ export = {
      * @see https://github.com/poiw-org/saffron/wiki
      */
     initialize: async (config: any = undefined) => {
-        Logger("info","News and announcements aggregation framework.")
+        Logger(LoggerTypes.INFO,"News and announcements aggregation framework.")
 
         // Load config file
         Config.load(config)
@@ -35,16 +33,16 @@ export = {
         // Initialize database
         let database = Database.getInstance()
         if(database == null){
-            throw new Error("Database driver is not valid")
+            Logger(LoggerTypes.INSTALL_ERROR, "Database driver is not valid")
         }
         db = database
         await db.connect()
-            .then(()=>Logger("step", "Successfully connected to the offload database."))
+            .then(()=>Logger(LoggerTypes.STEP, "Successfully connected to the offload database."))
 
         // Initialize and start grid
         grid = Grid.getInstance();
         await grid.connect()
-            .then(()=>Logger("step", "The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."))
+            .then(()=>Logger(LoggerTypes.STEP, "The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."))
 
         // Initialize scheduler
         if(Config.load().mode === 'main')
@@ -56,11 +54,15 @@ export = {
             workers.push(new Worker())
         }
 
+        setTimeout(()=>antennae.emit("new-job"),1000)
+
         // Event for workers
         antennae.on("start", () => {
             for(let worker of workers)
                 worker.start()
         })
+        antennae.emit("start")
+
         antennae.on("stop", (force: boolean) => {
             for(let worker of workers)
                 worker.stop(force)

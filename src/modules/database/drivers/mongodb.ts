@@ -1,5 +1,6 @@
 import MongoClient from "mongodb";
 import Logger from "../../../middleware/logger";
+import {LoggerTypes} from "../../../middleware/LoggerTypes"
 import Article from "../../../components/articles";
 import {nanoid} from "nanoid";
 import Database from "../database";
@@ -18,7 +19,7 @@ export default class MongoDB extends Database {
             return true
         }
         catch (e){
-            Logger('install-error', `Database error: ${e.message}.`)
+            Logger(LoggerTypes.INSTALL_ERROR, `Database error: ${e.message}.`)
         }
 
         return false
@@ -33,7 +34,7 @@ export default class MongoDB extends Database {
             await this.client.db('saffron').collection('articles').deleteOne({ id })
         }
         catch (e) {
-            Logger('error', `Database error: ${e.message}.`)
+            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
     }
 
@@ -42,7 +43,7 @@ export default class MongoDB extends Database {
             return await this.client.db('saffron').collection('articles').findOne({ id })
         }
         catch (e) {
-            Logger('error', `Database error: ${e.message}.`)
+            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
         return null
     }
@@ -59,7 +60,7 @@ export default class MongoDB extends Database {
             return id
         }
         catch (e) {
-            Logger('error', `Database error: ${e.message}.`)
+            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
         return ""
     }
@@ -69,7 +70,7 @@ export default class MongoDB extends Database {
             await this.client.db('saffron').collection('articles').updateOne({ id: article.id }, article.toJSON())
         }
         catch (e) {
-            Logger('error', `Database error: ${e.message}.`)
+            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
     }
 }

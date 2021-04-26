@@ -1,11 +1,11 @@
 import Logger from "../middleware/logger"
+import {LoggerTypes} from "../middleware/LoggerTypes"
 import _ from "lodash"
 import path from "path"
 
 interface _type {
     [key: string]: any
 }
-
 export default class Config{
     _config: _type = {
         database:{
@@ -46,14 +46,14 @@ export default class Config{
                 else
                     config = require((config.startsWith('./') ? '.' : '../') + config)
                 } catch (error) {
-                    Logger("install-error",`Saffron couldn\'t load the configuration file from the path specified.\n${error}\n`)
+                    Logger(LoggerTypes.INSTALL_ERROR, `Saffron couldn\'t load the configuration file from the path specified.\n${error}\n`)
                 throw new Error
             }
         }else if(!config) {
             try {
                 config = require("../../saffron.json")
             } catch (error) {
-                Logger("install-error","You did not supply any configuration or the supplied configuration file is improperly configured.")
+                Logger(LoggerTypes.INSTALL_ERROR,"You did not supply any configuration or the supplied configuration file is improperly configured.")
                 throw new Error
             }
         }
