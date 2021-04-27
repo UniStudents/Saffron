@@ -1,7 +1,8 @@
-
+import Job from "../components/job";
+import {Logger} from "mongodb";
 export default class Source {
 
-    static async parseFileObject(source: any): Promise<Source> {
+    static async parseFileObject(source: any): Promise<void> {
         // Check if source is valid and return an object for that source
 
         if (!source.baseURL) throw new Error('Please specify a baseURL.')
@@ -11,11 +12,22 @@ export default class Source {
         let ret = new Source('source-id')
         ret.intervalBetweenNewScan = source.intervalBetweenNewScan
 
-        return ret
+        Source._sources.push(ret)
     }
+
+    static getSources(): Array<Source> {
+        return this._sources
+    }
+
+    static getSourceFromJob(job: Job): Source {
+        return this._sources.find((source: Source) => { return source.id === job!!.source.id })!!
+    }
+
+    private static _sources: Source[] = []
 
     declare id: string
     declare intervalBetweenNewScan: number
+    declare instructions: object
 
     constructor(id: string) {
         this.id = id

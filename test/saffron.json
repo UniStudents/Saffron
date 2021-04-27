@@ -4,5 +4,13 @@
     },
     "sources":{
         "path": "/test/sources"
+    },
+    "scheduler": {
+        "intervalBetweenJobs": 140
+    },
+    "development": {
+        "scheduler": {
+            "intervalBetweenJobs": 130
+        }
     }
 }

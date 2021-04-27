@@ -5,6 +5,7 @@ import Article from "../../../components/articles";
 import {nanoid} from "nanoid";
 import Database from "../database";
 import Config from "../../../components/config"
+import Worker from "../../workers/index";
 
 export default class MongoDB extends Database {
 
@@ -31,7 +32,7 @@ export default class MongoDB extends Database {
 
     async deleteArticle(id: string): Promise<void> {
         try {
-            await this.client.db('saffron').collection('articles').deleteOne({ id })
+            await this.client.db(Config.load()!!.database.config.name).collection('articles').deleteOne({ id })
         }
         catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
@@ -40,7 +41,7 @@ export default class MongoDB extends Database {
 
     async getArticle(id: string): Promise<Article | null> {
         try {
-            return await this.client.db('saffron').collection('articles').findOne({ id })
+            return await this.client.db(Config.load()!!.database.config.name).collection('articles').findOne({ id })
         }
         catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
@@ -56,7 +57,7 @@ export default class MongoDB extends Database {
     async pushArticle(article: Article): Promise<string> {
         try {
             let id = article.source.id + "_" + nanoid(10) + Date.now()
-            await this.client.db('saffron').collection('articles').insertOne(article.toJSON())
+            await this.client.db(Config.load()!!.database.config.name).collection('articles').insertOne(article.toJSON())
             return id
         }
         catch (e) {
@@ -65,9 +66,28 @@ export default class MongoDB extends Database {
         return ""
     }
 
-    async  updateArticle(article: Article): Promise<void> {
+    async updateArticle(article: Article): Promise<void> {
         try {
-            await this.client.db('saffron').collection('articles').updateOne({ id: article.id }, article.toJSON())
+            await this.client.db(Config.load()!!.database.config.name).collection('articles').updateOne({ id: article.id }, article.toJSON())
+        }
+        catch (e) {
+            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
+        }
+    }
+
+    async getWorkers(): Promise<Worker[] | null> {
+        try {
+            return await this.client.db(Config.load()!!.database.config.name).collection('workers').find({}).toArray()
+        }
+        catch (e) {
+            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
+        }
+        return null
+    }
+
+    async announceWorker(worker: Worker): Promise<void> {
+        try {
+            await this.client.db(Config.load()!!.database.config.name).collection('workers').insertOne(worker.toJSON())
         }
         catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)

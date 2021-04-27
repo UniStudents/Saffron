@@ -1,16 +1,27 @@
-import Database from "../database/index"
-import Grid from "../grid";
 import Events from "../events"
 import Job from "../../components/job";
+import Logger from "../../middleware/logger"
+import {LoggerTypes} from "../../middleware/LoggerTypes";
+import randomId from "../../middleware/randomId";
 
 export default class Worker {
 
-    async start(): Promise<void> {
-        console.log("Worker Started")
+    async toJSON(): Promise<object> {
+        return {}
+    }
 
+    declare id: string;
+
+    async start(): Promise<void> {
+        this.id = randomId('wrk')
+        Logger(LoggerTypes.INFO, `Worker started. ID: ${this.id}`)
         // start listening for new jobs
         Events.getAntennae().on("new-job", (job: Job) => {
-            console.log("New job")
+
+
+
+            // when job is finish emit finished job.id
+            Events.getAntennae().emit("finish-job", job.id)
         })
     }
 

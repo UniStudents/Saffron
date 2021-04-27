@@ -17,10 +17,16 @@ export default class Config{
         },
         mode: "main",
         workers: {
-            nodes: 0 // Start zero workers
+            nodes: 3 // Start three workers
         },
         scheduler: {
             intervalBetweenNewJobs: 60 * 60 * 1000
+        },
+        grid: {
+            distributed: false
+        },
+        misc: {
+            log: "info"
         }
     }
 
@@ -28,14 +34,15 @@ export default class Config{
     public static isHydrated: boolean = false
     private static instance: Config
 
-    static load(config: object | string | undefined = undefined): _type{
+    static load(config: _type | string | undefined = undefined): _type{
         if(this.instance == null)
             this.instance = new Config(config)
 
         return this.instance._config
     }
 
-    private constructor(config: object | string | undefined) {
+    private constructor(config: _type | string | undefined) {
+
         /**
          * Loads an external configuration object and merges the parameters with the default ones.
          */
@@ -57,7 +64,30 @@ export default class Config{
                 throw new Error
             }
         }
+
         this._config = _.mergeWith({}, this._config, config, (o, s) => s ? s : o)
+
+        switch(process.env.NODE_ENV){
+            case "production":
+                //@ts-ignore
+                if(config.production) this._config = _.mergeWith({}, this._config, config.production, (o, s) => s ? s : o)
+                break
+            case "development":
+                //@ts-ignore
+                if(config.development) this._config = _.mergeWith({}, this._config, config.development, (o, s) => s ? s : o)
+                break
+            case "testing":
+                //@ts-ignore
+                if(config.testing) this._config = _.mergeWith({}, this._config, config.testing, (o, s) => s ? s : o)
+                break
+            default:
+
+        }
+
+        delete this._config.development
+        delete this._config.production
+        delete this._config.testing
+
         Config.isHydrated = true
     }
 }

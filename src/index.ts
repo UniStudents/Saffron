@@ -25,7 +25,7 @@ export = {
      * @see https://github.com/poiw-org/saffron/wiki
      */
     initialize: async (config: any = undefined) => {
-        Logger(LoggerTypes.INFO,"News and announcements aggregation framework.")
+        Logger(LoggerTypes.TITLE,"Simple Abstract Framework For the Retrieval Of News")
 
         // Load config file
         Config.load(config)
@@ -44,24 +44,21 @@ export = {
         await grid.connect()
             .then(()=>Logger(LoggerTypes.STEP, "The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."))
 
-        // Initialize scheduler
-        if(Config.load().mode === 'main')
-            scheduler = new Scheduler()
-
         // Initialize workers
         let workersSize = Config.load().workers.nodes
         for(let i = 0; i < workersSize; i++){
             workers.push(new Worker())
         }
 
-        setTimeout(()=>antennae.emit("new-job"),1000)
+        // Initialize scheduler
+        if(Config.load().mode === 'main')
+            scheduler = new Scheduler()
 
         // Event for workers
         antennae.on("start", () => {
             for(let worker of workers)
                 worker.start()
         })
-        antennae.emit("start")
 
         antennae.on("stop", (force: boolean) => {
             for(let worker of workers)
@@ -80,9 +77,9 @@ export = {
      */
     stop: async (force: boolean) => antennae.emit("stop", force),
     /**
-     * Register a new callback for a specific event.
-     * @param event The event
-     * @param callback The callback that will be used to pass the data
+     * Register a new event
+     * @param event The name of the event
+     * @param data The callback that will send the data
      */
-    on: antennae.on
+    on: async(event: string, data: any) => antennae.on(event, data)
 }

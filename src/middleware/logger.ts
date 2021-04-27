@@ -1,6 +1,7 @@
 import chalk from 'chalk'
 import Events from "../modules/events";
 import {LoggerTypes} from "./LoggerTypes"
+import Config from "../components/config";
 
 export default (type: LoggerTypes, data: any) => {
     Events.getAntennae().emit("log", type, data)
@@ -19,7 +20,15 @@ export default (type: LoggerTypes, data: any) => {
             console.log(chalk.red.bold(` ✕ ${data}`))
             return
         case LoggerTypes.INFO:
-            console.log(chalk.black(`${chalk.bgGreen(" saffron ")}`), chalk.white(chalk.white(data)))
+            console.log(chalk.white(`${chalk.blue(" | ")}`))
+            console.log(chalk.white(`${chalk.blue(" ○ ")} ${data}`))
         return
+        case LoggerTypes.DEBUG:
+            console.log(chalk.white(`${chalk.blue(" | ")}`))
+            console.log(chalk.white(`${chalk.blue(" DEBUG ")} ${data}`))
+            return
+        default:
+            console.log(chalk.black(`${chalk.bgGreen(" saffron ")}`), chalk.white(chalk.white(data)))
+        return;
     }
 }

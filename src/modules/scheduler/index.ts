@@ -1,6 +1,5 @@
 import Database from "../database";
 import Config from "../../components/config";
-
 import Logger from "../../middleware/logger"
 import {LoggerTypes} from "../../middleware/LoggerTypes";
 import Events from "../events";
@@ -26,7 +25,7 @@ export default class Scheduler {
         })
     }
 
-    private scanSourceFiles(): Promise<Source[]> {
+    private scanSourceFiles(): Promise<void> {
         return new Promise((loaded, failed) => {
             let sourcesPath = Config.load().sources.path
 
@@ -45,25 +44,68 @@ export default class Scheduler {
                     ...require(`${path + sourcesPath}/${file}`)
                 }))
 
-                let mSources: Source[] = []
-                sources.forEach(async (source: any) => mSources.push(await Source.parseFileObject(source)))
-                loaded(sources)
+                sources.forEach(async (source: any) => await Source.parseFileObject(source))
+                loaded()
             })
         })
     }
 
     private getRandomTime(source_id: string): number {
-        // return a random number between -3 minutes to + 3 minutes in milliseconds
+        // return a random number between e.x. -3 minutes to +3 minutes (in milliseconds)
         return 0
     }
 
+    private async electWorker(lastWorkerId: string): Promise<string> {
+
+        return lastWorkerId
+    }
+
+    private async createJob(sourceId: string, workerId: string, interval: number): Promise<Job> {
+        let job = new Job(sourceId + '_' + nanoid(10) + '_' + Date.now())
+        job.source.id = sourceId
+        // nextRetry = The time the job finished (just now) + interval + randomTIme
+        job.nextRetry = Date.now() + interval + this.getRandomTime(sourceId)
+        job.worker.id = workerId
+
+        return job
+    }
+
     async start(): Promise<void> {
-        let sources = await this.scanSourceFiles()
-        Logger("step", `Loaded ${sources.length} sources`)
+        await this.scanSourceFiles()
+        let sources = Source.getSources()
+        Logger(LoggerTypes.STEP, `Loaded ${sources.length} sources`)
+
+        // Initialize jobs for first time
+        await Grid.getInstance().clearAllJobs()
+        for(let source of sources){
+            // TODO - initialize job for first time
+        }
 
         // Check if is time for new job
         setInterval(async () => {
+            let pendingJobs = await Grid.getInstance().getJobs()
+            if(pendingJobs == null){
+                Logger(LoggerTypes.INFO, 'Scheduler: no pending jobs')
+                return
+            }
 
+            for(let pJob of pendingJobs){
+                if(pJob.status === 'failed'){
+                    await Grid.getInstance().deleteJob(pJob.id)
+
+                    let source = pJob.getSource()
+                    if(source == null) throw Error('Worker finished job for a source that does not exist.')
+
+                    // Job failed so try again in half interval
+                    let interval = (source.intervalBetweenNewScan ? source.intervalBetweenNewScan : Config.load().scheduler.intervalBetweenNewJobs) / 2
+
+                    let new_job = await this.createJob(source.id, await this.electWorker(pJob.worker.id), interval)
+                    await Grid.getInstance().pushJob(new_job)
+                }
+                else if(pJob.nextRetry <= Date.now()){
+                    Events.getAntennae().emit("new-job", pJob)
+                }
+            }
         }, 2 * 60 * 1000) // 2 minutes
 
         // Issue new job for this source
@@ -74,16 +116,12 @@ export default class Scheduler {
             await Grid.getInstance().deleteJob(job_id)
 
             // Find source
-            let source = sources.find((source: Source) => { return source.id === job!!.source.id })
+            let source = job.getSource()
             if(source == null) throw Error('Worker finished job for a source that does not exist.')
 
             let interval = source.intervalBetweenNewScan ? source.intervalBetweenNewScan : Config.load().scheduler.intervalBetweenNewJobs
 
-            let new_job = new Job(source.id + '_' + nanoid(10) + '_' + Date.now())
-            new_job.source = source
-            // nextRetry = The time the job finished (just now) + interval + randomTIme
-            new_job.nextRetry = Date.now() + interval + this.getRandomTime(source.id)
-
+            let new_job = await this.createJob(source.id, await this.electWorker(job.worker.id), interval)
             await Grid.getInstance().pushJob(new_job)
         })
     }

@@ -1,8 +1,8 @@
 const saffron = require('../dist/index');
-(async()=>{
+(async() => {
     await saffron.initialize("../test/saffron.json")
 
-    saffron.on("log", (type, data)=>console.log(type, data))
+    // saffron.on("start", () => console.log('saffron started'))
 
     await saffron.start()
 })()

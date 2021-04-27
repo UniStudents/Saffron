@@ -1,5 +1,6 @@
 import Article from "../../../components/articles";
 import Database from "../database";
+import Worker from "../../workers/index";
 
 export default class Memory extends Database {
 
@@ -31,4 +32,11 @@ export default class Memory extends Database {
         return
     }
 
+    async getWorkers(): Promise<Worker[] | null> {
+        return []
+    }
+
+    async announceWorker(worker: Worker): Promise<void> {
+        return
+    }
 }
