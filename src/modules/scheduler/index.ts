@@ -7,6 +7,7 @@ import {nanoid} from "nanoid";
 import Job from "../../components/job";
 import Source from "../../components/source";
 import Grid from "../grid";
+import {JobStatus} from "../../components/JobStatus";
 
 const fs = require('fs');
 const path = process.cwd();
@@ -101,7 +102,7 @@ export default class Scheduler {
             }
             //@ts-ignore
             for(let pJob of pendingJobs){
-                if(pJob.status === 'failed'){
+                if(pJob.status === JobStatus.FAILED){
                     await Grid.getInstance().deleteJob(pJob.id)
 
                     let source = pJob.getSource()

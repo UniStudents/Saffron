@@ -1,4 +1,5 @@
 import Source from "./source";
+import {JobStatus} from "./JobStatus";
 
 export default class Job {
     declare id: string // Job id
@@ -6,7 +7,7 @@ export default class Job {
         id: string
     } // Source id where the job belongs
     declare nextRetry: number // The date (milliseconds) where the job will be send to a worker | Only the scheduler edit this
-    declare status: string
+    declare status: JobStatus
     declare worker:{
         id: string
     }

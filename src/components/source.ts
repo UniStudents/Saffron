@@ -1,6 +1,7 @@
 import Job from "../components/job";
 import {Logger} from "mongodb";
 import randomId from "../middleware/randomId";
+import instructions from "./instructions";
 export default class Source {
 
     static async parseFileObject(source: any): Promise<void> {
@@ -28,7 +29,7 @@ export default class Source {
 
     declare id: string
     declare intervalBetweenNewScan: number
-    declare instructions: object
+    declare instructions: instructions
 
     constructor(id: string) {
         this.id = id
