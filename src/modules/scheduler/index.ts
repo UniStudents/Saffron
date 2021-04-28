@@ -62,10 +62,11 @@ export default class Scheduler {
 
     private async createJob(sourceId: string, workerId: string, interval: number): Promise<Job> {
         let job = new Job(sourceId + '_' + nanoid(10) + '_' + Date.now())
-        job.source.id = sourceId
+        job.source = {id:sourceId}
+        //job.source.id = sourceId
         // nextRetry = The time the job finished (just now) + interval + randomTIme
         job.nextRetry = Date.now() + interval + this.getRandomTime(sourceId)
-        job.worker.id = workerId
+        job.worker = {id:workerId}
 
         return job
     }
@@ -83,12 +84,22 @@ export default class Scheduler {
 
         // Check if is time for new job
         setInterval(async () => {
+
+            //Dummy code
+            for (const source of Source.getSources()) {
+                let new_job = await this.createJob(source.id, await this.electWorker("123"), 500)
+                await Grid.getInstance().pushJob(new_job)
+                Events.getAntennae().emit("new-job",new_job)
+            }
+            return
+            //End dummy code
+
             let pendingJobs = await Grid.getInstance().getJobs()
             if(pendingJobs == null){
                 Logger(LoggerTypes.INFO, 'Scheduler: no pending jobs')
                 return
             }
-
+            //@ts-ignore
             for(let pJob of pendingJobs){
                 if(pJob.status === 'failed'){
                     await Grid.getInstance().deleteJob(pJob.id)
@@ -106,11 +117,12 @@ export default class Scheduler {
                     Events.getAntennae().emit("new-job", pJob)
                 }
             }
-        }, 2 * 60 * 1000) // 2 minutes
+        }, 10 * 1000) // 2 minutes
 
         // Issue new job for this source
         Events.getAntennae().on("finish-job", async (job_id: string) => {
-            // Get job from grid
+            Logger(LoggerTypes.DEBUG, "Job finished")
+/*            // Get job from grid
             let job = await Grid.getInstance().getJob(job_id)
             if(job == null) throw Error("Worker finished a job but send invalid job id.")
             await Grid.getInstance().deleteJob(job_id)
@@ -122,7 +134,7 @@ export default class Scheduler {
             let interval = source.intervalBetweenNewScan ? source.intervalBetweenNewScan : Config.load().scheduler.intervalBetweenNewJobs
 
             let new_job = await this.createJob(source.id, await this.electWorker(job.worker.id), interval)
-            await Grid.getInstance().pushJob(new_job)
+            await Grid.getInstance().pushJob(new_job)*/
         })
     }
 

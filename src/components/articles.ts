@@ -2,7 +2,9 @@ import Source from "./source";
 
 export default class Article {
     declare id: string
-    declare source: Source
+    declare source: {
+        id: string
+    }
 
     constructor(id: string) {
         this.id = id

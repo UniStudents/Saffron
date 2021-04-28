@@ -29,7 +29,6 @@ export default class Grid {
     async pushJob(job: Job): Promise<void> {
         // Scheduler to push a new job
         dummyStorage.push(job)
-        events.emit("new-job", job)
     }
 
     async clearAllJobs(): Promise<void> {
