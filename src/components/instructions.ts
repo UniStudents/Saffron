@@ -1,4 +1,5 @@
 import Source from "./source";
+import {ParserType} from "../modules/workers/parsers/ParserType";
 
 /**
  * The instructions class is used mainly by parsers.
@@ -7,16 +8,17 @@ import Source from "./source";
  * a web page content.
  */
 export default class Instructions {
-    private declare source : {
+    private declare static instructions: Array<Instructions>;
+    declare source : {
         id: string
     }
-    private declare static instructions: Array<Instructions>;
     declare id: string;
     declare url: string;
     declare endPoint: string;
     declare scrapeOptions: object;
     declare elementSelector: string;
     declare sourceType: string;
+    declare parserType: ParserType
 
     /**
      * @param id instruction id.

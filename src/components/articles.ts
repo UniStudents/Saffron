@@ -8,6 +8,8 @@ export default class Article {
     declare id: string
     declare title: string
     declare description: string
+    declare link: string
+    declare pubDate: string
     declare extras: _extras
 
 

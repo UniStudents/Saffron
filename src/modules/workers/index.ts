@@ -4,6 +4,7 @@ import Logger from "../../middleware/logger"
 import {LoggerTypes} from "../../middleware/LoggerTypes";
 import randomId from "../../middleware/randomId";
 import Database from "../database/index";
+import Utils from "./parsers/Utils";
 
 export default class Worker {
 
@@ -22,7 +23,9 @@ export default class Worker {
         Logger(LoggerTypes.INFO, `Worker started. ID: ${this.id}`)
         // start listening for new jobs
         Events.getAntennae().on("new-job", (job: Job) => {
-            if(this.id !== job.worker.id) return
+           // if(this.id !== job.worker.id) return
+            let string = "When was the People&#039;s Republic of China founded?"
+            console.log(Utils.htmlStrip(string))
 
 
             console.log(job.worker.id)
