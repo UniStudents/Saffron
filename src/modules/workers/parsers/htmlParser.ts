@@ -41,13 +41,18 @@ export default class HtmlParser {
             let parsedArticles = new Map<Number, Article>();
 
             cheerioLoad(instructions.elementSelector).each( (index, element)  => {
-                let articleData: object = {};
+                let articleData: ArticleImage = {};
                 let tmpArticle: Article;
 
                 for (let item in instructions.scrapeOptions) {
-                    // Utils.htmlStrip(cheerioLoad(element).find(item).text());  // data.
+                    // @ts-ignore
+                    articleData[instructions.scrapeOptions[item].name] = Utils.htmlStrip(cheerioLoad(element).find(item).text());
                 }
-
+                tmpArticle = new Article("arc:123ioregu32123");
+                tmpArticle.title = articleData.title;
+                tmpArticle.pubDate = articleData.pubDate;
+                tmpArticle.description = (articleData.description) ? articleData.description : '';
+                // toDO find a way for the case of extras.
             })
         });
 
