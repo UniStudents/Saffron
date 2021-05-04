@@ -6,6 +6,7 @@ import randomId from "../../middleware/randomId";
 import HtmlParser from "./parsers/htmlParser";
 import Instructions from "../../components/instructions";
 import {ParserType} from "./parsers/ParserType";
+import Source from "../../components/source";
 
 export default class Worker {
 
@@ -34,26 +35,27 @@ export default class Worker {
 
             // Test for html Parser.
 
-            /*let parseInstructions: Instructions = new Instructions("inst:1231");
-            parseInstructions.url = "https://www.cs.unipi.gr/index.php?option=com_k2&view=itemlist&layout=category&task=category&id=16&Itemid=673&lang=el";
-            parseInstructions.elementSelector = ".itemContainer.itemContainerLast";
+           /* let parseInstructions: Instructions = new Instructions(randomId("inst"));
+            parseInstructions.source = {id: job.getSource()?.id};
+            parseInstructions.url = "https://www.ntua.gr/el/news/announcements";
+            parseInstructions.elementSelector = ".itemList > article:nth-child(1)";
             parseInstructions.scrapeOptions = {
-                ".catItemHeader": {
-                    "name": "title",
-                    "find": ["a"],
+                "": {
+                    "name": "title"
                 },
-                ".catItemDateCreated": {
+                ".itemList > article:nth-child(1) > header:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > div:nth-child(1)": {
                     "name": "pubDate"
                 },
-                ".catItemIntroText": {
+                " ": {
                     "name": "description"
                 }
             }
+
             parseInstructions.parserType = ParserType.HTML;
 
-            HtmlParser.parse(parseInstructions);*/
-
-
+            HtmlParser.parse(parseInstructions).then( (map) => {
+                console.log(map)
+            });*/
 
             // when job is finish emit finished job.id
             Events.getAntennae().emit("finish-job", job.id)

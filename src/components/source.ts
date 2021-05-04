@@ -25,6 +25,10 @@ export default class Source {
         return this._sources.find((source: Source) => { return source.id === job!!.source.id })!!
     }
 
+    static getSourceByID(id: String): Source {
+        return this._sources.find((source: Source) => source.id === id)!!;
+    }
+
     private static _sources: Source[] = []
 
     declare id: string

@@ -268,7 +268,7 @@ export default class Utils{
     }
 
 
-    public static htmlStrip(text: String): String {
+    public static htmlStrip(text: String = ""): String {
         text = this.decode(text)
         text = text.replace(/\n/g,'')
             .replace(/\t/g,'')

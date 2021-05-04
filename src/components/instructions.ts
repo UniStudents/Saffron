@@ -10,20 +10,20 @@ import {ParserType} from "../modules/workers/parsers/ParserType";
 export default class Instructions {
     private declare static instructions: Array<Instructions>;
     declare source : {
-        id: string
-    }
-    declare id: string;
-    declare url: string;
-    declare endPoint: string;
-    declare scrapeOptions: object;
-    declare elementSelector: string;
-    declare sourceType: string;
+        id: String;
+    };
+    declare id: String;
+    declare url: String;
+    declare endPoint: String;
+    declare scrapeOptions: Object;
+    declare elementSelector: String;
+    declare sourceType: String;
     declare parserType: ParserType
 
     /**
      * @param id instruction id.
      */
-    constructor(id: string) {
+    constructor(id: String) {
         this.id = id;
     }
 
@@ -31,12 +31,12 @@ export default class Instructions {
      * We return a Map which contains all the options
      * that a parser needs.
      *
-     * @return Map<string, object>
+     * @return Map<String, Object>
      */
-    getOptions(): Map<string, object> | null {
+    getOptions(): Map<String, Object> | null {
         if (!this.scrapeOptions) return null;
 
-        return new Map<string, object>(Object.entries(this.scrapeOptions));
+        return new Map<String, Object>(Object.entries(this.scrapeOptions));
     }
 
     /**
@@ -54,10 +54,11 @@ export default class Instructions {
     /**
      * Return the source that variable source refers to.
      *
-     * @return object
+     * @return Source
      */
-    getSource(): object {
-        return this.source;
+    getSource(): Source | null {
+        // toDo find the source by id.
+        return null;
     }
 
 }

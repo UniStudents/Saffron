@@ -6,6 +6,8 @@ import https from "https";
 import Logger from "../../../middleware/logger";
 import {LoggerTypes} from "../../../middleware/LoggerTypes";
 import Utils from "./Utils";
+import randomId from "../../../middleware/randomId";
+import Source from "../../../components/source";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false});
 
@@ -34,29 +36,52 @@ export default class HtmlParser {
         });
     }
 
-    static parse(instructions: Instructions): Map<Number, Article> | null {
+    static async parse(instructions: Instructions, amount: Number = 10): Promise<Map<Number, Article>> {
 
-        this.request(instructions).then( (response: AxiosResponse) => {
+        let parsedArticles = new Map<Number, Article>();
+
+        await HtmlParser.request(instructions).then( (response: AxiosResponse) => {
             const cheerioLoad = cheerio.load(response.data);
-            let parsedArticles = new Map<Number, Article>();
 
-            cheerioLoad(instructions.elementSelector).each( (index, element)  => {
+            cheerioLoad(instructions.elementSelector).each(  (index, element)  => {
                 let articleData: ArticleImage = {};
                 let tmpArticle: Article;
+                let basicData = ["title", "pubDate", "description"];
+                let options = instructions.scrapeOptions;
 
-                for (let item in instructions.scrapeOptions) {
+                for (let item in options) {
                     // @ts-ignore
-                    articleData[instructions.scrapeOptions[item].name] = Utils.htmlStrip(cheerioLoad(element).find(item).text());
+                    articleData[options[item].name] = Utils.htmlStrip(cheerioLoad(element).find(item).text());
+
+                    // @ts-ignore
+                    if (options[item].name === "links" && articleData[options[item].name].split(" ").length > 1) {
+                        // @ts-ignore
+                        articleData[options[item].name] = articleData[options[item].name].split(" ");
+                    }
                 }
-                tmpArticle = new Article("arc:123ioregu32123");
+                tmpArticle = new Article(randomId("arc"));
+                //tmpArticle.source.id = instructions.getSource().id;
                 tmpArticle.title = articleData.title;
                 tmpArticle.pubDate = articleData.pubDate;
-                tmpArticle.description = (articleData.description) ? articleData.description : '';
-                // toDO find a way for the case of extras.
-            })
+                tmpArticle.description = articleData.description;
+                tmpArticle.extras = {};
+
+
+                for (let extra in articleData) {
+
+                    if (basicData.indexOf(extra) === -1) {
+                        if (articleData[extra] === '') continue;
+
+                        tmpArticle.extras[extra] = articleData[extra];
+                    }
+                }
+
+                if (tmpArticle.title === '') return;
+
+                parsedArticles.set(index, tmpArticle);
+            });
         });
 
-
-        return null;
+        return parsedArticles;
     }
 }
