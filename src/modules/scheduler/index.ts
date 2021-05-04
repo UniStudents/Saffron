@@ -14,16 +14,9 @@ const path = process.cwd();
 
 export default class Scheduler {
 
-    private declare offload: Database
-
     constructor() {
-        this.offload = Database.getInstance()!!
-        Events.getAntennae().on("start", () => {
-            this.start().then(null)
-        })
-        Events.getAntennae().on("stop", (force: boolean) => {
-            this.stop(force).then(null)
-        })
+        Events.getAntennae().on("start", () => this.start())
+        Events.getAntennae().on("stop", (force: boolean) => this.stop(force))
     }
 
     private scanSourceFiles(): Promise<void> {
@@ -64,7 +57,6 @@ export default class Scheduler {
     private async createJob(sourceId: string, workerId: string, interval: number): Promise<Job> {
         let job = new Job(sourceId + '_' + nanoid(10) + '_' + Date.now())
         job.source = {id:sourceId}
-        //job.source.id = sourceId
         // nextRetry = The time the job finished (just now) + interval + randomTIme
         job.nextRetry = Date.now() + interval + this.getRandomTime(sourceId)
         job.worker = {id:workerId}
@@ -75,32 +67,30 @@ export default class Scheduler {
     async start(): Promise<void> {
         await this.scanSourceFiles()
         let sources = Source.getSources()
-        Logger(LoggerTypes.STEP, `Loaded ${sources.length} sources`)
+        Logger(LoggerTypes.DEBUG, `Loaded ${sources.length} sources`)
+
+        let workers = await Database.getInstance()!!.getWorkers()
+
+        let interval = Config.load().scheduler.intervalBetweenNewJobs / sources.length
 
         // Initialize jobs for first time
         await Grid.getInstance().clearAllJobs()
+
+        let sI = 0, wI = 0
         for(let source of sources){
-            // TODO - initialize job for first time
+            let new_job = await this.createJob(source.id, await this.electWorker(workers[wI].id), interval * sI)
+            await Grid.getInstance().pushJob(new_job)
+            sI++; wI++
+
+            if(wI == workers.length) wI = 0
         }
 
         // Check if is time for new job
         setInterval(async () => {
-
-            //Dummy code
-            for (const source of Source.getSources()) {
-                let new_job = await this.createJob(source.id, await this.electWorker("123"), 500)
-                await Grid.getInstance().pushJob(new_job)
-                Events.getAntennae().emit("new-job",new_job)
-            }
-            return
-            //End dummy code
-
             let pendingJobs = await Grid.getInstance().getJobs()
-            if(pendingJobs == null){
-                Logger(LoggerTypes.INFO, 'Scheduler: no pending jobs')
-                return
-            }
-            //@ts-ignore
+            if(pendingJobs.length === 0)
+                Logger(LoggerTypes.DEBUG, 'Scheduler: no pending jobs')
+
             for(let pJob of pendingJobs){
                 if(pJob.status === JobStatus.FAILED){
                     await Grid.getInstance().deleteJob(pJob.id)
@@ -123,7 +113,7 @@ export default class Scheduler {
         // Issue new job for this source
         Events.getAntennae().on("finish-job", async (job_id: string) => {
             Logger(LoggerTypes.DEBUG, "Job finished")
-/*            // Get job from grid
+            // Get job from grid
             let job = await Grid.getInstance().getJob(job_id)
             if(job == null) throw Error("Worker finished a job but send invalid job id.")
             await Grid.getInstance().deleteJob(job_id)
@@ -135,7 +125,7 @@ export default class Scheduler {
             let interval = source.intervalBetweenNewScan ? source.intervalBetweenNewScan : Config.load().scheduler.intervalBetweenNewJobs
 
             let new_job = await this.createJob(source.id, await this.electWorker(job.worker.id), interval)
-            await Grid.getInstance().pushJob(new_job)*/
+            await Grid.getInstance().pushJob(new_job)
         })
     }
 

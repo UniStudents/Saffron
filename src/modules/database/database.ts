@@ -19,13 +19,13 @@ export default abstract class Database {
      * @param options See documentation
      * @see https://github.com/poiw-org/saffron/wiki
      */
-    abstract getArticles(options: object | null): Promise<Array<Article>| null>
+    abstract getArticles(options: object | null): Promise<Array<Article>>
 
     /**
      * Return an article based on id or null if it is not found
      * @param id The article's id
      */
-    abstract getArticle(id: string): Promise<Article | null>
+    abstract getArticle(id: string): Promise<Article | undefined>
 
     /**
      * Add a new article on the database
@@ -48,7 +48,7 @@ export default abstract class Database {
     /**
      * Return all workers
      */
-    abstract getWorkers(): Promise<Array<Worker> | null>
+    abstract getWorkers(): Promise<Array<Worker>>
 
     /**
      * Initialize a new worker on the database

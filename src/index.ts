@@ -46,9 +46,8 @@ export = {
 
         // Initialize workers
         let workersSize = Config.load().workers.nodes
-        for(let i = 0; i < workersSize; i++){
+        for(let i = 0; i < workersSize; i++)
             workers.push(new Worker())
-        }
 
         // Initialize scheduler
         if(Config.load().mode === 'main')

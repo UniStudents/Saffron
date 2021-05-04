@@ -7,6 +7,8 @@ import HtmlParser from "./parsers/htmlParser";
 import Instructions from "../../components/instructions";
 import {ParserType} from "./parsers/ParserType";
 import Source from "../../components/source";
+import Grid from "../grid";
+import Database from "../database";
 
 export default class Worker {
 
@@ -22,6 +24,7 @@ export default class Worker {
 
     async start(): Promise<void> {
         this.id = randomId('wrk')
+        await Database.getInstance()!!.announceWorker(this)
         Logger(LoggerTypes.INFO, `Worker started. ID: ${this.id}`)
         // start listening for new jobs
         Events.getAntennae().on("new-job", (job: Job) => {

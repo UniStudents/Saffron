@@ -39,19 +39,19 @@ export default class MongoDB extends Database {
         }
     }
 
-    async getArticle(id: string): Promise<Article | null> {
+    async getArticle(id: string): Promise<Article | undefined> {
         try {
             return await this.client.db(Config.load()!!.database.config.name).collection('articles').findOne({ id })
         }
         catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
-        return null
+        return undefined
     }
 
-    async getArticles(options: object | null = null): Promise<Array<Article> | null> {
+    async getArticles(options: object | null = null): Promise<Array<Article>> {
 
-        return null
+        return []
     }
 
     async pushArticle(article: Article): Promise<string> {
@@ -75,14 +75,14 @@ export default class MongoDB extends Database {
         }
     }
 
-    async getWorkers(): Promise<Worker[] | null> {
+    async getWorkers(): Promise<Worker[]> {
         try {
             return await this.client.db(Config.load()!!.database.config.name).collection('workers').find({}).toArray()
         }
         catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
-        return null
+        return []
     }
 
     async announceWorker(worker: Worker): Promise<void> {

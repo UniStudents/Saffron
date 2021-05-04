@@ -32,22 +32,24 @@ export default class Grid {
     }
 
     async clearAllJobs(): Promise<void> {
-
+        dummyStorage.splice(0, dummyStorage.length)
     }
 
-    async getJobs(): Promise<Array<Job> | null> {
+    async getJobs(): Promise<Array<Job>> {
         // Scheduler for checking if the job exists so not to create a duplicate
-
-        return null
+        return dummyStorage
     }
 
-    async getJob(id: string): Promise<Job | null> {
+    async getJob(id: string): Promise<Job | undefined> {
         // For scheduler to get a job with specific id
-        return null
+        return dummyStorage.find((obj: Job) => obj.id === id)
     }
 
     async deleteJob(id: string): Promise<void> {
         // for scheduler to delete a job with specific id
+        let index = dummyStorage.findIndex((obj: Job) => obj.id === id)
+        if(index !== -1)
+            delete dummyStorage[index]
     }
 
     async finishJob(job_id: string): Promise<void> {
