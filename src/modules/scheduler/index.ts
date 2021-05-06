@@ -9,9 +9,21 @@ import Source from "../../components/source";
 import Grid from "../grid";
 import {JobStatus} from "../../components/JobStatus";
 import logger from "../../middleware/logger";
+import randomId from "../../middleware/randomId";
 
 const fs = require('fs');
 const path = process.cwd();
+
+const hashCode = (str: String) => {
+    let hash = 0, i, chr;
+    if (str.length === 0) return hash;
+    for (i = 0; i < str.length; i++) {
+        chr   = str.charCodeAt(i);
+        hash  = ((hash << 5) - hash) + chr;
+        hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+};
 
 export default class Scheduler {
 
@@ -45,9 +57,18 @@ export default class Scheduler {
         })
     }
 
+    private times = [
+        -400, -360, -300, -280, -240, -210, -180, -160, -120, -90, -60, -30, -10, -5,
+        0,
+        5, 10, 30, 60, 90, 120, 160, 180, 210, 240, 280, 300, 360, 400
+    ]
+
     private getRandomTime(source_id: string): number {
-        // return a random number between e.x. -3 minutes to +3 minutes (in milliseconds)
-        return 0
+        // return a random number of some minutes
+        if(process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
+            return 0
+
+        return this.times[Math.abs(hashCode(source_id + randomId())) % this.times.length] * 1000;
     }
 
     private async electWorker(lastWorkerId: string): Promise<string> {
