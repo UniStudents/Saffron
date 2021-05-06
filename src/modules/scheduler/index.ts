@@ -8,7 +8,6 @@ import Job from "../../components/job";
 import Source from "../../components/source";
 import Grid from "../grid";
 import {JobStatus} from "../../components/JobStatus";
-import logger from "../../middleware/logger";
 import randomId from "../../middleware/randomId";
 import Worker from "../workers";
 
@@ -90,6 +89,7 @@ export default class Scheduler {
         // nextRetry = The time the job finished (just now) + interval + randomTIme
         job.nextRetry = Date.now() + interval + this.getRandomTime(sourceId)
         job.worker = {id:workerId}
+        job.status = JobStatus.PENDING
 
         return job
     }
