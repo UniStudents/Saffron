@@ -10,6 +10,7 @@ import Source from "../../components/source";
 import Grid from "../grid";
 import Database from "../database";
 import logger from "../../middleware/logger";
+import rssParser from "./parsers/rssParser";
 
 export default class Worker {
 
@@ -30,6 +31,9 @@ export default class Worker {
         // start listening for new jobs
         Events.getAntennae().on("new-job", (job: Job) => {
            if(this.id !== job.worker.id) return
+           /* rssParser.rssParser("https://eclass.uoa.gr/modules/announcements/rss.php?c=AEROSPACE119",10).then(res=>{
+                console.log(res)
+            })*/
            /* let string = "When was the People&#039;s Republic of China founded?"
             console.log(Utils.htmlStrip(string))
 
