@@ -138,9 +138,18 @@ export default class Scheduler {
                     // A job failed so add retry flag
                     case JobStatus.FAILED: {
                         Logger(LoggerTypes.DEBUG, "Job failed")
+                        let source = job.getSource()
 
                         job.attempts += 1
-                        job.status = JobStatus.RETRY
+
+                        // If attempts > e.x. 10 increase interval to check on e.x. a day after
+                        let interval = job.attempts > 10
+                            ? 86400000 // One full day
+                            : ((source.intervalBetweenScans ? source.intervalBetweenScans : Config.load().scheduler.intervalBetweenJobs) / 2)
+
+                        job.nextRetry = Date.now() + interval
+                        job.status = JobStatus.PENDING
+                        
                         await Grid.getInstance().updateJob(job)
                     } break
                     case JobStatus.PENDING: {
@@ -149,16 +158,6 @@ export default class Scheduler {
                                 job.worker.id = await this.electWorker(job.worker.id)
                             await Grid.getInstance().emitJob(job)
                         }
-                    } break
-                    case JobStatus.RETRY: {
-                        await Grid.getInstance().deleteJob(job.id)
-
-                        let source = job.getSource()
-                        // Job failed so try again in half interval
-                        let interval = (source.intervalBetweenScans ? source.intervalBetweenScans : Config.load().scheduler.intervalBetweenJobs) / 2
-
-                        let nJob = await this.createJob(source.id, await this.electWorker(job.worker.id), interval)
-                        await Grid.getInstance().pushJob(nJob)
                     } break
                 }
             }
