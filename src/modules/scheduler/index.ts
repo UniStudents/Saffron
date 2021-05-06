@@ -90,6 +90,8 @@ export default class Scheduler {
         job.nextRetry = Date.now() + interval + this.getRandomTime(sourceId)
         job.worker = {id:workerId}
         job.status = JobStatus.PENDING
+        job.attempts = 0
+        job.emitAttempts = 0
 
         return job
     }
@@ -104,7 +106,6 @@ export default class Scheduler {
 
         // Initialize jobs for first time
         await Grid.getInstance().clearAllJobs()
-
         let sI = 0, wI = 0
         for(let source of sources){
             let new_job = await this.createJob(source.id, await this.electWorker(workers[wI].id), interval * sI)
@@ -114,49 +115,54 @@ export default class Scheduler {
             if(wI == workers.length) wI = 0
         }
 
-        // Check if is time for new job
+        // Check grid for job status
         setInterval(async () => {
             let pendingJobs = await Grid.getInstance().getJobs()
             if(pendingJobs.length === 0)
                 Logger(LoggerTypes.DEBUG, 'Scheduler: no pending jobs')
 
-            for(let pJob of pendingJobs){
-                if(pJob.status === JobStatus.FAILED){
-                    await Grid.getInstance().deleteJob(pJob.id)
+            for(let job of pendingJobs){
+                switch (job.status){
+                    // Issue new job for this source
+                    case JobStatus.FINISHED: {
+                        Logger(LoggerTypes.DEBUG, "Job finished")
+                        await Grid.getInstance().deleteJob(job.id)
 
-                    let source = pJob.getSource()
-                    if(source == null) throw Error('Worker finished job for a source that does not exist.')
+                        let source = job.getSource()
+                        let interval = source.intervalBetweenScans ? source.intervalBetweenScans : Config.load().scheduler.intervalBetweenJobs
 
-                    // Job failed so try again in half interval
-                    let interval = (source.intervalBetweenNewScan ? source.intervalBetweenNewScan : Config.load().scheduler.intervalBetweenJobs) / 2
+                        let nJob = await this.createJob(source.id, await this.electWorker(job.worker.id), interval)
+                        await Grid.getInstance().pushJob(nJob)
+                        Logger(LoggerTypes.DEBUG, "Added new job")
+                    } break
+                    // A job failed so add retry flag
+                    case JobStatus.FAILED: {
+                        Logger(LoggerTypes.DEBUG, "Job failed")
 
-                    let new_job = await this.createJob(source.id, await this.electWorker(pJob.worker.id), interval)
-                    await Grid.getInstance().pushJob(new_job)
-                }
-                else if(pJob.nextRetry <= Date.now()){
-                    Events.getAntennae().emit("new-job", pJob)
+                        job.attempts += 1
+                        job.status = JobStatus.RETRY
+                        await Grid.getInstance().updateJob(job)
+                    } break
+                    case JobStatus.PENDING: {
+                        if(job.nextRetry <= Date.now()) {
+                            if(job.emitAttempts > 5)
+                                job.worker.id = await this.electWorker(job.worker.id)
+                            await Grid.getInstance().emitJob(job)
+                        }
+                    } break
+                    case JobStatus.RETRY: {
+                        await Grid.getInstance().deleteJob(job.id)
+
+                        let source = job.getSource()
+                        // Job failed so try again in half interval
+                        let interval = (source.intervalBetweenScans ? source.intervalBetweenScans : Config.load().scheduler.intervalBetweenJobs) / 2
+
+                        let nJob = await this.createJob(source.id, await this.electWorker(job.worker.id), interval)
+                        await Grid.getInstance().pushJob(nJob)
+                    } break
                 }
             }
-        }, 10 * 1000) // 2 minutes
-
-        // Issue new job for this source
-        Events.getAntennae().on("finish-job", async (job_id: string) => {
-            Logger(LoggerTypes.DEBUG, "Job finished")
-            // Get job from grid
-            let job = await Grid.getInstance().getJob(job_id)
-            if(job == null) throw Error("Worker finished a job but send invalid job id.")
-            await Grid.getInstance().deleteJob(job_id)
-
-            // Find source
-            let source = job.getSource()
-            if(source == null) throw Error('Worker finished job for a source that does not exist.')
-
-            let interval = source.intervalBetweenNewScan ? source.intervalBetweenNewScan : Config.load().scheduler.intervalBetweenJobs
-
-            let new_job = await this.createJob(source.id, await this.electWorker(job.worker.id), interval)
-            await Grid.getInstance().pushJob(new_job)
-            Logger(LoggerTypes.DEBUG, "Added new job")
-        })
+        }, 10 * 1000) // Refresh rate: 2 minutes - for dev 10 seconds
     }
 
     async stop(force: boolean): Promise<void> {

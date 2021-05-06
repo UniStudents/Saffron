@@ -12,7 +12,7 @@ export default class Source {
         if (!['api', 'portal'].includes(source.type)) throw new Error('A source\'s "api" value must be either "api" or "portal"')
 
         let ret = new Source(randomId("src"))
-        ret.intervalBetweenNewScan = source.intervalBetweenNewScan
+        ret.intervalBetweenScans = source.intervalBetweenNewScan
 
         Source._sources.push(ret)
     }
@@ -32,7 +32,7 @@ export default class Source {
     private static _sources: Source[] = []
 
     declare id: string
-    declare intervalBetweenNewScan: number
+    declare intervalBetweenScans: number
     declare instructions: instructions
 
     constructor(id: string) {

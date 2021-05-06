@@ -1,6 +1,7 @@
 import Database from "./database";
 import Job from "../components/job";
 import Events from "./events";
+import {JobStatus} from "../components/JobStatus";
 
 let dummyStorage: Job[] = [],
     events = Events.getAntennae()
@@ -9,6 +10,9 @@ export default class Grid {
 
     private static instance: Grid
 
+    /**
+     * Returns an instance of Grid
+     */
     static getInstance(): Grid {
         if(this.instance == null)
             this.instance = new Grid()
@@ -16,43 +20,99 @@ export default class Grid {
         return this.instance
     }
 
-    declare offload: Database
+    private constructor() {}
 
-    private constructor() {
-        this.offload = Database.getInstance()!!
-    }
-
+    /**
+     * Connects to the grid
+     */
     async connect(): Promise<void> {
-        // connect with other workers or scheduler
+
     }
 
+    /**
+     * <h1>Scheduler</h1>
+     * Push a new job to the grid
+     * @param job The job object
+     */
     async pushJob(job: Job): Promise<void> {
-        // Scheduler to push a new job
         dummyStorage.push(job)
     }
 
+    /**
+     * <h1>Scheduler</h1>
+     * Clears all the jobs from the grid
+     */
     async clearAllJobs(): Promise<void> {
         dummyStorage.splice(0, dummyStorage.length)
     }
 
+    /**
+     * <h1>Scheduler</h1>
+     * Returns an array of all the jobs
+     */
     async getJobs(): Promise<Array<Job>> {
-        // Scheduler for checking if the job exists so not to create a duplicate
         return dummyStorage
     }
 
+    /**
+     * <h1>Scheduler</h1>
+     * Returns a specific job based on id
+     * @param id
+     */
     async getJob(id: string): Promise<Job | undefined> {
-        // For scheduler to get a job with specific id
         return dummyStorage.find((obj: Job) => obj?.id === id)
     }
 
+    /**
+     * <h1>Scheduler</h1>
+     * Delete a job from the grid based on id
+     * @param id
+     */
     async deleteJob(id: string): Promise<void> {
-        // for scheduler to delete a job with specific id
         let index = dummyStorage.findIndex((obj: Job) => obj?.id === id)
         if(index !== -1)
             dummyStorage.splice(index, 1)
     }
 
-    async finishJob(job_id: string): Promise<void> {
-        // worker finished the job
+    /**
+     * <h1>Scheduler</h1>, <h1>Grid</h1>
+     * Update a job based on id
+     * @param job
+     */
+    async updateJob(job: Job): Promise<void> {
+        let index = dummyStorage.findIndex((obj: Job) => obj?.id === job.id)
+        if(index !== -1)
+            dummyStorage[index] = job
+    }
+
+    /**
+     * <h1>Worker</h1>
+     * Flags the job as finished and update the grid
+     * @param job
+     */
+    async finishJob(job: Job): Promise<void> {
+        job.status = JobStatus.FINISHED
+        await this.updateJob(job)
+    }
+
+    /**
+     * <h1>Worker</h1>
+     * Flags the job as failed and update the grid
+     * @param job
+     */
+    async failedJob(job: Job): Promise<void> {
+        job.status = JobStatus.FAILED
+        await this.updateJob(job)
+    }
+
+    /**
+     * <h1>Scheduler</h1>
+     * Tells all the workers in the network that a job must be done
+     * @param job
+     */
+    async emitJob(job: Job): Promise<void> {
+        job.emitAttempts++
+        await this.updateJob(job)
+        Events.getAntennae().emit("new-job", job)
     }
 }

@@ -7,6 +7,8 @@ export default class Job {
         id: string
     } // Source id where the job belongs
     declare nextRetry: number // The date (milliseconds) where the job will be send to a worker | Only the scheduler edit this
+    declare attempts: number
+    declare emitAttempts: number
     declare status: JobStatus
     declare worker:{
         id: string
@@ -20,7 +22,7 @@ export default class Job {
         return Job.getJobs()
     }
 
-    getSource(): Source{
+    getSource(): Source {
         return Source.getSourceFromJob(this)
     }
 

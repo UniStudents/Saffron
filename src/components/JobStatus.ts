@@ -1,4 +1,6 @@
 export enum JobStatus {
     FAILED,
-    PENDING
+    PENDING,
+    RETRY,
+    FINISHED
 }

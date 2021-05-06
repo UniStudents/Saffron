@@ -65,8 +65,9 @@ export default class Worker {
                 console.log(map)
             });*/
 
-            // when job is finish emit finished job.id
-            Events.getAntennae().emit("finish-job", job.id)
+            // when job is finish emit finished job class
+            Grid.getInstance().finishJob(job)
+            Grid.getInstance().failedJob(job)
         })
     }
 
