@@ -10,6 +10,7 @@ import Grid from "../grid";
 import {JobStatus} from "../../components/JobStatus";
 import logger from "../../middleware/logger";
 import randomId from "../../middleware/randomId";
+import Worker from "../workers";
 
 const fs = require('fs');
 const path = process.cwd();
@@ -72,8 +73,15 @@ export default class Scheduler {
     }
 
     private async electWorker(lastWorkerId: string): Promise<string> {
+        let workers = await Database.getInstance()!!.getWorkers()
+        if(workers.length != 1){
+            let index = workers.findIndex((obj: Worker) => obj?.id === lastWorkerId)
+            if (index != -1)
+                workers.splice(index, 1)
+        }
 
-        return lastWorkerId
+        let newWorker = workers[Math.abs(hashCode(lastWorkerId)) % workers.length]
+        return newWorker.id
     }
 
     private async createJob(sourceId: string, workerId: string, interval: number): Promise<Job> {
