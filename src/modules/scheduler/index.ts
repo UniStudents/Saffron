@@ -70,7 +70,6 @@ export default class Scheduler {
         Logger(LoggerTypes.DEBUG, `Loaded ${sources.length} sources`)
 
         let workers = await Database.getInstance()!!.getWorkers()
-
         let interval = Config.load().scheduler.intervalBetweenNewJobs / sources.length
 
         // Initialize jobs for first time

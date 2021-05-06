@@ -44,7 +44,7 @@ export default class Memory extends Database {
     }
 
     async getWorkers(): Promise<Worker[]> {
-        return this.workers
+        return this.workers;
     }
 
     async announceWorker(worker: Worker): Promise<void> {

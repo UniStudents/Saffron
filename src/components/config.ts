@@ -35,8 +35,9 @@ export default class Config{
     private static instance: Config
 
     static load(config: _type | string | undefined = undefined): _type{
-        if(this.instance == null)
+        if(!this.instance)
             this.instance = new Config(config)
+
         return this.instance._config
     }
 
