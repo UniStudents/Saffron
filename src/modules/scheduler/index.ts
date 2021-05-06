@@ -8,6 +8,7 @@ import Job from "../../components/job";
 import Source from "../../components/source";
 import Grid from "../grid";
 import {JobStatus} from "../../components/JobStatus";
+import logger from "../../middleware/logger";
 
 const fs = require('fs');
 const path = process.cwd();
@@ -67,10 +68,10 @@ export default class Scheduler {
     async start(): Promise<void> {
         await this.scanSourceFiles()
         let sources = Source.getSources()
-        Logger(LoggerTypes.DEBUG, `Loaded ${sources.length} sources`)
+        Logger(LoggerTypes.INFO, `Loaded ${sources.length} sources`)
 
         let workers = await Database.getInstance()!!.getWorkers()
-        let interval = Config.load().scheduler.intervalBetweenNewJobs / sources.length
+        let interval = Config.load().scheduler.intervalBetweenJobs / sources.length
 
         // Initialize jobs for first time
         await Grid.getInstance().clearAllJobs()
@@ -98,7 +99,7 @@ export default class Scheduler {
                     if(source == null) throw Error('Worker finished job for a source that does not exist.')
 
                     // Job failed so try again in half interval
-                    let interval = (source.intervalBetweenNewScan ? source.intervalBetweenNewScan : Config.load().scheduler.intervalBetweenNewJobs) / 2
+                    let interval = (source.intervalBetweenNewScan ? source.intervalBetweenNewScan : Config.load().scheduler.intervalBetweenJobs) / 2
 
                     let new_job = await this.createJob(source.id, await this.electWorker(pJob.worker.id), interval)
                     await Grid.getInstance().pushJob(new_job)
@@ -121,10 +122,11 @@ export default class Scheduler {
             let source = job.getSource()
             if(source == null) throw Error('Worker finished job for a source that does not exist.')
 
-            let interval = source.intervalBetweenNewScan ? source.intervalBetweenNewScan : Config.load().scheduler.intervalBetweenNewJobs
+            let interval = source.intervalBetweenNewScan ? source.intervalBetweenNewScan : Config.load().scheduler.intervalBetweenJobs
 
             let new_job = await this.createJob(source.id, await this.electWorker(job.worker.id), interval)
             await Grid.getInstance().pushJob(new_job)
+            Logger(LoggerTypes.DEBUG, "Added new job")
         })
     }
 

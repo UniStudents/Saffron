@@ -42,14 +42,14 @@ export default class Grid {
 
     async getJob(id: string): Promise<Job | undefined> {
         // For scheduler to get a job with specific id
-        return dummyStorage.find((obj: Job) => obj.id === id)
+        return dummyStorage.find((obj: Job) => obj?.id === id)
     }
 
     async deleteJob(id: string): Promise<void> {
         // for scheduler to delete a job with specific id
-        let index = dummyStorage.findIndex((obj: Job) => obj.id === id)
+        let index = dummyStorage.findIndex((obj: Job) => obj?.id === id)
         if(index !== -1)
-            delete dummyStorage[index]
+            dummyStorage.splice(index, 1)
     }
 
     async finishJob(job_id: string): Promise<void> {

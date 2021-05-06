@@ -20,7 +20,7 @@ export default class Config{
             nodes: 3 // Start three workers
         },
         scheduler: {
-            intervalBetweenNewJobs: 60 * 60 * 1000
+            intervalBetweenJobs: 60 * 60 * 1000
         },
         grid: {
             distributed: false

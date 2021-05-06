@@ -9,6 +9,7 @@ import {ParserType} from "./parsers/ParserType";
 import Source from "../../components/source";
 import Grid from "../grid";
 import Database from "../database";
+import logger from "../../middleware/logger";
 
 export default class Worker {
 
@@ -28,7 +29,7 @@ export default class Worker {
         Logger(LoggerTypes.INFO, `Worker started. ID: ${this.id}`)
         // start listening for new jobs
         Events.getAntennae().on("new-job", (job: Job) => {
-           // if(this.id !== job.worker.id) return
+           if(this.id !== job.worker.id) return
            /* let string = "When was the People&#039;s Republic of China founded?"
             console.log(Utils.htmlStrip(string))
 
