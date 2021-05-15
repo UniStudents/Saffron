@@ -84,7 +84,7 @@ export default class Scheduler {
     }
 
     private async createJob(sourceId: string, workerId: string, interval: number): Promise<Job> {
-        let job = new Job(sourceId + '_' + nanoid(10) + '_' + Date.now())
+        let job = new Job(randomId('src'))
         job.source = {id:sourceId}
         // nextRetry = The time the job finished (just now) + interval + randomTIme
         job.nextRetry = Date.now() + interval + this.getRandomTime(sourceId)
@@ -97,6 +97,10 @@ export default class Scheduler {
     }
 
     async start(): Promise<void> {
+        let refreshInterval = 2 * 60 * 1000
+        if(process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
+            refreshInterval = 10 * 1000
+
         await this.scanSourceFiles()
         let sources = Source.getSources()
         Logger(LoggerTypes.INFO, `Loaded ${sources.length} sources`)
@@ -125,7 +129,7 @@ export default class Scheduler {
                 switch (job.status){
                     // Issue new job for this source
                     case JobStatus.FINISHED: {
-                        Logger(LoggerTypes.DEBUG, "Job finished")
+                        Logger(LoggerTypes.DEBUG, "Scheduler: found finished job: " + job.id)
                         await Grid.getInstance().deleteJob(job.id)
 
                         let source = job.getSource()
@@ -133,11 +137,11 @@ export default class Scheduler {
 
                         let nJob = await this.createJob(source.id, await this.electWorker(job.worker.id), interval)
                         await Grid.getInstance().pushJob(nJob)
-                        Logger(LoggerTypes.DEBUG, "Added new job")
+                        Logger(LoggerTypes.DEBUG, "Scheduler: added new job: " + job.id)
                     } break
                     // A job failed so add retry flag
                     case JobStatus.FAILED: {
-                        Logger(LoggerTypes.DEBUG, "Job failed")
+                        Logger(LoggerTypes.DEBUG, "Scheduler: found failed job: " + job.id)
                         let source = job.getSource()
 
                         job.attempts += 1
@@ -149,19 +153,22 @@ export default class Scheduler {
 
                         job.nextRetry = Date.now() + interval
                         job.status = JobStatus.PENDING
-                        
+
+                        Logger(LoggerTypes.DEBUG, "Scheduler: updated failed job: " + job.id)
                         await Grid.getInstance().updateJob(job)
                     } break
                     case JobStatus.PENDING: {
                         if(job.nextRetry <= Date.now()) {
                             if(job.emitAttempts > 5)
                                 job.worker.id = await this.electWorker(job.worker.id)
+
+                            Logger(LoggerTypes.DEBUG, "Scheduler: emitting pending job: " + job.id)
                             await Grid.getInstance().emitJob(job)
                         }
                     } break
                 }
             }
-        }, 10 * 1000) // Refresh rate: 2 minutes - for dev 10 seconds
+        }, refreshInterval) // Refresh rate: 2 minutes - for dev 10 seconds
     }
 
     async stop(force: boolean): Promise<void> {
