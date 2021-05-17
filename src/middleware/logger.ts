@@ -9,7 +9,7 @@ export default (type: LoggerTypes, data: any) => {
     switch(type) {
         case LoggerTypes.INSTALL_ERROR:
             console.log(chalk.red(" | "))
-            console.log(chalk.red.bold(` x ${data}${data.slice(-1) === "." ? "" : "."} Please consult our docs, at https://github.com/poiw-org/saffron/wiki.\n`))
+            console.log(chalk.red.bold(` ⊗ ${data}${data.slice(-1) === "." ? "" : "."} Please consult our docs, at https://github.com/poiw-org/saffron/wiki.\n`))
         return
         case LoggerTypes.STEP:
             console.log(chalk.white(`${chalk.green(" | ")}`))
@@ -17,15 +17,15 @@ export default (type: LoggerTypes, data: any) => {
         return
         case LoggerTypes.ERROR:
             console.log(chalk.red(" | "))
-            console.log(chalk.red.bold(` ✕ ${data}`))
+            console.log(chalk.red.bold(` ⊗ ${data}`))
             return
         case LoggerTypes.INFO:
             console.log(chalk.white(`${chalk.blue(" | ")}`))
-            console.log(chalk.white(`${chalk.blue(" ○ ")} ${data}`))
+            console.log(chalk.white(`${chalk.blue(" ◉ ")} ${data}`))
         return
         case LoggerTypes.DEBUG:
             console.log(chalk.white(`${chalk.blue(" | ")}`))
-            console.log(chalk.white(`${chalk.blue(" DEBUG ")} ${data}`))
+            console.log(chalk.white(`${chalk.blue(" ⦿ ")} ${data}`))
             return
         default:
             console.log(chalk.black(`${chalk.bgGreen(" saffron ")}`), chalk.white(chalk.white(data)))
