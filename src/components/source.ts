@@ -6,10 +6,11 @@ export default class Source {
 
     static async parseFileObject(source: any): Promise<void> {
         // Check if source is valid and return an object for that source
+        console.log(source.baseURL, source[0]);
 
-        if (!source.baseURL) throw new Error('Please specify a baseURL.')
+        if (source.baseURL.length == 0) throw new Error('Please specify a baseURL.')
         // if(new RegExp('^(http|https)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,6}(/\S*)?$').test(baseURL)) throw new Error('You specified an invalid baseURL')
-        if (!['api', 'portal'].includes(source.type)) throw new Error('A source\'s "api" value must be either "api" or "portal"')
+        //if (['api', 'portal'].includes(source.type) == false) throw new Error('A source\'s "api" value must be either "api" or "portal"')
 
         let ret = new Source(randomId("src"))
         ret.intervalBetweenScans = source.intervalBetweenNewScan
