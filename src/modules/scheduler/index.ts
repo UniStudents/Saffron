@@ -84,7 +84,7 @@ export default class Scheduler {
     }
 
     private async createJob(sourceId: string, workerId: string, interval: number): Promise<Job> {
-        let job = new Job(randomId("job"))
+        let job = new Job()
         job.source = {id:sourceId}
         // nextRetry = The time the job finished (just now) + interval + randomTIme
         job.nextRetry = Date.now() + interval + this.getRandomTime(sourceId)

@@ -109,7 +109,7 @@ export default class HtmlParser {
 
                 }
                 // It stores the article data to an instance of Article class.
-                tmpArticle = new Article(randomId("arc"));
+                tmpArticle = new Article();
                 //tmpArticle.source.id = instructions.getSource().id;
                 tmpArticle.title = articleData.title;
                 tmpArticle.pubDate = articleData.pubDate;

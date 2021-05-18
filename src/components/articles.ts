@@ -1,6 +1,6 @@
 import Source from "./source";
 import Instructions from "./instructions";
-
+import randomId from "../middleware/randomId"
 interface _extras {
     [key: string]: any
 }
@@ -17,8 +17,9 @@ export default class Article {
         id: string
     }
 
-    constructor(id: string) {
-        this.id = id
+    constructor() {
+        this.id = randomId("art")
+
     }
 
     async toJSON(): Promise<object> {

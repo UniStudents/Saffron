@@ -12,7 +12,7 @@ export default class Source {
         // if(new RegExp('^(http|https)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,6}(/\S*)?$').test(baseURL)) throw new Error('You specified an invalid baseURL')
         //if (['api', 'portal'].includes(source.type) == false) throw new Error('A source\'s "api" value must be either "api" or "portal"')
 
-        let ret = new Source(randomId("src"))
+        let ret = new Source()
         ret.intervalBetweenScans = source.intervalBetweenNewScan
 
         Source._sources.push(ret)
@@ -36,7 +36,7 @@ export default class Source {
     declare intervalBetweenScans: number
     declare instructions: instructions
 
-    constructor(id: string) {
-        this.id = id
+    constructor() {
+        this.id = randomId("wkr")
     }
 }

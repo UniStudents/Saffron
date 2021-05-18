@@ -21,11 +21,14 @@ export default class Worker {
         }
     }
 
+    constructor(){ 
+        this.id = randomId("wkr")
+    }
+
     declare id: string;
 
 
     async start(): Promise<void> {
-        this.id = randomId('wrk')
         await Database.getInstance()!!.announceWorker(this)
         Logger(LoggerTypes.INFO, `Worker started. ID: ${this.id}`)
         // start listening for new jobs
@@ -43,7 +46,7 @@ export default class Worker {
 
             // Test for html Parser.
 
-            let parseInstructions: Instructions = new Instructions(randomId("inst"));
+            let parseInstructions: Instructions = new Instructions();
             parseInstructions.source = {id: job.getSource()?.id};
             parseInstructions.url = "https://www.unipi.gr/unipi/el/%CE%B1%CE%BD%CE%B1%CE%BA%CE%BF%CE%B9%CE%BD%CF%8E%CF%83%CE%B5%CE%B9%CF%82.html";
             parseInstructions.elementSelector = ".itemContainer.itemContainerLast";
@@ -73,9 +76,9 @@ export default class Worker {
 
             parseInstructions.parserType = ParserType.HTML;
 
-            HtmlParser.parse(parseInstructions).then( (map) => {
-                console.log(map)
-            });
+            // HtmlParser.parse(parseInstructions).then( (map) => {
+            //     console.log(map)
+            // });
 
             // when job is finish emit finished job class
             Grid.getInstance().finishJob(job)

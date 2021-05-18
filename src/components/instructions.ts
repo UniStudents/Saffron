@@ -1,6 +1,6 @@
 import Source from "./source";
 import {ParserType} from "../modules/workers/parsers/ParserType";
-
+import randomId from "../middleware/randomId"
 /**
  * The instructions class is used mainly by parsers.
  * Its general use is to provide instructions on how
@@ -23,8 +23,8 @@ export default class Instructions {
     /**
      * @param id instruction id.
      */
-    constructor(id: String) {
-        this.id = id;
+    constructor() {
+        this.id = randomId("ins")
     }
 
     /**

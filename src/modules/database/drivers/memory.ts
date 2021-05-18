@@ -31,10 +31,8 @@ export default class Memory extends Database {
     }
 
     async pushArticle(article: Article): Promise<string> {
-        let id = randomId("art")
-        article.id = id
         this.articles.push(article)
-        return id
+        return article.id
     }
 
     async updateArticle(article: Article): Promise<void> {

@@ -1,6 +1,6 @@
 import Source from "./source";
 import {JobStatus} from "./JobStatus";
-
+import randomId from "../middleware/randomId"
 export default class Job {
     declare id: string // Job id
     declare source: {
@@ -14,8 +14,9 @@ export default class Job {
         id: string
     }
 
-    constructor(id: string) {
-        this.id = id
+    constructor() {
+        this.id = randomId("job")
+
     }
 
     static getJobs(): Job[] {
