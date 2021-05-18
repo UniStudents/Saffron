@@ -2,28 +2,17 @@ import Database from "../database";
 import Config from "../../components/config";
 import Logger from "../../middleware/logger"
 import {LoggerTypes} from "../../middleware/LoggerTypes";
+import hashCode from "../../middleware/hashCode"
 import Events from "../events";
-import {nanoid} from "nanoid";
 import Job from "../../components/job";
 import Source from "../../components/source";
-import Grid from "../grid";
+import Grid from "../grid/index";
 import {JobStatus} from "../../components/JobStatus";
 import randomId from "../../middleware/randomId";
 import Worker from "../workers";
 
 const fs = require('fs');
 const path = process.cwd();
-
-const hashCode = (str: String) => {
-    let hash = 0, i, chr;
-    if (str.length === 0) return hash;
-    for (i = 0; i < str.length; i++) {
-        chr   = str.charCodeAt(i);
-        hash  = ((hash << 5) - hash) + chr;
-        hash |= 0; // Convert to 32bit integer
-    }
-    return hash;
-};
 
 export default class Scheduler {
 
@@ -48,6 +37,7 @@ export default class Scheduler {
 
                 let sources = rawSources.map((file: any) => Object({
                     filename: file,
+                    path: `${path + sourcesPath}/${file}`,
                     ...require(`${path + sourcesPath}/${file}`)
                 }))
 
@@ -111,6 +101,7 @@ export default class Scheduler {
         // Initialize jobs for first time
         await Grid.getInstance().clearAllJobs()
         let sI = 0, wI = 0
+
         for(let source of sources){
             let new_job = await this.createJob(source.id, await this.electWorker(workers[wI].id), interval * sI)
             await Grid.getInstance().pushJob(new_job)
@@ -133,7 +124,7 @@ export default class Scheduler {
                         await Grid.getInstance().deleteJob(job.id)
 
                         let source = job.getSource()
-                        let interval = source.intervalBetweenScans ? source.intervalBetweenScans : Config.load().scheduler.intervalBetweenJobs
+                        let interval = source.scrapeInterval ? source.scrapeInterval : Config.load().scheduler.intervalBetweenJobs
 
                         let nJob = await this.createJob(source.id, await this.electWorker(job.worker.id), interval)
                         await Grid.getInstance().pushJob(nJob)
@@ -149,7 +140,7 @@ export default class Scheduler {
                         // If attempts > e.x. 10 increase interval to check on e.x. a day after
                         let interval = job.attempts > 10
                             ? 86400000 // One full day
-                            : ((source.intervalBetweenScans ? source.intervalBetweenScans : Config.load().scheduler.intervalBetweenJobs) / 2)
+                            : ((source.scrapeInterval ? source.scrapeInterval : Config.load().scheduler.intervalBetweenJobs) / 2)
 
                         job.nextRetry = Date.now() + interval
                         job.status = JobStatus.PENDING

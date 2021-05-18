@@ -23,7 +23,9 @@ export default class Article {
     }
 
     async toJSON(): Promise<object> {
-        return {}
+        let {id, title, source, description} = this;
+        console.table({id, title, source, description})
+        return {id, title, source, description}
     }
 
     getSource(): Source | null {

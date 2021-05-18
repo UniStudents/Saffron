@@ -8,17 +8,17 @@ import randomId from "../middleware/randomId"
  * a web page content.
  */
 export default class Instructions {
-    private declare static instructions: Array<Instructions>;
-    declare source : {
-        id: String;
-    };
     declare id: String;
+
+    private declare static instructions: Array<Instructions>;
+
+    declare source : { id: String; };
     declare url: String;
-    declare endPoint: String;
+    declare parserType: ParserType
+
     declare scrapeOptions: Object;
     declare elementSelector: String;
-    declare sourceType: String;
-    declare parserType: ParserType
+    declare scrapeFunction: String // just call eval
 
     /**
      * @param id instruction id.

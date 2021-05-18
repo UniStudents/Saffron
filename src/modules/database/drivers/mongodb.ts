@@ -2,7 +2,6 @@ import MongoClient from "mongodb";
 import Logger from "../../../middleware/logger";
 import {LoggerTypes} from "../../../middleware/LoggerTypes"
 import Article from "../../../components/articles";
-import {nanoid} from "nanoid";
 import Database from "../database";
 import Config from "../../../components/config"
 import Worker from "../../workers/index";
@@ -56,9 +55,8 @@ export default class MongoDB extends Database {
 
     async pushArticle(article: Article): Promise<string> {
         try {
-            let id = article.source.id + "_" + nanoid(10) + Date.now()
-            await this.client.db(Config.load()!!.database.config.name).collection('articles').insertOne(article.toJSON())
-            return id
+            await this.client.db(Config.load()!!.database.config.name).collection('articles').insertOne(await article.toJSON())
+            return article.id
         }
         catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
@@ -68,7 +66,7 @@ export default class MongoDB extends Database {
 
     async updateArticle(article: Article): Promise<void> {
         try {
-            await this.client.db(Config.load()!!.database.config.name).collection('articles').updateOne({ id: article.id }, article.toJSON())
+            await this.client.db(Config.load()!!.database.config.name).collection('articles').updateOne({ id: article.id }, await article.toJSON())
         }
         catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
@@ -87,7 +85,7 @@ export default class MongoDB extends Database {
 
     async announceWorker(worker: Worker): Promise<void> {
         try {
-            await this.client.db(Config.load()!!.database.config.name).collection('workers').insertOne(worker.toJSON())
+            await this.client.db(Config.load()!!.database.config.name).collection('workers').insertOne(await worker.toJSON())
         }
         catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)

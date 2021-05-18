@@ -7,6 +7,7 @@ import Scheduler from "./modules/scheduler";
 import Grid from "./modules/grid";
 import Events from "./modules/events";
 import Worker from "./modules/workers";
+import Article from "./components/articles";
 
 declare function require(name:string): any;
 

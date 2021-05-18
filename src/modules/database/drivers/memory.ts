@@ -27,7 +27,7 @@ export default class Memory extends Database {
     }
 
     async getArticles(options: object | null = null): Promise<Array<Article>> {
-        return []
+        return [...this.articles]
     }
 
     async pushArticle(article: Article): Promise<string> {
@@ -42,7 +42,7 @@ export default class Memory extends Database {
     }
 
     async getWorkers(): Promise<Worker[]> {
-        return this.workers;
+        return [...this.workers];
     }
 
     async announceWorker(worker: Worker): Promise<void> {

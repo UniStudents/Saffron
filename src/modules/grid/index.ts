@@ -1,7 +1,20 @@
-import Database from "./database";
-import Job from "../components/job";
-import Events from "./events";
-import {JobStatus} from "../components/JobStatus";
+import Database from "../database";
+import Job from "../../components/job";
+import Events from "../events";
+import {JobStatus} from "../../components/JobStatus";
+import { createServer } from "http";
+import { Server, Socket } from "socket.io";
+
+const httpServer = createServer();
+const io = new Server(httpServer, {
+    // ...
+});
+
+io.on("connection", (socket: Socket) => {
+    // ...
+});
+
+httpServer.listen(8080);
 
 let dummyStorage: Job[] = [],
     events = Events.getAntennae()

@@ -1,0 +1,7 @@
+{
+  "url": "https://eclass.uoa.gr/modules/announcements/rss.php?c=AEROSPACE119",
+  "name": "xml-cs.unipi.gr",
+  "type": "xml",
+  "retryInterval": 1500,
+  "scrapeInterval": 3000
+}

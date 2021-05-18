@@ -1,16 +1,19 @@
 {
   "name": "@poiw/saffron",
-  "version": "1.0.3-dev",
+  "version": "1.0.4-dev",
   "description": "<img src=\"https://digitalpress.fra1.cdn.digitaloceanspaces.com/09fn19m/2021/04/saffron-1.png\" width=\"200\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;News &amp; announcements aggregation framework. <br/><br/> <h6>Made in colaboration with: <br/><a href=\"https://unistudents.gr\"><img src=\"https://unistudents.gr/wp-content/uploads/2020/09/logo2-1024x341-1.png\" width=\"200\" /></a></h6>",
   "main": "src/index.ts",
   "dependencies": {
+    "@poiw/saffron-utils": "^1.0.0",
     "chalk": "^4.1.1",
     "cheerio": "^1.0.0-rc.6",
+    "dotenv": "^9.0.2",
     "lodash": "^4.17.21",
     "luxon": "^1.27.0",
     "mongodb": "^3.6.6",
     "nanoid": "^3.1.22",
-    "rss-parser": "^3.12.0"
+    "rss-parser": "^3.12.0",
+    "socket.io": "^4.1.2"
   },
   "scripts": {
     "start": "npx ts-node src/index.ts",

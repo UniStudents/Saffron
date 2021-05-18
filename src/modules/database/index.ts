@@ -7,7 +7,7 @@ export default class Driver {
     
     private static instance: Database
     
-    static getInstance(): Database | null {
+    static getInstance(): Database | undefined {
         if(!this.instance)
             switch(Config.load()!!.database.driver){
                 case "mongodb":
