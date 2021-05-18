@@ -1,23 +1,13 @@
+const {Article, Utils} = require('@poiw/saffron-utils')
+
 module.exports = {
     baseURL: "https://www.unipi.gr/unipi/el/%CE%B1%CE%BD%CE%B1%CE%BA%CE%BF%CE%B9%CE%BD%CF%8E%CF%83%CE%B5%CE%B9%CF%82.html",
     name: "cs.unipi.gr",
     type: "html",
     retryInterval: 1500,
     scrapeInterval: 3000,
-    scrape: {
-        //Pre request event (axios instance)  e.g add proxy, vpn passthrou, change headers .....    
-        //Pre scrape event (axios result)  e.g edit response
-        responsePreProccess: (axios) => {
-            //axios.headers("")
-            return "" // any
-        },
-        scrapeOverride: (response,db) => {
+    scrape: () => {
 
-            return json | any
-            //hidden return status code 
-        }
-        
-        //Cheerio instance   e.g override scrape functionality
     }
 }
 
@@ -40,10 +30,6 @@ module.exports = {
         ..
     }
 }
-
-*/
-
-
 
 
 

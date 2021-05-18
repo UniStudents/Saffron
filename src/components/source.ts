@@ -14,7 +14,7 @@ export default class Source {
         let ret = new Source()
         ret.intervalBetweenScans = source.intervalBetweenNewScan
 
-        Source._sources.push(ret)
+        this._sources.push(ret)
     }
 
     static getSources(): Array<Source> {
