@@ -81,8 +81,9 @@ export default class Worker {
             // });
 
             // when job is finish emit finished job class
+            logger(LoggerTypes.DEBUG, `Finished job (${job.id}).`)
             Grid.getInstance().finishJob(job)
-            Grid.getInstance().failedJob(job)
+            // Grid.getInstance().failedJob(job)
         })
     }
 
