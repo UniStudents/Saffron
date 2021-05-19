@@ -1,7 +1,7 @@
 {
   "name": "@poiw/saffron",
   "version": "1.0.4-dev",
-  "description": "<img src=\"https://digitalpress.fra1.cdn.digitaloceanspaces.com/09fn19m/2021/04/saffron-1.png\" width=\"200\">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;News &amp; announcements aggregation framework. <br/><br/> <h6>Made in colaboration with: <br/><a href=\"https://unistudents.gr\"><img src=\"https://unistudents.gr/wp-content/uploads/2020/09/logo2-1024x341-1.png\" width=\"200\" /></a></h6>",
+  "description": "A fairly intuitive & powerful framework that enables you to collect & save articles and news from all over the web. ",
   "main": "src/index.ts",
   "dependencies": {
     "@poiw/saffron-utils": "^1.0.0",
