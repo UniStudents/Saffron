@@ -48,17 +48,18 @@ export default class Worker {
 
             let parseInstructions: Instructions = new Instructions();
             parseInstructions.source = {id: job.getSource()?.id};
-            parseInstructions.url = "https://www.unipi.gr/unipi/el/%CE%B1%CE%BD%CE%B1%CE%BA%CE%BF%CE%B9%CE%BD%CF%8E%CF%83%CE%B5%CE%B9%CF%82.html";
+            parseInstructions.url = "https://www.unipi.gr/unipi/el/%CE%B1%CE%BD%CE%B1%CE%BA%CE%BF%CE%B9%CE%BD%CF%8E%CF%83%CE%B5%CE%B9%CF%82.html?start=10";
+            parseInstructions.endPoint = "https://www.unipi.gr";
             parseInstructions.elementSelector = ".itemContainer.itemContainerLast";
             parseInstructions.scrapeOptions = {
                 ".catItemDateCreated" : {
                     "name": "pubDate",
-                    "attributes": ["value","href"],
                     "find" : null,
                     "multiple": false
                 },
                 ".catItemTitle" : {
                     "name": "title",
+                    "attributes": null,
                     "find": ["a"],
                     "multiple": false
                 },
@@ -70,15 +71,16 @@ export default class Worker {
                 ".catItemLinks": {
                     "name": "links",
                     "find": [".catItemAttachmentsBlock","li","a"],
+                    "attributes": ["value","href"],
                     "multiple": true
                 }
             }
 
             parseInstructions.parserType = ParserType.HTML;
 
-            // HtmlParser.parse(parseInstructions).then( (map) => {
-            //     console.log(map)
-            // });
+            HtmlParser.parse(parseInstructions).then( (map) => {
+                 //console.log(map)
+            });
 
             // when job is finish emit finished job class
             logger(LoggerTypes.DEBUG, `Finished job (${job.id}).`)

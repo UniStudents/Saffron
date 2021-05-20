@@ -56,9 +56,8 @@ export default class Instructions {
      *
      * @return Source
      */
-    getSource(): Source | null {
-        // toDo find the source by id.
-        return null;
+    getSource(): Source {
+        return Source.getSourceByID(this.source.id);
     }
 
 }
