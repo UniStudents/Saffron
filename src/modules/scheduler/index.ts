@@ -89,7 +89,7 @@ export default class Scheduler {
     async start(): Promise<void> {
         let refreshInterval = 2 * 60 * 1000
         if(process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
-            refreshInterval = 10 * 1000
+            refreshInterval = 2 * 1000
 
         await this.scanSourceFiles()
         let sources = Source.getSources()
@@ -140,7 +140,7 @@ export default class Scheduler {
                         // If attempts > e.x. 10 increase interval to check on e.x. a day after
                         let interval = job.attempts > 10
                             ? 86400000 // One full day
-                            : ((source.scrapeInterval ? source.scrapeInterval : Config.load().scheduler.intervalBetweenJobs) / 2)
+                            : ((source.retryInterval ? source.retryInterval : Config.load().scheduler.intervalBetweenJobs) / 2)
 
                         job.nextRetry = Date.now() + interval
                         job.status = JobStatus.PENDING

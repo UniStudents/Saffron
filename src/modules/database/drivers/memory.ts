@@ -1,6 +1,7 @@
 import Article from "../../../components/articles";
 import Database from "../database";
 import Worker from "../../workers/index";
+import Source from "../../../components/source"
 import randomId from "../../../middleware/randomId";
 
 export default class Memory extends Database {
@@ -26,8 +27,11 @@ export default class Memory extends Database {
         return this.articles.find((obj: Article) => obj.id === id)
     }
 
-    async getArticles(options: object | null = null): Promise<Array<Article>> {
-        return [...this.articles]
+    async getArticles(options: any | null = null): Promise<Array<Article>> {
+        let _articles = this.articles
+        if(options.source) _articles = _articles.filter((article: Article) => article?.getSource()?.id === options.source.id)
+
+        return [..._articles]
     }
 
     async pushArticle(article: Article): Promise<string> {

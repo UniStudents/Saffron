@@ -45,8 +45,7 @@ export default class rssParser{
         let parser: Parser = await this.generateParser(renameFields)
         return await parser.parseURL(url).then(feed =>{
             let count = 0
-            // @ts-ignore
-            feed.items.forEach(item =>{
+            feed.items.forEach(item => {
                 // @ts-ignore
                 //Initializing json object
                 dataJson[count] = {}

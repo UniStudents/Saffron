@@ -13,12 +13,12 @@ export default class Instructions {
     private declare static instructions: Array<Instructions>;
 
     declare source : { id: String; };
-    declare url: String;
+    declare url: string;
     declare parserType: ParserType
 
     declare scrapeOptions: Object;
-    declare elementSelector: String;
-    declare scrapeFunction: String // just call eval
+    declare elementSelector: string;
+    declare scrapeFunction: string // just call eval
 
     /**
      * @param id instruction id.

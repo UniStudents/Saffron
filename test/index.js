@@ -1,11 +1,11 @@
 require('dotenv').config()
-console.log(process.env.MONGO_URL)
 const saffron = require('../dist/index');
+
 
 (async() => {
     await saffron.initialize({
         database:
-            process.env.MONGO_URL ? {
+            process.env.MONGO_URL && false ? {
                 driver: "mongodb",
                 config: {
                     url: process.env.MONGO_URL,

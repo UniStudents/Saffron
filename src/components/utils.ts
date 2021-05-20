@@ -1,20 +1,19 @@
+import Article from "./articles";
+
 export default class Utils {
-    private _isFirstScrape = true;
-    public get isFirstScrape() : boolean { return this._isFirstScrape }
-    resetFirstTime() { this._isFirstScrape = true }
+    /**
+     * True if source file does not have any articles on the database, false otherwise
+     */
+    public isFirstScrape = true;
 
-    private _isScrapeAfterError = false;
-    public get isScrapeAfterError() : boolean { return this._isScrapeAfterError }
+    /**
+     * True if the previous scrape returned exception
+     */
+    public isScrapeAfterError = false;
 
-    public getArticles(count: number) {}
-
-    static ScrapeError = class {
-        declare message: string
-        declare retry: boolean
-
-        constructor(message: string, retry: boolean) {
-            this.message = message
-            this.retry = retry
-        }
-    }
+    /**
+     *
+     * @param count
+     */
+    getArticles = async (count: number): Promise<Array<Article>> => []
 }

@@ -1,6 +1,8 @@
 import Source from "./source";
 import Instructions from "./instructions";
 import randomId from "../middleware/randomId"
+import {hash} from "argon2"
+
 interface _extras {
     [key: string]: any
 }
@@ -8,9 +10,10 @@ interface _extras {
 export default class Article {
     declare id: string
     declare title: string
-    declare description: string
+    declare content: string
     declare link: string
-    declare pubDate: string
+    declare pubDate: Date
+    declare hash: string
     declare extras: _extras
     declare instructions: Instructions;
     declare source: {
@@ -23,14 +26,21 @@ export default class Article {
     }
 
     async toJSON(): Promise<object> {
-        let {id, title, source, description} = this;
-        console.table({id, title, source, description})
-        return {id, title, source, description}
+        this.getHash()
+        let {id, title, source, content, hash} = this;
+        return {id, title, source, content: content, hash}
     }
 
     getSource(): Source | null {
         // toDO find the source by id.
         return null;
+    }
+
+    async getHash() {
+        if(!this.hash) this.hash = await hash(`${this.title} ${this.content} ${this.extras.map((thing: any) => thing.toString())}`)
+
+        return this.hash
+
     }
 
     getInstructions(): Instructions {

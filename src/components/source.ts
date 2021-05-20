@@ -9,7 +9,7 @@ import {LoggerTypes} from "../middleware/LoggerTypes";
 const fs = require('fs');
 
 const splice = function (base: string, idx: number, rem: number, str: string): string {
-    return base.slice(0, idx) + str + base.slice(idx + Math.abs(rem));
+    return base.slice(0, idx) + str + base.slice(Math.abs(rem));
 };
 
 export default class Source {
@@ -24,6 +24,7 @@ export default class Source {
         let ret = new Source()
         ret.scrapeInterval = source.scrapeInterval
         ret.retryInterval = source.retryInterval
+        ret.willParse = true // Get from db
 
         ret.instructions = new Instructions()
         ret.instructions.source = { id: `src_${hashCode(source.name)}` }
@@ -41,18 +42,15 @@ export default class Source {
             case ParserType.RSS: {
 
             } break
-            case ParserType.XML: {
-
-            } break
             case ParserType.CUSTOM: {
                 let scrapeStr = source.scrape.toString()
 
-                let scrape = splice(scrapeStr
-                        , scrapeStr.indexOf('(')
-                        , scrapeStr.indexOf(')') + 1
-                        , "(Article, Utils)")
+                let strFunc = splice(scrapeStr
+                    , scrapeStr.indexOf('(')
+                    , scrapeStr.indexOf(')') + 1
+                    , "(Article, utils, Exceptions)")
 
-                ret.instructions.scrapeFunction = '(' + scrape + ')();'
+                ret.instructions.scrapeFunction = strFunc
             } break
         }
 
@@ -71,11 +69,17 @@ export default class Source {
         return this._sources.find((source: Source) => source.id === id)!!;
     }
 
+    lock(){
+        this,this.willParse = false
+        // Update database
+    }
+
     private static _sources: Source[] = []
 
     declare id: string
     declare scrapeInterval: number
     declare retryInterval: number
+    declare willParse: boolean
     declare instructions: Instructions
 
     constructor() {

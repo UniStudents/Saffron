@@ -1,6 +1,7 @@
 import Source from "./source";
 import {JobStatus} from "./JobStatus";
 import randomId from "../middleware/randomId"
+import Instructions from "../components/instructions"
 export default class Job {
     declare id: string // Job id
     declare source: {
@@ -25,6 +26,10 @@ export default class Job {
 
     getSource(): Source {
         return Source.getSourceFromJob(this)
+    }
+
+    getInstructions() : Instructions {
+        return this.getSource().instructions
     }
 
     private static jobs: Array<Job> = []

@@ -148,9 +148,9 @@ export default class HtmlParser {
      * @return Map<Number,Article> The articles.
      */
     static async parse(instructions: Instructions,
-                       amount: Number = 10): Promise<Map<Number, Article>> {
+                       amount: Number = 10): Promise<Array<Article>> {
 
-        let parsedArticles = new Map<Number, Article>();
+        let parsedArticles: Array<Article> = [];
 
         await HtmlParser.request(instructions).then( (response: AxiosResponse) => {
             const cheerioLoad = cheerio.load(response.data);
@@ -190,7 +190,7 @@ export default class HtmlParser {
                 //tmpArticle.source.id = instructions.getSource()?.id;
                 tmpArticle.title = (articleData.title)? articleData.title : '';
                 tmpArticle.pubDate = (articleData.pubDate)? articleData.pubDate : '';
-                tmpArticle.description = (articleData.description)? articleData.description : '';
+                tmpArticle.content = (articleData.description)? articleData.description : '';
                 tmpArticle.extras = {};
 
                 // for each extra data. Data that are not described in the baseData variable.
@@ -205,7 +205,7 @@ export default class HtmlParser {
 
                 if (tmpArticle.title === '') return;
 
-                parsedArticles.set(index, tmpArticle);
+                parsedArticles.push(tmpArticle);
             });
         });
 

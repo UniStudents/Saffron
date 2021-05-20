@@ -11,6 +11,8 @@ import Grid from "../grid";
 import Database from "../database";
 import logger from "../../middleware/logger";
 import rssParser from "./parsers/rssParser";
+import DynamicParser from "./parsers/dynamicParser";
+import Article from "../../components/articles";
 
 export default class Worker {
 
@@ -32,60 +34,64 @@ export default class Worker {
         await Database.getInstance()!!.announceWorker(this)
         Logger(LoggerTypes.INFO, `Worker started. ID: ${this.id}`)
         // start listening for new jobs
-        Events.getAntennae().on("new-job", (job: Job) => {
+        Events.getAntennae().on("new-job", async (job: Job) => {
            if(this.id !== job.worker.id) return
-           /* rssParser.rssParser("https://eclass.uoa.gr/modules/announcements/rss.php?c=AEROSPACE119",10).then(res=>{
-                console.log(res)
-            })*/
-           /* let string = "When was the People&#039;s Republic of China founded?"
-            console.log(Utils.htmlStrip(string))
 
+            let instructions = job.getInstructions()
 
-            console.log(job.worker.id)*/
-           // Database.getInstance()!!.
+            let articles: Array<Article> = [];
+            switch (instructions.parserType){
+                case ParserType.HTML: {
+                    /* Test for html Parser.
 
-            // Test for html Parser.
+                     let parseInstructions: Instructions = new Instructions();
+                     parseInstructions.source = {id: job.getSource()?.id};
+                     parseInstructions.url = "https://www.unipi.gr/unipi/el/%CE%B1%CE%BD%CE%B1%CE%BA%CE%BF%CE%B9%CE%BD%CF%8E%CF%83%CE%B5%CE%B9%CF%82.html?start=10";
+                     parseInstructions.elementSelector = ".itemContainer.itemContainerLast";
+                     parseInstructions.scrapeOptions = {
+                         ".catItemDateCreated" : {
+                             "name": "pubDate",
+                             "find" : null,
+                             "multiple": false
+                         },
+                         ".catItemTitle" : {
+                             "name": "title",
+                             "attributes": null,
+                             "find": ["a"],
+                             "multiple": false
+                         },
+                         ".catItemBody" : {
+                             "name": "body",
+                             "find": null,
+                             "multiple": false
+                         },
+                         ".catItemLinks": {
+                             "name": "links",
+                             "find": [".catItemAttachmentsBlock","li","a"],
+                             "attributes": ["value","href"],
+                             "multiple": true
+                         }
+                     }
 
-            let parseInstructions: Instructions = new Instructions();
-            parseInstructions.source = {id: job.getSource()?.id};
-            parseInstructions.url = "https://www.unipi.gr/unipi/el/%CE%B1%CE%BD%CE%B1%CE%BA%CE%BF%CE%B9%CE%BD%CF%8E%CF%83%CE%B5%CE%B9%CF%82.html?start=10";
-            parseInstructions.endPoint = "https://www.unipi.gr";
-            parseInstructions.elementSelector = ".itemContainer.itemContainerLast";
-            parseInstructions.scrapeOptions = {
-                ".catItemDateCreated" : {
-                    "name": "pubDate",
-                    "find" : null,
-                    "multiple": false
-                },
-                ".catItemTitle" : {
-                    "name": "title",
-                    "attributes": null,
-                    "find": ["a"],
-                    "multiple": false
-                },
-                ".catItemBody" : {
-                    "name": "body",
-                    "find": null,
-                    "multiple": false
-                },
-                ".catItemLinks": {
-                    "name": "links",
-                    "find": [".catItemAttachmentsBlock","li","a"],
-                    "attributes": ["value","href"],
-                    "multiple": true
-                }
+                     parseInstructions.parserType = ParserType.HTML;
+                     */
+                    // articles = await HtmlParser.parse(instructions,10);
+                } break
+                case ParserType.RSS: {
+                    // articles = await rssParser.rssParser(instructions.url,10)
+                    // TODO - Fix rss to return Array<Article>
+                } break
+                case ParserType.CUSTOM: {
+                    articles = await DynamicParser.parse(job, instructions, 10)
+                } break
             }
 
-            parseInstructions.parserType = ParserType.HTML;
+            // when job is finish/failed emit finished/failed job class
+            logger(LoggerTypes.DEBUG, `Job finished ${articles === undefined ? ' with a failure: ' : ' successfully: '} (${job.id}).`)
+            console.log(articles)
 
-            HtmlParser.parse(parseInstructions).then( (map) => {
-                 //console.log(map)
-            });
-
-            // when job is finish emit finished job class
-            logger(LoggerTypes.DEBUG, `Finished job (${job.id}).`)
-            Grid.getInstance().finishJob(job)
-            // Grid.getInstance().failedJob(job)
+           if(articles === undefined) await Grid.getInstance().failedJob(job)
+            else await Grid.getInstance().finishJob(job)
         })
     }
 

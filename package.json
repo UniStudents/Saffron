@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "dependencies": {
     "@poiw/saffron-utils": "^1.0.0",
+    "argon2": "^0.27.2",
     "chalk": "^4.1.1",
     "cheerio": "^1.0.0-rc.6",
     "dotenv": "^9.0.2",

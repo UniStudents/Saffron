@@ -7,7 +7,10 @@ import Scheduler from "./modules/scheduler";
 import Grid from "./modules/grid";
 import Events from "./modules/events";
 import Worker from "./modules/workers";
+
 import Article from "./components/articles";
+import Utils from "./components/utils";
+import Exceptions from "./components/exceptions";
 
 declare function require(name:string): any;
 
@@ -81,5 +84,7 @@ export = {
      * @param event The name of the event
      * @param data The callback that will send the data
      */
-    on: async(event: string, data: any) => antennae.on(event, data)
+    on: async(event: string, data: any) => antennae.on(event, data),
+
+    types:{ Article, Utils, Exceptions }
 }
