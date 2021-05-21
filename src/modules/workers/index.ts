@@ -40,6 +40,8 @@ export default class Worker {
             let instructions = job.getInstructions()
 
             let articles: Array<Article> = [];
+            let parseFailed = false
+
             switch (instructions.parserType){
                 case ParserType.HTML: {
                     /* Test for html Parser.
@@ -75,30 +77,46 @@ export default class Worker {
 
                      parseInstructions.parserType = ParserType.HTML;
                      */
-                    // articles = await HtmlParser.parse(instructions,10);
+                    let result = await HtmlParser.parse(instructions,10)
+                    if(Array.isArray(result))
+                        articles.push.apply(articles, result)
+                    else parseFailed = true
                 } break
                 case ParserType.RSS: {
                     //All renameFields can be found on article.extras with the exact name mentioned in the source file
                     if(instructions.scrapeOptions.hasOwnProperty("renameFields")){
                         //@ts-ignore
                         let rename_fields = instructions.scrapeOptions.renameFields
-                        // @ts-ignore
-                        articles = await rssParser.parse(instructions.url,10,rename_fields)
-                    }else{
-                        articles = await rssParser.parse(instructions.url,10)
+
+                        let result = await rssParser.parse(instructions.url,10,rename_fields)
+                        if(Array.isArray(result))
+                            articles.push.apply(articles, result)
+                        else parseFailed = true
+                    }
+                    else {
+                        let result = await rssParser.parse(instructions.url,10)
+                        if(Array.isArray(result))
+                            articles.push.apply(articles, result)
+                        else parseFailed = true
                     }
                 } break
                 case ParserType.CUSTOM: {
-                    articles = await DynamicParser.parse(job, instructions, 10)
+                    let result = await DynamicParser.parse(job, instructions, 10)
+                    if(result[0].id !== "error")
+                        articles.push.apply(articles, result)
+                    else parseFailed = true
                 } break
             }
 
-            // when job is finish/failed emit finished/failed job class
-            logger(LoggerTypes.DEBUG, `Job finished ${articles === undefined ? ' with a failure: ' : ' successfully: '} (${job.id}).`)
-            //console.log(articles)
 
-           // if(articles === undefined) await Grid.getInstance().failedJob(job)
-            await Grid.getInstance().finishJob(job)
+            if (!parseFailed) {
+                // Check articles with database and import what you have to import
+
+                await Grid.getInstance().finishJob(job)
+            }
+            else await Grid.getInstance().failedJob(job)
+
+            logger(LoggerTypes.DEBUG, `Job finished ${parseFailed ? ' with a failure: ' : ' successfully: '} (${job.id}).`)
         })
     }
 

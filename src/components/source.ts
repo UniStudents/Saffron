@@ -78,7 +78,7 @@ export default class Source {
     }
 
     lock(){
-        this,this.willParse = false
+        this.willParse = false
         // Update database
     }
 

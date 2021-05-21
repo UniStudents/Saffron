@@ -39,6 +39,7 @@ export default class DynamicParser {
         if(result){
             if(!result.retry) job.getSource().lock()
             logger(LoggerTypes.ERROR, result.message)
+            parsedArticles.unshift(new Article("error"))
         }
 
         return parsedArticles

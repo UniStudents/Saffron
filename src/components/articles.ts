@@ -20,8 +20,10 @@ export default class Article {
         id: string
     }
 
-    constructor() {
-        this.id = randomId("art")
+    constructor(id: string = "") {
+        if(id !== "")
+            this.id = id
+        else this.id = randomId("art")
 
     }
 
