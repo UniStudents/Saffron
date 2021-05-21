@@ -38,7 +38,7 @@ export default class DynamicParser {
 
         if(result){
             if(!result.retry) job.getSource().lock()
-            logger(LoggerTypes.ERROR, result.message)
+            logger(LoggerTypes.ERROR, `Dynamic parser scraping returned error: ${result.message}`)
             parsedArticles.unshift(new Article("error"))
         }
 

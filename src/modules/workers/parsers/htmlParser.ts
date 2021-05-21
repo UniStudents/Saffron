@@ -145,7 +145,7 @@ export default class HtmlParser {
      *
      * @param instructions How does the parser gonna parse the html content.
      * @param amount How much article to withdraw.
-     * @return Map<Number,Article> The articles.
+     * @return Array<Article> The articles.
      */
     static async parse(instructions: Instructions,
                        amount: Number = 10): Promise<Array<Article>> {

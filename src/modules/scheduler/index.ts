@@ -16,11 +16,17 @@ const path = process.cwd();
 
 export default class Scheduler {
 
+    private declare isRunning: boolean
+    private declare isForcedStopped: boolean
+
     constructor() {
         Events.getAntennae().on("start", () => this.start())
         Events.getAntennae().on("stop", (force: boolean) => this.stop(force))
     }
 
+    /**
+     * Scans the source files from given path and translate them to classes
+     */
     private scanSourceFiles(): Promise<void> {
         return new Promise((loaded, failed) => {
             let sourcesPath = Config.load().sources.path
@@ -53,6 +59,10 @@ export default class Scheduler {
         5, 10, 30, 60, 90, 120, 160, 180, 210, 240, 280, 300, 360, 400
     ]
 
+    /**
+     * Return a random time in milliseconds
+     * @param source_id Helps to get a more random time
+     */
     private getRandomTime(source_id: string): number {
         // return a random number of some minutes
         if(process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
@@ -61,8 +71,12 @@ export default class Scheduler {
         return this.times[Math.abs(hashCode(source_id + randomId())) % this.times.length] * 1000;
     }
 
+    /**
+     * Return the id of a worker that will be used for the next job
+     * @param lastWorkerId The job's previous worker id. It will be excluded from the election only if the workers are greater that one
+     */
     private async electWorker(lastWorkerId: string): Promise<string> {
-        let workers = await Database.getInstance()!!.getWorkers()
+        let workers = await Grid.getInstance()!!.getWorkers()
         if(workers.length != 1){
             let index = workers.findIndex((obj: Worker) => obj?.id === lastWorkerId)
             if (index != -1)
@@ -73,6 +87,12 @@ export default class Scheduler {
         return newWorker.id
     }
 
+    /**
+     * Create a job for a source
+     * @param sourceId The source id
+     * @param workerId The worker that the job will be assigned
+     * @param interval The time from now the job will be issued to a worker
+     */
     private async createJob(sourceId: string, workerId: string, interval: number): Promise<Job> {
         let job = new Job()
         job.source = {id:sourceId}
@@ -86,24 +106,48 @@ export default class Scheduler {
         return job
     }
 
+    /**
+     * Issue a new job for a specific source
+     * @param source The source
+     * @param lasWorkerId The worker who has the job last time (Optional)
+     * @return Return the issued job id
+     */
+    async issueJobForSource(source: Source, lasWorkerId: string = ""): Promise<string> {
+        let interval = source.scrapeInterval ? source.scrapeInterval : Config.load().scheduler.intervalBetweenJobs
+
+        let nJob = await this.createJob(source.getId(), await this.electWorker(lasWorkerId), interval)
+        await Grid.getInstance().pushJob(nJob)
+        Logger(LoggerTypes.DEBUG, "Scheduler: added new job: " + nJob.id)
+
+        return nJob.id
+    }
+
+    /**
+     * Starts the scheduler
+     */
     async start(): Promise<void> {
+        this.isRunning = true
+        this.isForcedStopped = false
+        // The refresh interval of checking job status
         let refreshInterval = 2 * 60 * 1000
         if(process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
             refreshInterval = 2 * 1000
 
+        // Read all source files
         await this.scanSourceFiles()
         let sources = Source.getSources()
         Logger(LoggerTypes.INFO, `Loaded ${sources.length} sources`)
 
-        let workers = await Database.getInstance()!!.getWorkers()
+        // Load all workers
+        let workers = await Grid.getInstance()!!.getWorkers()
         let interval = Config.load().scheduler.intervalBetweenJobs / sources.length
 
-        // Initialize jobs for first time
+        // Initialize jobs for first time for every loaded source
         await Grid.getInstance().clearAllJobs()
         let sI = 0, wI = 0
 
         for(let source of sources){
-            let new_job = await this.createJob(source.id, await this.electWorker(workers[wI].id), interval * sI)
+            let new_job = await this.createJob(source.getId(), await this.electWorker(workers[wI].id), interval * sI)
             await Grid.getInstance().pushJob(new_job)
             sI++; wI++
 
@@ -111,7 +155,14 @@ export default class Scheduler {
         }
 
         // Check grid for job status
-        setInterval(async () => {
+        const mInterval = setInterval(async () => {
+            if (this.isForcedStopped)
+                await Grid.getInstance().clearAllJobs()
+
+            if(!this.isRunning)
+                clearInterval(mInterval)
+
+            // Load all jobs
             let pendingJobs = await Grid.getInstance().getJobs()
             if(pendingJobs.length === 0)
                 Logger(LoggerTypes.DEBUG, 'Scheduler: no pending jobs')
@@ -121,25 +172,23 @@ export default class Scheduler {
                     // Issue new job for this source
                     case JobStatus.FINISHED: {
                         Logger(LoggerTypes.DEBUG, "Scheduler: found finished job: " + job.id)
+
                         await Grid.getInstance().deleteJob(job.id)
+                        let jobId = await this.issueJobForSource(job.getSource(), job.worker.id)
 
-                        let source = job.getSource()
-                        let interval = source.scrapeInterval ? source.scrapeInterval : Config.load().scheduler.intervalBetweenJobs
-
-                        let nJob = await this.createJob(source.id, await this.electWorker(job.worker.id), interval)
-                        await Grid.getInstance().pushJob(nJob)
-                        Logger(LoggerTypes.DEBUG, "Scheduler: added new job: " + job.id)
+                        Logger(LoggerTypes.DEBUG, "Scheduler: added new job: " + jobId)
                     } break
-                    // A job failed so add retry flag
+                    // A job failed so increment the attempts and try again
                     case JobStatus.FAILED: {
                         Logger(LoggerTypes.DEBUG, "Scheduler: found failed job: " + job.id)
                         let source = job.getSource()
 
                         job.attempts += 1
+                        job.emitAttempts = 0
 
                         // If attempts > e.x. 10 increase interval to check on e.x. a day after
                         let interval = job.attempts > 10
-                            ? 86400000 // One full day
+                            ? Config.load().scheduler.heavyJobFailureInterval
                             : ((source.retryInterval ? source.retryInterval : Config.load().scheduler.intervalBetweenJobs) / 2)
 
                         job.nextRetry = Date.now() + interval
@@ -148,8 +197,10 @@ export default class Scheduler {
                         Logger(LoggerTypes.DEBUG, "Scheduler: updated failed job: " + job.id)
                         await Grid.getInstance().updateJob(job)
                     } break
+                    // Pending jobs
                     case JobStatus.PENDING: {
                         if(job.nextRetry <= Date.now()) {
+                            // If the worker did not returned the job after 5 times (total 10 minutes) elect new worker
                             if(job.emitAttempts > 5)
                                 job.worker.id = await this.electWorker(job.worker.id)
 
@@ -159,10 +210,16 @@ export default class Scheduler {
                     } break
                 }
             }
-        }, refreshInterval) // Refresh rate: 2 minutes - for dev 10 seconds
+        }, refreshInterval) // Refresh rate: 2 minutes - for dev 2 seconds
     }
 
+    /**
+     * Stops the scheduler from issuing new jobs
+     * @param force If true it will delete all pending jobs
+     */
     async stop(force: boolean): Promise<void> {
+        this.isRunning = false
+        this.isForcedStopped = force
         // if force == true then clear db from the existing jobs
     }
 }

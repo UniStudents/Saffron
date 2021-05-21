@@ -1,5 +1,9 @@
 import {customAlphabet} from "nanoid";
 
+/**
+ * Generates a random id and add prefix at the start
+ * @param prefix The prefix (Optional)
+ */
 export default (prefix: string = "") => {
     let string = customAlphabet("1234567890qwertyuiopasdfghjklzxcvbnm", 40)
     let number = customAlphabet("123456789",8)

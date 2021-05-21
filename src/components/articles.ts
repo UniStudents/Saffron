@@ -1,5 +1,4 @@
 import Source from "./source";
-import Instructions from "./instructions";
 import randomId from "../middleware/randomId"
 import {hash} from "argon2"
 
@@ -13,39 +12,45 @@ export default class Article {
     declare content: string
     declare link: string
     declare pubDate: Date
-    declare hash: string
+    private declare hash: string
     declare extras: _extras
-    declare instructions: Instructions;
     declare source: {
         id: string
     }
 
+    /**
+     * Article constructor
+     * @param id The article's id (Optional, auto-generated)
+     */
     constructor(id: string = "") {
         if(id !== "")
             this.id = id
         else this.id = randomId("art")
-
     }
 
+    /**
+     * Parse the article class to a json object
+     */
     async toJSON(): Promise<object> {
         this.getHash()
         let {id, title, source, content, hash} = this;
-        return {id, title, source, content: content, hash}
+        return {id, title, source, content, hash}
     }
 
+    /**
+     * Return the source class where this article belongs
+     */
     getSource(): Source | null {
-        // toDO find the source by id.
-        return null;
+        return Source.getSourceFromArticle(this)
     }
 
+    /**
+     * Generate and return the hash of the article
+     */
     async getHash() {
-        if(!this.hash) this.hash = await hash(`${this.title} ${this.content} ${this.extras.map((thing: any) => thing.toString())}`)
+        if(!this.hash)
+            this.hash = await hash(`${this.title} ${this.content} ${this.extras.map((thing: any) => thing.toString())}`)
 
         return this.hash
-
-    }
-
-    getInstructions(): Instructions {
-        return this.instructions;
     }
 }

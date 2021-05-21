@@ -1,3 +1,7 @@
+/**
+ * Return the hash code of a string
+ * @param str
+ */
 export default (str: String) => {
     let hash = 0, i, chr;
     if (str.length === 0) return hash;

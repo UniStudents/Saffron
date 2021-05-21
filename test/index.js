@@ -16,7 +16,8 @@ const saffron = require('../dist/index');
             path: "/test/sources"
         },
         scheduler: {
-            intervalBetweenJobs: 140
+            intervalBetweenJobs: 140,
+            heavyJobFailureInterval: 86400000
         },
         development: {
             scheduler: {

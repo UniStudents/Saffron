@@ -10,8 +10,6 @@ import randomId from "../middleware/randomId"
 export default class Instructions {
     declare id: String;
 
-    private declare static instructions: Array<Instructions>;
-
     declare source : { id: String; };
     declare url: string;
     declare parserType: ParserType
@@ -40,23 +38,10 @@ export default class Instructions {
     }
 
     /**
-     * Return all the instructions that exist
-     * in the instructions Array.
-     *
-     * @return Array<Instructions>
-     */
-    static getInstructions(): Array<Instructions> | null {
-        if (!this.instructions) return null;
-
-        return this.instructions;
-    }
-
-    /**
      * Return the source that variable source refers to.
-     *
      * @return Source
      */
-    getSource(): Source {
+    getSource(): Source | undefined {
         return Source.getSourceByID(this.source.id);
     }
 

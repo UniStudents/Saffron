@@ -2,12 +2,13 @@ import Source from "./source";
 import {JobStatus} from "./JobStatus";
 import randomId from "../middleware/randomId"
 import Instructions from "../components/instructions"
+
 export default class Job {
-    declare id: string // Job id
+    declare id: string
     declare source: {
         id: string
-    } // Source id where the job belongs
-    declare nextRetry: number // The date (milliseconds) where the job will be send to a worker | Only the scheduler edit this
+    }
+    declare nextRetry: number
     declare attempts: number
     declare emitAttempts: number
     declare status: JobStatus
@@ -15,22 +16,27 @@ export default class Job {
         id: string
     }
 
-    constructor() {
-        this.id = randomId("job")
-
+    /**
+     * Job constructor
+     * @param id The job's id (Optional, auto-generated)
+     */
+    constructor(id: string = "") {
+        if(id !== "")
+            this.id = id
+        else this.id = randomId("job")
     }
 
-    static getJobs(): Job[] {
-        return Job.getJobs()
-    }
-
+    /**
+     * Return the source class for the issued job
+     */
     getSource(): Source {
         return Source.getSourceFromJob(this)
     }
 
+    /**
+     * Return the instructions of the source where this job is issued
+     */
     getInstructions() : Instructions {
         return this.getSource().instructions
     }
-
-    private static jobs: Array<Job> = []
 }

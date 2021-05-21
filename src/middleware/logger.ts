@@ -4,6 +4,11 @@ import {LoggerTypes} from "./LoggerTypes"
 import Config from "../components/config";
 import { DateTime } from "luxon";
 
+/**
+ * Logs information in to the console
+ * @param type The type of log based on LoggerTypes
+ * @param data The message that will be logged
+ */
 export default (type: LoggerTypes, data: any) => {
     Events.getAntennae().emit("log", type, data)
     let time = chalk.bold(`${DateTime.now().toLocaleString({ day: '2-digit', month: '2-digit', year: "2-digit" , hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`)

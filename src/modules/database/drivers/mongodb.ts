@@ -49,7 +49,7 @@ export default class MongoDB extends Database {
     }
 
     async getArticles(options: object | null = null): Promise<Array<Article>> {
-
+        // TODO - getArticles MongoDB
         return []
     }
 
@@ -67,25 +67,6 @@ export default class MongoDB extends Database {
     async updateArticle(article: Article): Promise<void> {
         try {
             await this.client.db(Config.load()!!.database.config.name).collection('articles').updateOne({ id: article.id }, await article.toJSON())
-        }
-        catch (e) {
-            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
-        }
-    }
-
-    async getWorkers(): Promise<Worker[]> {
-        try {
-            return await this.client.db(Config.load()!!.database.config.name).collection('workers').find({}).toArray()
-        }
-        catch (e) {
-            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
-        }
-        return []
-    }
-
-    async announceWorker(worker: Worker): Promise<void> {
-        try {
-            await this.client.db(Config.load()!!.database.config.name).collection('workers').insertOne(await worker.toJSON())
         }
         catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)

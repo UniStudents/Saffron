@@ -5,6 +5,8 @@ import hashCode from "../middleware/hashCode";
 import {ParserType} from "../modules/workers/parsers/ParserType";
 import logger from "../middleware/logger";
 import {LoggerTypes} from "../middleware/LoggerTypes";
+import Article from "./articles";
+import {hash} from "argon2";
 
 const fs = require('fs');
 
@@ -14,6 +16,10 @@ const splice = function (base: string, idx: number, rem: number, str: string): s
 
 export default class Source {
 
+    /**
+     * Parse and store a source file contents to an array in memory
+     * @param source
+     */
     static async parseFileObject(source: any): Promise<void> {
         // Check if source is valid and return an object for that source
         if (source.url.length == 0)
@@ -22,6 +28,7 @@ export default class Source {
         //if (['api', 'portal'].includes(source.type) == false) throw new Error('A source\'s "api" value must be either "api" or "portal"')
 
         let ret = new Source()
+        ret.name = source.name
         ret.scrapeInterval = source.scrapeInterval
         ret.retryInterval = source.retryInterval
         ret.willParse = true // Get from db
@@ -30,7 +37,7 @@ export default class Source {
         ret.instructions.source = { id: `src_${hashCode(source.name)}` }
         ret.instructions.url = source.url
 
-        let parserType = ParserType.getFromString(source.type)
+        let parserType = await ParserType.getFromString(source.type)
         if(parserType === ParserType.UNKNOWN)
             return logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`)
 
@@ -48,7 +55,6 @@ export default class Source {
                     })
                     ret.instructions.scrapeOptions = { renameFields: map }
                 }
-
             } break
             case ParserType.CUSTOM: {
                 let scrapeStr = source.scrape.toString()
@@ -65,32 +71,63 @@ export default class Source {
         this._sources.push(ret)
     }
 
+    /**
+     * Return a copy array of the sources
+     */
     static getSources(): Array<Source> {
-        return this._sources
+        return [...this._sources]
     }
 
+    /**
+     * Return the source class based on job
+     * @param job
+     */
     static getSourceFromJob(job: Job): Source {
-        return this._sources.find((source: Source) => { return source.id === job!!.source.id })!!
+        return this._sources.find((source: Source) => { return source.getId() === job?.source.id })!!
     }
 
-    static getSourceByID(id: String): Source {
-        return this._sources.find((source: Source) => source.id === id)!!;
+    /**
+     * Return the source class based on article
+     * @param article
+     */
+    static getSourceFromArticle(article: Article): Source {
+        return this._sources.find((source: Source) => { return source.getId() === article?.source.id })!!
     }
 
-    lock(){
-        this.willParse = false
-        // Update database
+    /**
+     * Return a source class by searching the id of the source
+     * @param id
+     */
+    static getSourceByID(id: String): Source | undefined {
+        return this._sources.find((source: Source) => source.getId() === id);
     }
 
     private static _sources: Source[] = []
 
-    declare id: string
+    private declare id: string
+    declare name: string
     declare scrapeInterval: number
     declare retryInterval: number
     declare willParse: boolean
     declare instructions: Instructions
 
-    constructor() {
-        this.id = randomId("wkr")
+    constructor() { }
+
+    /**
+     * Locks the source file so it will not issue a new job until it is unlocked
+     */
+    lock(){
+        this.willParse = false
+        // Update database
+    }
+
+    /**
+     * Generate and return the id of the source
+     */
+    getId(): string {
+        if(!this.id)
+            this.id = 'src_' + this.name
+
+        return this.id
     }
 }

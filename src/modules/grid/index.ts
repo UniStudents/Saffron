@@ -4,6 +4,7 @@ import Events from "../events";
 import {JobStatus} from "../../components/JobStatus";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
+import Worker from "../workers";
 
 const httpServer = createServer();
 const io = new Server(httpServer, {
@@ -17,6 +18,7 @@ io.on("connection", (socket: Socket) => {
 httpServer.listen(8080);
 
 let dummyStorage: Job[] = [],
+    workers: Worker[] = [],
     events = Events.getAntennae()
 
 export default class Grid {
@@ -43,6 +45,31 @@ export default class Grid {
     }
 
     /**
+     * Return all workers
+     */
+    async getWorkers(): Promise<Worker[]> {
+        return [...workers];
+    }
+
+    /**
+     * Initialize a new worker on the database
+     * @param worker
+     */
+    async announceWorker(worker: Worker): Promise<void> {
+        workers.push(worker)
+    }
+
+    /**
+     * Initialize a new worker on the database
+     * @param worker
+     */
+    async destroyWorker(worker: Worker): Promise<void> {
+        let index = workers.findIndex((obj: Worker) => obj?.id === worker.id)
+        if(index !== -1)
+            workers.splice(index, 1)
+    }
+
+    /**
      * <h1>Scheduler</h1>
      * Push a new job to the grid
      * @param job The job object
@@ -65,15 +92,6 @@ export default class Grid {
      */
     async getJobs(): Promise<Array<Job>> {
         return dummyStorage
-    }
-
-    /**
-     * <h1>Scheduler</h1>
-     * Returns a specific job based on id
-     * @param id
-     */
-    async getJob(id: string): Promise<Job | undefined> {
-        return dummyStorage.find((obj: Job) => obj?.id === id)
     }
 
     /**

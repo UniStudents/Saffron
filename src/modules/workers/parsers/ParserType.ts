@@ -1,3 +1,6 @@
+/**
+ * The types of parsing
+ */
 export enum ParserType {
     RSS,
     HTML,
@@ -6,6 +9,10 @@ export enum ParserType {
 }
 
 export namespace ParserType {
+    /**
+     * Translate a string to ParserType enum
+     * @param str
+     */
     export function getFromString(str: String): ParserType {
         switch(str){
             case "html": return ParserType.HTML

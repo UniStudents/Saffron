@@ -20,7 +20,8 @@ export default class Config{
             nodes: 3 // Start three workers
         },
         scheduler: {
-            intervalBetweenJobs: 60 * 60 * 1000
+            intervalBetweenJobs: 60 * 60 * 1000,
+            heavyJobFailureInterval: 86400000
         },
         grid: {
             distributed: false
@@ -30,10 +31,12 @@ export default class Config{
         }
     }
 
-    
     public static isHydrated: boolean = false
     private static instance: Config
 
+    /**
+     * Loads an external configuration object and merges the parameters with the default ones.
+     */
     static load(config: _type | string | undefined = undefined): _type{
         if(!this.instance)
             this.instance = new Config(config)
@@ -42,10 +45,6 @@ export default class Config{
     }
 
     private constructor(config: _type | string | undefined) {
-
-        /**
-         * Loads an external configuration object and merges the parameters with the default ones.
-         */
         if(typeof config === "string"){
             try {
                 if(path.isAbsolute(config))

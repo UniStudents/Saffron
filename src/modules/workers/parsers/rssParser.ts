@@ -99,9 +99,10 @@ export default class rssParser{
 
     /**
      * Returns an array of articles based on rssParser function results
-     * @param url
-     * @param amount
+     * @param url The url that will be used for parsing
+     * @param amount The amount of articles that wil be returned
      * @param renameFields
+     * @return Array<Article> The articles.
      */
     public static async parse(url: string, amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()) : Promise<Array<Article>> {
         let parsedArticles: Array<Article> = [];

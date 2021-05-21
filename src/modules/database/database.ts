@@ -44,15 +44,4 @@ export default abstract class Database {
      * @param id The id of the article that will be deleted
      */
     abstract deleteArticle(id: string): Promise<void>
-
-    /**
-     * Return all workers
-     */
-    abstract getWorkers(): Promise<Array<Worker>>
-
-    /**
-     * Initialize a new worker on the database
-     * @param worker
-     */
-    abstract announceWorker(worker: Worker): Promise<void>
 }
