@@ -148,7 +148,7 @@ export default class HtmlParser {
      * @return Map<Number,Article> The articles.
      */
     static async parse(instructions: Instructions,
-                       amount: Number = 10): Promise<Array<Article> | undefined> {
+                       amount: Number = 10): Promise<Array<Article>> {
 
         let parsedArticles: Array<Article> = [];
 
