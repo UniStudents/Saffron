@@ -40,6 +40,14 @@ export default class Source {
 
             } break
             case ParserType.RSS: {
+                if(!source.name || !source.url) return logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`)
+                if(source.renameFields) {
+                    let map = new Map()
+                    Object.entries(source.renameFields).forEach(([key,value])=>{
+                        map.set(key,value)
+                    })
+                    ret.instructions.scrapeOptions = { renameFields: map }
+                }
 
             } break
             case ParserType.CUSTOM: {

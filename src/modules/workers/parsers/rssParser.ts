@@ -2,6 +2,7 @@ import Parser from "rss-parser";
 import Logger from "../../../middleware/logger";
 import {LoggerTypes} from "../../../middleware/LoggerTypes";
 import Utils from "./Utils";
+import Article from "../../../components/articles";
 
 
 export default class rssParser{
@@ -94,6 +95,61 @@ export default class rssParser{
             }
         });
     }
+
+
+    /**
+     * Returns an array of articles based on rssParser function results
+     * @param url
+     * @param amount
+     * @param renameFields
+     */
+    public static async parse(url: string, amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()) : Promise<Array<Article>> {
+        let parsedArticles: Array<Article> = [];
+        let articles = await this.rssParser(url,amount,renameFields)
+        //@ts-ignore
+        Array.from(new Map(Object.entries(articles)).values()).forEach((article: any) =>{
+            let tmpArticle = new Article()
+            tmpArticle.title = article.hasOwnProperty("title") ? article["title"] :
+                renameFields.get("title") && article.hasOwnProperty(renameFields.get("title")!) ? article[renameFields.get("title")!] : ""
+
+            tmpArticle.content = article.hasOwnProperty("content") ? article["content"] :
+                renameFields.get("content") && article.hasOwnProperty(renameFields.get("content")!) ? article[renameFields.get("content")!] : ""
+
+            tmpArticle.pubDate = article.hasOwnProperty("pubDate") ? article["pubDate"] :
+                renameFields.get("pubDate") && article.hasOwnProperty(renameFields.get("pubDate")!) ? article[renameFields.get("pubDate")!] : ""
+
+            tmpArticle.link = article.hasOwnProperty("link") ? article["link"] :
+                renameFields.get("link") && article.hasOwnProperty(renameFields.get("link")!) ? article[renameFields.get("link")!] : ""
+
+            //Add extras
+            tmpArticle.extras = {}
+            //Find remaining values
+            let remain = this.unAssign(article,this.requested_fields)
+            new Map(Object.entries(remain)).forEach((value, key) => {
+                tmpArticle.extras[key] = value;
+            })
+            //Return value
+            parsedArticles.push(tmpArticle)
+
+        })
+
+
+        return parsedArticles
+
+    }
+
+    /**
+     * Function that returns object without specified fields
+     * @param target
+     * @param source
+     * @private
+     */
+    private static unAssign(target: any, source: any) {
+        source.forEach((key: any) => {
+            delete target[key];
+        });
+        return target
+    };
 
 
 }

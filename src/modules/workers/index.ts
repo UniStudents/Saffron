@@ -78,8 +78,15 @@ export default class Worker {
                     // articles = await HtmlParser.parse(instructions,10);
                 } break
                 case ParserType.RSS: {
-                    // articles = await rssParser.rssParser(instructions.url,10)
-                    // TODO - Fix rss to return Array<Article>
+                    //All renameFields can be found on article.extras with the exact name mentioned in the source file
+                    if(instructions.scrapeOptions.hasOwnProperty("renameFields")){
+                        //@ts-ignore
+                        let rename_fields = instructions.scrapeOptions.renameFields
+                        // @ts-ignore
+                        articles = await rssParser.parse(instructions.url,10,rename_fields)
+                    }else{
+                        articles = await rssParser.parse(instructions.url,10)
+                    }
                 } break
                 case ParserType.CUSTOM: {
                     articles = await DynamicParser.parse(job, instructions, 10)
@@ -88,7 +95,7 @@ export default class Worker {
 
             // when job is finish/failed emit finished/failed job class
             logger(LoggerTypes.DEBUG, `Job finished ${articles === undefined ? ' with a failure: ' : ' successfully: '} (${job.id}).`)
-            console.log(articles)
+            //console.log(articles)
 
            // if(articles === undefined) await Grid.getInstance().failedJob(job)
             await Grid.getInstance().finishJob(job)
