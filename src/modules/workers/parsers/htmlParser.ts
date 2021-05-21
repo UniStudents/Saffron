@@ -148,66 +148,67 @@ export default class HtmlParser {
      * @return Map<Number,Article> The articles.
      */
     static async parse(instructions: Instructions,
-                       amount: Number = 10): Promise<Array<Article>> {
+                       amount: Number = 10): Promise<Array<Article> | undefined> {
 
         let parsedArticles: Array<Article> = [];
 
-        await HtmlParser.request(instructions).then( (response: AxiosResponse) => {
-            const cheerioLoad = cheerio.load(response.data);
+        await HtmlParser.request(instructions)
+            .then((response: AxiosResponse) => {
+                const cheerioLoad = cheerio.load(response.data);
 
-            // for each article.
-            cheerioLoad(instructions.elementSelector).each((index, element) => {
+                // for each article.
+                cheerioLoad(instructions.elementSelector).each((index, element) => {
 
-                if (index === amount) return;
+                    if (index === amount) return;
 
-                let articleData: ArticleImage = {};
-                let tmpArticle: Article;
-                let basicData = ["title", "pubDate", "description"]; // Exp. If you remove the title, then the title is going to be on the extra information of each article.
-                let options = instructions.scrapeOptions;
+                    let articleData: ArticleImage = {};
+                    let tmpArticle: Article;
+                    let basicData = ["title", "pubDate", "description"]; // Exp. If you remove the title, then the title is going to be on the extra information of each article.
+                    let options = instructions.scrapeOptions;
 
-                // for each option. The options provided by instructions.
-                for (let item in options) {
-                    //@ts-ignore
-                    if (options.hasOwnProperty(item) && options[item].find) {
+                    // for each option. The options provided by instructions.
+                    for (let item in options) {
                         //@ts-ignore
-                        if (!options[item].attributes) {
+                        if (options.hasOwnProperty(item) && options[item].find) {
                             //@ts-ignore
-                            articleData[options[item].name] = HtmlParser.findMultiple(options[item].find, cheerioLoad, element, item, options[item].multiple);
+                            if (!options[item].attributes) {
+                                //@ts-ignore
+                                articleData[options[item].name] = HtmlParser.findMultiple(options[item].find, cheerioLoad, element, item, options[item].multiple);
+                            }
+                            else {
+                                //@ts-ignore
+                                articleData[options[item].name] = HtmlParser.findMultiple(options[item].find, cheerioLoad, element, item, options[item].multiple, true, options[item].attributes, instructions.endPoint);
+                            }
                         }
                         else {
                             //@ts-ignore
-                            articleData[options[item].name] = HtmlParser.findMultiple(options[item].find, cheerioLoad, element, item, options[item].multiple, true, options[item].attributes, instructions.endPoint);
+                            articleData[options[item].name] = Utils.htmlStrip(cheerioLoad(element).find(item).text());
+                        }
+
+                    }
+                    // It stores the article data to an instance of Article class.
+                    tmpArticle = new Article();
+                    //tmpArticle.source.id = instructions.getSource()?.id;
+                    tmpArticle.title = (articleData.title)? articleData.title : '';
+                    tmpArticle.pubDate = (articleData.pubDate)? articleData.pubDate : '';
+                    tmpArticle.content = (articleData.description)? articleData.description : '';
+                    tmpArticle.extras = {};
+
+                    // for each extra data. Data that are not described in the baseData variable.
+                    for (let extra in articleData) {
+
+                        if (basicData.indexOf(extra) === -1) {
+                            if (articleData[extra] === '') continue;
+
+                            tmpArticle.extras[extra] = articleData[extra];
                         }
                     }
-                    else {
-                        //@ts-ignore
-                        articleData[options[item].name] = Utils.htmlStrip(cheerioLoad(element).find(item).text());
-                    }
 
-                }
-                // It stores the article data to an instance of Article class.
-                tmpArticle = new Article();
-                //tmpArticle.source.id = instructions.getSource()?.id;
-                tmpArticle.title = (articleData.title)? articleData.title : '';
-                tmpArticle.pubDate = (articleData.pubDate)? articleData.pubDate : '';
-                tmpArticle.content = (articleData.description)? articleData.description : '';
-                tmpArticle.extras = {};
+                    if (tmpArticle.title === '') return;
 
-                // for each extra data. Data that are not described in the baseData variable.
-                for (let extra in articleData) {
-
-                    if (basicData.indexOf(extra) === -1) {
-                        if (articleData[extra] === '') continue;
-
-                        tmpArticle.extras[extra] = articleData[extra];
-                    }
-                }
-
-                if (tmpArticle.title === '') return;
-
-                parsedArticles.push(tmpArticle);
-            });
-        });
+                    parsedArticles.push(tmpArticle);
+                });
+            })
 
         return parsedArticles;
     }

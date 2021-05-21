@@ -90,8 +90,8 @@ export default class Worker {
             logger(LoggerTypes.DEBUG, `Job finished ${articles === undefined ? ' with a failure: ' : ' successfully: '} (${job.id}).`)
             console.log(articles)
 
-           if(articles === undefined) await Grid.getInstance().failedJob(job)
-            else await Grid.getInstance().finishJob(job)
+           // if(articles === undefined) await Grid.getInstance().failedJob(job)
+            await Grid.getInstance().finishJob(job)
         })
     }
 

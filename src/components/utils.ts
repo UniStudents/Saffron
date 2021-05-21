@@ -12,8 +12,14 @@ export default class Utils {
     public isScrapeAfterError = false;
 
     /**
-     *
+     * Get all the articles in database
      * @param count
      */
     getArticles = async (count: number): Promise<Array<Article>> => []
+
+    /**
+     * When a new article is found
+     * @param article
+     */
+    onNewArticle = async (article: Article) => {}
 }

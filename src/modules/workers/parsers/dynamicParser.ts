@@ -4,6 +4,8 @@ import Utils from "../../../components/utils";
 import Exceptions from "../../../components/exceptions";
 import Job from "../../../components/job";
 import Database from "../../database";
+import logger from "../../../middleware/logger";
+import {LoggerTypes} from "../../../middleware/LoggerTypes";
 
 export default class DynamicParser {
 
@@ -17,6 +19,8 @@ export default class DynamicParser {
      * @return Array<Article> The articles.
      */
     public static async parse(job: Job, instructions: Instructions, amount: Number = 10): Promise<Array<Article>> {
+        let parsedArticles: Array<Article> = [];
+
         let scrapeFunc = eval(instructions.scrapeFunction)
         let utils = new Utils();
 
@@ -25,14 +29,18 @@ export default class DynamicParser {
         utils.isScrapeAfterError = job.attempts !== 0
 
         utils.getArticles = async (count: number): Promise<Array<Article>> => articles.slice(0, count)
-
-        let result: Array<Article> | Exceptions = await scrapeFunc(Article, utils, Exceptions)
-
-        if(result instanceof Exceptions){
-            if(!result.retry) job.getSource().lock()
+        utils.onNewArticle = async (article: Article) => {
+            parsedArticles.unshift(article)
+            utils.getArticles = async (count: number): Promise<Array<Article>> => [...parsedArticles, ...articles].slice(0, count)
         }
-        else return result
 
-        return []
+        let result: Exceptions | undefined = await scrapeFunc(Article, utils, Exceptions)
+
+        if(result){
+            if(!result.retry) job.getSource().lock()
+            logger(LoggerTypes.ERROR, result.message)
+        }
+
+        return parsedArticles
     }
 }
