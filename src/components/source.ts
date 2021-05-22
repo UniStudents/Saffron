@@ -1,12 +1,11 @@
 import Job from "../components/job";
-import randomId from "../middleware/randomId";
 import Instructions from "./instructions";
 import hashCode from "../middleware/hashCode";
 import {ParserType} from "../modules/workers/parsers/ParserType";
 import logger from "../middleware/logger";
 import {LoggerTypes} from "../middleware/LoggerTypes";
 import Article from "./articles";
-import {hash} from "argon2";
+
 
 const fs = require('fs');
 
@@ -44,7 +43,11 @@ export default class Source {
         ret.instructions.parserType = parserType
         switch (parserType) {
             case ParserType.HTML: {
+                if (!source.url || !source.name || Object.entries(source.scrape).some((key:any) => key[1].name === undefined)) return logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`);
 
+                ret.instructions.elementSelector = source.container;
+                ret.instructions.scrapeOptions = source.scrape;
+                ret.instructions.endPoint = source.endPoint;
             } break
             case ParserType.RSS: {
                 if(!source.name || !source.url) return logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`)

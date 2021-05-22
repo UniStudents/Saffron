@@ -48,10 +48,13 @@ export default class HtmlParser {
     private static attributes(location: Cheerio,
                               dataStoredAt: string,
                               attributesArr: Array<string>,
-                              endPoint: string): Object {
+                              endPoint: string): Object | null {
         let obj: Object = {};
 
+        if (Utils.htmlStrip(location.find(dataStoredAt).text()) === '') return null;
+
         if (attributesArr.includes("value")) {
+
             obj = {
                 attribute: endPoint+location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1]),
                 value: Utils.htmlStrip(location.find(dataStoredAt).text())
@@ -123,10 +126,13 @@ export default class HtmlParser {
 
                 if (!hasAttributes) {
                     // If we do not want to get the attributes, then we just get the information found in the location stored in the variable dataStoredAt.
+                    if (Utils.htmlStrip(finalData.find(dataStoredAt).text()) === '') return;
+
                     results.push(Utils.htmlStrip(finalData.find(dataStoredAt).text()));
                 }
                 else {
-                    results.push(HtmlParser.attributes(finalData, dataStoredAt, attributesArr, endPoint));
+                    let tmp = HtmlParser.attributes(finalData, dataStoredAt, attributesArr, endPoint);
+                    if (tmp) results.push(tmp);
                 }
             })
         }
@@ -188,24 +194,23 @@ export default class HtmlParser {
                     }
                     // It stores the article data to an instance of Article class.
                     tmpArticle = new Article();
-                    //tmpArticle.source.id = instructions.getSource()?.id;
+                    //tmpArticle.source = {id: instructions.getSource()!!.getId()};
                     tmpArticle.title = (articleData.title)? articleData.title : '';
                     tmpArticle.pubDate = (articleData.pubDate)? articleData.pubDate : '';
                     tmpArticle.content = (articleData.description)? articleData.description : '';
                     tmpArticle.extras = {};
 
                     // for each extra data. Data that are not described in the baseData variable.
-                    for (let extra in articleData) {
+                    Object.entries(articleData).forEach( (extra) => {
+                        if (basicData.indexOf(extra[0]) !== -1) return;
+                        if (extra[1] === '') return;
 
-                        if (basicData.indexOf(extra) === -1) {
-                            if (articleData[extra] === '') continue;
-
-                            tmpArticle.extras[extra] = articleData[extra];
-                        }
-                    }
+                        tmpArticle.extras[extra[0]] = extra[1];
+                    });
 
                     if (tmpArticle.title === '') return;
 
+                    console.log(tmpArticle)
                     parsedArticles.push(tmpArticle);
                 });
             })

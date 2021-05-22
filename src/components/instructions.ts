@@ -12,8 +12,8 @@ export default class Instructions {
 
     declare source : { id: string; };
     declare url: string;
-    declare parserType: ParserType
-
+    declare parserType: ParserType;
+    declare endPoint: string;
     declare scrapeOptions: Object;
     declare elementSelector: string;
     declare scrapeFunction: string // just call eval
@@ -41,7 +41,7 @@ export default class Instructions {
      * Return the source that variable source refers to.
      * @return Source
      */
-    getSource(): Source | undefined {
+    getSource(): Source {
         return Source.getSourceFrom(this.source.id);
     }
 
