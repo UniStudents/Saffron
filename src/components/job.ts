@@ -30,7 +30,7 @@ export default class Job {
      * Return the source class for the issued job
      */
     getSource(): Source {
-        return Source.getSourceFromJob(this)
+        return Source.getSourceFrom(this)
     }
 
     /**

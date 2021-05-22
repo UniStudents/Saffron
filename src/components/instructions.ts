@@ -8,9 +8,9 @@ import randomId from "../middleware/randomId"
  * a web page content.
  */
 export default class Instructions {
-    declare id: String;
+    declare id: string;
 
-    declare source : { id: String; };
+    declare source : { id: string; };
     declare url: string;
     declare parserType: ParserType
 
@@ -42,7 +42,7 @@ export default class Instructions {
      * @return Source
      */
     getSource(): Source | undefined {
-        return Source.getSourceByID(this.source.id);
+        return Source.getSourceFrom(this.source.id);
     }
 
 }

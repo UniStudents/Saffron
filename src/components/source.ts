@@ -79,27 +79,16 @@ export default class Source {
     }
 
     /**
-     * Return the source class based on job
-     * @param job
+     * Return the source class based on job, article or source id
+     * @param from
      */
-    static getSourceFromJob(job: Job): Source {
-        return this._sources.find((source: Source) => { return source.getId() === job?.source.id })!!
-    }
+    static getSourceFrom(from: Job | Article | string): Source {
+        if(from instanceof  Job)
+            return this._sources.find((source: Source) => { return source.getId() === from.source.id })!!
+        else if(from instanceof  Article)
+            return this._sources.find((source: Source) => { return source.getId() === from.source.id })!!
 
-    /**
-     * Return the source class based on article
-     * @param article
-     */
-    static getSourceFromArticle(article: Article): Source {
-        return this._sources.find((source: Source) => { return source.getId() === article?.source.id })!!
-    }
-
-    /**
-     * Return a source class by searching the id of the source
-     * @param id
-     */
-    static getSourceByID(id: String): Source | undefined {
-        return this._sources.find((source: Source) => source.getId() === id);
+        return this._sources.find((source: Source) => source.getId() === from)!!
     }
 
     private static _sources: Source[] = []
@@ -118,7 +107,7 @@ export default class Source {
      */
     lock(){
         this.willParse = false
-        // Update database
+        // TODO - Update grid/database?
     }
 
     /**

@@ -168,6 +168,11 @@ export default class Scheduler {
                 Logger(LoggerTypes.DEBUG, 'Scheduler: no pending jobs')
 
             for(let job of pendingJobs){
+                if(!job.getSource().willParse) {
+                    await Grid.getInstance().deleteJob(job.id)
+                    continue
+                }
+
                 switch (job.status){
                     // Issue new job for this source
                     case JobStatus.FINISHED: {
@@ -220,6 +225,5 @@ export default class Scheduler {
     async stop(force: boolean): Promise<void> {
         this.isRunning = false
         this.isForcedStopped = force
-        // if force == true then clear db from the existing jobs
     }
 }

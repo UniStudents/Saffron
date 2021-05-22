@@ -86,5 +86,5 @@ export = {
      */
     on: async(event: string, data: any) => antennae.on(event, data),
 
-    types:{ Article, Utils, Exceptions }
+    types: { Article, Utils, Exceptions }
 }

@@ -93,7 +93,7 @@ export default class Worker {
             if(this.isForcedStopped) return
 
             if (!parseFailed) {
-                // Check articles with database and import what you have to import
+                // TODO - Check articles with database and import what you have to import
 
                 await Grid.getInstance().finishJob(job)
             }
@@ -104,7 +104,7 @@ export default class Worker {
     }
 
     /**
-     * Worker will stop aceepting jobs
+     * Worker will stop accepting jobs
      * @param force if true the it will abandon the current job
      */
     async stop(force: boolean): Promise<void> {
