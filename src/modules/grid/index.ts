@@ -51,15 +51,11 @@ export default class Grid {
                     delete workerClients[index]
             })
 
-            socket.on('new-job', () => {
+            socket.on('finished-job', (data: any) => {
 
             })
 
-            socket.on('finished-job', () => {
-
-            })
-
-            socket.on('failed-job', () => {
+            socket.on('failed-job', (data: any) => {
 
             })
         })
@@ -69,7 +65,7 @@ export default class Grid {
      * Connects to the grid
      */
     async connect(): Promise<void> {
-        this.httpServer.listen(8080);
+        // this.httpServer.listen(8080);
     }
 
     /**
