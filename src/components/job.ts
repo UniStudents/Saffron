@@ -24,6 +24,9 @@ export default class Job {
         if(id !== "")
             this.id = id
         else this.id = randomId("job")
+
+        this.attempts = 0
+        this.emitAttempts = 0
     }
 
     /**

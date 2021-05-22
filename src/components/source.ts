@@ -20,10 +20,12 @@ export default class Source {
      * Parse and store a source file contents to an array in memory
      * @param source
      */
-    static async parseFileObject(source: any): Promise<void> {
+    static async parseFileObject(source: any, addToList: boolean = true): Promise<Source | undefined> {
         // Check if source is valid and return an object for that source
-        if (source.url.length == 0)
-            return logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Please specify a url. File: ${source.filename}`)
+        if (source.url.length == 0) {
+            logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Please specify a url. File: ${source.filename}`)
+            return
+        }
         // if(new RegExp('^(http|https)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,6}(/\S*)?$').test(url)) throw new Error('You specified an invalid url')
         //if (['api', 'portal'].includes(source.type) == false) throw new Error('A source\'s "api" value must be either "api" or "portal"')
 
@@ -38,20 +40,28 @@ export default class Source {
         ret.instructions.url = source.url
 
         let parserType = await ParserType.getFromString(source.type)
-        if(parserType === ParserType.UNKNOWN)
-            return logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`)
+        if(parserType === ParserType.UNKNOWN) {
+            logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`)
+            return
+        }
 
         ret.instructions.parserType = parserType
         switch (parserType) {
             case ParserType.HTML: {
-                if (!source.url || !source.name || Object.entries(source.scrape).some((key:any) => key[1].name === undefined)) return logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`);
+                if (!source.url || !source.name || Object.entries(source.scrape).some((key:any) => key[1].name === undefined)) {
+                    logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`);
+                    return
+                }
 
                 ret.instructions.elementSelector = source.container;
                 ret.instructions.scrapeOptions = source.scrape;
                 ret.instructions.endPoint = source.endPoint;
             } break
             case ParserType.RSS: {
-                if(!source.name || !source.url) return logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`)
+                if(!source.name || !source.url) {
+                    logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`)
+                    return
+                }
                 if(source.renameFields) {
                     let map = new Map()
                     Object.entries(source.renameFields).forEach(([key,value])=>{
@@ -72,7 +82,9 @@ export default class Source {
             } break
         }
 
-        this._sources.push(ret)
+        if(addToList)
+            this._sources.push(ret)
+        return ret
     }
 
     /**

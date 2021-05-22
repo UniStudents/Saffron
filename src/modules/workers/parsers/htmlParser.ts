@@ -91,7 +91,7 @@ export default class HtmlParser {
                                 multiple: Boolean = false,
                                 hasAttributes: Boolean = false,
                                 attributesArr: Array<string>,
-                                endPoint: string): Array<String | Object> {
+                                endPoint: string): Array<String | Object> | String {
 
         let results: Array<String | Object> = new Array<String | Object>();
         let tmpElement = htmlContent(currArticle).find(htmlClass);
@@ -138,7 +138,7 @@ export default class HtmlParser {
         }
         else {
             // If it is to get only one piece of information, then we simply take the text from the point where we are ( which will be the point where the information is ).
-            results.push(Utils.htmlStrip(finalLocation.text()));
+            return Utils.htmlStrip(finalLocation.text());
         }
 
         return results;
@@ -169,7 +169,7 @@ export default class HtmlParser {
 
                     let articleData: ArticleImage = {};
                     let tmpArticle: Article;
-                    let basicData = ["title", "pubDate", "description"]; // Exp. If you remove the title, then the title is going to be on the extra information of each article.
+                    let basicData = ["title", "pubDate", "content"]; // Exp. If you remove the title, then the title is going to be on the extra information of each article.
                     let options = instructions.scrapeOptions;
 
                     // for each option. The options provided by instructions.
@@ -197,7 +197,7 @@ export default class HtmlParser {
                     tmpArticle.source = {id: instructions.getSource()!!.getId()};
                     tmpArticle.title = (articleData.title)? articleData.title : '';
                     tmpArticle.pubDate = (articleData.pubDate)? articleData.pubDate : '';
-                    tmpArticle.content = (articleData.description)? articleData.description : '';
+                    tmpArticle.content = (articleData.content)? articleData.content : '';
                     tmpArticle.extras = {};
 
                     // for each extra data. Data that are not described in the baseData variable.

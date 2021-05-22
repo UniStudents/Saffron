@@ -19,7 +19,7 @@
       "multiple": false
     },
     ".catItemBody" : {
-      "name": "body",
+      "name": "content",
       "find": null,
       "multiple": false
     },

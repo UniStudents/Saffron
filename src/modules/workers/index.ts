@@ -11,6 +11,7 @@ import logger from "../../middleware/logger";
 import rssParser from "./parsers/rssParser";
 import DynamicParser from "./parsers/dynamicParser";
 import Article from "../../components/articles";
+import Instructions from "../../components/instructions";
 
 export default class Worker {
 
@@ -53,58 +54,67 @@ export default class Worker {
 
             let instructions = job.getInstructions()
 
-            let articles: Array<Article> = [];
-            let parseFailed = false
-
-            switch (instructions.parserType){
-                case ParserType.HTML: {
-                    let result = await HtmlParser.parse(instructions,10)
-                    if(Array.isArray(result))
-                        articles.push.apply(articles, result)
-                    else parseFailed = true
-                } break
-                case ParserType.RSS: {
-                    //All renameFields can be found on article.extras with the exact name mentioned in the source file
-                    if(instructions.scrapeOptions.hasOwnProperty("renameFields")){
-                        //@ts-ignore
-                        let rename_fields = instructions.scrapeOptions.renameFields
-
-                        let result = await rssParser.parse(instructions.url,10,rename_fields)
-                        if(Array.isArray(result))
-                            articles.push.apply(articles, result)
-                        else parseFailed = true
-                    }
-                    else {
-                        let result = await rssParser.parse(instructions.url,10)
-                        if(Array.isArray(result))
-                            articles.push.apply(articles, result)
-                        else parseFailed = true
-                    }
-                } break
-                case ParserType.CUSTOM: {
-                    let result = await DynamicParser.parse(job, instructions, 10)
-                    if(result[0].id !== "error")
-                        articles.push.apply(articles, result)
-                    else parseFailed = true
-                } break
-            }
-           // console.log(articles)
+            let articles = await Worker.parse(instructions, job)
 
             if(this.isForcedStopped) return
 
-            if (!parseFailed) {
+            if (Array.isArray(articles)) {
                 // TODO - Check articles with database and import what you have to import
                 articles.forEach((article: Article)=>{
                     article.source = {id: job.source.id}
+                    article.timestamp = new Date()
                 })
+
                 await Database.getInstance()?.mergeArticles(articles)
 
                 await Grid.getInstance().finishJob(job)
             }
             else await Grid.getInstance().failedJob(job)
 
-            logger(LoggerTypes.DEBUG, `Worker: Job finished ${parseFailed ? ' with a failure: ' : ' successfully: '} (${job.id}).`)
+            logger(LoggerTypes.DEBUG, `Worker: Job finished ${!articles ? ' with a failure: ' : ' successfully: '} (${job.id}).`)
         })
+    }
+
+    static async parse(instructions: Instructions, job: Job): Promise<Array<Article> | undefined> {
+        let articles: Array<Article> = [];
+        let parseFailed = false
+
+        switch (instructions.parserType){
+            case ParserType.HTML: {
+                let result = await HtmlParser.parse(instructions,10)
+                if(Array.isArray(result))
+                    articles.push.apply(articles, result)
+                else parseFailed = true
+            } break
+            case ParserType.RSS: {
+                //All renameFields can be found on article.extras with the exact name mentioned in the source file
+                if(instructions.scrapeOptions.hasOwnProperty("renameFields")){
+                    //@ts-ignore
+                    let rename_fields = instructions.scrapeOptions.renameFields
+
+                    let result = await rssParser.parse(instructions.url,10,rename_fields)
+                    if(Array.isArray(result))
+                        articles.push.apply(articles, result)
+                    else parseFailed = true
+                }
+                else {
+                    let result = await rssParser.parse(instructions.url,10)
+                    if(Array.isArray(result))
+                        articles.push.apply(articles, result)
+                    else parseFailed = true
+                }
+            } break
+            case ParserType.CUSTOM: {
+                let result = await DynamicParser.parse(job, instructions, 10)
+                if(result[0].id !== "error")
+                    articles.push.apply(articles, result)
+                else parseFailed = true
+            } break
+        }
+
+        if(parseFailed) return
+
+        return articles
     }
 
     /**
