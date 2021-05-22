@@ -3,6 +3,7 @@
   "name": "html-cs.unipi.gr",
   "type": "html",
   "container": ".catItemView",
+  "endPoint": "unipi.gr",
   "retryInterval": 30000,
   "scrapeInterval": 60000,
   "scrape": {
@@ -24,6 +25,7 @@
     },
     ".catItemLinks": {
       "name": "links",
+      "attributes": ["value","href"],
       "find": [".catItemAttachmentsBlock","li","a"],
       "multiple": true
     }

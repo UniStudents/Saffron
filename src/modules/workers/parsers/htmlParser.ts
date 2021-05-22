@@ -55,14 +55,29 @@ export default class HtmlParser {
 
         if (attributesArr.includes("value")) {
 
-            obj = {
-                attribute: endPoint+location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1]),
-                value: Utils.htmlStrip(location.find(dataStoredAt).text())
+            if (attributesArr.includes("href")) {
+                obj = {
+                    attribute: endPoint+location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1]),
+                    value: Utils.htmlStrip(location.find(dataStoredAt).text())
+                }
+            }
+            else {
+                obj = {
+                    attribute: location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1]),
+                    value: Utils.htmlStrip(location.find(dataStoredAt).text())
+                }
             }
         }
         else {
-            obj = {
-                attribute: endPoint+location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1])
+            if (attributesArr.includes("href")) {
+                obj = {
+                    attribute: endPoint+location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1])
+                }
+            }
+            else {
+                obj = {
+                    attribute: location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1])
+                }
             }
         }
 
@@ -194,7 +209,7 @@ export default class HtmlParser {
                     }
                     // It stores the article data to an instance of Article class.
                     tmpArticle = new Article();
-                    tmpArticle.source = {id: instructions.getSource()!!.getId()};
+                    tmpArticle.source = {id: instructions.getSource().getId()};
                     tmpArticle.title = (articleData.title)? articleData.title : '';
                     tmpArticle.pubDate = (articleData.pubDate)? articleData.pubDate : '';
                     tmpArticle.content = (articleData.content)? articleData.content : '';
@@ -210,6 +225,7 @@ export default class HtmlParser {
 
                     if (tmpArticle.title === '') return;
 
+                    console.log(tmpArticle)
                     parsedArticles.push(tmpArticle);
                 });
             })
