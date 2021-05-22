@@ -5,6 +5,7 @@ import {ParserType} from "../modules/workers/parsers/ParserType";
 import logger from "../middleware/logger";
 import {LoggerTypes} from "../middleware/LoggerTypes";
 import Article from "./articles";
+import hash from 'crypto-js/sha256';
 
 
 const fs = require('fs');
@@ -118,7 +119,7 @@ export default class Source {
      */
     getId(): string {
         if(!this.id)
-            this.id = 'src_' + this.name
+            this.id = 'src_' + hash(this.name).toString().substr(0,47)
 
         return this.id
     }

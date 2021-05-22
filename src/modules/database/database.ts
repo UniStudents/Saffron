@@ -28,8 +28,10 @@ export default abstract class Database {
     abstract getArticle(id: string): Promise<Article | undefined>
 
     /**
-     * Add a new article on the database
-     * @param article The article object to add
+     * Add a new article on the database. Unless you know
+     * what you are doing, DO NOT use this function to upload
+     * new articles. Instead, use mergeArticles().
+     * @param article The article object to add to the database
      */
     abstract pushArticle(article: Article): Promise<string>
 
@@ -44,4 +46,23 @@ export default abstract class Database {
      * @param id The id of the article that will be deleted
      */
     abstract deleteArticle(id: string): Promise<void>
+
+    /**
+     * The RECOMMENDED way to push articles to the database.
+     * It will try to compare the previous pushed articles with the new ones and upload the ones that their hashes aren't present in the aforementioned articles.
+     * @param articles An array of Article objects that are meant to be merged into the database.
+     */
+    async mergeArticles(articles: Article[]){
+        let dbArticles = await this.getArticles({
+            sortBy: "date",
+            count: articles.length * 2
+        })
+
+        let hashes = dbArticles.map((article: Article) => article.getHash())
+        articles = articles.filter((article: Article) => !hashes.includes(article.getHash()))
+
+        await articles.forEach((article: Article) => this.pushArticle(article))
+
+        return articles
+    }
 }

@@ -1,8 +1,7 @@
 import chalk from 'chalk'
 import Events from "../modules/events";
 import {LoggerTypes} from "./LoggerTypes"
-import Config from "../components/config";
-import { DateTime } from "luxon";
+import {DateTime} from "luxon";
 
 /**
  * Logs information in to the console
@@ -10,6 +9,8 @@ import { DateTime } from "luxon";
  * @param data The message that will be logged
  */
 export default (type: LoggerTypes, data: any) => {
+    // if(type === LoggerTypes.DEBUG) return
+
     Events.getAntennae().emit("log", type, data)
     let time = chalk.bold(`${DateTime.now().toLocaleString({ day: '2-digit', month: '2-digit', year: "2-digit" , hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}`)
 
@@ -30,6 +31,7 @@ export default (type: LoggerTypes, data: any) => {
             console.log(chalk.white(`${chalk.blue(" | ")}`))
             console.log(chalk.white(`${chalk.blue(" ◉ ")} ${time}: ${data}`))
         return
+        // @ts-ignore
         case LoggerTypes.DEBUG:
             console.log(chalk.white(`${chalk.blue(" | ")}`))
             console.log(chalk.white(`${chalk.blue(" ⦿ ")} ${time}: ${data}`))

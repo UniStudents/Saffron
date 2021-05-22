@@ -110,14 +110,15 @@ export default class Scheduler {
      * Issue a new job for a specific source
      * @param source The source
      * @param lasWorkerId The worker who has the job last time (Optional)
+     * @param interval
      * @return Return the issued job id
      */
-    async issueJobForSource(source: Source, lasWorkerId: string = ""): Promise<string> {
-        let interval = source.scrapeInterval ? source.scrapeInterval : Config.load().scheduler.intervalBetweenJobs
+    async issueJobForSource(source: Source, lasWorkerId: string = "", interval: number = -1): Promise<string> {
+        if(interval == -1)
+            interval = source.scrapeInterval ? source.scrapeInterval : Config.load().scheduler.intervalBetweenJobs
 
         let nJob = await this.createJob(source.getId(), await this.electWorker(lasWorkerId), interval)
         await Grid.getInstance().pushJob(nJob)
-        Logger(LoggerTypes.DEBUG, "Scheduler: added new job: " + nJob.id)
 
         return nJob.id
     }
@@ -147,8 +148,8 @@ export default class Scheduler {
         let sI = 0, wI = 0
 
         for(let source of sources){
-            let new_job = await this.createJob(source.getId(), await this.electWorker(workers[wI].id), interval * sI)
-            await Grid.getInstance().pushJob(new_job)
+            let jobId = await this.issueJobForSource(source, workers[wI].id, interval * sI)
+            Logger(LoggerTypes.DEBUG, "Scheduler: added new job: " + jobId)
             sI++; wI++
 
             if(wI == workers.length) wI = 0
@@ -176,16 +177,14 @@ export default class Scheduler {
                 switch (job.status){
                     // Issue new job for this source
                     case JobStatus.FINISHED: {
-                        Logger(LoggerTypes.DEBUG, "Scheduler: found finished job: " + job.id)
+                        Logger(LoggerTypes.DEBUG, "Scheduler: found finished job: " + job.id + '. Adding new job.')
 
                         await Grid.getInstance().deleteJob(job.id)
                         let jobId = await this.issueJobForSource(job.getSource(), job.worker.id)
-
-                        Logger(LoggerTypes.DEBUG, "Scheduler: added new job: " + jobId)
                     } break
                     // A job failed so increment the attempts and try again
                     case JobStatus.FAILED: {
-                        Logger(LoggerTypes.DEBUG, "Scheduler: found failed job: " + job.id)
+                        Logger(LoggerTypes.DEBUG, "Scheduler: found failed job: " + job.id + '. Updating job.')
                         let source = job.getSource()
 
                         job.attempts += 1
@@ -199,15 +198,16 @@ export default class Scheduler {
                         job.nextRetry = Date.now() + interval
                         job.status = JobStatus.PENDING
 
-                        Logger(LoggerTypes.DEBUG, "Scheduler: updated failed job: " + job.id)
                         await Grid.getInstance().updateJob(job)
                     } break
                     // Pending jobs
                     case JobStatus.PENDING: {
                         if(job.nextRetry <= Date.now()) {
                             // If the worker did not returned the job after 5 times (total 10 minutes) elect new worker
-                            if(job.emitAttempts > 5)
+                            if(job.emitAttempts > 5) {
+                                await Grid.getInstance().fireWorker(job.worker.id)
                                 job.worker.id = await this.electWorker(job.worker.id)
+                            }
 
                             Logger(LoggerTypes.DEBUG, "Scheduler: emitting pending job: " + job.id)
                             await Grid.getInstance().emitJob(job)

@@ -1,13 +1,15 @@
 {
   "name": "@poiw/saffron",
-  "version": "1.0.4-dev",
+  "version": "1.0.5-dev",
   "description": "A fairly intuitive & powerful framework that enables you to collect & save articles and news from all over the web. ",
   "main": "src/index.ts",
   "dependencies": {
     "@poiw/saffron-utils": "^1.0.0",
+    "@types/crypto-js": "^4.0.1",
     "argon2": "^0.27.2",
     "chalk": "^4.1.1",
     "cheerio": "^1.0.0-rc.6",
+    "crypto-js": "^4.0.0",
     "dotenv": "^9.0.2",
     "lodash": "^4.17.21",
     "luxon": "^1.27.0",

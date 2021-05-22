@@ -5,7 +5,7 @@ const saffron = require('../dist/index');
 (async() => {
     await saffron.initialize({
         database:
-            process.env.MONGO_URL && false ? {
+            process.env.MONGO_URL && true ? {
                 driver: "mongodb",
                 config: {
                     url: process.env.MONGO_URL,

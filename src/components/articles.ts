@@ -1,7 +1,6 @@
 import Source from "./source";
 import randomId from "../middleware/randomId"
-import {hash} from "argon2"
-
+import hash from 'crypto-js/sha256';
 interface _extras {
     [key: string]: any
 }
@@ -31,10 +30,10 @@ export default class Article {
     /**
      * Parse the article class to a json object
      */
-    async toJSON(): Promise<object> {
+    toJSON(): object {
         this.getHash()
         let {id, title, source, content, hash} = this;
-        return {id, title, source, content, hash}
+        return {id, title, source: source, content, hash}
     }
 
     /**
@@ -47,9 +46,9 @@ export default class Article {
     /**
      * Generate and return the hash of the article
      */
-    async getHash() {
+    getHash() {
         if(!this.hash)
-            this.hash = await hash(`${this.title} ${this.content} ${this.extras.map((thing: any) => thing.toString())}`)
+            this.hash = (hash(`${this.title} ${this.content}`)).toString()
 
         return this.hash
     }

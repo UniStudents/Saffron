@@ -3,9 +3,9 @@
   "name": "html-cs.unipi.gr",
   "type": "html",
   "container": ".catItemView",
-  "endPoint": "unipi.gr",
-  "retryInterval": 1500,
-  "scrapeInterval": 3000,
+  "retryInterval": 30000,
+  "scrapeInterval": 60000,
+
   "scrape": {
     ".catItemDateCreated" : {
       "name": "pubDate",

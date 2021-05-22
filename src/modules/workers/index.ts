@@ -88,18 +88,22 @@ export default class Worker {
                     else parseFailed = true
                 } break
             }
-            //console.log(articles)
+           // console.log(articles)
 
             if(this.isForcedStopped) return
 
             if (!parseFailed) {
                 // TODO - Check articles with database and import what you have to import
+                articles.forEach((article: Article)=>{
+                    article.source = {id: job.source.id}
+                })
+                await Database.getInstance()?.mergeArticles(articles)
 
                 await Grid.getInstance().finishJob(job)
             }
             else await Grid.getInstance().failedJob(job)
 
-            logger(LoggerTypes.DEBUG, `Job finished ${parseFailed ? ' with a failure: ' : ' successfully: '} (${job.id}).`)
+            logger(LoggerTypes.DEBUG, `Worker: Job finished ${parseFailed ? ' with a failure: ' : ' successfully: '} (${job.id}).`)
         })
     }
 

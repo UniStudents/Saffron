@@ -110,6 +110,21 @@ export default class Grid {
     }
 
     /**
+     * Remove a worker from the grid
+     * @param workerId
+     */
+    async fireWorker(workerId: string): Promise<void> {
+        // Alpha version
+        let index = workers.findIndex((obj: Worker) => obj?.id === workerId)
+        if(index !== -1)
+            workers.splice(index, 1)
+
+        // Beta version
+        // From socket.io-client it will disconnect to main saffron
+        // If worker is running with main saffron then do not disconnect through socket.io
+    }
+
+    /**
      * <h1>Scheduler</h1>
      * Push a new job to the grid
      * @param job The job object
