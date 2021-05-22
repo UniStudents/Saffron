@@ -34,7 +34,7 @@ export default class Source {
         ret.willParse = true // Get from db
 
         ret.instructions = new Instructions()
-        ret.instructions.source = { id: `src_${hashCode(source.name)}` }
+        ret.instructions.source = { id: ret.getId() }
         ret.instructions.url = source.url
 
         let parserType = await ParserType.getFromString(source.type)
