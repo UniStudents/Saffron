@@ -11,6 +11,7 @@ export default class Article {
     declare content: string
     declare link: string
     declare pubDate: Date
+    declare timestamp: Date
     private declare hash: string
     declare extras: _extras
     declare source: {
@@ -32,8 +33,8 @@ export default class Article {
      */
     toJSON(): object {
         this.getHash()
-        let {id, title, source, content, hash} = this;
-        return {id, title, source: source, content, hash}
+        let {id, timestamp, title, source, pubDate, content, hash, extras} = this;
+        return {id, timestamp, title, source: source, pubDate, content, extras, hash}
     }
 
     /**
@@ -48,7 +49,7 @@ export default class Article {
      */
     getHash() {
         if(!this.hash)
-            this.hash = (hash(`${this.title} ${this.content}`)).toString()
+            this.hash = (hash(`${this.title} ${this.content} ${this.extras.toString()} ${this.getSource()?.getId()}`)).toString()
 
         return this.hash
     }

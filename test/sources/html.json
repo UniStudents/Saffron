@@ -5,7 +5,6 @@
   "container": ".catItemView",
   "retryInterval": 30000,
   "scrapeInterval": 60000,
-
   "scrape": {
     ".catItemDateCreated" : {
       "name": "pubDate",
@@ -19,7 +18,7 @@
       "multiple": false
     },
     ".catItemBody" : {
-      "name": "body",
+      "name": "content",
       "find": null,
       "multiple": false
     },

@@ -1,5 +1,6 @@
 import Article from "../../components/articles"
 import Worker from "../workers/index";
+import Events from "../events";
 
 export default abstract class Database {
 
@@ -62,6 +63,7 @@ export default abstract class Database {
         articles = articles.filter((article: Article) => !hashes.includes(article.getHash()))
 
         await articles.forEach((article: Article) => this.pushArticle(article))
+        if(articles.length > 0) Events.getAntennae().emit("new-articles-pushed", articles)
 
         return articles
     }

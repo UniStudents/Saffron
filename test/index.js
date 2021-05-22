@@ -29,4 +29,6 @@ const saffron = require('../dist/index');
     // saffron.on("start", () => console.log('saffron started'))
 
     await saffron.start()
+
+    // saffron.on("new-articles-pushed", articles=> console.log("new-articles",articles))
 })()

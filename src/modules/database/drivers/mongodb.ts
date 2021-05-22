@@ -13,12 +13,11 @@ export default class MongoDB extends Database {
     async connect(): Promise<boolean> {
         try {
             this.client = await MongoClient.connect(Config.load()!!.database.config.url, {
-                "useUnifiedTopology" : true,
-                "useNewUrlParser" : true
+                "useUnifiedTopology": true,
+                "useNewUrlParser": true
             })
             return true
-        }
-        catch (e){
+        } catch (e) {
             Logger(LoggerTypes.INSTALL_ERROR, `Database error: ${e.message}.`)
         }
 
@@ -31,25 +30,38 @@ export default class MongoDB extends Database {
 
     async deleteArticle(id: string): Promise<void> {
         try {
-            await this.client.db(Config.load()!!.database.config.name).collection('articles').deleteOne({ id })
-        }
-        catch (e) {
+            await this.client.db(Config.load()!!.database.config.name).collection('articles').deleteOne({id})
+        } catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
     }
 
     async getArticle(id: string): Promise<Article | undefined> {
         try {
-            return await this.client.db(Config.load()!!.database.config.name).collection('articles').findOne({ id })
-        }
-        catch (e) {
+            return await this.client.db(Config.load()!!.database.config.name).collection('articles').findOne({id})
+        } catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
         return undefined
     }
 
     async getArticles(options: object | null = null): Promise<Array<Article>> {
-        // TODO - getArticles MongoDB
+        try {
+            let _articles = await this.client.db(Config.load()!!.database.config.name).collection('articles').find().toArray()
+            let articles: Article[]
+            return _articles.map((_article: Article)=>{
+                let article = new Article()
+
+                for(let key in _article)
+                    { // @ts-ignore
+                        article[key] = _article[key]
+                    }
+                return article
+
+            })
+        } catch (e) {
+            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
+        }
         return []
     }
 

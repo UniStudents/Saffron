@@ -12,6 +12,9 @@ import Article from "./components/articles";
 import Utils from "./components/utils";
 import Exceptions from "./components/exceptions";
 
+import Job from "./components/job"
+import Source from "./components/source"
+
 declare function require(name:string): any;
 
 // This is a centralized array that collects all the logs and errors, so that the report handler can easily collect and report them.
@@ -85,6 +88,17 @@ export = {
      * @param data The callback that will send the data
      */
     on: async(event: string, data: any) => antennae.on(event, data),
+
+    /**
+     * Get a source file and return an array of the parsed articles
+     * @param fileContents
+     */
+    async parse(fileContents: any): Promise<Array<Article> | undefined> {
+        let source = await Source.parseFileObject(fileContents)
+        if(!source) return
+
+        return Worker.parse(source.instructions, new Job())
+    },
 
     types: { Article, Utils, Exceptions }
 }

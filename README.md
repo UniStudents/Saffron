@@ -2,7 +2,7 @@
 **S**imple **A**bstract **F**ramework **F**or the **R**etrieval **O**f **N**ews
 
 \
-Stage: Development (NOT FOR PRODUCTION USE) 
+Stage: Alpha (API subject to change)
 
 In colaboration with: 
 \
