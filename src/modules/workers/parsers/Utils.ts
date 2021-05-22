@@ -1,3 +1,4 @@
+const striptags = require('striptags');
 export default class Utils{
 
     private static htmlEntries =  {
@@ -274,6 +275,7 @@ export default class Utils{
             .replace(/\t/g,'')
             .replace(/(<([^>]+)>)/gi, '')
             .trim()
+        text = striptags(text)
         return text
     }
 }
