@@ -88,6 +88,7 @@ export default class Worker {
                     else parseFailed = true
                 } break
             }
+           // console.log(articles)
 
             if(this.isForcedStopped) return
 

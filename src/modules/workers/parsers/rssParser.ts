@@ -104,9 +104,10 @@ export default class rssParser{
      * @param renameFields
      * @return Array<Article> The articles.
      */
-    public static async parse(url: string, amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()) : Promise<Array<Article>> {
+    public static async parse(url: string, amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()) : Promise<Promise<Array<Article>> | null> {
         let parsedArticles: Array<Article> = [];
         let articles = await this.rssParser(url,amount,renameFields)
+        if(!articles) return null
         //@ts-ignore
         Array.from(new Map(Object.entries(articles)).values()).forEach((article: any) =>{
             let tmpArticle = new Article()
