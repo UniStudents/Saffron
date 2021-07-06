@@ -4,7 +4,6 @@
   "description": "A fairly intuitive & powerful framework that enables you to collect & save articles and news from all over the web. ",
   "main": "src/index.ts",
   "dependencies": {
-    "@poiw/saffron-utils": "^1.0.0",
     "@types/crypto-js": "^4.0.1",
     "argon2": "^0.27.2",
     "chalk": "^4.1.1",
@@ -17,11 +16,15 @@
     "nanoid": "^3.1.22",
     "rss-parser": "^3.12.0",
     "socket.io": "^4.1.2",
+    "socket.io-client": "4.1.2",
     "striptags": "^3.1.1"
   },
   "scripts": {
-    "start": "npx ts-node src/index.ts",
-    "dev": "cross-env NODE_ENV=development tsc-watch --onSuccess \"node --stack-trace-limit=100 ./test/index.js\""
+    "test-start": "tsc && node ./test/index.js",
+    "dev": "cross-env NODE_ENV=development tsc-watch --onSuccess \"node --stack-trace-limit=100 ./test/index.js\"",
+    "docker-compose" : "cd ./test/docker && sudo docker-compose up --remove-orphans ",
+    "docker-compose-build" : "cd ./test/docker && sudo docker-compose up --build --remove-orphans "
+
   },
   "repository": {
     "type": "git",

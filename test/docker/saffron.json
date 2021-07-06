@@ -1,0 +1,8 @@
+{
+  "database":{
+    "driver": "mongodb",
+    "config": {
+      "url": "mongodb://mongo:27017/saffron"
+    }
+  }
+}

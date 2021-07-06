@@ -1,0 +1,22 @@
+version: "3"
+services:
+  main:
+    build:
+      context: ../../
+      dockerfile: ./test/docker/Dockerfile
+    environment:
+      SAFFRON_MODE: main
+    depends_on:
+      - mongo
+  worker:
+    build:
+      context: ../../
+      dockerfile: ./test/docker/Dockerfile
+    environment:
+      SAFFRON_MODE: worker
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"

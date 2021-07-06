@@ -4,7 +4,6 @@ import {LoggerTypes} from "../../../middleware/LoggerTypes"
 import Article from "../../../components/articles";
 import Database from "../database";
 import Config from "../../../components/config"
-import Worker from "../../workers/index";
 
 export default class MongoDB extends Database {
 
@@ -16,6 +15,9 @@ export default class MongoDB extends Database {
                 "useUnifiedTopology": true,
                 "useNewUrlParser": true
             })
+            Logger(LoggerTypes.DEBUG, "Testing database connection")
+            await this.client.db("local").listCollections()
+
             return true
         } catch (e) {
             Logger(LoggerTypes.INSTALL_ERROR, `Database error: ${e.message}.`)

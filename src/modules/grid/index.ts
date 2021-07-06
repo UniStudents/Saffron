@@ -4,14 +4,12 @@ import Events from "../events";
 import {JobStatus} from "../../components/JobStatus";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
+import io from "socket.io-client"
 import Worker from "../workers";
+import Config from "../../components/config";
 
 // For alpha version
-let jobsStorage: Job[] = [],
-    workers: Worker[] = []
-
-// For beta version
-let workerClients: { id: string; socket: Socket }[] = [];
+let jobsStorage: Job[] = []
 
 export default class Grid {
 
@@ -27,45 +25,71 @@ export default class Grid {
         return this.instance
     }
 
+    private declare readonly isMain: boolean
+
     private declare readonly httpServer
-    private declare io: Server
+    private declare io_server: Server
+    private declare io_client: any
+
+    private declare workersIds: string[];
+    private declare workerClients: { id: string; socket: Socket }[]
 
     private constructor() {
-        this.httpServer = createServer()
-        this.io = new Server(this.httpServer, { });
+        this.isMain = Config.load()!!.mode === 'main'
+        this.workerClients = []
+        this.workersIds = []
 
-        this.io.on("connection", (socket: Socket) => {
-            const workerId = socket.request.headers['id']
-
-            if(typeof workerId != 'string')
-                return socket.disconnect()
-
-            if(workerId.length === 0)
-                return socket.disconnect()
-
-            workerClients.push({id: workerId, socket})
-
-            socket.on('disconnect', () => {
-                let index = workerClients.findIndex((obj: any) => obj?.id === workerId)
-                if(index != -1)
-                    delete workerClients[index]
-            })
-
-            socket.on('finished-job', (data: any) => {
-
-            })
-
-            socket.on('failed-job', (data: any) => {
-
-            })
-        })
+        // // If main saffron
+        // if(this.isMain){
+        //     this.httpServer = createServer()
+        //     this.io_server = new Server(this.httpServer, { });
+        //
+        //     this.io_server.on("connection", (socket: Socket) => {
+        //         const workerId = socket.request.headers['id']
+        //
+        //         if(typeof workerId !== 'string' || workerId.length === 0 )
+        //             return socket.disconnect()
+        //
+        //         this.workerClients.push({id: workerId, socket})
+        //         this.workersIds.push(workerId)
+        //
+        //         socket.on('disconnect', () => {
+        //             let i = this.workerClients.findIndex((obj: any) => obj.id === workerId)
+        //             if(i != -1) this.workerClients.splice(i, 1)
+        //
+        //             let j = this.workersIds.findIndex((obj: string) => obj === workerId)
+        //             if(j != -1) this.workersIds.splice(j, 1)
+        //         })
+        //
+        //         socket.on('finished-job', (data: any) => {
+        //             // TODO -  Worker finished job
+        //         })
+        //
+        //         socket.on('failed-job', (data: any) => {
+        //             // TODO - Worker failed job
+        //         })
+        //     })
+        // }
     }
 
     /**
      * Connects to the grid
      */
     async connect(): Promise<void> {
-        // this.httpServer.listen(8080);
+        // if(this.isMain) {
+        //     this.httpServer!!.listen(8080);
+        // }
+        // else if(Config.load()!!.workers.nodes > 0){
+        //     // TODO - address
+        //     this.io_client = io("address", {
+        //         reconnection: false,
+        //         extraHeaders: { },
+        //     })
+        //
+        //     this.io_client.on('new-job', (data: any) => {
+        //         // TODO - New job from main saffron
+        //     })
+        // }
     }
 
     /**
@@ -73,11 +97,7 @@ export default class Grid {
      * Return all workers
      */
     async getWorkers(): Promise<Worker[]> {
-        // Alpha version
-        return [...workers];
-
-        // Beta version
-        // Return a Array<Worker> instance with worker ids
+        return [...this.workersIds.map(id => new Worker(id))];
     }
 
     /**
@@ -86,8 +106,11 @@ export default class Grid {
      * @param worker
      */
     async announceWorker(worker: Worker): Promise<void> {
-        // Alpha version
-        workers.push(worker)
+        if(this.isMain)
+            this.workersIds.push(worker.id)
+        else {
+            // Connect with socket.io-client
+        }
 
         // Beta version
         // From socket.io-client it will connect to main saffron
@@ -99,10 +122,10 @@ export default class Grid {
      * @param worker
      */
     async destroyWorker(worker: Worker): Promise<void> {
-        // Alpha version
-        let index = workers.findIndex((obj: Worker) => obj?.id === worker.id)
-        if(index !== -1)
-            workers.splice(index, 1)
+        // // Alpha version
+        // let index = workers.findIndex((obj: Worker) => obj?.id === worker.id)
+        // if(index !== -1)
+        //     workers.splice(index, 1)
 
         // Beta version
         // From socket.io-client it will disconnect to main saffron
@@ -114,10 +137,10 @@ export default class Grid {
      * @param workerId
      */
     async fireWorker(workerId: string): Promise<void> {
-        // Alpha version
-        let index = workers.findIndex((obj: Worker) => obj?.id === workerId)
-        if(index !== -1)
-            workers.splice(index, 1)
+        // // Alpha version
+        // let index = workers.findIndex((obj: Worker) => obj?.id === workerId)
+        // if(index !== -1)
+        //     workers.splice(index, 1)
 
         // Beta version
         // From socket.io-client it will disconnect to main saffron

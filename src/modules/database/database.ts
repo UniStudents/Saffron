@@ -1,5 +1,4 @@
 import Article from "../../components/articles"
-import Worker from "../workers/index";
 import Events from "../events";
 
 export default abstract class Database {

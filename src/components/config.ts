@@ -83,10 +83,15 @@ export default class Config{
 
         }
 
+        if(process.env.SAFFRON_MODE && ["main", "worker"].includes(process.env.SAFFRON_MODE)){
+            this._config.mode = process.env.SAFFRON_MODE
+        }
+
         delete this._config.development
         delete this._config.production
         delete this._config.testing
 
         Config.isHydrated = true
+        // console.log(this._config)
     }
 }

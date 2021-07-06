@@ -1,5 +1,6 @@
 // Module imports
 import Logger from "./middleware/logger"
+import logger from "./middleware/logger"
 import {LoggerTypes} from "./middleware/LoggerTypes"
 import Database from "./modules/database/index"
 import Config from "./components/config"
@@ -59,11 +60,15 @@ export = {
         // Initialize scheduler
         if(Config.load().mode === 'main')
             scheduler = new Scheduler()
+        else
+            logger(LoggerTypes.INFO, "This instance has been initialized as a WORKER node.")
 
         // Event for workers
         antennae.on("start", () => {
-            for(let worker of workers)
+            for(let worker of workers) {
+                // TODO - Start worker on new thread
                 worker.start()
+            }
         })
 
         antennae.on("stop", (force: boolean) => {
