@@ -100,9 +100,9 @@ export default class Source {
      */
     static getSourceFrom(from: Job | Article | string): Source {
         if(from instanceof  Job)
-            return this._sources.find((source: Source) => { return source.getId() === from.source.id })!!
+            return this._sources.find((source: Source) => { return source.getId() === from.source?.id })!!
         else if(from instanceof  Article)
-            return this._sources.find((source: Source) => { return source.getId() === from.source.id })!!
+            return this._sources.find((source: Source) => { return source.getId() === from.source?.id })!!
 
         return this._sources.find((source: Source) => source.getId() === from)!!
     }
@@ -123,7 +123,6 @@ export default class Source {
      */
     lock(){
         this.willParse = false
-        // TODO - Update grid/database?
     }
 
     /**

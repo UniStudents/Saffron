@@ -225,7 +225,6 @@ export default class HtmlParser {
 
                     if (tmpArticle.title === '') return;
 
-                    console.log(tmpArticle)
                     parsedArticles.push(tmpArticle);
                 });
             })

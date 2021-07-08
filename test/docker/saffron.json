@@ -2,7 +2,8 @@
   "database":{
     "driver": "mongodb",
     "config": {
-      "url": "mongodb://mongo:27017/saffron"
+      "name": "saffron",
+      "url": "mongodb://user:pass@host.docker.internal:27017/saffron"
     }
   }
 }

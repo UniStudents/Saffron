@@ -49,7 +49,7 @@ export default class Article {
      */
     getHash() {
         if(!this.hash)
-            this.hash = (hash(`${this.title} ${this.content} ${this.extras.toString()} ${this.getSource()?.getId()}`)).toString()
+            this.hash = (hash(`${this.title} ${this.content} ${this.extras?.toString()} ${this.getSource()?.getId()}`)).toString()
 
         return this.hash
     }

@@ -16,7 +16,6 @@ export default class MongoDB extends Database {
                 "useNewUrlParser": true
             })
             Logger(LoggerTypes.DEBUG, "Testing database connection")
-            await this.client.db("local").listCollections()
 
             return true
         } catch (e) {
