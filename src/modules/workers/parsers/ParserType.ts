@@ -5,6 +5,7 @@ export enum ParserType {
     RSS,
     HTML,
     CUSTOM,
+    WORDPRESS,
     UNKNOWN
 }
 
@@ -18,6 +19,7 @@ export namespace ParserType {
             case "html": return ParserType.HTML
             case "rss": return ParserType.RSS
             case "custom": return ParserType.CUSTOM
+            case "wordpress": return ParserType.WORDPRESS
         }
 
         return ParserType.UNKNOWN

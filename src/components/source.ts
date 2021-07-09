@@ -1,11 +1,11 @@
 import Job from "../components/job";
 import Instructions from "./instructions";
-import hashCode from "../middleware/hashCode";
 import {ParserType} from "../modules/workers/parsers/ParserType";
 import logger from "../middleware/logger";
 import {LoggerTypes} from "../middleware/LoggerTypes";
 import Article from "./articles";
 import hash from 'crypto-js/sha256';
+import {componentTypes} from "./componentTypes";
 
 
 const fs = require('fs');
@@ -36,11 +36,11 @@ export default class Source {
         ret.willParse = true // Get from db
 
         ret.instructions = new Instructions()
-        ret.instructions.source = { id: ret.getId() }
+        ret.instructions.source = {id: ret.getId()}
         ret.instructions.url = source.url
 
         let parserType = await ParserType.getFromString(source.type)
-        if(parserType === ParserType.UNKNOWN) {
+        if (parserType === ParserType.UNKNOWN) {
             logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`)
             return
         }
@@ -48,7 +48,7 @@ export default class Source {
         ret.instructions.parserType = parserType
         switch (parserType) {
             case ParserType.HTML: {
-                if (!source.url || !source.name || Object.entries(source.scrape).some((key:any) => key[1].name === undefined)) {
+                if (!source.url || !source.name || Object.entries(source.scrape).some((key: any) => key[1].name === undefined)) {
                     logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`);
                     return
                 }
@@ -56,20 +56,22 @@ export default class Source {
                 ret.instructions.elementSelector = source.container;
                 ret.instructions.scrapeOptions = source.scrape;
                 ret.instructions.endPoint = source.endPoint;
-            } break
+            }
+                break
             case ParserType.RSS: {
-                if(!source.name || !source.url) {
+                if (!source.name || !source.url) {
                     logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`)
                     return
                 }
-                if(source.renameFields) {
+                if (source.renameFields) {
                     let map = new Map()
-                    Object.entries(source.renameFields).forEach(([key,value])=>{
-                        map.set(key,value)
+                    Object.entries(source.renameFields).forEach(([key, value]) => {
+                        map.set(key, value)
                     })
-                    ret.instructions.scrapeOptions = { renameFields: map }
+                    ret.instructions.scrapeOptions = {renameFields: map}
                 }
-            } break
+            }
+                break
             case ParserType.CUSTOM: {
                 let scrapeStr = source.scrape.toString()
 
@@ -79,12 +81,17 @@ export default class Source {
                     , "(Article, utils, Exceptions)")
 
                 ret.instructions.scrapeFunction = strFunc
-            } break
-        }
+            }
+                break
+            case ParserType.WORDPRESS: {
+                ret.instructions.endPoint = `${source.url} + ${source.url.endsWith('/') ? '' : '/'}`
+                break
+            }
 
-        if(addToList)
-            this._sources.push(ret)
-        return ret
+            if (addToList)
+                this._sources.push(ret)
+            return ret
+        }
     }
 
     /**
@@ -99,10 +106,14 @@ export default class Source {
      * @param from
      */
     static getSourceFrom(from: Job | Article | string): Source {
-        if(from instanceof  Job)
-            return this._sources.find((source: Source) => { return source.getId() === from.source?.id })!!
-        else if(from instanceof  Article)
-            return this._sources.find((source: Source) => { return source.getId() === from.source?.id })!!
+        if (from instanceof Job)
+            return this._sources.find((source: Source) => {
+                return source.getId() === from.source?.id
+            })!!
+        else if (from instanceof Article)
+            return this._sources.find((source: Source) => {
+                return source.getId() === from.source?.id
+            })!!
 
         return this._sources.find((source: Source) => source.getId() === from)!!
     }
@@ -110,18 +121,20 @@ export default class Source {
     private static _sources: Source[] = []
 
     private declare id: string
+    declare _type: componentTypes.SOURCE
     declare name: string
     declare scrapeInterval: number
     declare retryInterval: number
     declare willParse: boolean
     declare instructions: Instructions
 
-    constructor() { }
+    constructor() {
+    }
 
     /**
      * Locks the source file so it will not issue a new job until it is unlocked
      */
-    lock(){
+    lock() {
         this.willParse = false
     }
 
@@ -129,8 +142,8 @@ export default class Source {
      * Generate and return the id of the source
      */
     getId(): string {
-        if(!this.id)
-            this.id = 'src_' + hash(this.name).toString().substr(0,47)
+        if (!this.id)
+            this.id = 'src_' + hash(this.name).toString().substr(0, 47)
 
         return this.id
     }
