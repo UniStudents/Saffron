@@ -63,7 +63,7 @@ export default class Worker {
                 // TODO - Check articles with database and import what you have to import
                 articles.forEach((article: Article)=>{
                     article.source = {id: job.source.id}
-                    article.timestamp = new Date()
+                    article.timestamp = Date.now()
                 })
 
                 await Database.getInstance()?.mergeArticles(articles)
