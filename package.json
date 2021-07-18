@@ -22,9 +22,8 @@
   "scripts": {
     "test-start": "tsc && node ./test/index.js",
     "dev": "cross-env NODE_ENV=development tsc-watch --onSuccess \"node --stack-trace-limit=100 ./test/index.js\"",
-    "docker-compose" : "cd ./test/docker && sudo docker-compose up --remove-orphans ",
-    "docker-compose-build" : "cd ./test/docker && sudo docker-compose up --build --remove-orphans "
-
+    "docker-compose": "cd ./test/docker && sudo docker-compose up --remove-orphans ",
+    "docker-compose-build": "cd ./test/docker && sudo docker-compose up --build --remove-orphans "
   },
   "repository": {
     "type": "git",

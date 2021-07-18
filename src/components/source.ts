@@ -5,7 +5,6 @@ import logger from "../middleware/logger";
 import {LoggerTypes} from "../middleware/LoggerTypes";
 import Article from "./articles";
 import hash from 'crypto-js/sha256';
-import {componentTypes} from "./componentTypes";
 
 
 const fs = require('fs');
@@ -121,7 +120,6 @@ export default class Source {
     private static _sources: Source[] = []
 
     private declare id: string
-    declare _type: componentTypes.SOURCE
     declare name: string
     declare scrapeInterval: number
     declare retryInterval: number
