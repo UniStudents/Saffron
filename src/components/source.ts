@@ -86,11 +86,11 @@ export default class Source {
                 ret.instructions.endPoint = `${source.url} + ${source.url.endsWith('/') ? '' : '/'}`
                 break
             }
-
-            if (addToList)
-                this._sources.push(ret)
-            return ret
         }
+        
+        if (addToList)
+            this._sources.push(ret)
+        return ret
     }
 
     /**
