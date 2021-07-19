@@ -6,8 +6,6 @@ import https from "https";
 import Logger from "../../../middleware/logger";
 import {LoggerTypes} from "../../../middleware/LoggerTypes";
 import Utils from "./Utils";
-import randomId from "../../../middleware/randomId";
-import Source from "../../../components/source";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false});
 
@@ -18,12 +16,12 @@ interface ArticleImage {
 
 export default class HtmlParser {
 
-    private static async request(instructions: Instructions): Promise<AxiosResponse> {
+    private static async request(url: string): Promise<AxiosResponse> {
         return new Promise((resolve, reject) => {
 
             let options: object = {
                 method: 'get',
-                url: instructions.url,
+                url,
                 httpsAgent: httpsAgent
             }
 
@@ -159,21 +157,10 @@ export default class HtmlParser {
         return results;
     }
 
-    /**
-     * This method analyzes the content of an html
-     * page and returns a map containing the requested
-     * announcements.
-     *
-     * @param instructions How does the parser gonna parse the html content.
-     * @param amount How much article to withdraw.
-     * @return Array<Article> The articles.
-     */
-    static async parse(instructions: Instructions,
-                       amount: Number = 10): Promise<Array<Article>> {
-
+    static async parse2(alias: string|undefined, url: string, instructions: Instructions, amount: Number = 10): Promise<Array<Article>> {
         let parsedArticles: Array<Article> = [];
 
-        await HtmlParser.request(instructions)
+        await HtmlParser.request(url)
             .then((response: AxiosResponse) => {
                 const cheerioLoad = cheerio.load(response.data);
 
@@ -215,6 +202,9 @@ export default class HtmlParser {
                     tmpArticle.content = (articleData.content)? articleData.content : '';
                     tmpArticle.extras = {};
 
+                    if(alias)
+                        tmpArticle.extras.alias = alias
+
                     // for each extra data. Data that are not described in the baseData variable.
                     Object.entries(articleData).forEach( (extra) => {
                         if (basicData.indexOf(extra[0]) !== -1) return;
@@ -228,6 +218,29 @@ export default class HtmlParser {
                     parsedArticles.push(tmpArticle);
                 });
             })
+        return parsedArticles;
+    }
+
+    /**
+     * This method analyzes the content of an html
+     * page and returns a map containing the requested
+     * announcements.
+     *
+     * @param instructions How does the parser gonna parse the html content.
+     * @param amount How much article to withdraw.
+     * @return Array<Article> The articles.
+     */
+    static async parse(instructions: Instructions,
+                       amount: Number = 10): Promise<Array<Article>> {
+
+        let parsedArticles: Array<Article> = [];
+
+        if(typeof instructions.url == 'string')
+            parsedArticles.push(...(await this.parse2(undefined, instructions.url, instructions, amount)))
+        else {
+            for(const pair of instructions.url)
+                parsedArticles.push(...(await this.parse2(pair[0], pair[1], instructions, amount)))
+        }
 
         return parsedArticles;
     }

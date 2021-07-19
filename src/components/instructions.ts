@@ -11,7 +11,7 @@ export default class Instructions {
     declare id: string;
 
     declare source : { id: string; };
-    declare url: string;
+    declare url: string | (string[])[];
     declare parserType: ParserType;
     declare endPoint: string;
     declare scrapeOptions: Object;

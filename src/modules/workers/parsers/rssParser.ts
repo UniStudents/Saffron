@@ -96,18 +96,9 @@ export default class rssParser{
         });
     }
 
-
-    /**
-     * Returns an array of articles based on rssParser function results
-     * @param url The url that will be used for parsing
-     * @param amount The amount of articles that wil be returned
-     * @param renameFields
-     * @return Array<Article> The articles.
-     */
-    public static async parse(url: string, amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()) : Promise<Array<Article> | null> {
+    private static async mapArticles(articles: any, alias: string|undefined, renameFields: Map<string, string>): Promise<Array<Article>> {
         let parsedArticles: Array<Article> = [];
-        let articles = await this.rssParser(url,amount,renameFields)
-        if(!articles) return null
+
         //@ts-ignore
         Array.from(new Map(Object.entries(articles)).values()).forEach((article: any) =>{
             let tmpArticle = new Article()
@@ -125,16 +116,48 @@ export default class rssParser{
 
             //Add extras
             tmpArticle.extras = {}
+
+            if(alias)
+                tmpArticle.extras.alias = alias
+
             //Find remaining values
             let remain = this.unAssign(article,this.requested_fields)
             new Map(Object.entries(remain)).forEach((value, key) => {
                 tmpArticle.extras[key] = value;
             })
+
             //Return value
             parsedArticles.push(tmpArticle)
-
         })
 
+        return parsedArticles
+    }
+
+
+    /**
+     * Returns an array of articles based on rssParser function results
+     * @param url The url that will be used for parsing
+     * @param amount The amount of articles that wil be returned
+     * @param renameFields
+     * @return Array<Article> The articles.
+     */
+    public static async parse(url: string | (string[])[], amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()) : Promise<Array<Article> | null> {
+        let parsedArticles: Array<Article> = [];
+
+        if(typeof url == 'string') {
+            let articles = await this.rssParser(url, amount, renameFields)
+            if (!articles) return null
+
+            parsedArticles.push(...(await this.mapArticles(articles, undefined, renameFields)))
+        }
+        else {
+            for(const pair of url) {
+                let articles = await this.rssParser(pair[1], amount, renameFields)
+                if (!articles) continue
+
+                parsedArticles.push(...(await this.mapArticles(articles, pair[0], renameFields)))
+            }
+        }
 
         return parsedArticles
     }

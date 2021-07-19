@@ -1,4 +1,5 @@
 {
   "url": "https://www.ds.unipi.gr/",
-  "name": "wordpress-cs.unipi.gr"
+  "name": "wordpress-cs.unipi.gr",
+  "type": "wordpress"
 }

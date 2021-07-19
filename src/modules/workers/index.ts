@@ -107,13 +107,13 @@ export default class Worker {
             } break
             case ParserType.CUSTOM: {
                 let result = await DynamicParser.parse(job, instructions, 10)
-                if(result[0].id !== "error")
+                if(result)
                     articles.push.apply(articles, result)
                 else parseFailed = true
             } break
             case ParserType.WORDPRESS: {
                 let result = await WordpressParser.parse(job, instructions, 10)
-                if(result[0].id !== "error")
+                if(result)
                     articles.push.apply(articles, result)
                 else parseFailed = true
             } break

@@ -18,16 +18,9 @@ export default class Source {
     /**
      * Parse and store a source file contents to an array in memory
      * @param source
+     * @param addToList
      */
     static async parseFileObject(source: any, addToList: boolean = true): Promise<Source | undefined> {
-        // Check if source is valid and return an object for that source
-        if (source.url.length == 0) {
-            logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Please specify a url. File: ${source.filename}`)
-            return
-        }
-        // if(new RegExp('^(http|https)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,6}(/\S*)?$').test(url)) throw new Error('You specified an invalid url')
-        //if (['api', 'portal'].includes(source.type) == false) throw new Error('A source\'s "api" value must be either "api" or "portal"')
-
         let ret = new Source()
         ret.name = source.name
         ret.scrapeInterval = source.scrapeInterval
@@ -36,7 +29,26 @@ export default class Source {
 
         ret.instructions = new Instructions()
         ret.instructions.source = {id: ret.getId()}
-        ret.instructions.url = source.url
+
+        if(typeof source.url === 'string') {
+            ret.instructions.url = source.url
+        }
+        else if(Array.isArray(source.url)) {
+            ret.instructions.url = []
+            for(const pair of source.url){
+                if(typeof pair[0] !== 'string' || pair[0].length == 0) {
+                    logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid alias: ${pair[0]}. File: ${source.filename}`)
+                    return
+                }
+
+                ret.instructions.url.push([pair[0], pair[1]])
+            }
+        }
+        else {
+            logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid url. File: ${source.filename}`)
+            return
+        }
+
 
         let parserType = await ParserType.getFromString(source.type)
         if (parserType === ParserType.UNKNOWN) {
@@ -69,27 +81,29 @@ export default class Source {
                     })
                     ret.instructions.scrapeOptions = {renameFields: map}
                 }
-            }
-                break
+            } break
             case ParserType.CUSTOM: {
                 let scrapeStr = source.scrape.toString()
 
-                let strFunc = splice(scrapeStr
+                ret.instructions.endPoint = source.url
+                ret.instructions.scrapeFunction = splice(scrapeStr
                     , scrapeStr.indexOf('(')
                     , scrapeStr.indexOf(')') + 1
                     , "(Article, utils, Exceptions)")
-
-                ret.instructions.scrapeFunction = strFunc
-            }
-                break
+            } break
             case ParserType.WORDPRESS: {
-                ret.instructions.endPoint = `${source.url} + ${source.url.endsWith('/') ? '' : '/'}`
-                break
-            }
+                if(typeof source.url !== 'string' ) {
+                    logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid url: ${source.url}. File: ${source.filename}`)
+                    return
+                }
+
+                ret.instructions.url = source.url
+            } break
         }
-        
+
         if (addToList)
             this._sources.push(ret)
+
         return ret
     }
 
@@ -126,9 +140,6 @@ export default class Source {
     declare willParse: boolean
     declare instructions: Instructions
 
-    constructor() {
-    }
-
     /**
      * Locks the source file so it will not issue a new job until it is unlocked
      */
@@ -142,7 +153,6 @@ export default class Source {
     getId(): string {
         if (!this.id)
             this.id = 'src_' + hash(this.name).toString().substr(0, 47)
-
         return this.id
     }
 }

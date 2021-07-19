@@ -3,7 +3,8 @@ import Article from "../../../components/articles";
 import Job from "../../../components/job";
 import logger from "../../../middleware/logger";
 import {LoggerTypes} from "../../../middleware/LoggerTypes";
-import axios from "axios"
+import axios, {AxiosResponse} from "axios"
+import Logger from "../../../middleware/logger";
 
 
 export default class WordpressParser {
@@ -17,14 +18,23 @@ export default class WordpressParser {
      * @param amount How much article to withdraw.
      * @return Array<Article> The articles.
      */
-    public static async parse(job: Job, instructions: Instructions, amount: Number = 10): Promise<Array<Article>> {
+    public static async parse(job: Job, instructions: Instructions, amount: Number = 10): Promise<Array<Article> | undefined> {
         let parsedArticles: Array<Article> = [];
 
         let categoriesUrl = instructions.url + 'wp-json/wp/v2/categories/'
         let postsUrl = instructions.url + 'wp-json/wp/v2/posts/'
 
-        let categories = (await axios.get(categoriesUrl))?.data
-        let posts = (await axios.get(postsUrl))?.data
+        // TODO - may return error
+        let categories: any, posts: any
+
+        try {
+            categories = (await axios.get(categoriesUrl))?.data
+            posts = (await axios.get(postsUrl))?.data
+        }
+        catch (e) {
+            Logger(LoggerTypes.ERROR,`Request error ${e.message}.`);
+            return
+        }
 
         for (let p of posts) {
             const article = new Article()
@@ -35,9 +45,10 @@ export default class WordpressParser {
             article.timestamp = Date.now()
             article.source = { id: instructions.source.id }
 
-
-            if(!article.extras) article.extras = {}
-            article.extras.categories = []
+            if(!article.extras)
+                article.extras = {
+                    categories: []
+                }
 
             let cats = p.categories
 

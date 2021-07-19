@@ -9,6 +9,6 @@ module.exports = {
     scrapeInterval: 60000,
     scrape: async () => {
 
-        return new Exceptions("Error1", "d")
+        return new Exceptions("Error1", true)
     }
 }
