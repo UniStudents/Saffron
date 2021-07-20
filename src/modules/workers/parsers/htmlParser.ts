@@ -203,7 +203,7 @@ export default class HtmlParser {
                     tmpArticle.extras = {};
 
                     if(alias)
-                        tmpArticle.extras.alias = alias
+                        tmpArticle.extras.categories = [{name: alias, url}]
 
                     // for each extra data. Data that are not described in the baseData variable.
                     Object.entries(articleData).forEach( (extra) => {

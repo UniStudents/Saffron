@@ -96,7 +96,7 @@ export default class rssParser{
         });
     }
 
-    private static async mapArticles(articles: any, alias: string|undefined, renameFields: Map<string, string>): Promise<Array<Article>> {
+    private static async mapArticles(articles: any, alias: string|undefined, url: string, renameFields: Map<string, string>): Promise<Array<Article>> {
         let parsedArticles: Array<Article> = [];
 
         //@ts-ignore
@@ -118,7 +118,7 @@ export default class rssParser{
             tmpArticle.extras = {}
 
             if(alias)
-                tmpArticle.extras.alias = alias
+                tmpArticle.extras.categories = [{name: alias, url}]
 
             //Find remaining values
             let remain = this.unAssign(article,this.requested_fields)
@@ -148,14 +148,14 @@ export default class rssParser{
             let articles = await this.rssParser(url, amount, renameFields)
             if (!articles) return null
 
-            parsedArticles.push(...(await this.mapArticles(articles, undefined, renameFields)))
+            parsedArticles.push(...(await this.mapArticles(articles, undefined, url, renameFields)))
         }
         else {
             for(const pair of url) {
                 let articles = await this.rssParser(pair[1], amount, renameFields)
                 if (!articles) continue
 
-                parsedArticles.push(...(await this.mapArticles(articles, pair[0], renameFields)))
+                parsedArticles.push(...(await this.mapArticles(articles, pair[0], pair[1], renameFields)))
             }
         }
 
