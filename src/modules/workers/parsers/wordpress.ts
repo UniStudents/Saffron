@@ -5,6 +5,7 @@ import logger from "../../../middleware/logger";
 import {LoggerTypes} from "../../../middleware/LoggerTypes";
 import axios, {AxiosResponse} from "axios"
 import Logger from "../../../middleware/logger";
+import Utils from "./Utils";
 
 
 export default class WordpressParser {
@@ -38,10 +39,10 @@ export default class WordpressParser {
 
         for (let p of posts) {
             const article = new Article()
-            article.title = p.title.rendered
-            article.content = p.content.rendered
-            article.link = p.link
-            article.pubDate = new Date(p.date)
+            article.title = Utils.htmlStrip(p.title.rendered).toString()
+            article.content = Utils.htmlStrip(p.content.rendered).toString()
+            article.link = Utils.htmlStrip(p.link).toString()
+            article.pubDate = new Date(Utils.htmlStrip(p.date).toString())
             article.timestamp = Date.now()
             article.source = { id: instructions.source.id }
 
@@ -58,21 +59,22 @@ export default class WordpressParser {
                 let links = []
 
                 for(let href of cat._links.self)
-                    links.push(href.href)
+                    links.push(Utils.htmlStrip(href.href).toString())
                 for(let href of cat._links.collection)
-                    links.push(href.href)
+                    links.push(Utils.htmlStrip(href.href).toString())
                 for(let href of cat._links.about)
-                    links.push(href.href)
+                    links.push(Utils.htmlStrip(href.href).toString())
                 for(let href of cat._links['wp:post_type'])
-                    links.push(href.href)
+                    links.push(Utils.htmlStrip(href.href).toString())
 
                 article.extras.categories.push({
-                    id: cat.id,
-                    description: cat.description,
-                    name: cat.name,
+                    id: Utils.htmlStrip(cat.id).toString(),
+                    description: Utils.htmlStrip(cat.description).toString(),
+                    name: Utils.htmlStrip(cat.name).toString(),
                     links
                 })
             }
+            parsedArticles.push(article)
         }
 
         return parsedArticles

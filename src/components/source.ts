@@ -97,7 +97,7 @@ export default class Source {
                     return
                 }
 
-                ret.instructions.url = source.url
+                ret.instructions.url = `${source.url}${(source.url.endsWith('/')) ? '' : '/' }`
             } break
         }
 
