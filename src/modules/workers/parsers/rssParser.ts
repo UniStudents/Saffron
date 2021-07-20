@@ -41,25 +41,22 @@ export default class rssParser{
      * @param renameFields
      */
     public static async rssParser(url: string, amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()){
-        let dataJson = {}; // there is where the returned data are stored.
+        let dataJson: any = { }; // there is where the returned data are stored.
         let customFieldsKeys = await Array.from(renameFields.keys());
         let parser: Parser = await this.generateParser(renameFields)
         return await parser.parseURL(url).then(feed =>{
             let count = 0
             feed.items.forEach(item => {
-                // @ts-ignore
                 //Initializing json object
-                dataJson[count] = {}
+                dataJson[count] = { } as any
                 //Skipping all the renamed fields
                 this.requested_fields.forEach(field =>{
                     if(customFieldsKeys.some(item => item === field)) return
-                    //@ts-ignore
-                    dataJson[count][field] = item[field] ? Utils.htmlStrip(item[field]) : null;
+                    dataJson[count][field.toString()] = item[field.toString()] ? Utils.htmlStrip(item[field.toString()]) : null;
                 })
                 //Adds all the renamed fields as renamed on the result json
                 customFieldsKeys.forEach(customField => {
-                    //@ts-ignore
-                    dataJson[count][renameFields.get(customField)] = item[customField] ? Utils.htmlStrip(item[customField]) : null
+                    dataJson[count][renameFields.get(customField)!!] = item[customField] ? Utils.htmlStrip(item[customField]) : null
                 })
                 count++
             })
@@ -99,7 +96,6 @@ export default class rssParser{
     private static async mapArticles(articles: any, alias: string|undefined, url: string, renameFields: Map<string, string>): Promise<Array<Article>> {
         let parsedArticles: Array<Article> = [];
 
-        //@ts-ignore
         Array.from(new Map(Object.entries(articles)).values()).forEach((article: any) =>{
             let tmpArticle = new Article()
             tmpArticle.title = article.hasOwnProperty("title") ? article["title"] :

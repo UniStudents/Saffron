@@ -172,16 +172,14 @@ export default class HtmlParser {
                     let articleData: ArticleImage = {};
                     let tmpArticle: Article;
                     let basicData = ["title", "pubDate", "content"]; // Exp. If you remove the title, then the title is going to be on the extra information of each article.
-                    let options = instructions.scrapeOptions;
+                    let options: any = instructions.scrapeOptions;
 
                     // for each option. The options provided by instructions.
                     for (let item in options) {
-                        //@ts-ignore
                         if (options.hasOwnProperty(item) && options[item].find) {
-                            //@ts-ignore
                             if (!options[item].attributes) {
                                 //@ts-ignore
-                                articleData[options[item].name] = HtmlParser.findMultiple(options[item].find, cheerioLoad, element, item, options[item].multiple);
+                                articleData[options[item].name] = HtmlParser.findMultiple(options[item].find, cheerioLoad, element, item, options[item].multiple, false, undefined, undefined);
                             }
                             else {
                                 //@ts-ignore
@@ -189,7 +187,6 @@ export default class HtmlParser {
                             }
                         }
                         else {
-                            //@ts-ignore
                             articleData[options[item].name] = Utils.htmlStrip(cheerioLoad(element).find(item).text());
                         }
 
