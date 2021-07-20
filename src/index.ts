@@ -1,6 +1,5 @@
 // Module imports
 import Logger from "./middleware/logger"
-import logger from "./middleware/logger"
 import {LoggerTypes} from "./middleware/LoggerTypes"
 import Database from "./modules/database/index"
 import Config from "./components/config"
@@ -61,7 +60,7 @@ export = {
         if(Config.load().mode === 'main')
             scheduler = new Scheduler()
         else
-            logger(LoggerTypes.INFO, "This instance has been initialized as a WORKER node.")
+            Logger(LoggerTypes.INFO, "This instance has been initialized as a WORKER node.")
 
         // Event for workers
         antennae.on("start", () => {
