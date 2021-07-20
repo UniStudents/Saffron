@@ -47,36 +47,21 @@ export default class HtmlParser {
                               dataStoredAt: string,
                               attributesArr: Array<string>,
                               endPoint: string): Object | null {
-        let obj: Object = {};
+        let obj: any = {};
 
         if (Utils.htmlStrip(location.find(dataStoredAt).text()) === '') return null;
 
-        if (attributesArr.includes("value")) {
+        let valueIndex: number = (attributesArr.includes("value"))? attributesArr.indexOf("value"): 1;
+        let tagIndex: number = (valueIndex === 1)? 0 : 1;
 
-            if (attributesArr.includes("href")) {
-                obj = {
-                    attribute: endPoint+location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1]),
-                    value: Utils.htmlStrip(location.find(dataStoredAt).text())
-                }
+        if (attributesArr.includes("value")) {
+            obj = {
+                value: Utils.htmlStrip(location.find(dataStoredAt).text())
             }
-            else {
-                obj = {
-                    attribute: location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1]),
-                    value: Utils.htmlStrip(location.find(dataStoredAt).text())
-                }
-            }
+            obj[attributesArr[tagIndex]] = (attributesArr.includes("href"))? endPoint+location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1]) : location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1]);
         }
         else {
-            if (attributesArr.includes("href")) {
-                obj = {
-                    attribute: endPoint+location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1])
-                }
-            }
-            else {
-                obj = {
-                    attribute: location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1])
-                }
-            }
+            obj[attributesArr[tagIndex]] = (attributesArr.includes("href"))? endPoint+location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1]) : location.find(dataStoredAt).attr(attributesArr[attributesArr.length-1]);
         }
 
         return obj;
@@ -179,17 +164,16 @@ export default class HtmlParser {
                         if (options.hasOwnProperty(item) && options[item].find) {
                             if (!options[item].attributes) {
                                 //@ts-ignore
-                                articleData[options[item].name] = HtmlParser.findMultiple(options[item].find, cheerioLoad, element, item, options[item].multiple, false, undefined, undefined);
+                                articleData[item] = HtmlParser.findMultiple(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, false, undefined, undefined);
                             }
                             else {
                                 //@ts-ignore
-                                articleData[options[item].name] = HtmlParser.findMultiple(options[item].find, cheerioLoad, element, item, options[item].multiple, true, options[item].attributes, instructions.endPoint);
+                                articleData[item] = HtmlParser.findMultiple(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, true, options[item].attributes, instructions.endPoint);
                             }
                         }
                         else {
-                            articleData[options[item].name] = Utils.htmlStrip(cheerioLoad(element).find(item).text());
+                            articleData[item] = Utils.htmlStrip(cheerioLoad(element).find(options[item].class).text());
                         }
-
                     }
                     // It stores the article data to an instance of Article class.
                     tmpArticle = new Article();

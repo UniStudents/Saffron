@@ -59,7 +59,7 @@ export default class Source {
         ret.instructions.parserType = parserType
         switch (parserType) {
             case ParserType.HTML: {
-                if (!source.url || !source.name || Object.entries(source.scrape.article).some((key: any) => key[1].name === undefined)) {
+                if (!source.url || !source.name || Object.entries(source.scrape.article).some((key: any) => key[1].class === undefined || key === undefined)) {
                     logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`);
                     return
                 }
