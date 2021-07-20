@@ -266,13 +266,10 @@ export default class Grid {
      * @param job
      */
     async emitJob(job: Job): Promise<void> {
-        // Alpha version
         job.emitAttempts++
         await this.updateJob(job)
         Events.getAntennae().emit("new-job", job)
 
         this.io_server.sockets.emit('new-job', { job: job.toJSON() })
-        // Beta version
-        // Emit to worker through socket.io
     }
 }

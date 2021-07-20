@@ -25,9 +25,7 @@ export default class WordpressParser {
         let categoriesUrl = instructions.url + 'wp-json/wp/v2/categories/'
         let postsUrl = instructions.url + 'wp-json/wp/v2/posts/'
 
-        // TODO - may return error
         let categories: any, posts: any
-
         try {
             categories = (await axios.get(categoriesUrl))?.data
             posts = (await axios.get(postsUrl))?.data

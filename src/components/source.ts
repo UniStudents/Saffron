@@ -92,7 +92,7 @@ export default class Source {
                     , "(Article, utils, Exceptions)")
             } break
             case ParserType.WORDPRESS: {
-                if(typeof source.url !== 'string' ) {
+                if(typeof source.url !== 'string') {
                     logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid url: ${source.url}. File: ${source.filename}`)
                     return
                 }

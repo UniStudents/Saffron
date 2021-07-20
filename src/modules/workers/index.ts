@@ -36,7 +36,6 @@ export default class Worker {
     async toJSON(): Promise<object> {
         return {
             id: this.id
-
         }
     }
 

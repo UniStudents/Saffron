@@ -45,7 +45,6 @@ export default class DynamicParser {
                             {name: pair[0], links: [pair[1]]}
                         ]
                     }
-                    article.extras = {alias: pair[0]}
 
                 parsedArticles.unshift(article)
                 utils.getArticles = async (count: number): Promise<Array<Article>> => [...parsedArticles, ...articles].slice(0, count)
