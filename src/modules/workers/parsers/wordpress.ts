@@ -37,6 +37,26 @@ export default class WordpressParser {
             return
         }
 
+        const parsedCategories = categories.map((category: any) => {
+            let links = []
+
+            for(let href of category._links.self)
+                links.push(Utils.htmlStrip(href.href).toString())
+            for(let href of category._links.collection)
+                links.push(Utils.htmlStrip(href.href).toString())
+            for(let href of category._links.about)
+                links.push(Utils.htmlStrip(href.href).toString())
+            for(let href of category._links['wp:post_type'])
+                links.push(Utils.htmlStrip(href.href).toString())
+
+            return {
+                id: category.id,
+                description: Utils.htmlStrip(category.description).toString(),
+                name: Utils.htmlStrip(category.name).toString(),
+                links
+            }
+        })
+
         for (let p of posts) {
             const article = new Article()
             article.title = Utils.htmlStrip(p.title.rendered).toString()
@@ -51,29 +71,11 @@ export default class WordpressParser {
                     categories: []
                 }
 
-            let cats = p.categories
-
-            for (let cId of cats) {
-                let cat = categories.find((c: any) => c.id == cId)
-
-                let links = []
-
-                for(let href of cat._links.self)
-                    links.push(Utils.htmlStrip(href.href).toString())
-                for(let href of cat._links.collection)
-                    links.push(Utils.htmlStrip(href.href).toString())
-                for(let href of cat._links.about)
-                    links.push(Utils.htmlStrip(href.href).toString())
-                for(let href of cat._links['wp:post_type'])
-                    links.push(Utils.htmlStrip(href.href).toString())
-
-                article.extras.categories.push({
-                    id: cat.id,
-                    description: Utils.htmlStrip(cat.description).toString(),
-                    name: Utils.htmlStrip(cat.name).toString(),
-                    links
-                })
+            for (let cId of p.categories) {
+                let cat = parsedCategories.find((c: any) => c.id == cId)
+                article.extras.categories.push(cat)
             }
+
             parsedArticles.push(article)
         }
 
