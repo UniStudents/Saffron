@@ -100,7 +100,7 @@ export = {
      * @param fileContents
      */
     async parse(fileContents: any): Promise<Array<Article> | undefined> {
-        let source = await Source.parseFileObject(fileContents, false)
+        let source = await Source.parseFileObject(fileContents, true)
         if(!source) return
 
         return Worker.parse(source.instructions, new Job())
