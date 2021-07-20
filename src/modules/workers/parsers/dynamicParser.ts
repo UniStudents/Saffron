@@ -42,7 +42,7 @@ export default class DynamicParser {
                 if(pair[0].length !== 0)
                     article.extras = {
                         categories: [
-                            {name: pair[0], url: pair[1]}
+                            {name: pair[0], links: [pair[1]]}
                         ]
                     }
                     article.extras = {alias: pair[0]}

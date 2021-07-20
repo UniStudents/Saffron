@@ -118,7 +118,7 @@ export default class rssParser{
             tmpArticle.extras = {}
 
             if(alias)
-                tmpArticle.extras.categories = [{name: alias, url}]
+                tmpArticle.extras.categories = [{name: alias, links: [url]}]
 
             //Find remaining values
             let remain = this.unAssign(article,this.requested_fields)
