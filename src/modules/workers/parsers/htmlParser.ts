@@ -1,12 +1,12 @@
 import Instructions from "../../../components/instructions"
 import Article from "../../../components/articles"
 import axios, {AxiosResponse} from "axios"
-import cheerio, {Cheerio, CheerioAPI} from "cheerio"
+import cheerio, {Cheerio} from "cheerio"
 import https from "https"
 import Logger from "../../../middleware/logger"
 import {LoggerTypes} from "../../../middleware/LoggerTypes"
 import Utils from "./Utils"
-import { Element } from "domhandler"
+import {Element} from "domhandler"
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})
 
@@ -18,7 +18,7 @@ interface ArticleImage {
 export default class HtmlParser {
 
     private static async request(url: string): Promise<AxiosResponse> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
 
             let options: object = {
                 method: 'get',
@@ -158,6 +158,8 @@ export default class HtmlParser {
 
                     // for each option. The options provided by instructions.
                     for (let item in options) {
+                        if (options.hasOwnProperty(item) && options[item].class[0] !== '.') options[item].class = "." + options[item].class.slice(0, -1);
+
                         if (options.hasOwnProperty(item) && options[item].find) {
                             if (!options[item].attributes)
                                 articleData[item] = HtmlParser.findMultiple(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, false, [], "")
@@ -166,7 +168,6 @@ export default class HtmlParser {
                         }
                         else articleData[item] = Utils.htmlStrip(cheerioLoad(element).find(options[item].class).text())
                     }
-                    console.log(articleData);
                     // It stores the article data to an instance of Article class.
                     tmpArticle = new Article()
                     tmpArticle.source = {id: instructions.getSource().getId()}
