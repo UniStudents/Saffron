@@ -68,7 +68,7 @@ export default class WordpressParser {
                     links.push(Utils.htmlStrip(href.href).toString())
 
                 article.extras.categories.push({
-                    id: Utils.htmlStrip(cat.id).toString(),
+                    id: cat.id,
                     description: Utils.htmlStrip(cat.description).toString(),
                     name: Utils.htmlStrip(cat.name).toString(),
                     links
