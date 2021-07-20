@@ -47,9 +47,11 @@ export = {
             .then(()=>Logger(LoggerTypes.STEP, "Successfully connected to the offload database."))
 
         // Initialize and start grid
-        grid = Grid.getInstance();
-        await grid.connect()
-            .then(()=>Logger(LoggerTypes.STEP, "The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."))
+        if (Config.load().grid.distributed){
+            grid = Grid.getInstance();
+            await grid.connect()
+                .then(() => Logger(LoggerTypes.STEP, "The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."))
+        }
 
         // Initialize workers
         let workersSize = Config.load().workers.nodes
