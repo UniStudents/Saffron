@@ -32,7 +32,7 @@ export default class Grid {
     private declare io_server: Server
     private declare io_client: any
 
-    private declare workersIds: string[];
+    private declare readonly workersIds: string[];
     private declare workersClients: { workersIds: string[], socketId: string }[];
 
     private constructor() {
@@ -40,7 +40,7 @@ export default class Grid {
         this.workersIds = []
         this.workersClients = []
 
-        // // If main saffron
+        // If main node
         if(this.isMain){
             this.httpServer = createServer()
             this.io_server = new Server(this.httpServer, { });
@@ -121,6 +121,12 @@ export default class Grid {
                 let job = Job.fromJSON(data.job)
                 Events.getAntennae().emit("new-job", job)
             })
+
+            // In case of reconnection the workers will be automatically announced from the grid
+            this.io_client.on('connect', (data: any) => {
+                for(const workerId of this.workersIds)
+                    this.io_client.emit('announce-worker', { id: workerId })
+            })
         }
     }
 
@@ -138,12 +144,9 @@ export default class Grid {
      * @param worker
      */
     async announceWorker(worker: Worker): Promise<void> {
-        if(this.isMain)
-            this.workersIds.push(worker.id)
-        else {
-            let info = { id: worker.id }
-            this.io_client.emit('announce-worker', info)
-        }
+        this.workersIds.push(worker.id)
+        if(!this.isMain)
+            this.io_client.emit('announce-worker', { id: worker.id })
     }
 
     /**
@@ -151,14 +154,11 @@ export default class Grid {
      * @param worker
      */
     async destroyWorker(worker: Worker): Promise<void> {
-        if(this.isMain) {
-            let index = this.workersIds.findIndex(id => id == worker.id)
-            this.workersIds.splice(index, 1)
-        }
-        else {
-            let info = { id: worker.id }
-            this.io_client.emit('destroy-worker', info)
-        }
+        let index = this.workersIds.findIndex(id => id == worker.id)
+        this.workersIds.splice(index, 1)
+
+        if(!this.isMain)
+            this.io_client.emit('destroy-worker', { id: worker.id })
     }
 
     /**
@@ -193,6 +193,7 @@ export default class Grid {
      * @param job The job object
      */
     async pushJob(job: Job): Promise<void> {
+        if(!this.isMain) return
         jobsStorage.push(job)
     }
 
@@ -201,6 +202,7 @@ export default class Grid {
      * Clears all the jobs from the grid
      */
     async clearAllJobs(): Promise<void> {
+        if(!this.isMain) return
         jobsStorage.splice(0, jobsStorage.length)
     }
 
@@ -209,6 +211,8 @@ export default class Grid {
      * Returns a copy array of all the jobs
      */
     async getJobs(): Promise<Array<Job>> {
+        if(!this.isMain) return []
+
         return [...jobsStorage]
     }
 
@@ -218,6 +222,8 @@ export default class Grid {
      * @param id
      */
     async deleteJob(id: string): Promise<void> {
+        if(!this.isMain) return
+
         let index = jobsStorage.findIndex((obj: Job) => obj?.id === id)
         if(index !== -1)
             jobsStorage.splice(index, 1)
@@ -266,6 +272,8 @@ export default class Grid {
      * @param job
      */
     async emitJob(job: Job): Promise<void> {
+        if(!this.isMain) return
+
         job.emitAttempts++
         await this.updateJob(job)
         Events.getAntennae().emit("new-job", job)
