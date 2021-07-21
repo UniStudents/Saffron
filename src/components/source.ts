@@ -131,7 +131,7 @@ export default class Source {
         return this._sources.find((source: Source) => source.getId() === from)!!
     }
 
-    private static _sources: Source[] = []
+    static _sources: Source[] = []
 
     private declare id: string
     declare name: string
@@ -139,6 +139,10 @@ export default class Source {
     declare retryInterval: number
     declare willParse: boolean
     declare instructions: Instructions
+
+    constructor(id: string = "") {
+        if(id !== "") this.id = id
+    }
 
     /**
      * Locks the source file so it will not issue a new job until it is unlocked
@@ -154,5 +158,27 @@ export default class Source {
         if (!this.id)
             this.id = 'src_' + hash(this.name).toString().substr(0, 47)
         return this.id
+    }
+
+    toJSON(): any {
+        return {
+            id: this.id,
+            name: this.name,
+            scrapeInterval: this.scrapeInterval,
+            retryInterval: this.retryInterval,
+            willParse: this.willParse,
+            instructions: this.instructions.toJSON()
+        }
+    }
+
+    static fromJSON(json: any): Source {
+        let source = new Source(json.id)
+        source.name = json.name
+        source.scrapeInterval = json.scrapeInterval
+        source.retryInterval = json.retryInterval
+        source.willParse = json.willParse
+        source.instructions = Instructions.fromJSON(json.instructions)
+
+        return source
     }
 }

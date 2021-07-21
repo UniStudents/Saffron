@@ -1,6 +1,6 @@
 {
   "name": "@poiw/saffron",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A fairly intuitive & powerful framework that enables you to collect & save articles and news from all over the web. ",
   "main": "dist/index.js",
   "dependencies": {
@@ -23,7 +23,8 @@
     "dev": "cross-env NODE_ENV=development tsc-watch --onSuccess \"node --stack-trace-limit=100 ./test/index.js\"",
     "docker-compose": "cd ./test/docker && sudo docker-compose up --remove-orphans ",
     "docker-compose-build": "cd ./test/docker && sudo docker-compose up --build --remove-orphans ",
-    "build": "rm -rf dist && tsc"
+    "build": "rm -rf dist && tsc",
+    "pub": "npm run build && npm publish"
   },
   "repository": {
     "type": "git",
