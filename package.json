@@ -9,11 +9,14 @@
     "chalk": "^4.1.1",
     "cheerio": "^1.0.0-rc.6",
     "crypto-js": "^4.0.0",
+    "cryptr": "^6.0.2",
     "dotenv": "^9.0.2",
+    "ip": "^1.1.5",
     "lodash": "^4.17.21",
     "luxon": "^1.27.0",
     "mongodb": "^3.6.6",
     "nanoid": "^3.1.22",
+    "public-ip": "^4.0.4",
     "rss-parser": "^3.12.0",
     "socket.io": "^4.1.2",
     "socket.io-client": "4.1.2",
@@ -22,9 +25,8 @@
   "scripts": {
     "test-start": "tsc && node ./test/index.js",
     "dev": "cross-env NODE_ENV=development tsc-watch --onSuccess \"node --stack-trace-limit=100 ./test/index.js\"",
-    "docker-compose" : "cd ./test/docker && sudo docker-compose up --remove-orphans ",
-    "docker-compose-build" : "cd ./test/docker && sudo docker-compose up --build --remove-orphans "
-
+    "docker-compose": "cd ./test/docker && sudo docker-compose up --remove-orphans ",
+    "docker-compose-build": "cd ./test/docker && sudo docker-compose up --build --remove-orphans "
   },
   "repository": {
     "type": "git",
@@ -37,6 +39,8 @@
   },
   "homepage": "https://github.com/poiw-org/saffron#readme",
   "devDependencies": {
+    "@types/cryptr": "^4.0.1",
+    "@types/ip": "^1.1.0",
     "@types/lodash": "^4.14.168",
     "@types/luxon": "^1.26.5",
     "@types/mongodb": "^3.6.12",

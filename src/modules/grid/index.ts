@@ -8,9 +8,13 @@ import Worker from "../workers";
 import Config from "../../components/config";
 import logger from "../../middleware/logger";
 import {LoggerTypes} from "../../middleware/LoggerTypes";
-
+import cryptr from "cryptr"
+import {nanoid} from "nanoid";
+import publicIp from "public-ip";
+import privateIp from "ip";
+import Database from "../database/index";
+import randomId from "../../middleware/randomId";
 // For alpha version
-let jobsStorage: Job[] = []
 
 export default class Grid {
 
@@ -34,11 +38,18 @@ export default class Grid {
 
     private declare workersIds: string[];
     private declare workersClients: { workersIds: string[], socketId: string }[];
+    private declare encryptionKey: string
+
+    declare jobsStorage: Job[]
 
     private constructor() {
         this.isMain = Config.load()!!.mode === 'main'
         this.workersIds = []
         this.workersClients = []
+
+        this.jobsStorage = []
+
+        this.encryptionKey = nanoid(256)
 
         // // If main saffron
         if(this.isMain){
@@ -89,18 +100,25 @@ export default class Grid {
                 socket.on('finished-job', (data: any) => {
                     let jobId = data.id
 
-                    let i = jobsStorage.findIndex(job => job.id == jobId)
-                    if(i != -1) jobsStorage[i].status = JobStatus.FINISHED
+                    let i = this.jobsStorage.findIndex(job => job.id == jobId)
+                    if(i != -1) this.jobsStorage[i].status = JobStatus.FINISHED
                 })
 
                 socket.on('failed-job', (data: any) => {
                     let jobId = data.id
 
-                    let i = jobsStorage.findIndex(job => job.id == jobId)
-                    if(i != -1) jobsStorage[i].status = JobStatus.FAILED
+                    let i = this.jobsStorage.findIndex(job => job.id == jobId)
+                    if(i != -1) this.jobsStorage[i].status = JobStatus.FAILED
                 })
             })
         }
+    }
+
+    async registerGridNode(): Promise<void> {
+        let _publicIp = {ipv4: (await publicIp.v4()), ipv6: (await publicIp.v6)}
+        let _privateIp = privateIp.address()
+        let id = (this.isMain ? 'grd-main' : randomId("grd"))
+        await Database.getInstance()!!.insertGridNode(id, _publicIp, _privateIp, this.encryptionKey)
     }
 
     /**
@@ -115,6 +133,18 @@ export default class Grid {
             this.io_client = io("address", {
                 reconnection: false,
                 extraHeaders: { },
+            })
+
+            this.io_client.on('connect', () => {
+
+            })
+
+            this.io_client.on('connect-error', () => {
+
+            })
+
+            this.io_client.on('disconnect', () => {
+
             })
 
             this.io_client.on('new-job', (data: any) => {
@@ -193,7 +223,7 @@ export default class Grid {
      * @param job The job object
      */
     async pushJob(job: Job): Promise<void> {
-        jobsStorage.push(job)
+        this.jobsStorage.push(job)
     }
 
     /**
@@ -201,7 +231,7 @@ export default class Grid {
      * Clears all the jobs from the grid
      */
     async clearAllJobs(): Promise<void> {
-        jobsStorage.splice(0, jobsStorage.length)
+        this.jobsStorage.splice(0, this.jobsStorage.length)
     }
 
     /**
@@ -209,7 +239,7 @@ export default class Grid {
      * Returns a copy array of all the jobs
      */
     async getJobs(): Promise<Array<Job>> {
-        return [...jobsStorage]
+        return [...this.jobsStorage]
     }
 
     /**
@@ -218,9 +248,9 @@ export default class Grid {
      * @param id
      */
     async deleteJob(id: string): Promise<void> {
-        let index = jobsStorage.findIndex((obj: Job) => obj?.id === id)
+        let index = this.jobsStorage.findIndex((obj: Job) => obj?.id === id)
         if(index !== -1)
-            jobsStorage.splice(index, 1)
+            this.jobsStorage.splice(index, 1)
     }
 
     /**
@@ -229,9 +259,9 @@ export default class Grid {
      * @param job
      */
     async updateJob(job: Job): Promise<void> {
-        let index = jobsStorage.findIndex((obj: Job) => obj?.id === job.id)
+        let index = this.jobsStorage.findIndex((obj: Job) => obj?.id === job.id)
         if(index !== -1)
-            jobsStorage[index] = job
+            this.jobsStorage[index] = job
     }
 
     /**

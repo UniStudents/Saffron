@@ -85,4 +85,10 @@ export default class MongoDB extends Database {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
     }
+
+    async insertGridNode(id:string, publicIP: object, privateIP: string, encryptionKey: string): Promise<void>{
+        await this.client.db(Config.load()!!.database.config.name).collection('grid').updateOne({id}, {
+            id, publicIP, privateIP, encryptionKey
+        }, {upsert: true})
+    }
 }

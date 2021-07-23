@@ -41,4 +41,8 @@ export default class Memory extends Database {
         if(index !== -1)
             this.articles[index] = article
     }
+
+    async insertGridNode(id: string, publicIP: object, privateIP: string, encryptionKey: string): Promise<void>{
+        return 
+    }
 }

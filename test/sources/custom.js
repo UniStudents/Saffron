@@ -9,6 +9,7 @@ module.exports = {
     scrapeInterval: 60000,
     scrape: async () => {
 
-        return new Exceptions("Error1", "d")
+        let article = new Article()
+        article.title = "TestArticle"
     }
 }

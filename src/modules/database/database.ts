@@ -66,4 +66,6 @@ export default abstract class Database {
 
         return articles
     }
+
+    abstract insertGridNode(id: string, publicIP: object, privateIP: string, encryptionKey: string): Promise<void>
 }
