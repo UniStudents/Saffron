@@ -55,8 +55,7 @@ export default class Scheduler {
 
     private times = [
         -400, -360, -300, -280, -240, -210, -180, -160, -120, -90, -60, -30, -10, -5,
-        0,
-        5, 10, 30, 60, 90, 120, 160, 180, 210, 240, 280, 300, 360, 400
+        0, 5, 10, 30, 60, 90, 120, 160, 180, 210, 240, 280, 300, 360, 400
     ]
 
     /**
@@ -193,7 +192,7 @@ export default class Scheduler {
                         // If attempts > e.x. 10 increase interval to check on e.x. a day after
                         let interval = job.attempts > 10
                             ? Config.load().scheduler.heavyJobFailureInterval
-                            : ((source.retryInterval ? source.retryInterval : Config.load().scheduler.intervalBetweenJobs) / 2)
+                            : (source.retryInterval ? source.retryInterval : Config.load().scheduler.intervalBetweenJobs / 2)
 
                         job.nextRetry = Date.now() + interval
                         job.status = JobStatus.PENDING

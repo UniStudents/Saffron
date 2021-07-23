@@ -5,7 +5,6 @@ import logger from "../middleware/logger";
 import {LoggerTypes} from "../middleware/LoggerTypes";
 import Article from "./articles";
 import hash from 'crypto-js/sha256';
-import {componentTypes} from "./componentTypes";
 
 
 const fs = require('fs');
@@ -19,16 +18,9 @@ export default class Source {
     /**
      * Parse and store a source file contents to an array in memory
      * @param source
+     * @param addToList
      */
     static async parseFileObject(source: any, addToList: boolean = true): Promise<Source | undefined> {
-        // Check if source is valid and return an object for that source
-        if (source.url.length == 0) {
-            logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Please specify a url. File: ${source.filename}`)
-            return
-        }
-        // if(new RegExp('^(http|https)\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,6}(/\S*)?$').test(url)) throw new Error('You specified an invalid url')
-        //if (['api', 'portal'].includes(source.type) == false) throw new Error('A source\'s "api" value must be either "api" or "portal"')
-
         let ret = new Source()
         ret.name = source.name
         ret.scrapeInterval = source.scrapeInterval
@@ -37,7 +29,26 @@ export default class Source {
 
         ret.instructions = new Instructions()
         ret.instructions.source = {id: ret.getId()}
-        ret.instructions.url = source.url
+
+        if(typeof source.url === 'string') {
+            ret.instructions.url = source.url
+        }
+        else if(Array.isArray(source.url)) {
+            ret.instructions.url = []
+            for(const pair of source.url){
+                if(typeof pair[0] !== 'string' || pair[0].length == 0) {
+                    logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid alias: ${pair[0]}. File: ${source.filename}`)
+                    return
+                }
+
+                ret.instructions.url.push([pair[0], pair[1]])
+            }
+        }
+        else {
+            logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid url. File: ${source.filename}`)
+            return
+        }
+
 
         let parserType = await ParserType.getFromString(source.type)
         if (parserType === ParserType.UNKNOWN) {
@@ -48,14 +59,14 @@ export default class Source {
         ret.instructions.parserType = parserType
         switch (parserType) {
             case ParserType.HTML: {
-                if (!source.url || !source.name || Object.entries(source.scrape).some((key: any) => key[1].name === undefined)) {
+                if (!source.url || !source.name || Object.entries(source.scrape.article).some((key: any) => key[1].class === undefined || key === undefined)) {
                     logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`);
                     return
                 }
 
-                ret.instructions.elementSelector = source.container;
-                ret.instructions.scrapeOptions = source.scrape;
-                ret.instructions.endPoint = source.endPoint;
+                ret.instructions.elementSelector = source.scrape.container;
+                ret.instructions.scrapeOptions = source.scrape.article;
+                ret.instructions.endPoint = source.scrape.endPoint;
             }
                 break
             case ParserType.RSS: {
@@ -70,28 +81,30 @@ export default class Source {
                     })
                     ret.instructions.scrapeOptions = {renameFields: map}
                 }
-            }
-                break
+            } break
             case ParserType.CUSTOM: {
                 let scrapeStr = source.scrape.toString()
 
-                let strFunc = splice(scrapeStr
+                ret.instructions.endPoint = source.url
+                ret.instructions.scrapeFunction = splice(scrapeStr
                     , scrapeStr.indexOf('(')
                     , scrapeStr.indexOf(')') + 1
                     , "(Article, utils, Exceptions)")
-
-                ret.instructions.scrapeFunction = strFunc
-            }
-                break
+            } break
             case ParserType.WORDPRESS: {
-                ret.instructions.endPoint = `${source.url} + ${source.url.endsWith('/') ? '' : '/'}`
-                break
-            }
+                if(typeof source.url !== 'string') {
+                    logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid url: ${source.url}. File: ${source.filename}`)
+                    return
+                }
 
-            if (addToList)
-                this._sources.push(ret)
-            return ret
+                ret.instructions.url = `${source.url}${(source.url.endsWith('/')) ? '' : '/' }`
+            } break
         }
+
+        if (addToList)
+            this._sources.push(ret)
+
+        return ret
     }
 
     /**
@@ -118,17 +131,17 @@ export default class Source {
         return this._sources.find((source: Source) => source.getId() === from)!!
     }
 
-    private static _sources: Source[] = []
+    static _sources: Source[] = []
 
     private declare id: string
-    declare _type: componentTypes.SOURCE
     declare name: string
     declare scrapeInterval: number
     declare retryInterval: number
     declare willParse: boolean
     declare instructions: Instructions
 
-    constructor() {
+    constructor(id: string = "") {
+        if(id !== "") this.id = id
     }
 
     /**
@@ -144,7 +157,28 @@ export default class Source {
     getId(): string {
         if (!this.id)
             this.id = 'src_' + hash(this.name).toString().substr(0, 47)
-
         return this.id
+    }
+
+    toJSON(): any {
+        return {
+            id: this.id,
+            name: this.name,
+            scrapeInterval: this.scrapeInterval,
+            retryInterval: this.retryInterval,
+            willParse: this.willParse,
+            instructions: this.instructions.toJSON()
+        }
+    }
+
+    static fromJSON(json: any): Source {
+        let source = new Source(json.id)
+        source.name = json.name
+        source.scrapeInterval = json.scrapeInterval
+        source.retryInterval = json.retryInterval
+        source.willParse = json.willParse
+        source.instructions = Instructions.fromJSON(json.instructions)
+
+        return source
     }
 }

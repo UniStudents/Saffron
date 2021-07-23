@@ -1,6 +1,7 @@
 import Source from "./source";
 import randomId from "../middleware/randomId"
 import hash from 'crypto-js/sha256';
+
 interface _extras {
     [key: string]: any
 }
@@ -11,7 +12,7 @@ export default class Article {
     declare content: string
     declare link: string
     declare pubDate: Date
-    declare timestamp: Date
+    declare timestamp: number
     private declare hash: string
     declare extras: _extras
     declare source: {

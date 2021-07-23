@@ -8,8 +8,11 @@ module.exports = {
     retryInterval: 30000,
     scrapeInterval: 60000,
     scrape: async () => {
+        const article = new Article()
+        article.title = "Hey"
+        // ...
+        await utils.onNewArticle(article)
 
-        let article = new Article()
-        article.title = "TestArticle"
+        // return new Exceptions("Error1", true)
     }
 }

@@ -36,7 +36,7 @@ export default class Grid {
     private declare io_server: Server
     private declare io_client: any
 
-    private declare workersIds: string[];
+    private declare readonly workersIds: string[];
     private declare workersClients: { workersIds: string[], socketId: string }[];
     private declare encryptionKey: string
 
@@ -151,6 +151,12 @@ export default class Grid {
                 let job = Job.fromJSON(data.job)
                 Events.getAntennae().emit("new-job", job)
             })
+
+            // In case of reconnection the workers will be automatically announced from the grid
+            this.io_client.on('connect', (data: any) => {
+                for(const workerId of this.workersIds)
+                    this.io_client.emit('announce-worker', { id: workerId })
+            })
         }
     }
 
@@ -168,12 +174,9 @@ export default class Grid {
      * @param worker
      */
     async announceWorker(worker: Worker): Promise<void> {
-        if(this.isMain)
-            this.workersIds.push(worker.id)
-        else {
-            let info = { id: worker.id }
-            this.io_client.emit('announce-worker', info)
-        }
+        this.workersIds.push(worker.id)
+        if(!this.isMain)
+            this.io_client.emit('announce-worker', { id: worker.id })
     }
 
     /**
@@ -181,14 +184,11 @@ export default class Grid {
      * @param worker
      */
     async destroyWorker(worker: Worker): Promise<void> {
-        if(this.isMain) {
-            let index = this.workersIds.findIndex(id => id == worker.id)
-            this.workersIds.splice(index, 1)
-        }
-        else {
-            let info = { id: worker.id }
-            this.io_client.emit('destroy-worker', info)
-        }
+        let index = this.workersIds.findIndex(id => id == worker.id)
+        this.workersIds.splice(index, 1)
+
+        if(!this.isMain)
+            this.io_client.emit('destroy-worker', { id: worker.id })
     }
 
     /**
@@ -296,13 +296,12 @@ export default class Grid {
      * @param job
      */
     async emitJob(job: Job): Promise<void> {
-        // Alpha version
+        if(!this.isMain) return
+
         job.emitAttempts++
         await this.updateJob(job)
         Events.getAntennae().emit("new-job", job)
 
         this.io_server.sockets.emit('new-job', { job: job.toJSON() })
-        // Beta version
-        // Emit to worker through socket.io
     }
 }

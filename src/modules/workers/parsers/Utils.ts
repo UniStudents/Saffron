@@ -258,14 +258,14 @@ export default class Utils{
         '&#34;': '"',
         '&#034;': '"'
     }
-    private static decode(string: String){
+    private static decode(str: String){
         for(let key in this.htmlEntries){
             let entity = key
             let regex = new RegExp(entity,'g')
             // @ts-ignore
-            string = string.replace(regex,this.htmlEntries[entity])
+            str = str.replace(regex,this.htmlEntries[entity])
         }
-        return string
+        return str
     }
 
 

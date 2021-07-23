@@ -11,12 +11,12 @@ export default class Instructions {
     declare id: string;
 
     declare source : { id: string; };
-    declare url: string;
+    declare url: string | (string[])[];
     declare parserType: ParserType;
     declare endPoint: string;
     declare scrapeOptions: Object;
     declare elementSelector: string;
-    declare scrapeFunction: string // just call eval
+    declare scrapeFunction: string
 
     /**
      * @param id instruction id.
@@ -43,6 +43,33 @@ export default class Instructions {
      */
     getSource(): Source {
         return Source.getSourceFrom(this.source.id);
+    }
+
+    toJSON(): any {
+        return {
+            id: this.id,
+            source: this.source,
+            url: this.url,
+            parserType: ParserType.toString(this.parserType),
+            endPoint: this.endPoint,
+            scrapeOptions: this.scrapeOptions,
+            elementSelector: this.elementSelector,
+            scrapeFunction: this.scrapeFunction
+        }
+    }
+
+    static fromJSON(json: any): Instructions {
+        let inst = new Instructions()
+        inst.id = json.id
+        inst.source = json.source
+        inst.url = json.url
+        inst.parserType = ParserType.getFromString(json.parserType)
+        inst.endPoint = json.endPoint
+        inst.scrapeOptions = json.scrapeOptions
+        inst.elementSelector = json.elementSelector
+        inst.scrapeFunction = json.scrapeFunction
+
+        return inst
     }
 
 }

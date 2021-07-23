@@ -44,10 +44,9 @@ export default class Job {
     }
 
     toJSON(): any {
-        // TODO - create Source.fromJSON(), toJSON()
         return {
             id: this.id,
-            source: this.getSource(),
+            source: this.getSource().toJSON(),
             worker: {
                 id: this.worker.id
             }
@@ -55,9 +54,16 @@ export default class Job {
     }
 
     static fromJSON(json: any): Job {
-        // TODO
         let job = new Job(json.id)
-        job.source.id
+        job.source = { id: json.source.id }
+
+        // Add source to list
+        let index = Source._sources.findIndex(s => s.getId() === json.source.id)
+        if(index == -1)
+            Source._sources.push(Source.fromJSON(json.source))
+        else Source._sources[index] = Source.fromJSON(json.source)
+
+        job.worker = json.worker
 
         return job
     }

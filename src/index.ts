@@ -1,6 +1,5 @@
 // Module imports
 import Logger from "./middleware/logger"
-import logger from "./middleware/logger"
 import {LoggerTypes} from "./middleware/LoggerTypes"
 import Database from "./modules/database/index"
 import Config from "./components/config"
@@ -48,9 +47,11 @@ export = {
             .then(()=>Logger(LoggerTypes.STEP, "Successfully connected to the offload database."))
 
         // Initialize and start grid
-        grid = Grid.getInstance();
-        await grid.connect()
-            .then(()=>Logger(LoggerTypes.STEP, "The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."))
+        if (Config.load().grid.distributed){
+            grid = Grid.getInstance();
+            await grid.connect()
+                .then(() => Logger(LoggerTypes.STEP, "The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."))
+        }
 
         // Initialize workers
         let workersSize = Config.load().workers.nodes
@@ -61,7 +62,7 @@ export = {
         if(Config.load().mode === 'main')
             scheduler = new Scheduler()
         else
-            logger(LoggerTypes.INFO, "This instance has been initialized as a WORKER node.")
+            Logger(LoggerTypes.INFO, "This instance has been initialized as a WORKER node.")
 
         // Event for workers
         antennae.on("start", () => {
@@ -99,7 +100,7 @@ export = {
      * @param fileContents
      */
     async parse(fileContents: any): Promise<Array<Article> | undefined> {
-        let source = await Source.parseFileObject(fileContents)
+        let source = await Source.parseFileObject(fileContents, true)
         if(!source) return
 
         return Worker.parse(source.instructions, new Job())
