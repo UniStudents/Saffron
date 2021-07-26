@@ -74,12 +74,13 @@ export default class Source {
                     logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`)
                     return
                 }
+                ret.instructions.scrapeOptions = {}
                 if (source.renameFields) {
                     let map = new Map()
                     Object.entries(source.renameFields).forEach(([key, value]) => {
                         map.set(key, value)
                     })
-                    ret.instructions.scrapeOptions = {renameFields: map}
+                    ret.instructions.scrapeOptions.renameFields = map
                 }
             } break
             case ParserType.CUSTOM: {
