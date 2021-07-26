@@ -8,7 +8,6 @@ import Worker from "../workers";
 import Config from "../../components/config";
 import logger from "../../middleware/logger";
 import {LoggerTypes} from "../../middleware/LoggerTypes";
-import cryptr from "cryptr"
 import {nanoid} from "nanoid";
 import publicIp from "public-ip";
 import privateIp from "ip";
@@ -19,12 +18,12 @@ import randomId from "../../middleware/randomId";
 export default class Grid {
 
     private static instance: Grid
-
+    
     /**
      * Returns an instance of Grid
      */
     static getInstance(): Grid {
-        if(this.instance == null)
+        if (this.instance == null)
             this.instance = new Grid()
 
         return this.instance
@@ -52,19 +51,19 @@ export default class Grid {
         this.encryptionKey = nanoid(256)
 
         // // If main saffron
-        if(this.isMain){
+        if (this.isMain) {
             this.httpServer = createServer()
-            this.io_server = new Server(this.httpServer, { });
+            this.io_server = new Server(this.httpServer, {});
 
             this.io_server.on("connection", (socket: Socket) => {
-                this.workersClients.push({ workersIds: [], socketId: socket.id })
+                this.workersClients.push({workersIds: [], socketId: socket.id})
 
                 socket.on('disconnect', () => {
                     let i = this.workersClients.findIndex(js => js.socketId == socket.id)
-                    if(i != -1) {
+                    if (i != -1) {
                         // Delete all workers from client
                         this.workersIds.forEach((id, index, object) => {
-                            if(this.workersClients[i].workersIds.includes(id))
+                            if (this.workersClients[i].workersIds.includes(id))
                                 this.workersIds.splice(index, 1)
                         })
 
@@ -75,8 +74,8 @@ export default class Grid {
 
                 socket.on('announce-worker', (data: any) => {
                     let workerId = data.id
-                    if(typeof workerId !== 'string') return
-                    if(workerId.length == 0) return
+                    if (typeof workerId !== 'string') return
+                    if (workerId.length == 0) return
 
                     this.workersIds.push(workerId)
                     this.workersClients.find(js => js.socketId == socket.id)?.workersIds?.push(workerId)
@@ -88,12 +87,12 @@ export default class Grid {
                     logger(LoggerTypes.INFO, `Worker disconnected: ${data.id}`)
 
                     let j = this.workersIds.findIndex((obj: string) => obj === data.id)
-                    if(j != -1) this.workersIds.splice(j, 1)
+                    if (j != -1) this.workersIds.splice(j, 1)
 
                     let i = this.workersClients.findIndex(js => js.socketId == socket.id)
-                    if(i != -1){
+                    if (i != -1) {
                         let k = this.workersClients[i].workersIds.findIndex(id => id == data.id)
-                        if(k != -1) this.workersClients[i].workersIds.splice(k, 1)
+                        if (k != -1) this.workersClients[i].workersIds.splice(k, 1)
                     }
                 })
 
@@ -101,14 +100,14 @@ export default class Grid {
                     let jobId = data.id
 
                     let i = this.jobsStorage.findIndex(job => job.id == jobId)
-                    if(i != -1) this.jobsStorage[i].status = JobStatus.FINISHED
+                    if (i != -1) this.jobsStorage[i].status = JobStatus.FINISHED
                 })
 
                 socket.on('failed-job', (data: any) => {
                     let jobId = data.id
 
                     let i = this.jobsStorage.findIndex(job => job.id == jobId)
-                    if(i != -1) this.jobsStorage[i].status = JobStatus.FAILED
+                    if (i != -1) this.jobsStorage[i].status = JobStatus.FAILED
                 })
             })
         }
@@ -125,14 +124,13 @@ export default class Grid {
      * Connects to the grid
      */
     async connect(): Promise<void> {
-        if(this.isMain) {
+        if (this.isMain) {
             this.httpServer!!.listen(8080);
-        }
-        else if(Config.load()!!.workers.nodes > 0){
+        } else if (Config.load()!!.workers.nodes > 0) {
             // TODO - address
             this.io_client = io("address", {
                 reconnection: false,
-                extraHeaders: { },
+                extraHeaders: {},
             })
 
             this.io_client.on('connect', () => {
@@ -154,8 +152,8 @@ export default class Grid {
 
             // In case of reconnection the workers will be automatically announced from the grid
             this.io_client.on('connect', (data: any) => {
-                for(const workerId of this.workersIds)
-                    this.io_client.emit('announce-worker', { id: workerId })
+                for (const workerId of this.workersIds)
+                    this.io_client.emit('announce-worker', {id: workerId})
             })
         }
     }
@@ -175,8 +173,8 @@ export default class Grid {
      */
     async announceWorker(worker: Worker): Promise<void> {
         this.workersIds.push(worker.id)
-        if(!this.isMain)
-            this.io_client.emit('announce-worker', { id: worker.id })
+        if (!this.isMain)
+            this.io_client.emit('announce-worker', {id: worker.id})
     }
 
     /**
@@ -187,8 +185,8 @@ export default class Grid {
         let index = this.workersIds.findIndex(id => id == worker.id)
         this.workersIds.splice(index, 1)
 
-        if(!this.isMain)
-            this.io_client.emit('destroy-worker', { id: worker.id })
+        if (!this.isMain)
+            this.io_client.emit('destroy-worker', {id: worker.id})
     }
 
     /**
@@ -196,25 +194,25 @@ export default class Grid {
      * @param workerId
      */
     async fireWorker(workerId: string): Promise<void> {
-        if(!this.isMain) return
+        if (!this.isMain) return
 
         let index = this.workersClients.findIndex(js => {
             let index = js.workersIds.findIndex(id => id == workerId)
             return index !== -1;
         })
 
-        if(index != -1) {
+        if (index != -1) {
             logger(LoggerTypes.INFO, `Worker fired: ${workerId}`)
 
             let j = this.workersIds.findIndex((obj: string) => obj === workerId)
-            if(j != -1) this.workersIds.splice(j, 1)
+            if (j != -1) this.workersIds.splice(j, 1)
 
             let k = this.workersClients[index].workersIds.findIndex(id => workerId == id)
-            if(k != -1) this.workersClients[index].workersIds.splice(k, 1)
+            if (k != -1) this.workersClients[index].workersIds.splice(k, 1)
         }
 
         let k = this.workersIds.findIndex(id => workerId == id)
-        if(k != -1) this.workersIds.splice(k, 1)
+        if (k != -1) this.workersIds.splice(k, 1)
     }
 
     /**
@@ -249,7 +247,7 @@ export default class Grid {
      */
     async deleteJob(id: string): Promise<void> {
         let index = this.jobsStorage.findIndex((obj: Job) => obj?.id === id)
-        if(index !== -1)
+        if (index !== -1)
             this.jobsStorage.splice(index, 1)
     }
 
@@ -260,7 +258,7 @@ export default class Grid {
      */
     async updateJob(job: Job): Promise<void> {
         let index = this.jobsStorage.findIndex((obj: Job) => obj?.id === job.id)
-        if(index !== -1)
+        if (index !== -1)
             this.jobsStorage[index] = job
     }
 
@@ -271,10 +269,10 @@ export default class Grid {
      */
     async finishJob(job: Job): Promise<void> {
         job.status = JobStatus.FINISHED
-        if(this.isMain)
+        if (this.isMain)
             await this.updateJob(job)
         else
-            this.io_client.emit('finish-job', { id: job.id })
+            this.io_client.emit('finish-job', {id: job.id})
     }
 
     /**
@@ -284,10 +282,10 @@ export default class Grid {
      */
     async failedJob(job: Job): Promise<void> {
         job.status = JobStatus.FAILED
-        if(this.isMain)
+        if (this.isMain)
             await this.updateJob(job)
         else
-            this.io_client.emit('failed-job', { id: job.id })
+            this.io_client.emit('failed-job', {id: job.id})
     }
 
     /**
@@ -296,12 +294,12 @@ export default class Grid {
      * @param job
      */
     async emitJob(job: Job): Promise<void> {
-        if(!this.isMain) return
+        if (!this.isMain) return
 
         job.emitAttempts++
         await this.updateJob(job)
         Events.getAntennae().emit("new-job", job)
 
-        this.io_server.sockets.emit('new-job', { job: job.toJSON() })
+        this.io_server.sockets.emit('new-job', {job: job.toJSON()})
     }
 }

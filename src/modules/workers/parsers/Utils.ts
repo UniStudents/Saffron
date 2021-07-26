@@ -1,7 +1,7 @@
 const striptags = require('striptags');
-export default class Utils{
+export default class Utils {
 
-    private static htmlEntries =  {
+    private static htmlEntries = {
         '&apos;': "'",
         '&lt;': '<',
         '&gt;': '>',
@@ -258,24 +258,26 @@ export default class Utils{
         '&#34;': '"',
         '&#034;': '"'
     }
-    private static decode(str: String){
-        for(let key in this.htmlEntries){
+
+    private static decode(str: String) {
+        for (let key in this.htmlEntries) {
             let entity = key
-            let regex = new RegExp(entity,'g')
+            let regex = new RegExp(entity, 'g')
             // @ts-ignore
-            str = str.replace(regex,this.htmlEntries[entity])
+            str = str.replace(regex, this.htmlEntries[entity])
         }
         return str
     }
 
 
-    public static htmlStrip(text: String = ""): String {
+    public static htmlStrip(text: String = "", stripTags: boolean = true): String {
         text = this.decode(text)
-        text = text.replace(/\n/g,'')
-            .replace(/\t/g,'')
+        text = text.replace(/\n/g, '')
+            .replace(/\t/g, '')
             .replace(/(<([^>]+)>)/gi, '')
             .trim()
-        text = striptags(text)
+        if (stripTags)
+            text = striptags(text)
         return text
     }
 }
