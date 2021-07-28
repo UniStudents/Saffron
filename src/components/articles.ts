@@ -24,7 +24,7 @@ export default class Article {
      * @param id The article's id (Optional, auto-generated)
      */
     constructor(id: string = "") {
-        if(id !== "")
+        if (id !== "")
             this.id = id
         else this.id = randomId("art")
     }
@@ -34,8 +34,8 @@ export default class Article {
      */
     toJSON(): object {
         this.getHash()
-        let {id, timestamp, title, source, pubDate, content, hash, extras} = this;
-        return {id, timestamp, title, source: source, pubDate, content, extras, hash}
+        let {id, timestamp, title, source, pubDate, link, content, hash, extras} = this;
+        return {id, timestamp, title, source: source, link, pubDate, content, extras, hash}
     }
 
     /**
@@ -49,7 +49,7 @@ export default class Article {
      * Generate and return the hash of the article
      */
     getHash() {
-        if(!this.hash)
+        if (!this.hash)
             this.hash = (hash(`${this.title} ${this.content} ${this.extras?.toString()} ${this.getSource()?.getId()}`)).toString()
 
         return this.hash
