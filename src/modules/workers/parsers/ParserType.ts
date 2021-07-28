@@ -4,7 +4,7 @@
 export enum ParserType {
     RSS,
     HTML,
-    CUSTOM,
+    DYNAMIC,
     WORDPRESS,
     UNKNOWN
 }
@@ -15,22 +15,32 @@ export namespace ParserType {
      * @param str
      */
     export function getFromString(str: string): ParserType {
-        switch(str){
-            case "html": return ParserType.HTML
-            case "rss": return ParserType.RSS
-            case "custom": return ParserType.CUSTOM
-            case "wordpress": return ParserType.WORDPRESS
-            default: return ParserType.UNKNOWN
+        switch (str) {
+            case "html":
+                return ParserType.HTML
+            case "rss":
+                return ParserType.RSS
+            case "dynamic":
+                return ParserType.DYNAMIC
+            case "wordpress":
+                return ParserType.WORDPRESS
+            default:
+                return ParserType.UNKNOWN
         }
     }
 
     export function toString(type: ParserType): string {
-        switch (type){
-            case ParserType.HTML: return "html"
-            case ParserType.RSS: return "rss"
-            case ParserType.CUSTOM: return "custom"
-            case ParserType.WORDPRESS: return "wordpress"
-            default: return "unknown"
+        switch (type) {
+            case ParserType.HTML:
+                return "html"
+            case ParserType.RSS:
+                return "rss"
+            case ParserType.DYNAMIC:
+                return "dynamic"
+            case ParserType.WORDPRESS:
+                return "wordpress"
+            default:
+                return "unknown"
         }
     }
 }

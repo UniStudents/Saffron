@@ -16,13 +16,14 @@ export default class Utils {
      * Get all the articles in database.
      * @param count
      */
-    getArticles = async (count: number): Promise<Array<Article>> => []
+    getArticles = (count: number): Array<Article> => []
 
     /**
      * When a new article is found.
      * @param article
      */
-    onNewArticle = async (article: Article) => {}
+    onNewArticle = (article: Article) => {
+    }
 
     /**
      * The specified URL.

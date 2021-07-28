@@ -6,9 +6,6 @@ import {LoggerTypes} from "../middleware/LoggerTypes";
 import Article from "./articles";
 import hash from 'crypto-js/sha256';
 
-
-const fs = require('fs');
-
 const splice = function (base: string, idx: number, rem: number, str: string): string {
     return base.slice(0, idx) + str + base.slice(Math.abs(rem));
 };
@@ -30,21 +27,19 @@ export default class Source {
         ret.instructions = new Instructions()
         ret.instructions.source = {id: ret.getId()}
 
-        if(typeof source.url === 'string') {
+        if (typeof source.url === 'string') {
             ret.instructions.url = source.url
-        }
-        else if(Array.isArray(source.url)) {
+        } else if (Array.isArray(source.url)) {
             ret.instructions.url = []
-            for(const pair of source.url){
-                if(typeof pair[0] !== 'string' || pair[0].length == 0) {
+            for (const pair of source.url) {
+                if (typeof pair[0] !== 'string' || pair[0].length == 0) {
                     logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid alias: ${pair[0]}. File: ${source.filename}`)
                     return
                 }
 
                 ret.instructions.url.push([pair[0], pair[1]])
             }
-        }
-        else {
+        } else {
             logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid url. File: ${source.filename}`)
             return
         }
@@ -82,8 +77,9 @@ export default class Source {
                     })
                     ret.instructions.scrapeOptions.renameFields = map
                 }
-            } break
-            case ParserType.CUSTOM: {
+            }
+                break
+            case ParserType.DYNAMIC: {
                 let scrapeStr = source.scrape.toString()
 
                 ret.instructions.endPoint = source.url
@@ -91,15 +87,17 @@ export default class Source {
                     , scrapeStr.indexOf('(')
                     , scrapeStr.indexOf(')') + 1
                     , "(Article, utils, Exceptions)")
-            } break
+            }
+                break
             case ParserType.WORDPRESS: {
-                if(typeof source.url !== 'string') {
+                if (typeof source.url !== 'string') {
                     logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid url: ${source.url}. File: ${source.filename}`)
                     return
                 }
 
-                ret.instructions.url = `${source.url}${(source.url.endsWith('/')) ? '' : '/' }`
-            } break
+                ret.instructions.url = `${source.url}${(source.url.endsWith('/')) ? '' : '/'}`
+            }
+                break
         }
 
         if (addToList)
@@ -142,7 +140,7 @@ export default class Source {
     declare instructions: Instructions
 
     constructor(id: string = "") {
-        if(id !== "") this.id = id
+        if (id !== "") this.id = id
     }
 
     /**

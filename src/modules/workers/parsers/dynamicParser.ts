@@ -24,22 +24,22 @@ export default class DynamicParser {
         let scrapeFunc = eval(instructions.scrapeFunction)
 
         let urls: (string[])[] = []
-        if(typeof instructions.url !== 'string')
+        if (typeof instructions.url !== 'string')
             urls = instructions.url
         else urls.push(["", instructions.url])
 
-        for (const pair of urls){
+        for (const pair of urls) {
             let utils = new Utils(pair[1]);
 
             let articles = await Database.getInstance()!!.getArticles({source: job.getSource()})
             utils.isFirstScrape = articles.length === 0
             utils.isScrapeAfterError = job.attempts !== 0
 
-            utils.getArticles = async (count: number): Promise<Array<Article>> => articles.slice(0, count)
-            utils.onNewArticle = async (article: Article) => {
-                if(!article.extras) article.extras = {}
+            utils.getArticles = (count: number): Array<Article> => articles.slice(0, count)
+            utils.onNewArticle = (article: Article) => {
+                if (!article.extras) article.extras = {}
 
-                if(pair[0].length !== 0)
+                if (pair[0].length !== 0)
                     article.extras = {
                         categories: [
                             {name: pair[0], links: [pair[1]]}
@@ -47,7 +47,7 @@ export default class DynamicParser {
                     }
 
                 parsedArticles.unshift(article)
-                utils.getArticles = async (count: number): Promise<Array<Article>> => [...parsedArticles, ...articles].slice(0, count)
+                utils.getArticles = (count: number): Array<Article> => [...parsedArticles, ...articles].slice(0, count)
             }
 
             let result: Exceptions | undefined = await scrapeFunc(Article, utils, Exceptions)
