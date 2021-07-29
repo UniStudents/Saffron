@@ -15,10 +15,9 @@ export default class DynamicParser {
      *
      * @param job The job instance
      * @param instructions How does the parser gonna parse the html content.
-     * @param amount How much article to withdraw.
      * @return Array<Article> The articles.
      */
-    public static async parse(job: Job, instructions: Instructions, amount: Number = 10): Promise<Array<Article> | undefined> {
+    public static async parse(job: Job, instructions: Instructions): Promise<Array<Article> | undefined> {
         let parsedArticles: Array<Article> = [];
 
         let scrapeFunc = eval(instructions.scrapeFunction)

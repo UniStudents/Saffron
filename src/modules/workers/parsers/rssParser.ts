@@ -6,7 +6,7 @@ import Article from "../../../components/articles";
 
 
 export default class rssParser {
-    private static requested_fields: String[] = ["title", "link", "content", "pubDate"]
+    private static requested_fields: String[] = ["title", "link", "content", "pubDate", "categories"]
     private static parser_timout: number = 5000
 
     /**
@@ -48,24 +48,25 @@ export default class rssParser {
         return await parser.parseURL(url).then(feed => {
             let count = 0
             feed.items.forEach(item => {
+                // console.log(item)
                 //Initializing json object
                 dataJson[count] = {} as any
                 //Skipping all the renamed fields
                 this.requested_fields.forEach(field => {
                     if (customFieldsKeys.some(item => item === field)) return
-                    dataJson[count][field.toString()] = item[field.toString()] ? Utils.htmlStrip(item[field.toString()], false) : null;
+                    dataJson[count][field.toString()] = item[field.toString()] ? item[field.toString()] : null;
                 })
                 //Adds all the renamed fields as renamed on the result json
                 customFieldsKeys.forEach(customField => {
-                    dataJson[count][renameFields.get(customField)!!] = item[customField] ? Utils.htmlStrip(item[customField], false) : null
+                    dataJson[count][renameFields.get(customField)!!] = item[customField] ? item[customField] : null
                 })
                 count++
             })
+
             return dataJson
         }).catch(e => {
             Logger(LoggerTypes.ERROR, `RSS parser error ${e.message}.`);
         })
-
     }
 
     /**
@@ -99,11 +100,13 @@ export default class rssParser {
 
         Array.from(new Map(Object.entries(articles)).values()).forEach((article: any) => {
             let tmpArticle = new Article()
-            tmpArticle.title = article.hasOwnProperty("title") ? article["title"] :
-                renameFields.get("title") && article.hasOwnProperty(renameFields.get("title")!) ? article[renameFields.get("title")!] : ""
+            tmpArticle.title = Utils.htmlStrip(article.hasOwnProperty("title") ? article["title"] :
+                renameFields.get("title") && article.hasOwnProperty(renameFields.get("title")!) ? article[renameFields.get("title")!] : "")
 
-            tmpArticle.content = article.hasOwnProperty("content") ? article["content"] :
+            let content = article.hasOwnProperty("content") ? article["content"] :
                 renameFields.get("content") && article.hasOwnProperty(renameFields.get("content")!) ? article[renameFields.get("content")!] : ""
+
+            tmpArticle.content = Utils.htmlStrip(content, true)
 
             tmpArticle.pubDate = article.hasOwnProperty("pubDate") ? article["pubDate"] :
                 renameFields.get("pubDate") && article.hasOwnProperty(renameFields.get("pubDate")!) ? article[renameFields.get("pubDate")!] : ""
@@ -111,12 +114,17 @@ export default class rssParser {
             tmpArticle.link = article.hasOwnProperty("link") ? article["link"] :
                 renameFields.get("link") && article.hasOwnProperty(renameFields.get("link")!) ? article[renameFields.get("link")!] : ""
 
+            tmpArticle.attachments = Utils.extractLinks(content)
             //Add extras
-            tmpArticle.extras = {}
+            if (article.categories)
+                tmpArticle.categories = article.categories.map((c: any) => {
+                    return {name: c}
+                })
 
             if (alias)
-                tmpArticle.extras.categories = [{name: alias, links: [url]}]
+                tmpArticle.categories.push({name: alias, links: [url]})
 
+            tmpArticle.extras = {}
             //Find remaining values
             let remain = this.unAssign(article, this.requested_fields)
             new Map(Object.entries(remain)).forEach((value, key) => {
@@ -126,6 +134,7 @@ export default class rssParser {
             //Return value
             parsedArticles.push(tmpArticle)
         })
+        // console.log(util.inspect(parsedArticles, false, null, true))
 
         return parsedArticles
     }

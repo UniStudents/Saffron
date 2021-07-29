@@ -1,3 +1,5 @@
+import cheerio from "cheerio";
+
 const striptags = require('striptags');
 export default class Utils {
 
@@ -270,14 +272,44 @@ export default class Utils {
     }
 
 
-    public static htmlStrip(text: String = "", stripTags: boolean = true): String {
-        text = this.decode(text)
-        text = text.replace(/\n/g, '')
-            .replace(/\t/g, '')
-            .replace(/(<([^>]+)>)/gi, '')
-            .trim()
-        if (stripTags)
+    public static htmlStrip(text: String = "", stripTags: boolean = true): string {
+        if (stripTags) {
+            text = this.decode(text)
+            text = text.replace(/\n/g, '')
+                .replace(/\t/g, '')
+                .replace(/(<([^>]+)>)/gi, '')
+                .trim()
             text = striptags(text)
-        return text
+        } else {
+            text = this.decode(text)
+            text = text.replace(/\n/g, '')
+                .replace(/\t/g, '')
+                .trim()
+        }
+
+        return text.toString()
+    }
+
+    public static extractLinks(html: string): object[] {
+        const $ = cheerio.load(html);
+        const links: object[] = [];
+
+        $('a').each((index, element) => {
+            links.push({
+                text: $(element).text(), // get the text
+                link: $(element).attr('href'), // get the href attribute
+                type: 'a'
+            });
+        });
+
+        $('img').each((index, element) => {
+            links.push({
+                text: $(element).text(), // get the text
+                link: $(element).attr('href'), // get the href attribute
+                type: 'img'
+            });
+        });
+
+        return links
     }
 }

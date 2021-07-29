@@ -15,10 +15,9 @@ export default class WordpressParser {
      *
      * @param job The job instance
      * @param instructions How does the parser gonna parse the html content.
-     * @param amount How much article to withdraw.
      * @return Array<Article> The articles.
      */
-    public static async parse(job: Job, instructions: Instructions, amount: Number = 10): Promise<Array<Article> | undefined> {
+    public static async parse(job: Job, instructions: Instructions): Promise<Array<Article> | undefined> {
         let parsedArticles: Array<Article> = [];
 
         let categoriesUrl = instructions.url + 'wp-json/wp/v2/categories/'
@@ -56,25 +55,28 @@ export default class WordpressParser {
         for (let p of posts) {
             const article = new Article()
             article.title = Utils.htmlStrip(p.title.rendered, false).toString()
-            article.content = Utils.htmlStrip(p.content.rendered, false).toString()
+
+            let content = p.content.rendered
+            article.content = Utils.htmlStrip(content).toString()
+
             article.link = Utils.htmlStrip(p.link, false).toString()
-            article.pubDate = new Date(Utils.htmlStrip(p.date).toString())
+            article.pubDate = Utils.htmlStrip(p.date)
             article.timestamp = Date.now()
-            article.source = {id: instructions.source.id}
+            article.source = {
+                id: instructions.source.id
+            }
+            article.attachments = Utils.extractLinks(content)
 
-            if (!article.extras)
-                article.extras = {
-                    categories: []
-                }
-
+            article.categories = []
             for (let cId of p.categories) {
                 let cat = parsedCategories.find((c: any) => c.id == cId)
                 if (cat)
-                    article.extras.categories.push(cat)
+                    article.categories.push(cat)
             }
 
             parsedArticles.push(article)
         }
+        // console.log(util.inspect(parsedArticles, false, null, true))
 
         return parsedArticles
     }

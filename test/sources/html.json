@@ -1,6 +1,9 @@
 {
   "url": [
-    ["unipi","https://www.unipi.gr/unipi/el/%CE%B1%CE%BD%CE%B1%CE%BA%CE%BF%CE%B9%CE%BD%CF%8E%CF%83%CE%B5%CE%B9%CF%82.html"]
+    [
+      "unipi",
+      "https://www.unipi.gr/unipi/el/%CE%B1%CE%BD%CE%B1%CE%BA%CE%BF%CE%B9%CE%BD%CF%8E%CF%83%CE%B5%CE%B9%CF%82.html"
+    ]
   ],
   "name": "html-cs.unipi.gr",
   "type": "html",
@@ -31,7 +34,7 @@
         "find": null,
         "multiple": false
       },
-      "links": {
+      "attachments": {
         "class": ".catItemLinks",
         "attributes": [
           "value",
