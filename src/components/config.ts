@@ -21,7 +21,7 @@ export default class Config {
             nodes: 1 // Start one workers
         },
         scheduler: {
-            intervalBetweenJobs: 60 * 60 * 1000,
+            intervalBetweenJobs: 3600000,
             heavyJobFailureInterval: 86400000
         },
         grid: {

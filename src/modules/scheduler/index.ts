@@ -1,4 +1,3 @@
-import Database from "../database";
 import Config from "../../components/config";
 import Logger from "../../middleware/logger"
 import {LoggerTypes} from "../../middleware/LoggerTypes";
@@ -64,7 +63,7 @@ export default class Scheduler {
      */
     private getRandomTime(source_id: string): number {
         // return a random number of some minutes
-        if(process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
+        if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
             return 0
 
         return this.times[Math.abs(hashCode(source_id + randomId())) % this.times.length] * 1000;
@@ -76,7 +75,7 @@ export default class Scheduler {
      */
     private async electWorker(lastWorkerId: string): Promise<string> {
         let workers = await Grid.getInstance()!!.getWorkers()
-        if(workers.length != 1){
+        if (workers.length != 1) {
             let index = workers.findIndex((obj: Worker) => obj?.id === lastWorkerId)
             if (index != -1)
                 workers.splice(index, 1)
@@ -94,10 +93,10 @@ export default class Scheduler {
      */
     private async createJob(sourceId: string, workerId: string, interval: number): Promise<Job> {
         let job = new Job()
-        job.source = {id:sourceId}
+        job.source = {id: sourceId}
         // nextRetry = The time the job finished (just now) + interval + randomTIme
         job.nextRetry = Date.now() + interval + this.getRandomTime(sourceId)
-        job.worker = {id:workerId}
+        job.worker = {id: workerId}
         job.status = JobStatus.PENDING
         job.attempts = 0
         job.emitAttempts = 0
@@ -113,7 +112,7 @@ export default class Scheduler {
      * @return Return the issued job id
      */
     async issueJobForSource(source: Source, lasWorkerId: string = "", interval: number = -1): Promise<string> {
-        if(interval == -1)
+        if (interval == -1)
             interval = source.scrapeInterval ? source.scrapeInterval : Config.load().scheduler.intervalBetweenJobs
 
         let nJob = await this.createJob(source.getId(), await this.electWorker(lasWorkerId), interval)
@@ -130,7 +129,7 @@ export default class Scheduler {
         this.isForcedStopped = false
         // The refresh interval of checking job status
         let refreshInterval = 2 * 60 * 1000
-        if(process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
+        if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
             refreshInterval = 2 * 1000
 
         // Read all source files
@@ -146,12 +145,13 @@ export default class Scheduler {
         await Grid.getInstance().clearAllJobs()
         let sI = 0, wI = 0
 
-        for(let source of sources){
+        for (let source of sources) {
             let jobId = await this.issueJobForSource(source, workers[wI].id, interval * sI)
             Logger(LoggerTypes.DEBUG, "Scheduler: added new job: " + jobId)
-            sI++; wI++
+            sI++;
+            wI++
 
-            if(wI == workers.length) wI = 0
+            if (wI == workers.length) wI = 0
         }
 
         // Check grid for job status
@@ -159,28 +159,29 @@ export default class Scheduler {
             if (this.isForcedStopped)
                 await Grid.getInstance().clearAllJobs()
 
-            if(!this.isRunning)
+            if (!this.isRunning)
                 clearInterval(mInterval)
 
             // Load all jobs
             let pendingJobs = await Grid.getInstance().getJobs()
-            if(pendingJobs.length === 0)
+            if (pendingJobs.length === 0)
                 Logger(LoggerTypes.DEBUG, 'Scheduler: no pending jobs')
 
-            for(let job of pendingJobs){
-                if(!job.getSource().willParse) {
+            for (let job of pendingJobs) {
+                if (!job.getSource().willParse) {
                     await Grid.getInstance().deleteJob(job.id)
                     continue
                 }
 
-                switch (job.status){
+                switch (job.status) {
                     // Issue new job for this source
                     case JobStatus.FINISHED: {
                         Logger(LoggerTypes.DEBUG, "Scheduler: found finished job: " + job.id + '. Adding new job.')
 
                         await Grid.getInstance().deleteJob(job.id)
                         let jobId = await this.issueJobForSource(job.getSource(), job.worker.id)
-                    } break
+                    }
+                        break
                     // A job failed so increment the attempts and try again
                     case JobStatus.FAILED: {
                         Logger(LoggerTypes.DEBUG, "Scheduler: found failed job: " + job.id + '. Updating job.')
@@ -198,12 +199,13 @@ export default class Scheduler {
                         job.status = JobStatus.PENDING
 
                         await Grid.getInstance().updateJob(job)
-                    } break
+                    }
+                        break
                     // Pending jobs
                     case JobStatus.PENDING: {
-                        if(job.nextRetry <= Date.now()) {
+                        if (job.nextRetry <= Date.now()) {
                             // If the worker did not returned the job after 5 times (total 10 minutes) elect new worker
-                            if(job.emitAttempts > 5) {
+                            if (job.emitAttempts > 5) {
                                 await Grid.getInstance().fireWorker(job.worker.id)
                                 job.worker.id = await this.electWorker(job.worker.id)
                             }
@@ -211,7 +213,8 @@ export default class Scheduler {
                             Logger(LoggerTypes.DEBUG, "Scheduler: emitting pending job: " + job.id)
                             await Grid.getInstance().emitJob(job)
                         }
-                    } break
+                    }
+                        break
                 }
             }
         }, refreshInterval) // Refresh rate: 2 minutes - for dev 2 seconds

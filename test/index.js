@@ -1,9 +1,9 @@
 require('dotenv').config()
 const saffron = require('../dist/index');
 let config = {}
-try{
+try {
     config = require("./saffron.json")
-}catch(e){
+} catch (e) {
     config = {
         database:
             process.env.MONGO_URL && true ? {
@@ -13,22 +13,17 @@ try{
                     name: 'saffron-sandbox'
                 }
             } : {driver: "memory"},
-        sources:{
+        sources: {
             path: "/test/sources"
         },
         scheduler: {
-            intervalBetweenJobs: 140,
+            intervalBetweenJobs: 1000,
             heavyJobFailureInterval: 86400000
-        },
-        development: {
-            scheduler: {
-                intervalBetweenJobs: 130
-            }
         }
     }
 }
 
-(async() => {
+(async () => {
     await saffron.initialize(config)
 
     // saffron.on("start", () => console.log('saffron started'))

@@ -7,8 +7,6 @@
   ],
   "name": "html-cs.unipi.gr",
   "type": "html",
-  "retryInterval": 30000,
-  "scrapeInterval": 60000,
   "scrape": {
     "container": ".catItemView",
     "endPoint": "unipi.gr",

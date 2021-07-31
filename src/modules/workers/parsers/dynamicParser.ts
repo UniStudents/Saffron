@@ -30,7 +30,8 @@ export default class DynamicParser {
         for (const pair of urls) {
             let utils = new Utils(pair[1]);
 
-            let articles = await Database.getInstance()!!.getArticles({source: job.getSource()})
+            // TODO - like worker change it
+            let articles = await Database.getInstance()!!.getArticles(instructions.getSource().name, {source: job.getSource()})
             utils.isFirstScrape = articles.length === 0
             utils.isScrapeAfterError = job.attempts !== 0
 

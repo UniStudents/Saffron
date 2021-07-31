@@ -19,6 +19,12 @@ export default class Source {
      */
     static async parseFileObject(source: any, addToList: boolean = true): Promise<Source | undefined> {
         let ret = new Source()
+
+        if (["saffron", "config", "workers"].includes(source.name)) {
+            logger(LoggerTypes.INSTALL_ERROR, "Source name is blacklisted.")
+            return
+        }
+
         ret.name = source.name
         ret.scrapeInterval = source.scrapeInterval
         ret.retryInterval = source.retryInterval

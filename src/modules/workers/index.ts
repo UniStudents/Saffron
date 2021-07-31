@@ -59,13 +59,13 @@ export default class Worker {
             if (this.isForcedStopped) return
 
             if (Array.isArray(articles)) {
-                // TODO - Check articles with database and import what you have to import
                 articles.forEach((article: Article) => {
                     article.source = {id: job.source.id}
                     article.timestamp = Date.now()
                 })
 
-                await Database.getInstance()?.mergeArticles(articles)
+                // TODO - do it manual distinction from config.
+                await Database.getInstance()?.mergeArticles(job.getSource().name, articles)
 
                 await Grid.getInstance().finishJob(job)
             } else await Grid.getInstance().failedJob(job)
