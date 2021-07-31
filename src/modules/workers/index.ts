@@ -64,8 +64,13 @@ export default class Worker {
                     article.timestamp = Date.now()
                 })
 
-                // TODO - do it manual distinction from config.
-                await Database.getInstance()?.mergeArticles(job.getSource().name, articles)
+                let collection = job.getSource().collection_name
+                if (!collection || collection.length == 0)
+                    collection = job.getSource().name
+                if (!collection || collection.length == 0)
+                    collection = job.getSource().getId()
+
+                await Database.getInstance()?.mergeArticles(collection, articles)
 
                 await Grid.getInstance().finishJob(job)
             } else await Grid.getInstance().failedJob(job)

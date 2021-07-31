@@ -20,12 +20,13 @@ export default class Source {
     static async parseFileObject(source: any, addToList: boolean = true): Promise<Source | undefined> {
         let ret = new Source()
 
-        if (["saffron", "config", "workers"].includes(source.name)) {
+        if (["saffron", "config", "workers"].includes(source.collection_name)) {
             logger(LoggerTypes.INSTALL_ERROR, "Source name is blacklisted.")
             return
         }
 
         ret.name = source.name
+        ret.collection_name = source.collection_name
         ret.scrapeInterval = source.scrapeInterval
         ret.retryInterval = source.retryInterval
         ret.willParse = true // Get from db
@@ -140,6 +141,7 @@ export default class Source {
 
     private declare id: string
     declare name: string
+    declare collection_name: string
     declare scrapeInterval: number
     declare retryInterval: number
     declare willParse: boolean
@@ -169,6 +171,7 @@ export default class Source {
         return {
             id: this.id,
             name: this.name,
+            collection_name: this.collection_name,
             scrapeInterval: this.scrapeInterval,
             retryInterval: this.retryInterval,
             willParse: this.willParse,
@@ -179,6 +182,7 @@ export default class Source {
     static fromJSON(json: any): Source {
         let source = new Source(json.id)
         source.name = json.name
+        source.collection_name = json.collection_name
         source.scrapeInterval = json.scrapeInterval
         source.retryInterval = json.retryInterval
         source.willParse = json.willParse
