@@ -79,53 +79,63 @@ export default class Worker {
         })
     }
 
-    static async parse(instructions: Instructions, job: Job): Promise<Array<Article> | undefined> {
+    static async parse(instructions: Instructions, job: Job): Promise<Array<Article> | object> {
         let articles: Array<Article> = [];
         let parseFailed = false
+        let errorMessage = ""
 
         switch (instructions.parserType) {
             case ParserType.HTML: {
                 let result = await HtmlParser.parse(instructions, 10)
                 if (Array.isArray(result))
                     articles.push.apply(articles, result)
-                else parseFailed = true
+                else {
+                    parseFailed = true
+                    errorMessage = "html parser failed."
+                }
             }
                 break
             case ParserType.RSS: {
-                //All renameFields can be found on article.extras with the exact name mentioned in the source file
-                if (instructions.scrapeOptions.hasOwnProperty("renameFields")) {
-                    //@ts-ignore
-                    let rename_fields = instructions.scrapeOptions.renameFields
+                let rename_fields: Map<string, string> = new Map<string, string>()
+                if (instructions.scrapeOptions.hasOwnProperty("renameFields"))
+                    rename_fields = instructions.scrapeOptions.renameFields
 
-                    let result = await rssParser.parse(instructions.url, 10, rename_fields)
-                    if (Array.isArray(result))
-                        articles.push.apply(articles, result)
-                    else parseFailed = true
-                } else {
-                    let result = await rssParser.parse(instructions.url, 10)
-                    if (Array.isArray(result))
-                        articles.push.apply(articles, result)
-                    else parseFailed = true
+                let result = await rssParser.parse(instructions.url, 10, rename_fields)
+                if (Array.isArray(result))
+                    articles.push.apply(articles, result)
+                else {
+                    parseFailed = true
+                    errorMessage = "rss parser failed."
                 }
             }
                 break
             case ParserType.DYNAMIC: {
-                let result = await DynamicParser.parse(job, instructions)
-                if (result)
+                let result: any = await DynamicParser.parse(job, instructions)
+                if (Array.isArray(result))
                     articles.push.apply(articles, result)
-                else parseFailed = true
+                else {
+                    parseFailed = true
+                    errorMessage = result.errorMessage
+                }
             }
                 break
             case ParserType.WORDPRESS: {
-                let result = await WordpressParser.parse(job, instructions)
-                if (result)
+                let result: any = await WordpressParser.parse(instructions)
+                if (Array.isArray(result))
                     articles.push.apply(articles, result)
-                else parseFailed = true
+                else {
+                    parseFailed = true
+                    errorMessage = result.errorMessage
+                }
             }
                 break
         }
 
-        if (parseFailed) return
+        if (parseFailed) return {
+            sourceName: instructions.getSource().name,
+            parser: ParserType.toString(instructions.parserType),
+            message: "Failed to fetch the articles from the site."
+        }
 
         return articles
     }

@@ -17,7 +17,7 @@ export default class DynamicParser {
      * @param instructions How does the parser gonna parse the html content.
      * @return Array<Article> The articles.
      */
-    public static async parse(job: Job, instructions: Instructions): Promise<Array<Article> | undefined> {
+    public static async parse(job: Job, instructions: Instructions): Promise<Array<Article> | object> {
         let parsedArticles: Array<Article> = [];
 
         let scrapeFunc = eval(instructions.scrapeFunction)
@@ -61,6 +61,7 @@ export default class DynamicParser {
             if (result) {
                 if (!result.retry) job.getSource().lock()
                 logger(LoggerTypes.ERROR, `Dynamic parser scraping returned error: ${result.message}`)
+                return {errorMessage: result.message}
             }
         }
 

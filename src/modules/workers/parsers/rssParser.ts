@@ -147,12 +147,12 @@ export default class rssParser {
      * @param renameFields
      * @return Array<Article> The articles.
      */
-    public static async parse(url: string | (string[])[], amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()): Promise<Array<Article> | null> {
+    public static async parse(url: string | (string[])[], amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()): Promise<Array<Article> | undefined> {
         let parsedArticles: Array<Article> = [];
 
         if (typeof url == 'string') {
             let articles = await this.rssParser(url, amount, renameFields)
-            if (!articles) return null
+            if (!articles) return
 
             parsedArticles.push(...(await this.mapArticles(articles, undefined, url, renameFields)))
         } else {

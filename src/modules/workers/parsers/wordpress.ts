@@ -1,6 +1,5 @@
 import Instructions from "../../../components/instructions";
 import Article from "../../../components/articles";
-import Job from "../../../components/job";
 import Logger from "../../../middleware/logger";
 import {LoggerTypes} from "../../../middleware/LoggerTypes";
 import axios from "axios"
@@ -13,11 +12,10 @@ export default class WordpressParser {
      * This method uses a custom function made from the user
      * and returns a map containing the requested announcements.
      *
-     * @param job The job instance
      * @param instructions How does the parser gonna parse the html content.
      * @return Array<Article> The articles.
      */
-    public static async parse(job: Job, instructions: Instructions): Promise<Array<Article> | undefined> {
+    public static async parse(instructions: Instructions): Promise<Array<Article> | object> {
         let parsedArticles: Array<Article> = [];
 
         let categoriesUrl = instructions.url + 'wp-json/wp/v2/categories/'
@@ -29,7 +27,7 @@ export default class WordpressParser {
             posts = (await axios.get(postsUrl))?.data
         } catch (e) {
             Logger(LoggerTypes.ERROR, `Request error ${e.message}.`);
-            return
+            return {errorMessage: 'Request error: ' + e.message}
         }
 
         const parsedCategories = categories.map((category: any) => {

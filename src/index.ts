@@ -99,11 +99,13 @@ export = {
      * Get a source file and return an array of the parsed articles
      * @param fileContents
      */
-    async parse(fileContents: any): Promise<Array<Article> | undefined> {
-        let source = await Source.parseFileObject(fileContents, true)
-        if (!source) return
+    async parse(fileContents: any): Promise<Array<Article> | object> {
+        let source: Source | object = await Source.parseFileObject(fileContents, true)
+        if (!(source instanceof Source)) return source
 
-        return Worker.parse(source.instructions, new Job())
+        let job = new Job()
+        job.source = {id: source.getId()}
+        return await Worker.parse(source.instructions, new Job())
     },
 
     types: {Article, Utils, Exceptions}

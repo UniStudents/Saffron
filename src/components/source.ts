@@ -17,17 +17,55 @@ export default class Source {
      * @param source
      * @param addToList
      */
-    static async parseFileObject(source: any, addToList: boolean = true): Promise<Source | undefined> {
+    static async parseFileObject(source: any, addToList: boolean = true): Promise<Source | object> {
         let ret = new Source()
 
-        if (["saffron", "config", "workers"].includes(source.collection_name)) {
-            logger(LoggerTypes.INSTALL_ERROR, "Source name is blacklisted.")
-            return
+        if (!source.name || source.name.length < 3) {
+            logger(LoggerTypes.INSTALL_ERROR, "Source name is not valid. Must be a string with at least 3 characters.")
+            return {
+                filename: source.filename,
+                errorField: 'name',
+                message: "Source name is not valid. Must be type string with a least 3 characters."
+            }
         }
-
         ret.name = source.name
+
+        if (["saffron", "config", "workers"].includes(source.collection_name)) {
+            logger(LoggerTypes.INSTALL_ERROR, "Source collection name is blacklisted.")
+            return {
+                filename: source.filename,
+                errorField: 'collection_name',
+                message: "Source collection name is blacklisted. Must not be 'saffron', 'config' or 'workers'."
+            }
+        }
+        if (!source.collection_name || source.collection_name.length < 3) {
+            logger(LoggerTypes.INSTALL_ERROR, "Source collection name is not valid. Must be a string with at least 3 characters.")
+            return {
+                filename: source.filename,
+                errorField: 'collection_name',
+                message: "Source collection name is not valid. Must be type string with a least 3 characters."
+            }
+        }
         ret.collection_name = source.collection_name
+
+        if (source.scrapeInterval && (typeof source.scrapeInterval != 'number' || source.scrapeInterval < 0)) {
+            logger(LoggerTypes.INSTALL_ERROR, "Source scrapeInterval is not valid. Must be a positive number.")
+            return {
+                filename: source.filename,
+                errorField: 'scrapeInterval',
+                message: "Source scrapeInterval is not valid. Must be a positive number."
+            }
+        }
         ret.scrapeInterval = source.scrapeInterval
+
+        if (source.retryInterval && (typeof source.retryInterval != 'number' || source.retryInterval < 0)) {
+            logger(LoggerTypes.INSTALL_ERROR, "Source retryInterval is not valid. Must be a positive number.")
+            return {
+                filename: source.filename,
+                errorField: 'retryInterval',
+                message: "Source retryInterval is not valid. Must be a positive number."
+            }
+        }
         ret.retryInterval = source.retryInterval
         ret.willParse = true // Get from db
 
@@ -35,35 +73,68 @@ export default class Source {
         ret.instructions.source = {id: ret.getId()}
 
         if (typeof source.url === 'string') {
+            if (source.url.length == 0) {
+                logger(LoggerTypes.INSTALL_ERROR, "Source url is not valid. Must be a string type or an array.")
+                return {
+                    filename: source.filename,
+                    errorField: 'url',
+                    message: "Source url is not valid. Must be a string type or an array."
+                }
+            }
+
             ret.instructions.url = source.url
         } else if (Array.isArray(source.url)) {
             ret.instructions.url = []
             for (const pair of source.url) {
                 if (typeof pair[0] !== 'string' || pair[0].length == 0) {
                     logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid alias: ${pair[0]}. File: ${source.filename}`)
-                    return
+                    return {
+                        filename: source.filename,
+                        errorField: 'url',
+                        message: "Source url has an invalid alias/url pair. Invalid part: alias: " + pair[0]
+                    }
+                }
+                if (typeof pair[1] !== 'string' || pair[1].length == 0) {
+                    logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid alias: ${pair[0]}. File: ${source.filename}`)
+                    return {
+                        filename: source.filename,
+                        errorField: 'url',
+                        message: "Source url has an invalid alias/url pair. Invalid part: url: " + pair[1]
+                    }
                 }
 
                 ret.instructions.url.push([pair[0], pair[1]])
             }
         } else {
             logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid url. File: ${source.filename}`)
-            return
+            return {
+                filename: source.filename,
+                errorField: 'url',
+                message: "Source url is invalid type."
+            }
         }
 
 
         let parserType = await ParserType.getFromString(source.type)
         if (parserType === ParserType.UNKNOWN) {
             logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`)
-            return
+            return {
+                filename: source.filename,
+                errorField: 'type',
+                message: "Source type is invalid."
+            }
         }
 
         ret.instructions.parserType = parserType
         switch (parserType) {
             case ParserType.HTML: {
-                if (!source.url || !source.name || Object.entries(source.scrape.article).some((key: any) => key[1].class === undefined || key === undefined)) {
-                    logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`);
-                    return
+                if (Object.entries(source.scrape.article).some((key: any) => key[1].class === undefined || key === undefined)) {
+                    logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect scrape.article options. File: ${source.filename}`);
+                    return {
+                        filename: source.filename,
+                        errorField: 'scrape.article',
+                        message: "Source scrape article contains undefined objects."
+                    }
                 }
 
                 ret.instructions.elementSelector = source.scrape.container;
@@ -72,10 +143,6 @@ export default class Source {
             }
                 break
             case ParserType.RSS: {
-                if (!source.name || !source.url) {
-                    logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect type. File: ${source.filename}`)
-                    return
-                }
                 ret.instructions.scrapeOptions = {}
                 if (source.renameFields) {
                     let map = new Map()
@@ -89,6 +156,15 @@ export default class Source {
             case ParserType.DYNAMIC: {
                 let scrapeStr = source.scrape.toString()
 
+                if (typeof source.scrape != 'function') {
+                    logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Incorrect scrape function options. File: ${source.filename}`);
+                    return {
+                        filename: source.filename,
+                        errorField: 'scrape',
+                        message: "Source scrape function contains errors."
+                    }
+                }
+
                 ret.instructions.endPoint = source.url
                 ret.instructions.scrapeFunction = splice(scrapeStr
                     , scrapeStr.indexOf('(')
@@ -97,11 +173,6 @@ export default class Source {
             }
                 break
             case ParserType.WORDPRESS: {
-                if (typeof source.url !== 'string') {
-                    logger(LoggerTypes.INSTALL_ERROR, `Error parsing source file. Invalid url: ${source.url}. File: ${source.filename}`)
-                    return
-                }
-
                 ret.instructions.url = `${source.url}${(source.url.endsWith('/')) ? '' : '/'}`
             }
                 break
