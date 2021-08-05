@@ -304,8 +304,8 @@ export default class Utils {
 
         $('img').each((index, element) => {
             links.push({
-                text: $(element).text(), // get the text
-                link: $(element).attr('href'), // get the href attribute
+                alt: $(element).attr('alt'), // get the text
+                link: $(element).attr('src'), // get the href attribute
                 type: 'img'
             });
         });
