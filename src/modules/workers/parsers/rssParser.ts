@@ -3,6 +3,7 @@ import Logger from "../../../middleware/logger";
 import {LoggerTypes} from "../../../middleware/LoggerTypes";
 import Utils from "./Utils";
 import Article from "../../../components/articles";
+import Instructions from "../../../components/instructions";
 
 
 export default class rssParser {
@@ -95,11 +96,17 @@ export default class rssParser {
         });
     }
 
-    private static async mapArticles(articles: any, alias: string | undefined, url: string, renameFields: Map<string, string>): Promise<Array<Article>> {
+    private static async mapArticles(articles: any, alias: string | undefined, url: string, renameFields: Map<string, string>, instructions: Instructions): Promise<Array<Article>> {
         let parsedArticles: Array<Article> = [];
 
         Array.from(new Map(Object.entries(articles)).values()).forEach((article: any) => {
             let tmpArticle = new Article()
+
+            tmpArticle.source = {
+                id: instructions.getSource().getId(),
+                name: instructions.getSource().name
+            }
+
             tmpArticle.title = Utils.htmlStrip(article.hasOwnProperty("title") ? article["title"] :
                 renameFields.get("title") && article.hasOwnProperty(renameFields.get("title")!) ? article[renameFields.get("title")!] : "")
 
@@ -142,25 +149,25 @@ export default class rssParser {
 
     /**
      * Returns an array of articles based on rssParser function results
-     * @param url The url that will be used for parsing
+     * @param instructions
      * @param amount The amount of articles that wil be returned
      * @param renameFields
      * @return Array<Article> The articles.
      */
-    public static async parse(url: string | (string[])[], amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()): Promise<Array<Article> | undefined> {
+    public static async parse(instructions: Instructions, amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()): Promise<Array<Article> | undefined> {
         let parsedArticles: Array<Article> = [];
 
-        if (typeof url == 'string') {
-            let articles = await this.rssParser(url, amount, renameFields)
+        if (typeof instructions.url == 'string') {
+            let articles = await this.rssParser(instructions.url, amount, renameFields)
             if (!articles) return
 
-            parsedArticles.push(...(await this.mapArticles(articles, undefined, url, renameFields)))
+            parsedArticles.push(...(await this.mapArticles(articles, undefined, instructions.url, renameFields, instructions)))
         } else {
-            for (const pair of url) {
+            for (const pair of instructions.url) {
                 let articles = await this.rssParser(pair[1], amount, renameFields)
                 if (!articles) continue
 
-                parsedArticles.push(...(await this.mapArticles(articles, pair[0], pair[1], renameFields)))
+                parsedArticles.push(...(await this.mapArticles(articles, pair[0], pair[1], renameFields, instructions)))
             }
         }
 

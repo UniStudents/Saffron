@@ -38,14 +38,6 @@ export default class Source {
                 message: "Source collection name is blacklisted. Must not be 'saffron', 'config' or 'workers'."
             }
         }
-        if (!source.collection_name || source.collection_name.length < 3) {
-            logger(LoggerTypes.INSTALL_ERROR, "Source collection name is not valid. Must be a string with at least 3 characters.")
-            return {
-                filename: source.filename,
-                errorField: 'collection_name',
-                message: "Source collection name is not valid. Must be type string with a least 3 characters."
-            }
-        }
         ret.collection_name = source.collection_name
 
         if (source.scrapeInterval && (typeof source.scrapeInterval != 'number' || source.scrapeInterval < 0)) {

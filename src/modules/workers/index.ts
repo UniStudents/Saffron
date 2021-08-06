@@ -60,7 +60,10 @@ export default class Worker {
 
             if (Array.isArray(articles)) {
                 articles.forEach((article: Article) => {
-                    article.source = {id: job.source.id}
+                    article.source = {
+                        id: job.getSource().getId(),
+                        name: job.getSource().name
+                    }
                     article.timestamp = Date.now()
                 })
 
@@ -100,7 +103,7 @@ export default class Worker {
                 if (instructions.scrapeOptions.hasOwnProperty("renameFields"))
                     rename_fields = instructions.scrapeOptions.renameFields
 
-                let result = await rssParser.parse(instructions.url, 10, rename_fields)
+                let result = await rssParser.parse(instructions, 10, rename_fields)
                 if (Array.isArray(result))
                     articles.push.apply(articles, result)
                 else {

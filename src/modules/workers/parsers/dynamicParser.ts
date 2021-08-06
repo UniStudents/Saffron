@@ -30,7 +30,6 @@ export default class DynamicParser {
         for (const pair of urls) {
             let utils = new Utils(pair[1]);
 
-
             let collection = instructions.getSource().collection_name
             if (!collection || collection.length == 0)
                 collection = instructions.getSource().name
@@ -43,6 +42,11 @@ export default class DynamicParser {
 
             utils.getArticles = (count: number): Array<Article> => articles.slice(0, count)
             utils.onNewArticle = (article: Article) => {
+                article.source = {
+                    id: job.getSource().getId(),
+                    name: job.getSource().name
+                }
+
                 if (!article.extras) article.extras = {}
 
                 if (pair[0].length !== 0)

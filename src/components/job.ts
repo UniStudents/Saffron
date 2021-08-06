@@ -55,7 +55,7 @@ export default class Job {
 
     static fromJSON(json: any): Job {
         let job = new Job(json.id)
-        job.source = { id: json.source.id }
+        job.source = json.source
 
         // Add source to list
         let index = Source._sources.findIndex(s => s.getId() === json.source.id)

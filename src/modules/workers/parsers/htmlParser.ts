@@ -172,7 +172,10 @@ export default class HtmlParser {
                     }
                     // It stores the article data to an instance of Article class.
                     tmpArticle = new Article()
-                    tmpArticle.source = {id: instructions.getSource().getId()}
+                    tmpArticle.source = {
+                        id: instructions.getSource().getId(),
+                        name: instructions.getSource().name
+                    }
                     tmpArticle.title = (articleData.title) ? Utils.htmlStrip(articleData.title) : ''
                     tmpArticle.pubDate = (articleData.pubDate) ? Utils.htmlStrip(articleData.pubDate) : ''
 

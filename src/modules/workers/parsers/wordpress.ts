@@ -61,7 +61,8 @@ export default class WordpressParser {
             article.pubDate = Utils.htmlStrip(p.date)
             article.timestamp = Date.now()
             article.source = {
-                id: instructions.source.id
+                id: instructions.getSource().getId(),
+                name: instructions.getSource().name
             }
             article.attachments = Utils.extractLinks(content)
 

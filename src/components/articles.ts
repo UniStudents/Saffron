@@ -17,6 +17,7 @@ export default class Article {
     declare extras: _extras
     declare source: {
         id: string
+        name: string
     }
     declare attachments: object[]
     declare categories: object[]
