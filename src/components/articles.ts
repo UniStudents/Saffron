@@ -42,6 +42,24 @@ export default class Article {
     }
 
     /**
+     * Parse the article class to a json object
+     */
+    static fromJSON(json: any): Article {
+        const art = new Article(json.id)
+        art.timestamp = json.timestamp
+        art.title = json.title
+        art.source = json.source
+        art.link = json.link
+        art.pubDate = json.pubDate
+        art.content = json.content
+        art.extras = json.extras
+        art.hash = json.hash
+        art.attachments = json.attachments
+        art.categories = json.categories
+        return art
+    }
+
+    /**
      * Return the source class where this article belongs
      */
     getSource(): Source | null {

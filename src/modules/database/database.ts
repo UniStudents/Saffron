@@ -1,5 +1,5 @@
 import Article from "../../components/articles"
-import Events from "../events";
+import Grid from "../grid";
 
 export default abstract class Database {
 
@@ -68,7 +68,7 @@ export default abstract class Database {
         articles = articles.filter((article: Article) => !hashes.includes(article.getHash()))
 
         await articles.forEach((article: Article) => this.pushArticle(src, article))
-        if (articles.length > 0) Events.getAntennae().emit("new-articles-pushed", articles)
+        if (articles.length > 0) await Grid.getInstance().emitNewArticles(articles)
 
         return articles
     }

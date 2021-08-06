@@ -13,12 +13,13 @@ import publicIp from "public-ip";
 import privateIp from "ip";
 import Database from "../database/index";
 import randomId from "../../middleware/randomId";
+import Article from "../../components/articles";
 // For alpha version
 
 export default class Grid {
 
     private static instance: Grid
-    
+
     /**
      * Returns an instance of Grid
      */
@@ -108,6 +109,11 @@ export default class Grid {
 
                     let i = this.jobsStorage.findIndex(job => job.id == jobId)
                     if (i != -1) this.jobsStorage[i].status = JobStatus.FAILED
+                })
+
+                socket.on('new-articles-pushed', (data: any) => {
+                    let articles = data.map((json: any) => Article.fromJSON(json))
+                    this.io_client.emit('new-articles-pushed', articles)
                 })
             })
         }
@@ -301,5 +307,13 @@ export default class Grid {
         Events.getAntennae().emit("new-job", job)
 
         this.io_server.sockets.emit('new-job', {job: job.toJSON()})
+    }
+
+    async emitNewArticles(articles: any): Promise<void> {
+        if (this.isMain)
+            Events.getAntennae().emit("new-articles-pushed", articles.map((a: Article) => a.toJSON()))
+        else
+            this.io_client.emit('new-articles-pushed', articles)
+
     }
 }
