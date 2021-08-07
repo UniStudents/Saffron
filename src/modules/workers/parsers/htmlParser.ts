@@ -180,8 +180,9 @@ export default class HtmlParser {
                     tmpArticle.pubDate = (articleData.pubDate) ? Utils.htmlStrip(articleData.pubDate) : ''
 
                     let content = (articleData.content) ? articleData.content : ''
-                    tmpArticle.content = Utils.htmlStrip(content)
+                    tmpArticle.content = content
 
+                    if (!articleData.attachments) articleData.attachments = []
                     tmpArticle.attachments = articleData.attachments.map((att: any) => {
                         return {
                             text: att.value,

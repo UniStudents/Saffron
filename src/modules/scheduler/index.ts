@@ -127,10 +127,6 @@ export default class Scheduler {
     async start(): Promise<void> {
         this.isRunning = true
         this.isForcedStopped = false
-        // The refresh interval of checking job status
-        let refreshInterval = 2 * 60 * 1000
-        if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
-            refreshInterval = 2 * 1000
 
         // Read all source files
         await this.scanSourceFiles()
@@ -148,6 +144,7 @@ export default class Scheduler {
         for (let source of sources) {
             let jobId = await this.issueJobForSource(source, workers[wI].id, interval * sI)
             Logger(LoggerTypes.DEBUG, "Scheduler: added new job: " + jobId)
+            Events.getAntennae().emit("scheduler.job.new", jobId)
             sI++;
             wI++
 
@@ -180,6 +177,7 @@ export default class Scheduler {
 
                         await Grid.getInstance().deleteJob(job.id)
                         let jobId = await this.issueJobForSource(job.getSource(), job.worker.id)
+                        Events.getAntennae().emit("scheduler.job.new", jobId)
                     }
                         break
                     // A job failed so increment the attempts and try again
@@ -217,7 +215,7 @@ export default class Scheduler {
                         break
                 }
             }
-        }, refreshInterval) // Refresh rate: 2 minutes - for dev 2 seconds
+        }, Config.load().scheduler.intervalBetweenChecks) // Refresh rate: 2 minutes - for dev 2 seconds
     }
 
     /**

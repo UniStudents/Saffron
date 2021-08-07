@@ -134,12 +134,17 @@ export default class Worker {
                 break
         }
 
-        if (parseFailed) return {
-            sourceName: instructions.getSource().name,
-            parser: ParserType.toString(instructions.parserType),
-            message: "Failed to fetch the articles from the site."
-        }
+        if (parseFailed) {
+            let message = {
+                sourceName: instructions.getSource().name,
+                parser: ParserType.toString(instructions.parserType),
+                message: "Failed to fetch the articles from the site."
+            }
 
+            await Grid.getInstance().emitParserError(message)
+
+            return message
+        }
         return articles
     }
 

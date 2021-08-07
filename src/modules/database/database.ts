@@ -35,6 +35,7 @@ export default abstract class Database {
      * new articles. Instead, use mergeArticles().
      * @param src Some string of source distinction.
      * @param article The article object to add to the database
+     * @return The article id if it pushed successfully.
      */
     abstract pushArticle(src: string, article: Article): Promise<string>
 
@@ -59,6 +60,8 @@ export default abstract class Database {
      * @param articles An array of Article objects that are meant to be merged into the database.
      */
     async mergeArticles(src: string, articles: Article[]) {
+        await Grid.getInstance().emitFoundArticles(articles)
+
         let dbArticles = await this.getArticles(src, {
             sortBy: "date",
             count: articles.length * 2
@@ -67,8 +70,14 @@ export default abstract class Database {
         let hashes = dbArticles.map((article: Article) => article.getHash())
         articles = articles.filter((article: Article) => !hashes.includes(article.getHash()))
 
-        await articles.forEach((article: Article) => this.pushArticle(src, article))
         if (articles.length > 0) await Grid.getInstance().emitNewArticles(articles)
+
+        await articles.forEach((article: Article) => {
+            ;(async () => {
+                let id = await this.pushArticle(src, article)
+                if (id == "") await Grid.getInstance().emitFailedToUploadArticle(article)
+            })();
+        })
 
         return articles
     }

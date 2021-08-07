@@ -113,7 +113,7 @@ export default class rssParser {
             let content = article.hasOwnProperty("content") ? article["content"] :
                 renameFields.get("content") && article.hasOwnProperty(renameFields.get("content")!) ? article[renameFields.get("content")!] : ""
 
-            tmpArticle.content = Utils.htmlStrip(content, true)
+            tmpArticle.content = content
 
             tmpArticle.pubDate = article.hasOwnProperty("pubDate") ? article["pubDate"] :
                 renameFields.get("pubDate") && article.hasOwnProperty(renameFields.get("pubDate")!) ? article[renameFields.get("pubDate")!] : ""

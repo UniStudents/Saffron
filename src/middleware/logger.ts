@@ -11,7 +11,7 @@ import {DateTime} from "luxon";
 export default (type: LoggerTypes, data: any) => {
     // if(type === LoggerTypes.DEBUG) return
 
-    Events.getAntennae().emit("log", type, data)
+    Events.getAntennae().emit("log", {type, log: data})
     let time = chalk.bold(`${DateTime.now().toLocaleString({
         day: '2-digit',
         month: '2-digit',

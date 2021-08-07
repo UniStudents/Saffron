@@ -58,8 +58,10 @@ export default class Grid {
 
             this.io_server.on("connection", (socket: Socket) => {
                 this.workersClients.push({workersIds: [], socketId: socket.id})
+                Events.getAntennae().emit("grid.node.connected")
 
                 socket.on('disconnect', () => {
+                    Events.getAntennae().emit("grid.node.disconnected")
                     let i = this.workersClients.findIndex(js => js.socketId == socket.id)
                     if (i != -1) {
                         // Delete all workers from client
@@ -78,6 +80,8 @@ export default class Grid {
                     if (typeof workerId !== 'string') return
                     if (workerId.length == 0) return
 
+                    Events.getAntennae().emit("grid.worker.announced", workerId)
+
                     this.workersIds.push(workerId)
                     this.workersClients.find(js => js.socketId == socket.id)?.workersIds?.push(workerId)
 
@@ -86,6 +90,8 @@ export default class Grid {
 
                 socket.on('destroy-worker', (data: any) => {
                     logger(LoggerTypes.INFO, `Worker disconnected: ${data.id}`)
+
+                    Events.getAntennae().emit("grid.worker.destroyed", data.id)
 
                     let j = this.workersIds.findIndex((obj: string) => obj === data.id)
                     if (j != -1) this.workersIds.splice(j, 1)
@@ -97,24 +103,44 @@ export default class Grid {
                     }
                 })
 
-                socket.on('finished-job', (data: any) => {
-                    let jobId = data.id
+                socket.on('workers.job.finished', (data: any) => {
+                    let jobId = data
 
                     let i = this.jobsStorage.findIndex(job => job.id == jobId)
                     if (i != -1) this.jobsStorage[i].status = JobStatus.FINISHED
+
+                    Events.getAntennae().emit("workers.job.finished", jobId)
                 })
 
-                socket.on('failed-job', (data: any) => {
-                    let jobId = data.id
+                socket.on('workers.job.failed', (data: any) => {
+                    let jobId = data
 
                     let i = this.jobsStorage.findIndex(job => job.id == jobId)
                     if (i != -1) this.jobsStorage[i].status = JobStatus.FAILED
+
+                    Events.getAntennae().emit("workers.job.failed", jobId)
                 })
 
-                socket.on('new-articles-pushed', (data: any) => {
+                socket.on('workers.articles.new', (data: any) => {
                     let articles = data.map((json: any) => Article.fromJSON(json))
-                    this.io_client.emit('new-articles-pushed', articles)
+                    this.io_client.emit('workers.articles.new', articles)
                 })
+
+                socket.on('workers.articles.found', (data: any) => {
+                    let articles = data.map((json: any) => Article.fromJSON(json))
+                    this.io_client.emit('workers.articles.found', articles)
+                })
+
+                socket.on('workers.articles.errorOffloading', (data: any) => {
+                    let article = Article.fromJSON(data)
+                    this.io_client.emit('workers.articles.errorOffloading', article)
+                })
+
+                socket.on('workers.parsers.error', (data: any) => {
+                    this.io_client.emit('workers.parsers.error', data)
+                })
+
+
             })
         }
     }
@@ -151,9 +177,9 @@ export default class Grid {
 
             })
 
-            this.io_client.on('new-job', (data: any) => {
+            this.io_client.on('scheduler.job.new', (data: any) => {
                 let job = Job.fromJSON(data.job)
-                Events.getAntennae().emit("new-job", job)
+                Events.getAntennae().emit("scheduler.job.new", job)
             })
 
             // In case of reconnection the workers will be automatically announced from the grid
@@ -275,10 +301,11 @@ export default class Grid {
      */
     async finishJob(job: Job): Promise<void> {
         job.status = JobStatus.FINISHED
-        if (this.isMain)
+        if (this.isMain) {
             await this.updateJob(job)
-        else
-            this.io_client.emit('finish-job', {id: job.id})
+            Events.getAntennae().emit('workers.job.finished', job.id)
+        } else
+            this.io_client.emit('workers.job.finished', job.id)
     }
 
     /**
@@ -288,10 +315,11 @@ export default class Grid {
      */
     async failedJob(job: Job): Promise<void> {
         job.status = JobStatus.FAILED
-        if (this.isMain)
+        if (this.isMain) {
             await this.updateJob(job)
-        else
-            this.io_client.emit('failed-job', {id: job.id})
+            Events.getAntennae().emit("workers.job.failed", job.id)
+        } else
+            this.io_client.emit('workers.job.failed', job.id)
     }
 
     /**
@@ -304,16 +332,28 @@ export default class Grid {
 
         job.emitAttempts++
         await this.updateJob(job)
-        Events.getAntennae().emit("new-job", job)
+        Events.getAntennae().emit("scheduler.job.new", job)
 
-        this.io_server.sockets.emit('new-job', {job: job.toJSON()})
+        this.io_server.sockets.emit('scheduler.job.new', {job: job.toJSON()})
     }
 
     async emitNewArticles(articles: any): Promise<void> {
-        if (this.isMain)
-            Events.getAntennae().emit("new-articles-pushed", articles.map((a: Article) => a.toJSON()))
-        else
-            this.io_client.emit('new-articles-pushed', articles)
+        if (this.isMain) Events.getAntennae().emit("workers.articles.new", articles.map((a: Article) => a.toJSON()))
+        else this.io_client.emit('workers.articles.new', articles)
+    }
 
+    async emitFoundArticles(articles: any): Promise<void> {
+        if (this.isMain) Events.getAntennae().emit("workers.articles.found", articles.map((a: Article) => a.toJSON()))
+        else this.io_client.emit('workers.articles.found', articles)
+    }
+
+    async emitFailedToUploadArticle(article: any): Promise<void> {
+        if (this.isMain) Events.getAntennae().emit("workers.articles.errorOffloading", article.toJSON())
+        else this.io_client.emit('workers.articles.errorOffloading', article)
+    }
+
+    async emitParserError(message: any): Promise<void> {
+        if (this.isMain) Events.getAntennae().emit("workers.parsers.error", message)
+        else this.io_client.emit('workers.parsers.error', message)
     }
 }

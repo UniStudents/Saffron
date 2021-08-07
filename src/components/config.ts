@@ -22,7 +22,8 @@ export default class Config {
         },
         scheduler: {
             intervalBetweenJobs: 3600000,
-            heavyJobFailureInterval: 86400000
+            heavyJobFailureInterval: 86400000,
+            intervalBetweenChecks: 120000
         },
         grid: {
             distributed: false

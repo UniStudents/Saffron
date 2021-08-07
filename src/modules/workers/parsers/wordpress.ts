@@ -55,7 +55,7 @@ export default class WordpressParser {
             article.title = Utils.htmlStrip(p.title.rendered, false).toString()
 
             let content = p.content.rendered
-            article.content = Utils.htmlStrip(content).toString()
+            article.content = content
 
             article.link = Utils.htmlStrip(p.link, false).toString()
             article.pubDate = Utils.htmlStrip(p.date)
