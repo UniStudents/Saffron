@@ -132,6 +132,7 @@ export default class Scheduler {
         await this.scanSourceFiles()
         let sources = Source.getSources()
         Logger(LoggerTypes.INFO, `Loaded ${sources.length} sources`)
+        Events.getAntennae().emit("scheduler.sources.new", sources.map((source: Source) => source.name))
 
         // Load all workers
         let workers = await Grid.getInstance()!!.getWorkers()
