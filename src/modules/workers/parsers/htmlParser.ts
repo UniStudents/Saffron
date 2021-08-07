@@ -182,14 +182,17 @@ export default class HtmlParser {
                     let content = (articleData.content) ? articleData.content : ''
                     tmpArticle.content = content
 
-                    if (!articleData.attachments) articleData.attachments = []
-                    tmpArticle.attachments = articleData.attachments.map((att: any) => {
+                    tmpArticle.attachments = []
+
+                    let attachs = articleData.attachments.map((att: any) => {
                         return {
                             text: att.value,
                             link: att.link,
                             type: 'href'
                         }
                     })
+                    tmpArticle.attachments.push(...((attachs) ? attachs : []))
+                    tmpArticle.attachments.push(...Utils.extractLinks(content))
 
                     tmpArticle.extras = {}
 
