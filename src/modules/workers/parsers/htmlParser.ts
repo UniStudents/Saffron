@@ -184,7 +184,8 @@ export default class HtmlParser {
 
                     tmpArticle.attachments = []
 
-                    let attachs = articleData.attachments.map((att: any) => {
+
+                    let attachs = articleData.attachments?.map((att: any) => {
                         return {
                             text: att.value,
                             link: att.link,
