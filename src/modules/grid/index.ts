@@ -207,6 +207,8 @@ export default class Grid {
         this.workersIds.push(worker.id)
         if (!this.isMain)
             this.io_client.emit('announce-worker', {id: worker.id})
+        else
+            Events.getAntennae().emit("grid.worker.announced", worker.id)
     }
 
     /**
@@ -219,6 +221,7 @@ export default class Grid {
 
         if (!this.isMain)
             this.io_client.emit('destroy-worker', {id: worker.id})
+        else Events.getAntennae().emit("grid.worker.destroyed", worker.id)
     }
 
     /**

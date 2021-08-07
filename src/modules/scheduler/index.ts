@@ -75,13 +75,13 @@ export default class Scheduler {
      */
     private async electWorker(lastWorkerId: string): Promise<string> {
         let workers = await Grid.getInstance()!!.getWorkers()
-        if (workers.length != 1) {
+        if (workers.length > 1) {
             let index = workers.findIndex((obj: Worker) => obj?.id === lastWorkerId)
             if (index != -1)
                 workers.splice(index, 1)
         }
-
         let newWorker = workers[Math.abs(hashCode(lastWorkerId)) % workers.length]
+
         return newWorker.id
     }
 
@@ -125,6 +125,9 @@ export default class Scheduler {
      * Starts the scheduler
      */
     async start(): Promise<void> {
+        let checkInterval = Config.load().scheduler.intervalBetweenChecks
+        if (!checkInterval) checkInterval = 120000 // 2 minutes
+
         this.isRunning = true
         this.isForcedStopped = false
 
@@ -216,7 +219,7 @@ export default class Scheduler {
                         break
                 }
             }
-        }, Config.load().scheduler.intervalBetweenChecks) // Refresh rate: 2 minutes - for dev 2 seconds
+        }, checkInterval) // Refresh rate: 2 minutes - for dev 2 seconds
     }
 
     /**

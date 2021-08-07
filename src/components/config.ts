@@ -66,20 +66,45 @@ export default class Config {
             }
         }
 
-        this._config = _.mergeWith({}, this._config, config, (o, s) => s ? s : o)
+        // this._config = _.mergeWith({}, this._config, config, (o, s) => s ? s : o)
+
+        this._config = _.mergeWith({}, this._config, config, (o, s) => {
+            if (typeof o == 'object')
+                return _.mergeWith({}, o, s, (o1, s1) => s1 ? s1 : o1)
+            return s ? s : o
+        })
+        // console.log(util.inspect(this._config, false, null, true))
 
         switch (process.env.NODE_ENV) {
             case "production":
                 //@ts-ignore
-                if (config.production) this._config = _.mergeWith({}, this._config, config.production, (o, s) => s ? s : o)
+                if (config.production) //this._config = _.mergeWith({}, this._config, config.production, (o, s) => s ? s : o)
+                    //@ts-ignore
+                    this._config = _.mergeWith({}, this._config, config.production, (o, s) => {
+                        if (typeof o == 'object')
+                            return _.mergeWith({}, o, s, (o1, s1) => s1 ? s1 : o1)
+                        return s ? s : o
+                    })
                 break
             case "development":
                 //@ts-ignore
-                if (config.development) this._config = _.mergeWith({}, this._config, config.development, (o, s) => s ? s : o)
+                if (config.development) // this._config = _.mergeWith({}, this._config, config.development, (o, s) => s ? s : o)
+                    //@ts-ignore
+                    this._config = _.mergeWith({}, this._config, config.development, (o, s) => {
+                        if (typeof o == 'object')
+                            return _.mergeWith({}, o, s, (o1, s1) => s1 ? s1 : o1)
+                        return s ? s : o
+                    })
                 break
             case "testing":
                 //@ts-ignore
-                if (config.testing) this._config = _.mergeWith({}, this._config, config.testing, (o, s) => s ? s : o)
+                if (config.testing) //this._config = _.mergeWith({}, this._config, config.testing, (o, s) => s ? s : o)
+                                    //@ts-ignore
+                    this._config = _.mergeWith({}, this._config, config.testing, (o, s) => {
+                        if (typeof o == 'object')
+                            return _.mergeWith({}, o, s, (o1, s1) => s1 ? s1 : o1)
+                        return s ? s : o
+                    })
                 break
             default:
 
