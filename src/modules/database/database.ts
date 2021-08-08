@@ -60,7 +60,7 @@ export default abstract class Database {
      * @param articles An array of Article objects that are meant to be merged into the database.
      */
     async mergeArticles(src: string, articles: Article[]) {
-        await Grid.getInstance().emitFoundArticles(articles)
+        await Grid.getInstance().onFoundArticles(articles)
 
         let dbArticles = await this.getArticles(src, {
             sortBy: "date",
@@ -70,12 +70,12 @@ export default abstract class Database {
         let hashes = dbArticles.map((article: Article) => article.getHash())
         articles = articles.filter((article: Article) => !hashes.includes(article.getHash()))
 
-        if (articles.length > 0) await Grid.getInstance().emitNewArticles(articles)
+        if (articles.length > 0) await Grid.getInstance().onNewArticles(articles)
 
         await articles.forEach((article: Article) => {
             ;(async () => {
                 let id = await this.pushArticle(src, article)
-                if (id == "") await Grid.getInstance().emitFailedToUploadArticle(article)
+                if (id == "") await Grid.getInstance().onFailedUploadingArticle(article)
             })();
         })
 

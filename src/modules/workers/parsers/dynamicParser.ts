@@ -4,8 +4,6 @@ import Utils from "../../../components/utils";
 import Exceptions from "../../../components/exceptions";
 import Job from "../../../components/job";
 import Database from "../../database";
-import logger from "../../../middleware/logger";
-import {LoggerTypes} from "../../../middleware/LoggerTypes";
 
 export default class DynamicParser {
 
@@ -62,11 +60,7 @@ export default class DynamicParser {
 
             let result: Exceptions | undefined = await scrapeFunc(Article, utils, Exceptions)
 
-            if (result) {
-                if (!result.retry) job.getSource().lock()
-                logger(LoggerTypes.ERROR, `Dynamic parser scraping returned error: ${result.message}`)
-                return {errorMessage: result.message}
-            }
+            if (result) return {errorMessage: result.message}
         }
 
         return parsedArticles

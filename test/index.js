@@ -17,8 +17,9 @@ try {
             path: "/test/sources"
         },
         scheduler: {
-            intervalBetweenJobs: 5000,
-            heavyJobFailureInterval: 86400000
+            intervalBetweenJobs: 30000,
+            heavyJobFailureInterval: 86400000,
+            intervalBetweenChecks: 5000
         }
     }
 }

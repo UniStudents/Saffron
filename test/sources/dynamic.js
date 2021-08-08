@@ -6,12 +6,12 @@ module.exports = {
     name: "custom-cs.unipi.gr",
     type: "dynamic",
     scrape: async () => {
-        const article = new Article()
-        article.title = "Hey"
-        // ...
-        await utils.onNewArticle(article)
+        // const article = new Article()
+        // article.title = "Hey"
+        // // ...
+        // await utils.onNewArticle(article)
 
 
-        // return new Exceptions("Error1", true)
+        return new Exceptions("Error1")
     }
 }

@@ -67,7 +67,6 @@ export default class Source {
             }
         }
         ret.retryInterval = source.retryInterval
-        ret.willParse = true // Get from db
 
         ret.instructions = new Instructions()
         ret.instructions.source = {id: ret.getId()}
@@ -215,18 +214,10 @@ export default class Source {
     declare collection_name: string
     declare scrapeInterval: number
     declare retryInterval: number
-    declare willParse: boolean
     declare instructions: Instructions
 
     constructor(id: string = "") {
         if (id !== "") this.id = id
-    }
-
-    /**
-     * Locks the source file so it will not issue a new job until it is unlocked
-     */
-    lock() {
-        this.willParse = false
     }
 
     /**
@@ -245,7 +236,6 @@ export default class Source {
             collection_name: this.collection_name,
             scrapeInterval: this.scrapeInterval,
             retryInterval: this.retryInterval,
-            willParse: this.willParse,
             instructions: this.instructions.toJSON()
         }
     }
@@ -256,7 +246,6 @@ export default class Source {
         source.collection_name = json.collection_name
         source.scrapeInterval = json.scrapeInterval
         source.retryInterval = json.retryInterval
-        source.willParse = json.willParse
         source.instructions = Instructions.fromJSON(json.instructions)
 
         return source

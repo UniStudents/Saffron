@@ -19,7 +19,7 @@ declare function require(name: string): any;
 
 // This is a centralized array that collects all the logs and errors, so that the report handler can easily collect and report them.
 let db: any
-    , grid: any
+    , grid: Grid
     , scheduler: Scheduler
     , antennae = Events.getAntennae()
     , workers: Worker[] = []
@@ -58,6 +58,10 @@ export = {
         for (let i = 0; i < workersSize; i++)
             workers.push(new Worker())
 
+        // Initialize grid
+        grid = Grid.getInstance()
+        await grid.connect()
+
         // Initialize scheduler
         if (Config.load().mode === 'main')
             scheduler = new Scheduler()
@@ -76,6 +80,8 @@ export = {
             for (let worker of workers)
                 worker.stop(force)
         })
+
+        Events.registerLogListeners()
     },
     /**
      * Starts a Saffron instance.

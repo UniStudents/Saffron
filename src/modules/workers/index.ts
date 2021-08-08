@@ -1,8 +1,5 @@
 import Events from "../events"
 import Job from "../../components/job";
-import Logger from "../../middleware/logger"
-import logger from "../../middleware/logger"
-import {LoggerTypes} from "../../middleware/LoggerTypes";
 import randomId from "../../middleware/randomId";
 import HtmlParser from "./parsers/htmlParser";
 import {ParserType} from "./parsers/ParserType";
@@ -46,9 +43,9 @@ export default class Worker {
         await Grid.getInstance()!!.announceWorker(this)
         this.isForcedStopped = false
         this.isRunning = true
-        Logger(LoggerTypes.INFO, `Worker started. ID: ${this.id}`)
+
         // start listening for new jobs
-        Events.getAntennae().on("new-job", async (job: Job) => {
+        Events.getAntennae().on("scheduler.job.push", async (job: Job) => {
             if (!this.isRunning) return
             if (this.id !== job.worker.id) return
 
@@ -70,15 +67,10 @@ export default class Worker {
                 let collection = job.getSource().collection_name
                 if (!collection || collection.length == 0)
                     collection = job.getSource().name
-                if (!collection || collection.length == 0)
-                    collection = job.getSource().getId()
 
                 await Database.getInstance()?.mergeArticles(collection, articles)
-
-                await Grid.getInstance().finishJob(job)
+                await Grid.getInstance().finishedJob(job)
             } else await Grid.getInstance().failedJob(job)
-
-            logger(LoggerTypes.DEBUG, `Worker: Job finished ${!articles ? ' with a failure: ' : ' successfully: '} (${job.id}).`)
         })
     }
 
@@ -141,10 +133,10 @@ export default class Worker {
                 message: "Failed to fetch the articles from the site."
             }
 
-            await Grid.getInstance().emitParserError(message)
-
+            await Grid.getInstance().onParserError(message)
             return message
         }
+
         return articles
     }
 
