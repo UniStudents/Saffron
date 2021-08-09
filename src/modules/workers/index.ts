@@ -4,7 +4,6 @@ import randomId from "../../middleware/randomId";
 import HtmlParser from "./parsers/htmlParser";
 import {ParserType} from "./parsers/ParserType";
 import Grid from "../grid";
-import Database from "../database";
 import rssParser from "./parsers/rssParser";
 import DynamicParser from "./parsers/dynamicParser";
 import Article from "../../components/articles";
@@ -68,7 +67,7 @@ export default class Worker {
                 if (!collection || collection.length == 0)
                     collection = job.getSource().name
 
-                await Database.getInstance()?.mergeArticles(collection, articles)
+                await Grid.getInstance().mergeArticles(collection, articles)
                 await Grid.getInstance().finishedJob(job)
             } else await Grid.getInstance().failedJob(job)
         })

@@ -20,6 +20,7 @@ export default class Source {
     static async parseFileObject(source: any, addToList: boolean = true): Promise<Source | object> {
         let ret = new Source()
 
+        // TODO - Add event emitters here too.
         if (!source.name || source.name.length < 3) {
             logger(LoggerTypes.INSTALL_ERROR, "Source name is not valid. Must be a string with at least 3 characters.")
             return {

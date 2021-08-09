@@ -115,10 +115,16 @@ export default class Grid {
                 }
             })
 
-            this.server.on('workers.articles.new', (socket: any, data: any) => {
-                let articles = data.map((json: any) => Article.fromJSON(json))
+            this.server.on('workers.articles.new', async (socket: any, data: any) => {
+                let articles = data.articles.map((json: any) => Article.fromJSON(json))
                 Events.getAntennae().emit('workers.articles.new', articles)
-                // TODO - Maybe add to db from here and not from workers
+
+                let collection = articles[0].getSource().collection_name
+                if (!collection || collection.length == 0)
+                    collection = articles[0].getSource().name
+
+                // TODO - if articles are added only from main merger articles here
+                // await this.mergeArticles(collection, articles)
             })
 
             this.server.on('workers.articles.found', (data: any) => {
@@ -332,7 +338,9 @@ export default class Grid {
         // TODO - Client emit will be removed if articles are all added from the main saffron
         if (this.isMain)
             Events.getAntennae().emit("workers.articles.new", articles)
-        else await this.client.emit('workers.articles.new', articles.map(a => a.toJSON()))
+        else await this.client.emit('workers.articles.new', {
+            articles: articles.map(a => a.toJSON())
+        })
     }
 
     async onFoundArticles(articles: Article[]): Promise<void> {
@@ -351,5 +359,11 @@ export default class Grid {
     async onParserError(message: any): Promise<void> {
         if (this.isMain) Events.getAntennae().emit("workers.parsers.error", message)
         else await this.client.emit('workers.parsers.error', message)
+    }
+
+    async mergeArticles(collection: string, articles: Article[]): Promise<void> {
+        // TODO - if main then merge
+        await Database.getInstance()?.mergeArticles(collection, articles)
+        // else emit only articles to server on workers.articles.new
     }
 }

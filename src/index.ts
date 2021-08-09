@@ -117,11 +117,25 @@ export = {
 
     /**
      * Assign an extension function.
-     * @param event The event of the function
+     * @param event The event of the function.
      * @param callback The callback function that will be called.
      */
     use(event: string, callback: (...args: any[]) => any): void {
         Extensions.getInstance().addPair({event, callback})
+    },
+
+    /**
+     * Returns all the articles.
+     * @param src The collection name that the articles are saved.
+     * @param options The options that will be applied.
+     */
+    async getArticles(src: string, options?: {
+        pageNo?: number,
+        articlesPerPage?: number,
+        sort?: { [key: string]: -1 | 1 }
+    }): Promise<Article[] | undefined> {
+        let articles = await Database.getInstance()?.getArticles(src, options);
+        return articles
     },
 
     types: {Article, Utils, Exceptions}

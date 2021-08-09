@@ -21,7 +21,11 @@ export default abstract class Database {
      * @param options See documentation
      * @see https://github.com/poiw-org/saffron/wiki
      */
-    abstract getArticles(src: string, options: object | null): Promise<Array<Article>>
+    abstract getArticles(src: string, options?: {
+        pageNo?: number,
+        articlesPerPage?: number,
+        sort?: { [key: string]: -1 | 1 }
+    }): Promise<Array<Article>>
 
     /**
      * Return an article based on id or null if it is not found
@@ -63,11 +67,6 @@ export default abstract class Database {
     async mergeArticles(src: string, articles: Article[]) {
         await Grid.getInstance().onFoundArticles(articles)
 
-        let dbArticles = await this.getArticles(src, {
-            sortBy: "date",
-            count: articles.length * 2
-        })
-
         // First edit the articles
         if (Extensions.getInstance().hasEvent("article.format")) {
             for (const article of articles) {
@@ -86,6 +85,38 @@ export default abstract class Database {
                 article.categories = formattedArticle.categories
             }
         }
+
+        // check for sort
+        let sort: any = {"timestamp": 1}
+        if (Extensions.getInstance().hasEvent("articles.sort")) {
+            let result = await Extensions.getInstance().callEvent("articles.sort", articles)
+
+            let keys = Object.keys(result)
+            if (keys.length !== 2 || !keys.includes("articles"))
+                throw new Error("Extension articles.sort does not return a valid object.")
+
+            if (!Array.isArray(result.articles))
+                throw new Error("Extension articles.sort does not return articles array of articles.")
+
+            for (let article of result.articles)
+                if (!(article instanceof Article))
+                    throw new Error("Extension articles.sort does not return articles array of articles.")
+
+            articles = result.articles
+
+            let field = keys.filter(k => k !== 'articles')[0]
+            let order = result[field]
+            if (order !== -1 && order !== 1)
+                throw new Error("Extension articles.sort does not return a valid sort field order.")
+
+            sort = {field: order}
+        }
+
+        let dbArticles = await this.getArticles(src, {
+            pageNo: 1,
+            articlesPerPage: articles.length >= 10 ? articles.length * 2 : 10,
+            sort
+        })
 
         // And then check if they already exist.
         let hashes = dbArticles.map((article: Article) => article.getHash())

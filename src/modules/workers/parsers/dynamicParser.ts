@@ -34,7 +34,7 @@ export default class DynamicParser {
             if (!collection || collection.length == 0)
                 collection = instructions.getSource().getId()
 
-            let articles = await Database.getInstance()!!.getArticles(collection, {source: job.getSource()})
+            let articles = await Database.getInstance()!!.getArticles(collection, {pageNo: 1, articlesPerPage: 100})
             utils.isFirstScrape = articles.length === 0
             utils.isScrapeAfterError = job.attempts !== 0
 

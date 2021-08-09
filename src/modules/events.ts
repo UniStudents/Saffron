@@ -32,17 +32,11 @@ export default class Events {
 
         this.getAntennae().on("workers.job.finished", (job: Job) => Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - finished job(${job.id}).`))
         this.getAntennae().on("workers.job.failed", (job: Job) => Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - failed job(${job.id}).`))
+        this.getAntennae().on("workers.articles.errorOffloading", (data: any) => Logger(LoggerTypes.ERROR, `${chalk.green('Worker')} - failed to upload articles to the database.`))
 
         this.getAntennae().on("workers.articles.found", (articles: Article[]) => Logger(LoggerTypes.DEBUG, `${chalk.cyan('Articles')} - Finished job returned ${articles.length} articles.`))
-        this.getAntennae().on("workers.articles.new", (articles: Article[]) => Logger(LoggerTypes.DEBUG, `${chalk.cyan('Articles')} - ${articles.length} articles will be added to to the db.`))
+        this.getAntennae().on("workers.articles.new", (articles: Article[]) => Logger(LoggerTypes.INFO, `${chalk.cyan('Articles')} - ${articles.length} articles will be added to to the db.`))
 
-        this.getAntennae().on("workers.parsers.error", (data: any) => Logger(LoggerTypes.DEBUG, `${chalk.red('Parsers')} - failed to scrape the articles with error message: ${data.message}.`))
-
-    }
-
-    static registerListeners(): void {
-        this.getAntennae().on("workers.articles.new", (articles: Article[]) => {
-            // TODO - if articles are added only by the main implement here.
-        })
+        this.getAntennae().on("workers.parsers.error", (data: any) => Logger(LoggerTypes.INFO, `${chalk.red('Parsers')} - failed to scrape the articles with error message: ${data.message}.`))
     }
 }

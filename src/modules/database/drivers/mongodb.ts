@@ -46,18 +46,31 @@ export default class MongoDB extends Database {
         return undefined
     }
 
-    async getArticles(src: string, options: object | null = null): Promise<Array<Article>> {
+    async getArticles(src: string, options?: {
+        pageNo?: number,
+        articlesPerPage?: number,
+        sort?: { [key: string]: -1 | 1 }
+    }): Promise<Array<Article>> {
         try {
-            let _articles = await this.client.db(Config.load()!!.database.config.name).collection(src).find().toArray()
-            return _articles.map((_article: Article) => {
-                let article = new Article()
+            if (!options) {
+                return (await this.client.db(Config.load()!!.database.config.name).collection(src).find().toArray())
+                    .map((_article: Article) => Article.fromJSON(_article))
+            }
 
-                for (let key in _article) { // @ts-ignore
-                    article[key] = _article[key]
-                }
-                return article
+            let opts = {
+                pageNo: options.pageNo ? options.pageNo : 1,
+                articlesPerPage: options.articlesPerPage ? options.articlesPerPage : 10,
+                sort: options.sort ? options.sort : {"timestamp": -1},
+            }
 
-            })
+            let _articles = await this.client.db(Config.load()!!.database.config.name).collection(src)
+                .find()
+                .sort(opts.sort)
+                .skip((opts.pageNo - 1) * opts.articlesPerPage)
+                .limit(opts.articlesPerPage)
+                .toArray()
+
+            return _articles.map((_article: Article) => Article.fromJSON(_article))
         } catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }

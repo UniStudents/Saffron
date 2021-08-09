@@ -1,5 +1,6 @@
 require('dotenv').config()
 const saffron = require('../dist/index');
+const util = require("util");
 
 let config = {}
 try {
@@ -32,7 +33,17 @@ try {
 
     saffron.use("article.format", (article) => {
         article.title += " - Title"
+        article.extras.puDateMillis = parseDate(article.pubDate)
         return article
+    })
+
+    saffron.use("articles.sort", (articles) => {
+        // Do some custom article sort
+
+        return {
+            articles,
+            "extras.pubDateMillis": 1
+        }
     })
 
     await saffron.start()
