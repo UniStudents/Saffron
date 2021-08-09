@@ -14,6 +14,7 @@ import Exceptions from "./components/exceptions";
 
 import Job from "./components/job"
 import Source from "./components/source"
+import Extensions from "./modules/extensions";
 
 declare function require(name: string): any;
 
@@ -112,6 +113,15 @@ export = {
         let job = new Job()
         job.source = {id: source.getId()}
         return await Worker.parse(source.instructions, new Job())
+    },
+
+    /**
+     * Assign an extension function.
+     * @param event The event of the function
+     * @param callback The callback function that will be called.
+     */
+    use(event: string, callback: (...args: any[]) => any): void {
+        Extensions.getInstance().addPair({event, callback})
     },
 
     types: {Article, Utils, Exceptions}

@@ -1,5 +1,6 @@
 import Article from "../../components/articles"
 import Grid from "../grid";
+import Extensions from "../extensions";
 
 export default abstract class Database {
 
@@ -67,17 +68,34 @@ export default abstract class Database {
             count: articles.length * 2
         })
 
+        // First edit the articles
+        if (Extensions.getInstance().hasEvent("article.format")) {
+            for (const article of articles) {
+                let formattedArticle = await Extensions.getInstance().callEvent("article.format", article)
+
+                if (!(formattedArticle instanceof Article))
+                    throw new Error("Extension article.format does not return article class.")
+
+                // Override - Except id, source, timestamp, hash
+                article.title = formattedArticle.title
+                article.content = formattedArticle.content
+                article.link = formattedArticle.link
+                article.pubDate = formattedArticle.pubDate
+                article.extras = formattedArticle.extras
+                article.attachments = formattedArticle.attachments
+                article.categories = formattedArticle.categories
+            }
+        }
+
+        // And then check if they already exist.
         let hashes = dbArticles.map((article: Article) => article.getHash())
         articles = articles.filter((article: Article) => !hashes.includes(article.getHash()))
-
         if (articles.length > 0) await Grid.getInstance().onNewArticles(articles)
 
-        await articles.forEach((article: Article) => {
-            ;(async () => {
-                let id = await this.pushArticle(src, article)
-                if (id == "") await Grid.getInstance().onFailedUploadingArticle(article)
-            })();
-        })
+        for (const article of articles) {
+            let id = await this.pushArticle(src, article)
+            if (id == "") await Grid.getInstance().onFailedUploadingArticle(article)
+        }
 
         return articles
     }

@@ -1,5 +1,6 @@
 require('dotenv').config()
 const saffron = require('../dist/index');
+
 let config = {}
 try {
     config = require("./saffron.json")
@@ -17,7 +18,7 @@ try {
             path: "/test/sources"
         },
         scheduler: {
-            intervalBetweenJobs: 30000,
+            intervalBetweenJobs: 10000,
             heavyJobFailureInterval: 86400000,
             intervalBetweenChecks: 5000
         }
@@ -28,6 +29,11 @@ try {
     await saffron.initialize(config)
 
     // saffron.on("start", () => console.log('saffron started'))
+
+    saffron.use("article.format", (article) => {
+        article.title += " - Title"
+        return article
+    })
 
     await saffron.start()
 
