@@ -158,6 +158,7 @@ export default class HtmlParser {
                     let tmpArticle: Article
                     let basicData = ["title", "pubDate", "content", "attachments"] // Exp. If you remove the title, then the title is going to be on the extra information of each article.
                     let options: any = instructions.scrapeOptions
+                    articleData.link = cheerioLoad(element).find(options["title"].class).find("a").attr("href")
 
                     // for each option. The options provided by instructions.
                     for (let item in options) {
@@ -176,6 +177,7 @@ export default class HtmlParser {
                         id: instructions.getSource().getId(),
                         name: instructions.getSource().name
                     }
+                    tmpArticle.link = (articleData.link) ? instructions.endPoint + Utils.htmlStrip(articleData.link) : ''
                     tmpArticle.title = (articleData.title) ? Utils.htmlStrip(articleData.title) : ''
                     tmpArticle.pubDate = (articleData.pubDate) ? Utils.htmlStrip(articleData.pubDate) : ''
 
