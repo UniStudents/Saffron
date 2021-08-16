@@ -26,6 +26,20 @@ export default class Utils {
     }
 
     /**
+     * Get a source file and return an array of the parsed articles
+     * @param fileContents
+     */
+    parse = async (fileContents: string) => {
+        // TODO - Fix addToList
+        // let source: Source | object = await Source.parseFileObject(fileContents, false)
+        // if (!(source instanceof Source)) return source
+        //
+        // let job = new Job()
+        // job.source = {id: source.getId()}
+        // return await Worker.parse(source.instructions, new Job())
+    }
+
+    /**
      * The specified URL.
      */
     declare readonly url: string

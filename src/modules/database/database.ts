@@ -75,7 +75,10 @@ export default abstract class Database {
                 if (!(formattedArticle instanceof Article))
                     throw new Error("Extension article.format does not return article class.")
 
-                // Override - Except id, source, timestamp, hash
+                // Override - Except hash
+                article.id = formattedArticle.id
+                article.source = formattedArticle.source
+                article.timestamp = formattedArticle.timestamp
                 article.title = formattedArticle.title
                 article.content = formattedArticle.content
                 article.link = formattedArticle.link
