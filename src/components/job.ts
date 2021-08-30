@@ -12,7 +12,7 @@ export default class Job {
     declare attempts: number
     declare emitAttempts: number
     declare status: JobStatus
-    declare worker:{
+    declare worker: {
         id: string
     }
 
@@ -21,7 +21,7 @@ export default class Job {
      * @param id The job's id (Optional, auto-generated)
      */
     constructor(id: string = "") {
-        if(id !== "")
+        if (id !== "")
             this.id = id
         else this.id = randomId("job")
 
@@ -39,7 +39,32 @@ export default class Job {
     /**
      * Return the instructions of the source where this job is issued
      */
-    getInstructions() : Instructions {
+    getInstructions(): Instructions {
         return this.getSource().instructions
+    }
+
+    toJSON(): any {
+        return {
+            id: this.id,
+            source: this.getSource().toJSON(),
+            worker: {
+                id: this.worker.id
+            }
+        }
+    }
+
+    static fromJSON(json: any): Job {
+        let job = new Job(json.id)
+        job.source = json.source
+
+        // Add source to list
+        let index = Source._sources.findIndex(s => s.getId() === json.source.id)
+        if(index == -1)
+            Source._sources.push(Source.fromJSON(json.source))
+        else Source._sources[index] = Source.fromJSON(json.source)
+
+        job.worker = json.worker
+
+        return job
     }
 }

@@ -6,22 +6,24 @@ import path from "path"
 interface _type {
     [key: string]: any
 }
-export default class Config{
+
+export default class Config {
     _config: _type = {
-        database:{
-            driver: "",
+        database: {
+            driver: "memory",
             config: {}
         },
-        sources:{
+        sources: {
             path: "../../../sources"
         },
         mode: "main",
         workers: {
-            nodes: 3 // Start three workers
+            nodes: 1 // Start one workers
         },
         scheduler: {
-            intervalBetweenJobs: 60 * 60 * 1000,
-            heavyJobFailureInterval: 86400000
+            intervalBetweenJobs: 3600000,
+            heavyJobFailureInterval: 86400000,
+            intervalBetweenChecks: 120000
         },
         grid: {
             distributed: false
@@ -37,50 +39,79 @@ export default class Config{
     /**
      * Loads an external configuration object and merges the parameters with the default ones.
      */
-    static load(config: _type | string | undefined = undefined): _type{
-        if(!this.instance)
+    static load(config: _type | string | undefined = undefined): _type {
+        if (!this.instance)
             this.instance = new Config(config)
 
         return this.instance._config
     }
 
     private constructor(config: _type | string | undefined) {
-        if(typeof config === "string"){
+        if (typeof config === "string") {
             try {
-                if(path.isAbsolute(config))
+                if (path.isAbsolute(config))
                     config = require(config);
                 else
                     config = require((config.startsWith('./') ? '.' : '../') + config)
-                } catch (error) {
-                    Logger(LoggerTypes.INSTALL_ERROR, `Saffron couldn\'t load the configuration file from the path specified.\n${error}\n`)
+            } catch (error) {
+                Logger(LoggerTypes.INSTALL_ERROR, `Saffron couldn\'t load the configuration file from the path specified.\n${error}\n`)
                 throw new Error
             }
-        }else if(!config) {
+        } else if (!config) {
             try {
                 config = require("../../saffron.json")
             } catch (error) {
-                Logger(LoggerTypes.INSTALL_ERROR,"You did not supply any configuration or the supplied configuration file is improperly configured.")
+                Logger(LoggerTypes.INSTALL_ERROR, "You did not supply any configuration or the supplied configuration file is improperly configured.")
                 throw new Error
             }
         }
 
-        this._config = _.mergeWith({}, this._config, config, (o, s) => s ? s : o)
+        // this._config = _.mergeWith({}, this._config, config, (o, s) => s ? s : o)
 
-        switch(process.env.NODE_ENV){
+        this._config = _.mergeWith({}, this._config, config, (o, s) => {
+            if (typeof o == 'object')
+                return _.mergeWith({}, o, s, (o1, s1) => s1 ? s1 : o1)
+            return s ? s : o
+        })
+        // console.log(util.inspect(this._config, false, null, true))
+
+        switch (process.env.NODE_ENV) {
             case "production":
                 //@ts-ignore
-                if(config.production) this._config = _.mergeWith({}, this._config, config.production, (o, s) => s ? s : o)
+                if (config.production) //this._config = _.mergeWith({}, this._config, config.production, (o, s) => s ? s : o)
+                    //@ts-ignore
+                    this._config = _.mergeWith({}, this._config, config.production, (o, s) => {
+                        if (typeof o == 'object')
+                            return _.mergeWith({}, o, s, (o1, s1) => s1 ? s1 : o1)
+                        return s ? s : o
+                    })
                 break
             case "development":
                 //@ts-ignore
-                if(config.development) this._config = _.mergeWith({}, this._config, config.development, (o, s) => s ? s : o)
+                if (config.development) // this._config = _.mergeWith({}, this._config, config.development, (o, s) => s ? s : o)
+                    //@ts-ignore
+                    this._config = _.mergeWith({}, this._config, config.development, (o, s) => {
+                        if (typeof o == 'object')
+                            return _.mergeWith({}, o, s, (o1, s1) => s1 ? s1 : o1)
+                        return s ? s : o
+                    })
                 break
             case "testing":
                 //@ts-ignore
-                if(config.testing) this._config = _.mergeWith({}, this._config, config.testing, (o, s) => s ? s : o)
+                if (config.testing) //this._config = _.mergeWith({}, this._config, config.testing, (o, s) => s ? s : o)
+                                    //@ts-ignore
+                    this._config = _.mergeWith({}, this._config, config.testing, (o, s) => {
+                        if (typeof o == 'object')
+                            return _.mergeWith({}, o, s, (o1, s1) => s1 ? s1 : o1)
+                        return s ? s : o
+                    })
                 break
             default:
 
+        }
+
+        if (process.env.SAFFRON_MODE && ["main", "worker"].includes(process.env.SAFFRON_MODE)) {
+            this._config.mode = process.env.SAFFRON_MODE
         }
 
         delete this._config.development
@@ -88,5 +119,6 @@ export default class Config{
         delete this._config.testing
 
         Config.isHydrated = true
+        // console.log(this._config)
     }
 }

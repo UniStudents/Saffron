@@ -1,7 +1,9 @@
-const striptags = require('striptags');
-export default class Utils{
+import cheerio from "cheerio";
 
-    private static htmlEntries =  {
+const striptags = require('striptags');
+export default class Utils {
+
+    private static htmlEntries = {
         '&apos;': "'",
         '&lt;': '<',
         '&gt;': '>',
@@ -258,24 +260,56 @@ export default class Utils{
         '&#34;': '"',
         '&#034;': '"'
     }
-    private static decode(string: String){
-        for(let key in this.htmlEntries){
+
+    private static decode(str: String) {
+        for (let key in this.htmlEntries) {
             let entity = key
-            let regex = new RegExp(entity,'g')
+            let regex = new RegExp(entity, 'g')
             // @ts-ignore
-            string = string.replace(regex,this.htmlEntries[entity])
+            str = str.replace(regex, this.htmlEntries[entity])
         }
-        return string
+        return str
     }
 
 
-    public static htmlStrip(text: String = ""): String {
-        text = this.decode(text)
-        text = text.replace(/\n/g,'')
-            .replace(/\t/g,'')
-            .replace(/(<([^>]+)>)/gi, '')
-            .trim()
-        text = striptags(text)
-        return text
+    public static htmlStrip(text: String = "", stripTags: boolean = true): string {
+        if (stripTags) {
+            text = this.decode(text)
+            text = text.replace(/\n/g, '')
+                .replace(/\t/g, '')
+                .replace(/(<([^>]+)>)/gi, '')
+                .trim()
+            text = striptags(text)
+        } else {
+            text = this.decode(text)
+            text = text.replace(/\n/g, '')
+                .replace(/\t/g, '')
+                .trim()
+        }
+
+        return text.toString()
+    }
+
+    public static extractLinks(html: string): object[] {
+        const $ = cheerio.load(html);
+        const links: object[] = [];
+
+        $('a').each((index, element) => {
+            links.push({
+                text: $(element).text(), // get the text
+                link: $(element).attr('href'), // get the href attribute
+                type: 'a'
+            });
+        });
+
+        $('img').each((index, element) => {
+            links.push({
+                alt: $(element).attr('alt'), // get the text
+                link: $(element).attr('src'), // get the href attribute
+                type: 'img'
+            });
+        });
+
+        return links
     }
 }

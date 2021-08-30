@@ -4,8 +4,6 @@ import Utils from "../../../components/utils";
 import Exceptions from "../../../components/exceptions";
 import Job from "../../../components/job";
 import Database from "../../database";
-import logger from "../../../middleware/logger";
-import {LoggerTypes} from "../../../middleware/LoggerTypes";
 
 export default class DynamicParser {
 
@@ -15,31 +13,54 @@ export default class DynamicParser {
      *
      * @param job The job instance
      * @param instructions How does the parser gonna parse the html content.
-     * @param amount How much article to withdraw.
      * @return Array<Article> The articles.
      */
-    public static async parse(job: Job, instructions: Instructions, amount: Number = 10): Promise<Array<Article>> {
+    public static async parse(job: Job, instructions: Instructions): Promise<Array<Article> | object> {
         let parsedArticles: Array<Article> = [];
 
         let scrapeFunc = eval(instructions.scrapeFunction)
-        let utils = new Utils();
 
-        let articles = await Database.getInstance()!!.getArticles({source: job.getSource()})
-        utils.isFirstScrape = articles.length === 0
-        utils.isScrapeAfterError = job.attempts !== 0
+        let urls: (string[])[] = []
+        if (typeof instructions.url !== 'string')
+            urls = instructions.url
+        else urls.push(["", instructions.url])
 
-        utils.getArticles = async (count: number): Promise<Array<Article>> => articles.slice(0, count)
-        utils.onNewArticle = async (article: Article) => {
-            parsedArticles.unshift(article)
-            utils.getArticles = async (count: number): Promise<Array<Article>> => [...parsedArticles, ...articles].slice(0, count)
-        }
+        for (const pair of urls) {
+            let utils = new Utils(pair[1]);
 
-        let result: Exceptions | undefined = await scrapeFunc(Article, utils, Exceptions)
+            let collection = instructions.getSource().collection_name
+            if (!collection || collection.length == 0)
+                collection = instructions.getSource().name
+            if (!collection || collection.length == 0)
+                collection = instructions.getSource().getId()
 
-        if(result){
-            if(!result.retry) job.getSource().lock()
-            logger(LoggerTypes.ERROR, `Dynamic parser scraping returned error: ${result.message}`)
-            parsedArticles.unshift(new Article("error"))
+            let articles = await Database.getInstance()!!.getArticles(collection, {pageNo: 1, articlesPerPage: 100})
+            utils.isFirstScrape = articles.length === 0
+            utils.isScrapeAfterError = job.attempts !== 0
+
+            utils.getArticles = (count: number): Array<Article> => articles.slice(0, count)
+            utils.onNewArticle = (article: Article) => {
+                article.source = {
+                    id: job.getSource().getId(),
+                    name: job.getSource().name
+                }
+
+                if (!article.extras) article.extras = {}
+
+                if (pair[0].length !== 0)
+                    article.extras = {
+                        categories: [
+                            {name: pair[0], links: [pair[1]]}
+                        ]
+                    }
+
+                parsedArticles.unshift(article)
+                utils.getArticles = (count: number): Array<Article> => [...parsedArticles, ...articles].slice(0, count)
+            }
+
+            let result: Exceptions | undefined = await scrapeFunc(Article, utils, Exceptions)
+
+            if (result) return {errorMessage: result.message}
         }
 
         return parsedArticles

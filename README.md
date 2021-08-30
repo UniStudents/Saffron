@@ -2,7 +2,7 @@
 **S**imple **A**bstract **F**ramework **F**or the **R**etrieval **O**f **N**ews
 
 \
-Stage: Alpha (API subject to change)
+Stage: Alpha (Beta coming in Q4 2021 - Q1 2022)
 
 In colaboration with: 
 \
