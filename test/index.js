@@ -1,7 +1,8 @@
 require('dotenv').config()
 const saffron = require('../dist/index');
+const loggerTypes = require('../dist/middleware/LoggerTypes')
+const logger = require('../dist/middleware/logger').default
 const util = require("util");
-
 let config = {}
 try {
     config = require("./saffron.json")
@@ -27,26 +28,24 @@ try {
 }
 
 (async () => {
-    await saffron.initialize(config)
 
-    // saffron.on("start", () => console.log('saffron started'))
+    let errors = []
 
-    saffron.use("article.format", (article) => {
-        article.title += " - Title"
-        article.extras.puDateMillis = parseDate(article.pubDate)
-        return article
-    })
+    try {
+        await saffron.initialize(config)
+        await saffron.start()
+    } catch (error) {
+        errors.push(error)
+    }
 
-    saffron.use("articles.sort", (articles) => {
-        // Do some custom article sort
-
-        return {
-            articles,
-            "extras.pubDateMillis": 1
+    setTimeout(() => {
+        if(errors.length > 0) {
+            logger(loggerTypes.LoggerTypes.ERROR,`Saffron failed at runtime. The CI workflow will be terminated. The errors that occured where the following: \n\n${errors}\n\n`)
+            process.exit(1)
+        }else{
+            logger(loggerTypes.LoggerTypes.STEP,`Saffron doesn\'t show any signs of malfunction with this commit.\n`);
+            process.exit(0)
         }
-    })
-
-    await saffron.start()
-
+    }, 15000)
     // saffron.on("new-articles-pushed", articles=> console.log("new-articles",articles))
 })()

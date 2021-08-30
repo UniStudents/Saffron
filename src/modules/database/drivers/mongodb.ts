@@ -18,7 +18,7 @@ export default class MongoDB extends Database {
             Logger(LoggerTypes.DEBUG, "Testing database connection")
 
             return true
-        } catch (e) {
+        } catch (e: any) {
             Logger(LoggerTypes.INSTALL_ERROR, `Database error: ${e.message}.`)
         }
 
@@ -33,7 +33,7 @@ export default class MongoDB extends Database {
         try {
             await this.client.db(Config.load()!!.database.config.name).collection(src).deleteOne({id})
 
-        } catch (e) {
+        } catch (e: any) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
     }
@@ -42,7 +42,7 @@ export default class MongoDB extends Database {
         try {
             return await this.client.db(Config.load()!!.database.config.name).collection(src).findOne({id})
 
-        } catch (e) {
+        } catch (e: any) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
         return undefined
@@ -74,7 +74,7 @@ export default class MongoDB extends Database {
 
             return _articles.map((_article: Article) => Article.fromJSON(_article))
 
-        } catch (e) {
+        } catch (e: any) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
         return []
@@ -84,7 +84,7 @@ export default class MongoDB extends Database {
         try {
             await this.client.db(Config.load()!!.database.config.name).collection(src).insertOne(await article.toJSON())
             return article.id
-        } catch (e) {
+        } catch (e: any) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
         return ""
@@ -93,7 +93,7 @@ export default class MongoDB extends Database {
     async updateArticle(src: string, article: Article): Promise<void> {
         try {
             await this.client.db(Config.load()!!.database.config.name).collection(src).updateOne({id: article.id}, await article.toJSON())
-        } catch (e) {
+        } catch (e: any) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
     }

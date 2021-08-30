@@ -104,4 +104,4 @@ dist
 .tern-port
 
 .idea/
-package-lock.json
+yarn.lock
