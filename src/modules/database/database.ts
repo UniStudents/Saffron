@@ -144,6 +144,7 @@ export default abstract class Database {
             if (id == "") await Grid.getInstance().onFailedUploadingArticle(article)
         }
 
+
         return articles
     }
 

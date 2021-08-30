@@ -18,6 +18,7 @@ export default class Source {
      * @param addToList
      */
     static async parseFileObject(source: any, addToList: boolean = true): Promise<Source | object> {
+
         let ret = new Source()
 
         // TODO - Add event emitters here too.
@@ -145,6 +146,7 @@ export default class Source {
             case ParserType.RSS: {
                 ret.instructions.scrapeOptions = {}
                 if (source.renameFields) {
+
                     let map = new Map()
                     Object.entries(source.renameFields).forEach(([key, value]) => {
                         map.set(key, value)
@@ -180,7 +182,6 @@ export default class Source {
 
         if (addToList)
             this._sources.push(ret)
-
         return ret
     }
 

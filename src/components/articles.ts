@@ -57,6 +57,7 @@ export default class Article {
         art.attachments = json.attachments
         art.categories = json.categories
         return art
+
     }
 
     /**
