@@ -137,7 +137,6 @@ export default class HtmlParser {
         } else {
             // If it is to get only one piece of information, then we simply take the text from the point where we are ( which will be the point where the information is ).
             return finalLocation.text()
-
         }
 
         return results
@@ -160,7 +159,6 @@ export default class HtmlParser {
                     let basicData = ["title", "pubDate", "content", "attachments"] // Exp. If you remove the title, then the title is going to be on the extra information of each article.
                     let options: any = instructions.scrapeOptions
                     articleData.link = cheerioLoad(element).find(options["title"].class).find("a").attr("href")
-
 
                     // for each option. The options provided by instructions.
                     for (let item in options) {
