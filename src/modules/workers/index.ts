@@ -10,6 +10,7 @@ import Article from "../../components/articles";
 import Instructions from "../../components/instructions";
 import WordpressParser from "./parsers/wordpress";
 
+
 export default class Worker {
 
     declare readonly id: string;
@@ -62,6 +63,7 @@ export default class Worker {
                     }
                     article.timestamp = Date.now()
                 })
+
 
                 let collection = job.getSource().collection_name
                 if (!collection || collection.length == 0)

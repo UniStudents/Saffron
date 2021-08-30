@@ -18,6 +18,7 @@ import Extensions from "./modules/extensions";
 
 declare function require(name: string): any;
 
+
 // This is a centralized array that collects all the logs and errors, so that the report handler can easily collect and report them.
 let db: any
     , grid: Grid
@@ -139,4 +140,5 @@ export = {
     },
 
     types: {Article, Utils, Exceptions}
+
 }

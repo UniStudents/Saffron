@@ -32,6 +32,7 @@ export default class MongoDB extends Database {
     async deleteArticle(src: string, id: string): Promise<void> {
         try {
             await this.client.db(Config.load()!!.database.config.name).collection(src).deleteOne({id})
+
         } catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
@@ -40,6 +41,7 @@ export default class MongoDB extends Database {
     async getArticle(src: string, id: string): Promise<Article | undefined> {
         try {
             return await this.client.db(Config.load()!!.database.config.name).collection(src).findOne({id})
+
         } catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
@@ -71,6 +73,7 @@ export default class MongoDB extends Database {
                 .toArray()
 
             return _articles.map((_article: Article) => Article.fromJSON(_article))
+
         } catch (e) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
