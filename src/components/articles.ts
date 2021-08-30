@@ -13,7 +13,7 @@ export default class Article {
     declare link: string
     declare pubDate: string
     declare timestamp: number
-    private declare hash: string
+    declare hash: string
     declare extras: _extras
     declare source: {
         id: string

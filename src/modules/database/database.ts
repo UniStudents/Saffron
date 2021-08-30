@@ -115,6 +115,19 @@ export default abstract class Database {
             sort = {field: order}
         }
 
+        // First edit the articles
+        if (Extensions.getInstance().hasEvent("article.hash")) {
+            for (const article of articles) {
+                let newHash = await Extensions.getInstance().callEvent("article.hash", article)
+
+                if (typeof newHash != "string")
+                    throw new Error("Extension article.hash does not return string type.")
+
+                // Override - Except hash
+                article.hash = newHash
+            }
+        }
+
         let dbArticles = await this.getArticles(src, {
             pageNo: 1,
             articlesPerPage: articles.length >= 10 ? articles.length * 2 : 10,
