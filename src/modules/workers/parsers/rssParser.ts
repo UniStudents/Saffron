@@ -121,7 +121,9 @@ export default class rssParser {
             tmpArticle.link = article.hasOwnProperty("link") ? article["link"] :
                 renameFields.get("link") && article.hasOwnProperty(renameFields.get("link")!) ? article[renameFields.get("link")!] : ""
 
-            tmpArticle.attachments = Utils.extractLinks(content)
+            if (tmpArticle.content != null) {
+                tmpArticle.attachments = Utils.extractLinks(content)
+            }
             //Add extras
             if (article.categories)
                 tmpArticle.categories = article.categories.map((c: any) => {
