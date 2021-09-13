@@ -291,6 +291,8 @@ export default class Utils {
     }
 
     public static extractLinks(html: string): object[] {
+        if(!html || html == '') return [];
+
         const $ = cheerio.load(html);
         const links: object[] = [];
 
