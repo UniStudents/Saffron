@@ -130,7 +130,7 @@ export default abstract class Database {
 
         let dbArticles = await this.getArticles(src, {
             pageNo: 1,
-            articlesPerPage: articles.length >= 10 ? articles.length * 2 : 10,
+            articlesPerPage: articles.length >= 5 ? articles.length * 2 : 10,
             sort
         })
 

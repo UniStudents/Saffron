@@ -63,7 +63,7 @@ export default class Article {
     /**
      * Return the source class where this article belongs
      */
-    getSource(): Source | null {
+    getSource(): Source {
         return Source.getSourceFrom(this)
     }
 
