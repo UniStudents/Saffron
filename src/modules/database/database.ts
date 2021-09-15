@@ -90,29 +90,22 @@ export default abstract class Database {
         }
 
         // check for sort
-        let sort: any = {"timestamp": 1}
+        let sort: string = 'timestamp'
         if (Extensions.getInstance().hasEvent("articles.sort")) {
             let result = await Extensions.getInstance().callEvent("articles.sort", articles)
 
-            let keys = Object.keys(result)
-            if (keys.length !== 2 || !keys.includes("articles"))
-                throw new Error("Extension articles.sort does not return a valid object.")
-
             if (!Array.isArray(result.articles))
                 throw new Error("Extension articles.sort does not return articles array of articles.")
+
+            if(!result.sort_field)
+                throw new Error("Extension articles.sort does not return sort_field array of articles.")
 
             for (let article of result.articles)
                 if (!(article instanceof Article))
                     throw new Error("Extension articles.sort does not return articles array of articles.")
 
             articles = result.articles
-
-            let field = keys.filter(k => k !== 'articles')[0]
-            let order = result[field]
-            if (order !== -1 && order !== 1)
-                throw new Error("Extension articles.sort does not return a valid sort field order.")
-
-            sort = {field: order}
+            sort = result.sort_field
         }
 
         // First edit the articles
@@ -128,10 +121,13 @@ export default abstract class Database {
             }
         }
 
+        let s: any = {}
+        s[sort] = -1
+
         let dbArticles = await this.getArticles(src, {
             pageNo: 1,
             articlesPerPage: articles.length >= 5 ? articles.length * 2 : 10,
-            sort
+            sort: s
         })
 
         // And then check if they already exist.
