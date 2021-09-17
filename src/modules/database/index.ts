@@ -2,6 +2,7 @@ import Database from "./database"
 import Config from "../../components/config"
 import MongoDB from "./drivers/mongodb"
 import Memory from "./drivers/memory"
+import None from "./drivers/none";
 
 export default class Driver {
     
@@ -19,6 +20,8 @@ export default class Driver {
                 case "memory":
                     this.instance = new Memory()
                     break
+                case "none":
+                    this.instance = new None()
             }
 
         return this.instance
