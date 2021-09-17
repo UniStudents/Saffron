@@ -1,4 +1,7 @@
 import Article from "./articles";
+import Source from "./source";
+import Job from "./job";
+import Worker from "../modules/workers";
 
 export default class Utils {
 
@@ -30,13 +33,22 @@ export default class Utils {
      * @param fileContents
      */
     parse = async (fileContents: string) => {
-        // TODO - Fix addToList
-        // let source: Source | object = await Source.parseFileObject(fileContents, false)
-        // if (!(source instanceof Source)) return source
-        //
-        // let job = new Job()
-        // job.source = {id: source.getId()}
-        // return await Worker.parse(source.instructions, new Job())
+        let source: Source | object = await Source.parseFileObject(fileContents, false)
+        if (!(source instanceof Source)) return source
+
+        source.instructions.getSource = (): Source => source as Source;
+
+        let job = new Job()
+        job.source = {id: source.getId()}
+        job.getSource = (): Source => source as Source;
+        let articles = await Worker.parse(source.instructions, new Job())
+
+        if (Array.isArray(articles)) {
+            for (const article of articles)
+                article.getSource = (): Source => source as Source;
+        }
+
+        return articles;
     }
 
     /**

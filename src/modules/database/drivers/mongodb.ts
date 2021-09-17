@@ -51,7 +51,7 @@ export default class MongoDB extends Database {
     async getArticles(src: string, options?: {
         pageNo?: number,
         articlesPerPage?: number,
-        sort?: { [key: string]: -1 | 1 }
+        sort?: { [key: string]: -1 | 1 },
     }): Promise<Array<Article>> {
         try {
             if (!options) {

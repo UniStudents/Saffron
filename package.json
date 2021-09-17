@@ -1,6 +1,6 @@
 {
   "name": "@poiw/saffron",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "description": "A fairly intuitive & powerful framework that enables you to collect & save articles and news from all over the web. ",
   "main": "dist/index.js",
   "dependencies": {
