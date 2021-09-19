@@ -104,7 +104,6 @@ export default class Scheduler {
         job.status = JobStatus.PENDING
         job.attempts = 0
         job.emitAttempts = 0
-
         return job
     }
 
