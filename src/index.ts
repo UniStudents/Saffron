@@ -73,7 +73,7 @@ export = {
         // Event for workers
         antennae.on("start", () => {
             for (let worker of workers) {
-                // TODO - Start worker on new thread
+                // TODO - Start worker on new node thread
                 worker.start()
             }
         })
@@ -108,12 +108,22 @@ export = {
      * @param fileContents
      */
     async parse(fileContents: any): Promise<Array<Article> | object> {
-        let source: Source | object = await Source.parseFileObject(fileContents, true)
+        let source: Source | object = await Source.parseFileObject(fileContents, false)
         if (!(source instanceof Source)) return source
+
+        source.instructions.getSource = (): Source => source as Source;
 
         let job = new Job()
         job.source = {id: source.getId()}
-        return await Worker.parse(source.instructions, new Job())
+        job.getSource = (): Source => source as Source;
+        let articles = await Worker.parse(source.instructions, new Job())
+
+        if (Array.isArray(articles)) {
+            for (const article of articles)
+                article.getSource = (): Source => source as Source;
+        }
+
+        return articles;
     },
 
     /**

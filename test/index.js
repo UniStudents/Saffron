@@ -17,7 +17,8 @@ try {
                 }
             } : {driver: "memory"},
         sources: {
-            path: "/test/sources"
+            path: "/test/sources",
+            excluded: ["html-cs.unipi.gr"]
         },
         scheduler: {
             intervalBetweenJobs: 10000,

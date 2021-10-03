@@ -9,6 +9,7 @@ import Grid from "../grid/index";
 import {JobStatus} from "../../components/JobStatus";
 import randomId from "../../middleware/randomId";
 import Worker from "../workers";
+import {last} from "lodash";
 
 const fs = require('fs');
 const path = process.cwd();
@@ -74,12 +75,15 @@ export default class Scheduler {
      * @param lastWorkerId The job's previous worker id. It will be excluded from the election only if the workers are greater that one
      */
     private async electWorker(lastWorkerId: string): Promise<string> {
-        let workers = await Grid.getInstance()!!.getWorkers()
+        let workers = (await Grid.getInstance()!!.getWorkers()).slice()
         if (workers.length > 1) {
             let index = workers.findIndex((obj: Worker) => obj?.id === lastWorkerId)
             if (index != -1)
                 workers.splice(index, 1)
         }
+
+        if(workers.length == 0)
+            return lastWorkerId;
 
         let newWorker = workers[Math.abs(hashCode(lastWorkerId)) % workers.length]
         return newWorker.id
@@ -100,7 +104,6 @@ export default class Scheduler {
         job.status = JobStatus.PENDING
         job.attempts = 0
         job.emitAttempts = 0
-
         return job
     }
 
@@ -132,8 +135,19 @@ export default class Scheduler {
         // Read all source files
         await this.scanSourceFiles()
         let sources = Source.getSources()
-        Events.getAntennae().emit("scheduler.sources.new", sources.map((source: Source) => source.name))
+        let excluded = Config.load().sources.excluded
+        if(!Array.isArray(excluded)) throw new Error("Config.sources.excluded is not an array.")
+        excluded.forEach((ex_source: any) => {
+            if(typeof ex_source !== 'string')
+                throw new Error("Config.sources.excluded is not an array of strings.")
 
+            let index = sources.findIndex((source: Source) => source.name === ex_source)
+            sources.splice(index, 1)
+        })
+
+        console.log(sources)
+
+        Events.getAntennae().emit("scheduler.sources.new", sources.map((source: Source) => source.name))
         // Load workers
         let workers = await Grid.getInstance()!!.getWorkers()
 

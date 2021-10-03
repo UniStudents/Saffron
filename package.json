@@ -1,13 +1,13 @@
 {
   "name": "@poiw/saffron",
-  "version": "1.7.0",
+  "version": "1.9.0",
   "description": "A fairly intuitive & powerful framework that enables you to collect & save articles and news from all over the web. ",
   "main": "dist/index.js",
   "dependencies": {
-    "@types/crypto-js": "^4.0.2",
+    "@types/crypto-js": "^4.0.1",
     "chalk": "^4.1.1",
     "cheerio": "^1.0.0-rc.6",
-    "crypto-js": "^4.1.1",
+    "crypto-js": "^4.0.0",
     "cryptr": "^6.0.2",
     "dotenv": "^9.0.2",
     "ip": "^1.1.5",
@@ -42,10 +42,9 @@
   "devDependencies": {
     "@types/cryptr": "^4.0.1",
     "@types/ip": "^1.1.0",
-    "@types/lodash": "^4.14.172",
+    "@types/lodash": "^4.14.168",
     "@types/luxon": "^1.26.5",
     "@types/mongodb": "^3.6.12",
-    "@types/node": "^16.7.6",
     "@types/xml2js": "^0.4.8",
     "axios": "^0.21.1",
     "cross-env": "^7.0.3",

@@ -59,7 +59,6 @@ export default class WordpressParser {
 
             article.link = Utils.htmlStrip(p.link, false).toString()
             article.pubDate = Utils.htmlStrip(p.date)
-            article.timestamp = Date.now()
             article.source = {
                 id: instructions.getSource().getId(),
                 name: instructions.getSource().name
