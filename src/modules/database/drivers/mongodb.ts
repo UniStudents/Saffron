@@ -62,7 +62,7 @@ export default class MongoDB extends Database {
             let opts = {
                 pageNo: options.pageNo ? options.pageNo : 1,
                 articlesPerPage: options.articlesPerPage ? options.articlesPerPage : 10,
-                sort: options.sort ? options.sort : {"timestamp": -1},
+                sort: options.sort ? options.sort : {"_id": -1},
             }
 
             let _articles = await this.client.db(Config.load()!!.database.config.name).collection(src)
@@ -82,6 +82,7 @@ export default class MongoDB extends Database {
 
     async pushArticle(src: string, article: Article): Promise<string> {
         try {
+            article.timestamp = Date.now()
             await this.client.db(Config.load()!!.database.config.name).collection(src).insertOne(await article.toJSON())
             return article.id
         } catch (e: any) {

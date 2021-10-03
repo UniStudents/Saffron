@@ -90,22 +90,17 @@ export default abstract class Database {
         }
 
         // check for sort
-        let sort: string = 'timestamp'
         if (Extensions.getInstance().hasEvent("articles.sort")) {
-            let result = await Extensions.getInstance().callEvent("articles.sort", articles)
+            let result: any[] = await Extensions.getInstance().callEvent("articles.sort", articles)
 
-            if (!Array.isArray(result.articles))
+            if (!Array.isArray(result))
                 throw new Error("Extension articles.sort does not return articles array of articles.")
 
-            if(!result.sort_field)
-                throw new Error("Extension articles.sort does not return sort_field array of articles.")
-
-            for (let article of result.articles)
+            for (let article of result)
                 if (!(article instanceof Article))
                     throw new Error("Extension articles.sort does not return articles array of articles.")
 
-            articles = result.articles
-            sort = result.sort_field
+            articles = result
         }
 
         // First edit the articles
@@ -121,13 +116,9 @@ export default abstract class Database {
             }
         }
 
-        let s: any = {}
-        s[sort] = -1
-
         let dbArticles = await this.getArticles(src, {
             pageNo: 1,
-            articlesPerPage: articles.length >= 5 ? articles.length * 2 : 10,
-            sort: s
+            articlesPerPage: articles.length >= 5 ? articles.length * 2 : 10
         })
 
         // And then check if they already exist.
@@ -139,7 +130,6 @@ export default abstract class Database {
             let id = await this.pushArticle(src, article)
             if (id == "") await Grid.getInstance().onFailedUploadingArticle(article)
         }
-
 
         return articles
     }
