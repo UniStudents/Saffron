@@ -185,7 +185,7 @@ export default class HtmlParser {
                     tmpArticle.content = content
 
                     tmpArticle.attachments = []
-
+                    tmpArticle.categories = []
 
                     let attachs = articleData.attachments?.map((att: any) => {
                         return {
@@ -198,9 +198,6 @@ export default class HtmlParser {
                     tmpArticle.attachments.push(...Utils.extractLinks(content))
 
                     tmpArticle.extras = {}
-
-                    if (!tmpArticle.categories)
-                        tmpArticle.categories = []
 
                     if (alias)
                         tmpArticle.categories.push({name: alias, links: [url]})

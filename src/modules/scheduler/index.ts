@@ -145,8 +145,6 @@ export default class Scheduler {
             sources.splice(index, 1)
         })
 
-        console.log(sources)
-
         Events.getAntennae().emit("scheduler.sources.new", sources.map((source: Source) => source.name))
         // Load workers
         let workers = await Grid.getInstance()!!.getWorkers()
