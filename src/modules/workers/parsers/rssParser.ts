@@ -122,15 +122,15 @@ export default class rssParser {
                 renameFields.get("link") && article.hasOwnProperty(renameFields.get("link")!) ? article[renameFields.get("link")!] : ""
 
             tmpArticle.attachments = Utils.extractLinks(content)
-            //Add extras
+
+            tmpArticle.categories = []
             if (article.categories)
-                tmpArticle.categories = article.categories.map((c: any) => {
-                    return {name: c}
-                })
+                article.categories.forEach((c: any) => tmpArticle.categories.push({name: c}))
 
             if (alias)
                 tmpArticle.categories.push({name: alias, links: [url]})
 
+            //Add extras
             tmpArticle.extras = {}
             //Find remaining values
             let remain = this.unAssign(article, this.requested_fields)
