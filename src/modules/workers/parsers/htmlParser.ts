@@ -7,6 +7,7 @@ import Logger from "../../../middleware/logger"
 import {LoggerTypes} from "../../../middleware/LoggerTypes"
 import Utils from "./Utils"
 import {Element} from "domhandler"
+import {intersection, result} from "lodash";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})
 
@@ -46,27 +47,17 @@ export default class HtmlParser {
      */
     private static attributes(location: Cheerio,
                               dataStoredAt: string,
-                              attributesArr: Array<string>,
-                              endPoint: string): Object | null {
+                              attributesArr: Array<string>): Array<Object> | null {
+
         let obj: any = {}
 
-        if (location.find(dataStoredAt).text() === '') return null
-
-        let valueIndex: number = (attributesArr.includes("value")) ? attributesArr.indexOf("value") : 1
-        let tagIndex: number = (valueIndex === 1) ? 0 : 1
-
-        if (attributesArr.includes("value")) {
-            obj = {value: location.find(dataStoredAt).text()}
-
-            obj["link"] =
-                (attributesArr.includes("href"))
-                    ? endPoint + location.find(dataStoredAt).attr(attributesArr[attributesArr.length - 1])
-                    : location.find(dataStoredAt).attr(attributesArr[attributesArr.length - 1])
-
-        } else obj["link"] =
-            (attributesArr.includes("href"))
-                ? endPoint + location.find(dataStoredAt).attr(attributesArr[attributesArr.length - 1])
-                : location.find(dataStoredAt).attr(attributesArr[attributesArr.length - 1])
+        obj = attributesArr.filter( item => location.find(dataStoredAt).attr(item)).map( item => {
+            return {
+                attribute : (location.find(dataStoredAt).attr(item))? location.find(dataStoredAt).attr()[item] : "",
+                value : (location.find(dataStoredAt).text())? location.find(dataStoredAt).text() : "",
+                type : item
+            }
+        })
 
         return obj
     }
@@ -86,14 +77,14 @@ export default class HtmlParser {
      * @param endPoint The endpoint of the specific site ( e.g https://example.com ).
      * @private
      */
-    private static findMultiple(instructions: Array<string>,
-                                htmlContent: cheerio.Root,
-                                currArticle: Element,
-                                htmlClass: string,
-                                multiple: Boolean = false,
-                                hasAttributes: Boolean = false,
-                                attributesArr: Array<string>,
-                                endPoint: string): Array<String | Object> | String {
+    private static getData(instructions: Array<string>,
+                           htmlContent: cheerio.Root,
+                           currArticle: Element,
+                           htmlClass: string,
+                           multiple: Boolean = false,
+                           hasAttributes: Boolean = false,
+                           attributesArr: Array<string>,
+                           endPoint: string): Array<String | Object> | String {
 
         let results: Array<String | Object> = new Array<String | Object>()
         let tmpElement = htmlContent(currArticle).find(htmlClass)
@@ -101,14 +92,17 @@ export default class HtmlParser {
         let finalLocation: Cheerio
         let finalData: Cheerio
         let dataStoredAt: string
-
+        let tmp
 
         if (multiple) {
             // save the point where the data is stored.
-            dataStoredAt = instructions[instructions.length - 1]
-            tmpArray = instructions.slice(0, instructions.length - 1)
-        } else
-            tmpArray = instructions
+            dataStoredAt = (instructions)? instructions[instructions.length - 1] : htmlClass
+            tmpArray = (instructions)? instructions.slice(0, instructions.length - 1) : [];
+        } else {
+            tmpArray = []
+            dataStoredAt = (instructions)? instructions[instructions.length - 1] : htmlClass
+        }
+
 
         // going deeper into the html content.
         tmpArray.forEach((value) => {
@@ -130,11 +124,25 @@ export default class HtmlParser {
 
                     results.push(finalData.find(dataStoredAt).text())
                 } else {
-                    let tmp = HtmlParser.attributes(finalData, dataStoredAt, attributesArr, endPoint)
-                    if (tmp) results.push(tmp)
+                    tmp = HtmlParser.attributes(finalData, dataStoredAt, attributesArr);
+                    if (tmp) {
+                        tmp.map( (object : Object) => {
+                            results.push(object);
+                        });
+                    }
                 }
             })
         } else {
+            if (hasAttributes) {
+                tmp = HtmlParser.attributes(finalLocation, dataStoredAt, attributesArr)
+                if (tmp) {
+                    tmp.map( (object: Object) => {
+                        results.push(object)
+                    })
+                }
+
+                return results
+            }
             // If it is to get only one piece of information, then we simply take the text from the point where we are ( which will be the point where the information is ).
             return finalLocation.text()
         }
@@ -156,19 +164,16 @@ export default class HtmlParser {
 
                     let articleData: ArticleImage = {}
                     let tmpArticle: Article
-                    let basicData = ["title", "pubDate", "content", "attachments"] // Exp. If you remove the title, then the title is going to be on the extra information of each article.
+                    let basicData = ["title", "pubDate", "content", "attachments", "link"] // Exp. If you remove the title, then the title is going to be on the extra information of each article.
                     let options: any = instructions.scrapeOptions
-                    articleData.link = cheerioLoad(element).find(options["title"].class).find("a").attr("href")
 
                     // for each option. The options provided by instructions.
                     for (let item in options) {
-                        if (options.hasOwnProperty(item) && options[item].class[0] !== '.') options[item].class = "." + options[item].class.slice(0, -1);
-
                         if (options.hasOwnProperty(item) && options[item].find) {
                             if (!options[item].attributes)
-                                articleData[item] = HtmlParser.findMultiple(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, false, [], "")
+                                articleData[item] = HtmlParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, false, [], "")
                             else
-                                articleData[item] = HtmlParser.findMultiple(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, true, options[item].attributes, instructions.endPoint)
+                                articleData[item] = HtmlParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, true, options[item].attributes, instructions.endPoint)
                         } else articleData[item] = cheerioLoad(element).find(options[item].class).text()
                     }
                     // It stores the article data to an instance of Article class.
@@ -177,26 +182,24 @@ export default class HtmlParser {
                         id: instructions.getSource().getId(),
                         name: instructions.getSource().name
                     }
-                    tmpArticle.link = (articleData.link) ? instructions.endPoint + Utils.htmlStrip(articleData.link) : ''
+                    tmpArticle.link = (articleData.link[0]?.attribute)? articleData.link[0].attribute : ''
                     tmpArticle.title = (articleData.title) ? Utils.htmlStrip(articleData.title) : ''
                     tmpArticle.pubDate = (articleData.pubDate) ? Utils.htmlStrip(articleData.pubDate) : ''
 
                     let content = (articleData.content) ? articleData.content : ''
                     tmpArticle.content = content
-
                     tmpArticle.attachments = []
                     tmpArticle.categories = []
 
-                    let attachs = articleData.attachments?.map((att: any) => {
+                    let attachments = articleData.attachments?.map((att: any) => {
                         return {
-                            text: att.value,
-                            link: att.link,
-                            type: 'href'
+                            attribute: att.attribute,
+                            value: att.value,
+                            type: att.type
                         }
                     })
-                    tmpArticle.attachments.push(...((attachs) ? attachs : []))
+                    tmpArticle.attachments.push(...((attachments) ? attachments : []))
                     tmpArticle.attachments.push(...Utils.extractLinks(content))
-
                     tmpArticle.extras = {}
 
                     if (alias)
@@ -212,10 +215,10 @@ export default class HtmlParser {
 
                     if (tmpArticle.title === '') return
 
+                    console.log(tmpArticle)
                     parsedArticles.push(tmpArticle)
                 })
             })
-        // console.log(util.inspect(parsedArticles, false, null, true))
         return parsedArticles
     }
 
