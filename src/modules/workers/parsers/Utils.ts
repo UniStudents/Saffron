@@ -299,16 +299,24 @@ export default class Utils {
         $('a').each((index, element) => {
             links.push({
                 text: $(element).text(), // get the text
-                link: $(element).attr('href'), // get the href attribute
-                type: 'a'
+                value: $(element).attr('href'), // get the href attribute
+                attribute: 'href'
             });
         });
 
         $('img').each((index, element) => {
             links.push({
-                alt: $(element).attr('alt'), // get the text
-                link: $(element).attr('src'), // get the href attribute
-                type: 'img'
+                text: $(element).attr('alt'), // get the text
+                value: $(element).attr('src'), // get the href attribute
+                attribute: 'src'
+            });
+        });
+
+        $('link').each((index, element) => {
+            links.push({
+                text: $(element).text(), // get the text
+                value: $(element).attr('href'), // get the href attribute
+                attribute: 'href'
             });
         });
 

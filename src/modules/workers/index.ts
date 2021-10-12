@@ -61,7 +61,6 @@ export default class Worker {
                         id: job.getSource().getId(),
                         name: job.getSource().name
                     }
-                    article.timestamp = Date.now()
                 })
 
 

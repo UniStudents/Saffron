@@ -1,11 +1,8 @@
 {
   "url": [
-    [
-      "unipi",
-      "https://www.unipi.gr/unipi/el/%CE%B1%CE%BD%CE%B1%CE%BA%CE%BF%CE%B9%CE%BD%CF%8E%CF%83%CE%B5%CE%B9%CF%82.html"
-    ]
+    ["Γενικές Ανακοινώσεις","https://www.unipi.gr/unipi/el/%CE%B1%CE%BD%CE%B1%CE%BA%CE%BF%CE%B9%CE%BD%CF%8E%CF%83%CE%B5%CE%B9%CF%82.html"]
   ],
-  "name": "html-cs.unipi.gr",
+  "name": "unipi.gr",
   "type": "html",
   "scrape": {
     "container": ".catItemView",
@@ -14,7 +11,6 @@
       "pubDate": {
         "class": ".catItemDateCreated",
         "attributes": [
-          "value",
           "href"
         ],
         "find": null,
@@ -27,16 +23,26 @@
         ],
         "multiple": false
       },
+      "link": {
+        "class": ".catItemTitle",
+        "find": [
+          "a"
+        ],
+        "attributes": [
+          "href"
+        ],
+        "multiple": false
+      },
       "content": {
-        "class": ".catItemBody",
+        "class": ".catItemIntroText",
         "find": null,
         "multiple": false
       },
       "attachments": {
         "class": ".catItemLinks",
         "attributes": [
-          "value",
-          "href"
+          "href",
+          "src"
         ],
         "find": [
           ".catItemAttachmentsBlock",
@@ -45,7 +51,6 @@
         ],
         "multiple": true
       }
-
     }
   }
 }

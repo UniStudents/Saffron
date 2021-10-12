@@ -11,7 +11,7 @@ import randomId from "../../middleware/randomId";
 import Article from "../../components/articles";
 import Server from "./server";
 import Client from "./client";
-
+import {Pack, Unpack} from "./transformer"
 export default class Grid {
 
     private static instance: Grid
@@ -50,92 +50,16 @@ export default class Grid {
         if (this.isMain) {
             this.server = new Server()
 
-            this.server.on("connection", (socket: any) => {
-                this.workersClients.push({workersIds: [], socketId: socket.id})
-                Events.getAntennae().emit("grid.node.connected")
-            })
 
-            this.server.on('disconnect', (socket: any) => {
-                Events.getAntennae().emit("grid.node.disconnected")
-                let i = this.workersClients.findIndex(js => js.socketId == socket.id)
-                if (i != -1) {
-                    // Delete all workers from client
-                    this.workersIds.forEach((id, index, object) => {
-                        if (this.workersClients[i].workersIds.includes(id))
-                            this.workersIds.splice(index, 1)
-                    })
-
-                    // Delete socket association
-                    this.workersClients.splice(i, 1)
-                }
-            })
-
-            this.server.on('grid.worker.announced', (socket: any, data: any) => {
-                let workerId = data.id
-                if (typeof workerId !== 'string') return
-                if (workerId.length == 0) return
-
-                Events.getAntennae().emit("grid.worker.announced", workerId)
-
-                this.workersIds.push(workerId)
-                this.workersClients.find(js => js.socketId == socket.id)?.workersIds?.push(workerId)
-            })
-
-            this.server.on('grid.worker.destroyed', (socket: any, data: any) => {
-                Events.getAntennae().emit("grid.worker.destroyed", data.id)
-
-                let j = this.workersIds.findIndex((obj: string) => obj === data.id)
-                if (j != -1) this.workersIds.splice(j, 1)
-
-                let i = this.workersClients.findIndex(js => js.socketId == socket.id)
-                if (i != -1) {
-                    let k = this.workersClients[i].workersIds.findIndex(id => id == data.id)
-                    if (k != -1) this.workersClients[i].workersIds.splice(k, 1)
-                }
-            })
-
-            this.server.on('workers.job.finished', (data: any) => {
-                let jobId = data.id
-
-                let i = this.jobsStorage.findIndex(job => job.id == jobId)
-                if (i != -1) {
-                    this.jobsStorage[i].status = JobStatus.FINISHED
-                    Events.getAntennae().emit("workers.job.finished", this.jobsStorage[i])
-
-                }
-            })
-
-            this.server.on('workers.job.failed', (data: any) => {
-                let jobId = data.id
-
-                let i = this.jobsStorage.findIndex(job => job.id == jobId)
-                if (i != -1) {
-                    this.jobsStorage[i].status = JobStatus.FAILED
-                    Events.getAntennae().emit("workers.job.failed", this.jobsStorage[i])
-                }
-            })
-
-            this.server.on('workers.articles.new', async (socket: any, data: any) => {
-                let articles = data.articles.map((json: any) => Article.fromJSON(json))
-                Events.getAntennae().emit('workers.articles.new', articles)
-
-                let collection = articles[0].getSource().collection_name
-                if (!collection || collection.length == 0)
-                    collection = articles[0].getSource().name
-
-                // TODO - if articles are added only from main merger articles here
-                // await this.mergeArticles(collection, articles)
-            })
-
-            this.server.on('workers.articles.found', (data: any) => {
-                let articles = data.map((json: any) => Article.fromJSON(json))
-                Events.getAntennae().emit('workers.articles.found', articles)
-            })
-
-            this.server.on('workers.parsers.error', (data: any) => {
-                Events.getAntennae().emit('workers.parsers.error', data)
-            })
         }
+    }
+
+    emit(eventName: string, firstPayload?: any, secondPayload?:any, thirdPayload?:any, lastPayload?:any): Promise<void>{
+        return new Promise<void>(async resolve => {
+            resolve()
+
+
+        })
     }
 
     async registerGridNode(): Promise<void> {

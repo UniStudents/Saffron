@@ -18,7 +18,6 @@ export default class Source {
      * @param addToList
      */
     static async parseFileObject(source: any, addToList: boolean = true): Promise<Source | object> {
-
         let ret = new Source()
 
         // TODO - Add event emitters here too.

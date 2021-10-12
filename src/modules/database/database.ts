@@ -90,29 +90,17 @@ export default abstract class Database {
         }
 
         // check for sort
-        let sort: any = {"timestamp": 1}
         if (Extensions.getInstance().hasEvent("articles.sort")) {
-            let result = await Extensions.getInstance().callEvent("articles.sort", articles)
+            let result: any[] = await Extensions.getInstance().callEvent("articles.sort", articles)
 
-            let keys = Object.keys(result)
-            if (keys.length !== 2 || !keys.includes("articles"))
-                throw new Error("Extension articles.sort does not return a valid object.")
-
-            if (!Array.isArray(result.articles))
+            if (!Array.isArray(result))
                 throw new Error("Extension articles.sort does not return articles array of articles.")
 
-            for (let article of result.articles)
+            for (let article of result)
                 if (!(article instanceof Article))
                     throw new Error("Extension articles.sort does not return articles array of articles.")
 
-            articles = result.articles
-
-            let field = keys.filter(k => k !== 'articles')[0]
-            let order = result[field]
-            if (order !== -1 && order !== 1)
-                throw new Error("Extension articles.sort does not return a valid sort field order.")
-
-            sort = {field: order}
+            articles = result
         }
 
         // First edit the articles
@@ -130,8 +118,7 @@ export default abstract class Database {
 
         let dbArticles = await this.getArticles(src, {
             pageNo: 1,
-            articlesPerPage: articles.length >= 5 ? articles.length * 2 : 10,
-            sort
+            articlesPerPage: articles.length >= 5 ? articles.length * 2 : 10
         })
 
         // And then check if they already exist.
@@ -143,7 +130,6 @@ export default abstract class Database {
             let id = await this.pushArticle(src, article)
             if (id == "") await Grid.getInstance().onFailedUploadingArticle(article)
         }
-
 
         return articles
     }

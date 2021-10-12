@@ -104,7 +104,6 @@ export default class Scheduler {
         job.status = JobStatus.PENDING
         job.attempts = 0
         job.emitAttempts = 0
-
         return job
     }
 
@@ -136,8 +135,17 @@ export default class Scheduler {
         // Read all source files
         await this.scanSourceFiles()
         let sources = Source.getSources()
-        Events.getAntennae().emit("scheduler.sources.new", sources.map((source: Source) => source.name))
+        let excluded = Config.load().sources.excluded
+        if(!Array.isArray(excluded)) throw new Error("Config.sources.excluded is not an array.")
+        excluded.forEach((ex_source: any) => {
+            if(typeof ex_source !== 'string')
+                throw new Error("Config.sources.excluded is not an array of strings.")
 
+            let index = sources.findIndex((source: Source) => source.name === ex_source)
+            sources.splice(index, 1)
+        })
+
+        Events.getAntennae().emit("scheduler.sources.new", sources.map((source: Source) => source.name))
         // Load workers
         let workers = await Grid.getInstance()!!.getWorkers()
 

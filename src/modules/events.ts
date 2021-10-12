@@ -1,10 +1,9 @@
-import EventEmitter from "events"
 import Logger from "../middleware/logger";
 import {LoggerTypes} from "../middleware/LoggerTypes";
 import Job from "../components/job";
 import Article from "../components/articles";
 import chalk from "chalk";
-
+import Grid from "./grid/index";
 export default class Events {
 
     private static antennae: any
@@ -13,7 +12,7 @@ export default class Events {
      * Return the event emitter
      */
     static getAntennae(): any {
-        if (Events.antennae == null) Events.antennae = new EventEmitter()
+        if (Events.antennae == null) Events.antennae = new Antennae()
         return Events.antennae
     }
 
@@ -41,4 +40,27 @@ export default class Events {
 
         this.getAntennae().on("workers.parsers.error", (data: any) => Logger(LoggerTypes.INFO, `${chalk.red('Parsers')} - failed to scrape the articles with error message: ${data.message}.`))
     }
+}
+
+class Antennae {
+    private _config: any;
+    private _callbacks: any = {};
+
+    public on(eventName: string, callback: any): any {
+        if(eventName.length === 0) throw Error("You cannot create an event for nothing!")
+
+        if(!this._callbacks[eventName]) this._callbacks[eventName] = [];
+        this._callbacks[eventName].push(callback)
+    }
+
+    public emit(eventName: string, firstPayload?: any, secondPayload?:any, thirdPayload?:any, lastPayload?:any): any{
+        if(!this._callbacks[eventName]) return;
+
+        Grid.getInstance().emit(eventName, firstPayload, secondPayload, thirdPayload, lastPayload)
+
+        this._callbacks[eventName].forEach((callback: any)=>callback(firstPayload, secondPayload, thirdPayload, lastPayload))
+        if(this._callbacks['*']) this._callbacks["*"].forEach((callback: any)=>callback(firstPayload, secondPayload, thirdPayload, lastPayload))
+
+    }
+
 }

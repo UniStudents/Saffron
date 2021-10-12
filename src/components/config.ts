@@ -14,7 +14,8 @@ export default class Config {
             config: {}
         },
         sources: {
-            path: "../../../sources"
+            path: "../../../sources",
+            excluded: []
         },
         mode: "main",
         workers: {
