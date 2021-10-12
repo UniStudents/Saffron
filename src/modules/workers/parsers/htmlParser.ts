@@ -7,7 +7,6 @@ import Logger from "../../../middleware/logger"
 import {LoggerTypes} from "../../../middleware/LoggerTypes"
 import Utils from "./Utils"
 import {Element} from "domhandler"
-import {intersection, result} from "lodash";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})
 
@@ -49,17 +48,13 @@ export default class HtmlParser {
                               dataStoredAt: string,
                               attributesArr: Array<string>): Array<Object> | null {
 
-        let obj: any = {}
-
-        obj = attributesArr.filter( item => location.find(dataStoredAt).attr(item)).map( item => {
+        return attributesArr.filter(item => location.find(dataStoredAt).attr(item)).map(item => {
             return {
-                attribute : (location.find(dataStoredAt).attr(item))? location.find(dataStoredAt).attr()[item] : "",
-                value : (location.find(dataStoredAt).text())? location.find(dataStoredAt).text() : "",
-                type : item
+                attribute: item, //attribute
+                value: (location.find(dataStoredAt).attr(item)) ? location.find(dataStoredAt).attr(item) : "", //value_of__requested_attribute
+                text: (location.find(dataStoredAt).text()) ? location.find(dataStoredAt).text() : "", //tag value
             }
         })
-
-        return obj
     }
 
     /**
@@ -191,14 +186,7 @@ export default class HtmlParser {
                     tmpArticle.attachments = []
                     tmpArticle.categories = []
 
-                    let attachments = articleData.attachments?.map((att: any) => {
-                        return {
-                            attribute: att.attribute,
-                            value: att.value,
-                            type: att.type
-                        }
-                    })
-                    tmpArticle.attachments.push(...((attachments) ? attachments : []))
+                    tmpArticle.attachments.push(...((articleData.attachments) ? articleData.attachments : []))
                     tmpArticle.attachments.push(...Utils.extractLinks(content))
                     tmpArticle.extras = {}
 
