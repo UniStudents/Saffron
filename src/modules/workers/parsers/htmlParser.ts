@@ -8,6 +8,7 @@ import {LoggerTypes} from "../../../middleware/LoggerTypes"
 import Utils from "./Utils"
 import {Element} from "domhandler"
 import Config from "../../../components/config";
+import {intersection, reject} from "lodash";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})
 
@@ -18,17 +19,18 @@ interface ArticleImage {
 
 export default class HtmlParser {
 
-    private static async request(url: string): Promise<AxiosResponse> {
+    private static async request(url: string, timeout: number): Promise<AxiosResponse> {
         return new Promise((resolve) => {
             axios({
                 method: 'get',
                 url,
                 httpsAgent: httpsAgent,
-                timeout: Config.load().workers.jobs.timeout
+                timeout
             }).then((result: AxiosResponse) => {
                 resolve(result)
             }).catch((e) => {
                 Logger(LoggerTypes.ERROR, `Request error ${e.message}.`)
+                reject(e)
             })
 
         })
@@ -147,7 +149,7 @@ export default class HtmlParser {
     static async parse2(alias: string | undefined, url: string, instructions: Instructions, amount: Number = 10): Promise<Array<Article>> {
         let parsedArticles: Array<Article> = []
 
-        await HtmlParser.request(url)
+        await HtmlParser.request(url, instructions.getSource().requestTimeout)
             .then((response: AxiosResponse) => {
                 const cheerioLoad: cheerio.Root = cheerio.load(response.data)
 
@@ -205,6 +207,8 @@ export default class HtmlParser {
                     parsedArticles.push(tmpArticle)
                 })
             })
+
+        // TODO - .catch(error) and return
         return parsedArticles
     }
 
