@@ -19,7 +19,10 @@ export default class Config {
         },
         mode: "main",
         workers: {
-            nodes: 1 // Start one workers
+            nodes: 1, // Start one workers
+            jobs: {
+                timeout: 5000
+            }
         },
         scheduler: {
             intervalBetweenJobs: 3600000,
@@ -36,6 +39,16 @@ export default class Config {
 
     public static isHydrated: boolean = false
     private static instance: Config
+
+    private mergeObject(src: any, original: object): object {
+        return _.mergeWith({}, original, src, (o, s) => {
+            if(Array.isArray(o))
+                return s ? s : o
+            else if (typeof o == 'object')
+                return this.mergeObject(s, o)
+            return s ? s : o
+        })
+    }
 
     /**
      * Loads an external configuration object and merges the parameters with the default ones.
@@ -67,45 +80,26 @@ export default class Config {
             }
         }
 
-        // this._config = _.mergeWith({}, this._config, config, (o, s) => s ? s : o)
-
-        this._config = _.mergeWith({}, this._config, config, (o, s) => {
-            if (typeof o == 'object')
-                return _.mergeWith({}, o, s, (o1, s1) => s1 ? s1 : o1)
-            return s ? s : o
-        })
-        // console.log(util.inspect(this._config, false, null, true))
+        this._config = this.mergeObject(config, this._config)
 
         switch (process.env.NODE_ENV) {
             case "production":
                 //@ts-ignore
                 if (config.production) //this._config = _.mergeWith({}, this._config, config.production, (o, s) => s ? s : o)
                     //@ts-ignore
-                    this._config = _.mergeWith({}, this._config, config.production, (o, s) => {
-                        if (typeof o == 'object')
-                            return _.mergeWith({}, o, s, (o1, s1) => s1 ? s1 : o1)
-                        return s ? s : o
-                    })
+                    this._config = this.mergeObject(config.production, this._config)
                 break
             case "development":
                 //@ts-ignore
                 if (config.development) // this._config = _.mergeWith({}, this._config, config.development, (o, s) => s ? s : o)
                     //@ts-ignore
-                    this._config = _.mergeWith({}, this._config, config.development, (o, s) => {
-                        if (typeof o == 'object')
-                            return _.mergeWith({}, o, s, (o1, s1) => s1 ? s1 : o1)
-                        return s ? s : o
-                    })
+                    this._config = this.mergeObject(config.development, this._config)
                 break
             case "testing":
                 //@ts-ignore
                 if (config.testing) //this._config = _.mergeWith({}, this._config, config.testing, (o, s) => s ? s : o)
-                                    //@ts-ignore
-                    this._config = _.mergeWith({}, this._config, config.testing, (o, s) => {
-                        if (typeof o == 'object')
-                            return _.mergeWith({}, o, s, (o1, s1) => s1 ? s1 : o1)
-                        return s ? s : o
-                    })
+                    //@ts-ignore
+                    this._config = this.mergeObject(config.testing, this._config)
                 break
             default:
 
@@ -120,6 +114,5 @@ export default class Config {
         delete this._config.testing
 
         Config.isHydrated = true
-        // console.log(this._config)
     }
 }
