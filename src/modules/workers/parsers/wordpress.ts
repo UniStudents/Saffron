@@ -24,8 +24,8 @@ export default class WordpressParser {
 
         let categories: any, posts: any
         try {
-            categories = (await axios.get(categoriesUrl, {timeout: Config.load().workers.jobs.timeout}))?.data
-            posts = (await axios.get(postsUrl, {timeout: Config.load().workers.jobs.timeout}))?.data
+            categories = (await axios.get(categoriesUrl, {timeout: instructions.getSource().requestTimeout}))?.data
+            posts = (await axios.get(postsUrl, {timeout: instructions.getSource().requestTimeout}))?.data
         } catch (e: any) {
             Logger(LoggerTypes.ERROR, `Request error ${e.message}.`);
             return {errorMessage: 'Request error: ' + e.message}

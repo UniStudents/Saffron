@@ -38,14 +38,15 @@ export default class rssParser {
      which contains all the necessary data that they we
      will use.
      *
+     * @param instructions
      * @param url
      * @param amount
      * @param renameFields
      */
-    public static async rssParser(url: string, amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()) {
+    public static async rssParser(instructions: Instructions, url: string, amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()) {
         let dataJson: any = {}; // there is where the returned data are stored.
         let customFieldsKeys = Array.from(renameFields.keys());
-        let parser: Parser = await this.generateParser(renameFields)
+        let parser: Parser = await this.generateParser(instructions, renameFields)
         return await parser.parseURL(url).then(feed => {
             let count = 0
             feed.items.forEach(item => {
@@ -75,14 +76,15 @@ export default class rssParser {
      * that is able to parse
      * given rss data
      *
+     * @param instructions
      * @param renameFields
      * @private
      */
-    private static async generateParser(renameFields: Map<string, string>): Promise<Parser> {
+    private static async generateParser(instructions: Instructions, renameFields: Map<string, string>): Promise<Parser> {
         let customFields = await this.generateRenamedFields(renameFields);
         return new Parser({
             // define the request headers.
-            timeout: Config.load().workers.jobs.timeout,
+            timeout: instructions.getSource().requestTimeout,
             headers: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'},
             // define requests options.
             requestOptions: {
@@ -158,13 +160,13 @@ export default class rssParser {
         let parsedArticles: Array<Article> = [];
 
         if (typeof instructions.url == 'string') {
-            let articles = await this.rssParser(instructions.url, amount, renameFields)
+            let articles = await this.rssParser(instructions, instructions.url, amount, renameFields)
             if (!articles) return
 
             parsedArticles.push(...(await this.mapArticles(articles, undefined, instructions.url, renameFields, instructions)))
         } else {
             for (const pair of instructions.url) {
-                let articles = await this.rssParser(pair[1], amount, renameFields)
+                let articles = await this.rssParser(instructions, pair[1], amount, renameFields)
                 if (!articles) continue
 
                 parsedArticles.push(...(await this.mapArticles(articles, pair[0], pair[1], renameFields, instructions)))
@@ -186,8 +188,6 @@ export default class rssParser {
         });
         return target
     };
-
-
 }
 
 

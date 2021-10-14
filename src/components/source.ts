@@ -5,6 +5,7 @@ import logger from "../middleware/logger";
 import {LoggerTypes} from "../middleware/LoggerTypes";
 import Article from "./articles";
 import hash from 'crypto-js/sha256';
+import Config from "./config";
 
 const splice = function (base: string, idx: number, rem: number, str: string): string {
     return base.slice(0, idx) + str + base.slice(Math.abs(rem));
@@ -68,6 +69,18 @@ export default class Source {
             }
         }
         ret.retryInterval = source.retryInterval
+
+        if (source.requestTimeout && (typeof source.requestTimeout != 'number' || source.requestTimeout < 0)) {
+            logger(LoggerTypes.INSTALL_ERROR, "Source requestTimeout is not valid. Must be a positive number.")
+            return {
+                filename: source.filename,
+                errorField: 'requestTimeout',
+                message: "Source requestTimeout is not valid. Must be a positive number."
+            }
+        }
+        if(addToList)
+            ret.requestTimeout = source.requestTimeout ? source.requestTimeout : Config.load().workers.jobs.timeout
+        else ret.requestTimeout = source.requestTimeout ? source.requestTimeout : 5000
 
         ret.instructions = new Instructions()
         ret.instructions.source = {id: ret.getId()}
@@ -215,6 +228,7 @@ export default class Source {
     declare collection_name: string
     declare scrapeInterval: number
     declare retryInterval: number
+    declare requestTimeout: number
     declare instructions: Instructions
 
     constructor(id: string = "") {
