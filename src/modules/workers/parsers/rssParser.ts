@@ -4,11 +4,11 @@ import {LoggerTypes} from "../../../middleware/LoggerTypes";
 import Utils from "./Utils";
 import Article from "../../../components/articles";
 import Instructions from "../../../components/instructions";
+import Config from "../../../components/config";
 
 
 export default class rssParser {
     private static requested_fields: String[] = ["title", "link", "content", "pubDate", "categories"]
-    private static parser_timout: number = 5000
 
     /**
      This function finds the RSS fields that are not
@@ -82,7 +82,7 @@ export default class rssParser {
         let customFields = await this.generateRenamedFields(renameFields);
         return new Parser({
             // define the request headers.
-            timeout: this.parser_timout,
+            timeout: Config.load().workers.jobs.timeout,
             headers: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'},
             // define requests options.
             requestOptions: {

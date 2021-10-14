@@ -7,6 +7,7 @@ import Logger from "../../../middleware/logger"
 import {LoggerTypes} from "../../../middleware/LoggerTypes"
 import Utils from "./Utils"
 import {Element} from "domhandler"
+import Config from "../../../components/config";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})
 
@@ -19,14 +20,12 @@ export default class HtmlParser {
 
     private static async request(url: string): Promise<AxiosResponse> {
         return new Promise((resolve) => {
-
-            let options: object = {
+            axios({
                 method: 'get',
                 url,
-                httpsAgent: httpsAgent
-            }
-
-            axios(options).then((result: AxiosResponse) => {
+                httpsAgent: httpsAgent,
+                timeout: Config.load().workers.jobs.timeout
+            }).then((result: AxiosResponse) => {
                 resolve(result)
             }).catch((e) => {
                 Logger(LoggerTypes.ERROR, `Request error ${e.message}.`)
