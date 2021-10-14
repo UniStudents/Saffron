@@ -176,7 +176,7 @@ export default class HtmlParser {
                         id: instructions.getSource().getId(),
                         name: instructions.getSource().name
                     }
-                    tmpArticle.link = (articleData.link[0]?.attribute)? articleData.link[0].attribute : ''
+                    tmpArticle.link = (Array.isArray(articleData.link) && articleData.link[0]?.value)? articleData.link[0].value : ''
                     tmpArticle.title = (articleData.title) ? Utils.htmlStrip(articleData.title) : ''
                     tmpArticle.pubDate = (articleData.pubDate) ? Utils.htmlStrip(articleData.pubDate) : ''
 
