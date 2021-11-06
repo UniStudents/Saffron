@@ -1,7 +1,7 @@
 import Instructions from "../../../components/instructions"
 import Article from "../../../components/articles"
 import axios, {AxiosResponse} from "axios"
-import cheerio, {Cheerio} from "cheerio"
+import cheerio from "cheerio"
 import https from "https"
 import Logger from "../../../middleware/logger"
 import {LoggerTypes} from "../../../middleware/LoggerTypes"
@@ -15,6 +15,7 @@ const httpsAgent = new https.Agent({rejectUnauthorized: false})
 interface ArticleImage {
     [key: string]: any
 }
+
 
 
 export default class HtmlParser {
@@ -45,7 +46,7 @@ export default class HtmlParser {
      * @param attributesArr The array that contains the information that helps to get the appropriate attributes.
      * @param endPoint The endpoint of the specific site ( e.g https://example.com ).
      */
-    private static attributes(location: Cheerio,
+    private static attributes(location: cheerio.Cheerio,
                               dataStoredAt: string,
                               attributesArr: Array<string>): Array<Object> | null {
 
@@ -75,7 +76,7 @@ export default class HtmlParser {
      */
     private static getData(instructions: Array<string>,
                            htmlContent: cheerio.Root,
-                           currArticle: Element,
+                           currArticle: cheerio.Element,
                            htmlClass: string,
                            multiple: Boolean = false,
                            hasAttributes: Boolean = false,
@@ -85,8 +86,8 @@ export default class HtmlParser {
         let results: Array<String | Object> = new Array<String | Object>()
         let tmpElement = htmlContent(currArticle).find(htmlClass)
         let tmpArray: Array<string> | null
-        let finalLocation: Cheerio
-        let finalData: Cheerio
+        let finalLocation: cheerio.Cheerio
+        let finalData: cheerio.Cheerio
         let dataStoredAt: string
         let tmp
 

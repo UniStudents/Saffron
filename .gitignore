@@ -105,3 +105,5 @@ dist
 
 .idea/
 yarn.lock
+
+.parcel-cache/

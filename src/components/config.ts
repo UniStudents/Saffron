@@ -67,14 +67,14 @@ export default class Config {
                     config = require(config);
                 else
                     config = require((config.startsWith('./') ? '.' : '../') + config)
-            } catch (error) {
+            } catch (error: any) {
                 Logger(LoggerTypes.INSTALL_ERROR, `Saffron couldn\'t load the configuration file from the path specified.\n${error}\n`)
                 throw new Error(error)
             }
         } else if (!config) {
             try {
                 config = require("../../saffron.json")
-            } catch (error) {
+            } catch (error: any) {
                 Logger(LoggerTypes.INSTALL_ERROR, "You did not supply any configuration or the supplied configuration file is improperly configured.")
                 throw new Error(error)
             }

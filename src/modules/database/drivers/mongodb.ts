@@ -1,4 +1,4 @@
-import MongoClient from "mongodb";
+import {MongoClient} from "mongodb";
 import Logger from "../../../middleware/logger";
 import {LoggerTypes} from "../../../middleware/LoggerTypes"
 import Article from "../../../components/articles";
@@ -7,19 +7,19 @@ import Config from "../../../components/config"
 
 export default class MongoDB extends Database {
 
-    declare client: MongoClient.MongoClient
+    declare client: MongoClient;
+
 
     async connect(): Promise<boolean> {
         try {
-            this.client = await MongoClient.connect(Config.load()!!.database.config.url, {
-                "useUnifiedTopology": true,
-                "useNewUrlParser": true
-            })
+            this.client = new MongoClient(Config.load()!!.database.config.url)
+            await this.client.connect();
             Logger(LoggerTypes.DEBUG, "Testing database connection")
 
             return true
         } catch (e: any) {
             Logger(LoggerTypes.INSTALL_ERROR, `Database error: ${e.message}.`)
+            throw Error();
         }
 
         return false
@@ -40,7 +40,9 @@ export default class MongoDB extends Database {
 
     async getArticle(src: string, id: string): Promise<Article | undefined> {
         try {
-            return await this.client.db(Config.load()!!.database.config.name).collection(src).findOne({id})
+            let fetched = await this.client.db(Config.load()!!.database.config.name).collection(src).findOne({id})
+            if(!fetched) return undefined;
+            return Article.fromJSON(fetched);
 
         } catch (e: any) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
@@ -56,10 +58,10 @@ export default class MongoDB extends Database {
         try {
             if (!options) {
                 return (await this.client.db(Config.load()!!.database.config.name).collection(src).find().toArray())
-                    .map((_article: Article) => Article.fromJSON(_article))
+                    .map((_article: object) => Article.fromJSON(_article))
             }
 
-            let opts = {
+            let opts: any = {
                 pageNo: options.pageNo ? options.pageNo : 1,
                 articlesPerPage: options.articlesPerPage ? options.articlesPerPage : 10,
                 sort: options.sort ? options.sort : {"_id": -1},
@@ -72,7 +74,7 @@ export default class MongoDB extends Database {
                 .limit(opts.articlesPerPage)
                 .toArray()
 
-            return _articles.map((_article: Article) => Article.fromJSON(_article))
+            return _articles.map((_article: object) => Article.fromJSON(_article))
 
         } catch (e: any) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)

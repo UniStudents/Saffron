@@ -16,7 +16,7 @@ export const Unpack = (payload: Payload): Job | Article | Source | object => {
         case "Source":
             return Source.fromJSON(payload.payload)
         default:
-            new Error(`The transformer module received a payload that could not unpacked: \n ${payload}`)
+            new Error(`The transformer module received a payload that couldn\'t be unpacked: \n ${payload}`)
     }
     return {}
 };
