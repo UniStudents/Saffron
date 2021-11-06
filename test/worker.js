@@ -18,7 +18,7 @@ try {
             } : {driver: "memory"},
         sources: {
             path: "/test/sources",
-            excluded: ["custom-cs.unipi.gr", "wordpress-cs.unipi.gr", "rss-cs.unipi.gr", "unipi.gr"]
+            excluded: ["custom-cs.unipi.gr", "wordpress-cs.unipi.gr", "rss-cs.unipi.gr"]
         },
         scheduler: {
             intervalBetweenJobs: 10000,
@@ -27,13 +27,13 @@ try {
         },
         mode: process.env.MODE || "main",
         workers: {
-            nodes: 0,
+            nodes: 3,
             job: {
                 timeout: 5000
             }
         },
         grid:{
-            mode: "auto" || "manual",
+            mode: "auto",
             // Following options are optional during auto mode
             address: "192.168.2.9",
             port: "3000",

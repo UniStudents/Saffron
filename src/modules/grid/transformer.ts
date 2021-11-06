@@ -28,5 +28,6 @@ export const Pack = (payload: Job | Article | Source | object): Payload => {
         payload: payload.toJSON() || payload
     }
 
+    console.log(chunk)
     return chunk
 }
