@@ -18,7 +18,7 @@ try {
             } : {driver: "memory"},
         sources: {
             path: "/test/sources",
-            excluded: ["html-cs.unipi.gr"]
+            // excluded: [custom-cs.unipi.gr"]
         },
         scheduler: {
             intervalBetweenJobs: 10000,
@@ -35,11 +35,16 @@ try {
     try {
         await saffron.initialize(config)
         await saffron.start()
+
+        // saffron.on("workers.articles.found", (articles)=>{
+        //     console.log(articles)
+        //
+        // })
     } catch (error) {
         errors.push(error)
     }
 
-    setTimeout(() => {
+    if(process.env.NODE_ENV = "testing") setTimeout(() => {
         if(errors.length > 0) {
             logger(loggerTypes.LoggerTypes.ERROR,`Saffron failed at runtime. The CI workflow will be terminated. The errors that occured where the following: \n\n${errors}\n\n`)
             process.exit(1)
