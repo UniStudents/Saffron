@@ -1,6 +1,6 @@
 {
   "name": "@poiw/saffron",
-  "version": "1.12.0",
+  "version": "1.12.1",
   "description": "A  fairly intuitive & powerful framework that enables you to collect & save articles and news from all over the web. ",
   "main": "dist/index.js",
   "dependencies": {
@@ -34,7 +34,7 @@
     "url": "git+https://github.com/poiw-org/saffron.git"
   },
   "author": "",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/poiw-org/saffron/issues"
   },
