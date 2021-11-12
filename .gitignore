@@ -107,3 +107,4 @@ dist
 yarn.lock
 
 .parcel-cache/
+package-lock.json
