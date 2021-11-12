@@ -9,10 +9,10 @@ import Grid from "../grid/index";
 import {JobStatus} from "../../components/JobStatus";
 import randomId from "../../middleware/randomId";
 import Worker from "../workers";
-import {last} from "lodash";
 
-const fs = require('fs');
+
 const path = process.cwd();
+const glob = require("glob")
 
 export default class Scheduler {
 
@@ -28,27 +28,28 @@ export default class Scheduler {
      * Scans the source files from given path and translate them to classes
      */
     private scanSourceFiles(): Promise<void> {
-        return new Promise((loaded, failed) => {
+        return new Promise((resolve, reject) => {
             let sourcesPath = Config.load().sources.path
+            glob(`${path+sourcesPath}/**`,null,(error : any,files: string[])=>{
+                if(error){
+                    Logger(LoggerTypes.INSTALL_ERROR, "Path is invalid or there are insufficient permissions.")
+                    reject(error)
+                }else{
+                    let acceptedFiles = new RegExp(/.*js/)
+                    if (!files || files.length <=0) {
+                        Logger(LoggerTypes.INSTALL_ERROR, "No source files were found.")
+                        reject(new Error("No source files were found."))
+                    }
+                    let rawSources = files.filter((file: any) => acceptedFiles.test(file))
+                    let sources = rawSources.map((file: any) => Object({
+                        filename: `${file.split("/").pop()}`,
+                        path: `${file}`,
+                        ...require(`${file}`)
+                    }))
+                    sources.forEach(async (source: any) => await Source.parseFileObject(source))
+                    resolve()
 
-            fs.readdir(path + sourcesPath, (err: object, files: object[]) => {
-                let acceptedFiles = new RegExp(/.*js/)
-
-                if (!files) {
-                    Logger(LoggerTypes.INSTALL_ERROR, "No source files were found")
-                    throw Error
                 }
-
-                let rawSources = files.filter((file: any) => acceptedFiles.test(file))
-
-                let sources = rawSources.map((file: any) => Object({
-                    filename: file,
-                    path: `${path + sourcesPath}/${file}`,
-                    ...require(`${path + sourcesPath}/${file}`)
-                }))
-
-                sources.forEach(async (source: any) => await Source.parseFileObject(source))
-                loaded()
             })
         })
     }

@@ -48,9 +48,9 @@ export default class Grid {
 
         // // If main saffron
         if (this.isMain) {
-            this.server = new Server()
-
-
+            this.server = new Server();
+        }else{
+            this.client = new Client();
         }
     }
 
@@ -62,11 +62,13 @@ export default class Grid {
         })
     }
 
-    async registerGridNode(): Promise<void> {
+    async registerGridNode(): Promise<string> {
         let _publicIp = {ipv4: (await publicIp.v4()), ipv6: (await publicIp.v6)}
         let _privateIp = privateIp.address()
         let id = (this.isMain ? 'grd-main' : randomId("grd"))
         await Database.getInstance()!!.insertGridNode(id, _publicIp, _privateIp, this.encryptionKey)
+
+        return id
     }
 
     /**
@@ -76,12 +78,15 @@ export default class Grid {
         if (this.isMain) {
             if (Config.load().grid.distributed)
                 await this.server.listen()
+                this.server.socket.on("connection", ()=>{
+                    this.registerGridNode()
+                })
         } else if (Config.load()!!.workers.nodes > 0) {
             await this.client.connect()
 
-            this.client.on('connect', () => {
+            this.client.socket.on('connect', () => {
                 for (const workerId of this.workersIds)
-                    this.client.emit('grid.worker.announced', {id: workerId})
+                    this.client.socket.emit('grid.worker.announced', {id: workerId})
             })
 
             this.client.on('scheduler.job.push', (data: any) => {
