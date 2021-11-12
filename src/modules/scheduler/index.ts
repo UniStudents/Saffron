@@ -46,7 +46,6 @@ export default class Scheduler {
                         path: `${file}`,
                         ...require(`${file}`)
                     }))
-                    console.log(sources)
                     sources.forEach(async (source: any) => await Source.parseFileObject(source))
                     resolve()
 

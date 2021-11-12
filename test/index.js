@@ -62,7 +62,7 @@ try {
         errors.push(error)
     }
 
-    if(process.env.NODE_ENV == "testing") setTimeout(() => {
+    setTimeout(() => {
         if(errors.length > 0) {
             logger(loggerTypes.LoggerTypes.ERROR,`Saffron failed at runtime. The CI workflow will be terminated. The errors that occured where the following: \n\n${errors}\n\n`)
             process.exit(1)
