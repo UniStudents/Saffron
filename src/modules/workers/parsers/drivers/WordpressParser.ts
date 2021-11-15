@@ -37,7 +37,7 @@ export class WordpressParser extends ParserClass {
             categories = (await axios.get(categoriesUrl, (config as AxiosRequestConfig)))?.data
             posts = (await axios.get(postsUrl, (config as AxiosRequestConfig)))?.data
         } catch (e: any) {
-            let message = `WordpressParserRequestException error during request, original ${e.message}`;
+            let message = `WordpressParserException error during request, original error: ${e.message}`;
             Logger(LoggerTypes.ERROR, message);
             throw new Error(message);
         }

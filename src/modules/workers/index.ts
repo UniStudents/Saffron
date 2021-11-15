@@ -79,7 +79,7 @@ export default class Worker {
             let articles: Article[] = await (ParserLoader.getParser(instructions.parserType))!!.parse(job);
             return articles;
         } catch (e: any) {
-            throw new Error(`WorkerException failed to complete job, original error: ${e.message}`);
+            throw new Error(`WorkerException failed to complete job for ${job.getSource().name}, original error: ${e.message}`);
         }
     }
 
