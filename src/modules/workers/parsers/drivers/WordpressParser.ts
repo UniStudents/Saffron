@@ -2,10 +2,14 @@ import {ParserClass} from "../ParserClass";
 import Instructions from "../../../../components/instructions";
 import Job from "../../../../components/job";
 import Article from "../../../../components/articles";
-import axios from "axios";
+import axios, {AxiosRequestConfig} from "axios";
 import Logger from "../../../../middleware/logger";
 import {LoggerTypes} from "../../../../middleware/LoggerTypes";
 import Utils from "../Utils";
+import https from "https";
+import {AxiosConfig} from "../../../../components/AxiosConfig";
+const httpsAgent = new https.Agent({rejectUnauthorized: false})
+
 
 export class WordpressParser extends ParserClass {
     validateScrape(scrape: object): string {
@@ -23,9 +27,15 @@ export class WordpressParser extends ParserClass {
         let postsUrl = instructions.url + 'wp-json/wp/v2/posts/';
 
         let categories: any, posts: any;
+
+        let config: (AxiosConfig)  = {
+            timeout: instructions.getSource().requestTimeout
+        }
+        if(instructions["ignoreCertificates"]) config.httpsAgent = httpsAgent
+
         try {
-            categories = (await axios.get(categoriesUrl, {timeout: instructions.getSource().requestTimeout}))?.data
-            posts = (await axios.get(postsUrl, {timeout: instructions.getSource().requestTimeout}))?.data
+            categories = (await axios.get(categoriesUrl, (config as AxiosRequestConfig)))?.data
+            posts = (await axios.get(postsUrl, (config as AxiosRequestConfig)))?.data
         } catch (e: any) {
             let message = `WordpressParserRequestException error during request, original ${e.message}`;
             Logger(LoggerTypes.ERROR, message);

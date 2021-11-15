@@ -3,12 +3,13 @@ import Instructions from "../../../../components/instructions";
 import Job from "../../../../components/job";
 import Article from "../../../../components/articles";
 import https from "https";
-import axios, {AxiosResponse} from "axios";
+import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
 import Logger from "../../../../middleware/logger";
 import {LoggerTypes} from "../../../../middleware/LoggerTypes";
 import {reject} from "lodash";
 import cheerio from "cheerio";
 import Utils from "../Utils";
+import {AxiosConfig} from "../../../../components/AxiosConfig";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})
 interface ArticleImage { [key: string]: any }
@@ -30,18 +31,23 @@ export class HTMLParser extends ParserClass {
         instructions.endPoint = sourceJson.scrape.endPoint;
     }
 
-    private static async request(url: string, timeout: number): Promise<AxiosResponse> {
+    private static async request(url: string, timeout: number,instructions: Instructions): Promise<AxiosResponse> {
         return new Promise((resolve) => {
-            axios({
+
+            let config : AxiosConfig = {
                 method: 'get',
                 url,
                 httpsAgent: httpsAgent,
                 timeout
-            }).then((result: AxiosResponse) => {
+            }
+
+            if(instructions["ignoreCertificates"]) config.httpsAgent = httpsAgent
+            axios((config as AxiosRequestConfig)).then((result: AxiosResponse) => {
                 resolve(result)
-            }).catch((e) => {
-                Logger(LoggerTypes.ERROR, `Request error ${e.message}.`)
-                reject(e)
+            }).catch((e: any) => {
+                let message = `HTMLParserException error during request, original error ${e.message}`
+                Logger(LoggerTypes.ERROR, `${message}`)
+                reject(new Error(message))
             })
 
         })
@@ -160,7 +166,7 @@ export class HTMLParser extends ParserClass {
     static async parse2(alias: string | undefined, url: string, instructions: Instructions, amount: Number = 10): Promise<Article[]> {
         let parsedArticles: Article[] = []
 
-        await HTMLParser.request(url, instructions.getSource().requestTimeout)
+        await HTMLParser.request(url, instructions.getSource().requestTimeout,instructions)
             .then((response: AxiosResponse) => {
                 const cheerioLoad: cheerio.Root = cheerio.load(response.data)
 

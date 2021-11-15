@@ -63,6 +63,13 @@ export default class Source {
         ret.instructions = new Instructions()
         ret.instructions.source = {id: ret.getId()}
 
+        if (source.hasOwnProperty("ignoreCertificates")) {
+            ret.instructions.ignoreCertificates = source["ignoreCertificates"]
+        }else{
+            ret.instructions.ignoreCertificates = false
+        }
+
+
         if (typeof source.url === 'string') {
             if (source.url.length == 0) {
                 let message = `SourceException: ${source.filename}: url: is not valid, url cannot be empty.`;

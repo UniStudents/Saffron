@@ -2,10 +2,12 @@ import {ParserClass} from "../ParserClass";
 import Instructions from "../../../../components/instructions";
 import Job from "../../../../components/job";
 import Article from "../../../../components/articles";
-import Logger from "../../../../middleware/logger";
-import {LoggerTypes} from "../../../../middleware/LoggerTypes";
 import Parser from "rss-parser";
 import Utils from "../Utils";
+import Logger from "../../../../middleware/logger";
+import {LoggerTypes} from "../../../../middleware/LoggerTypes";
+import {reject} from "lodash";
+
 
 export class RSSParser extends ParserClass {
     validateScrape(scrape: object): string {
@@ -62,7 +64,7 @@ export class RSSParser extends ParserClass {
             headers: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'},
             // define requests options.
             requestOptions: {
-                rejectUnauthorized: false
+                rejectUnauthorized: instructions["ignoreCertificates"]
             },
             // a few custom fields.
             customFields: {
@@ -110,7 +112,9 @@ export class RSSParser extends ParserClass {
 
             return dataJson
         }).catch((e: any) => {
-            throw new Error(`RSSParserException failed to retrieve articles, original error: ${e.message}`);
+            let message = `RSSParserException error during request, original error ${e.message}`
+            Logger(LoggerTypes.ERROR, `${message}`)
+            throw new Error(message)
         })
     }
 

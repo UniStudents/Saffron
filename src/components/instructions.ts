@@ -16,7 +16,8 @@ export default class Instructions {
     declare endPoint: string;
     declare scrapeOptions: any;
     declare elementSelector: string;
-    declare scrapeFunction: string
+    declare scrapeFunction: string;
+    declare ignoreCertificates: boolean;
 
     /**
      * @param id instruction id.

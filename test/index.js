@@ -27,7 +27,7 @@ try {
         },
         mode: process.env.MODE || "main",
         workers: {
-            nodes: 0,
+            nodes: 1,
             job: {
                 timeout: 5000
             }
@@ -61,8 +61,7 @@ try {
     } catch (error) {
         errors.push(error)
     }
-
-    setTimeout(() => {
+    if(process.env.NODE_ENV === "testing") setTimeout(() => {
         if(errors.length > 0) {
             logger(loggerTypes.LoggerTypes.ERROR,`Saffron failed at runtime. The CI workflow will be terminated. The errors that occured where the following: \n\n${errors}\n\n`)
             process.exit(1)
