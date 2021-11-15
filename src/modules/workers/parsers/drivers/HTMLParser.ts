@@ -1,24 +1,34 @@
-import Instructions from "../../../components/instructions"
-import Article from "../../../components/articles"
-import axios, {AxiosResponse} from "axios"
-import cheerio from "cheerio"
-import https from "https"
-import Logger from "../../../middleware/logger"
-import {LoggerTypes} from "../../../middleware/LoggerTypes"
-import Utils from "./Utils"
-import {Element} from "domhandler"
-import Config from "../../../components/config";
-import {intersection, reject} from "lodash";
+import {ParserClass} from "../ParserClass";
+import Instructions from "../../../../components/instructions";
+import Job from "../../../../components/job";
+import Article from "../../../../components/articles";
+import https from "https";
+import axios, {AxiosResponse} from "axios";
+import Logger from "../../../../middleware/logger";
+import {LoggerTypes} from "../../../../middleware/LoggerTypes";
+import {reject} from "lodash";
+import cheerio from "cheerio";
+import Utils from "../Utils";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})
+interface ArticleImage { [key: string]: any }
 
-interface ArticleImage {
-    [key: string]: any
-}
+export class HTMLParser extends ParserClass {
 
+    validateScrape(scrape: any): string {
+        let value = Object.entries(scrape.article).some((key: any) => key[1].class === undefined || key === undefined);
 
+        if(value)
+            return ""
+            // TODO
+        else return "HTMLParserSourceException error message"
+    }
 
-export default class HtmlParser {
+    assignInstructions(instructions: Instructions, sourceJson: any): void {
+        instructions.elementSelector = sourceJson.scrape.container;
+        instructions.scrapeOptions = sourceJson.scrape.article;
+        instructions.endPoint = sourceJson.scrape.endPoint;
+    }
 
     private static async request(url: string, timeout: number): Promise<AxiosResponse> {
         return new Promise((resolve) => {
@@ -121,7 +131,7 @@ export default class HtmlParser {
 
                     results.push(finalData.find(dataStoredAt).text())
                 } else {
-                    tmp = HtmlParser.attributes(finalData, dataStoredAt, attributesArr);
+                    tmp = HTMLParser.attributes(finalData, dataStoredAt, attributesArr);
                     if (tmp) {
                         tmp.map( (object : Object) => {
                             results.push(object);
@@ -131,7 +141,7 @@ export default class HtmlParser {
             })
         } else {
             if (hasAttributes) {
-                tmp = HtmlParser.attributes(finalLocation, dataStoredAt, attributesArr)
+                tmp = HTMLParser.attributes(finalLocation, dataStoredAt, attributesArr)
                 if (tmp) {
                     tmp.map( (object: Object) => {
                         results.push(object)
@@ -147,10 +157,10 @@ export default class HtmlParser {
         return results
     }
 
-    static async parse2(alias: string | undefined, url: string, instructions: Instructions, amount: Number = 10): Promise<Array<Article>> {
-        let parsedArticles: Array<Article> = []
+    static async parse2(alias: string | undefined, url: string, instructions: Instructions, amount: Number = 10): Promise<Article[]> {
+        let parsedArticles: Article[] = []
 
-        await HtmlParser.request(url, instructions.getSource().requestTimeout)
+        await HTMLParser.request(url, instructions.getSource().requestTimeout)
             .then((response: AxiosResponse) => {
                 const cheerioLoad: cheerio.Root = cheerio.load(response.data)
 
@@ -168,9 +178,9 @@ export default class HtmlParser {
                     for (let item in options) {
                         if (options.hasOwnProperty(item) && options[item].find) {
                             if (!options[item].attributes)
-                                articleData[item] = HtmlParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, false, [], "")
+                                articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, false, [], "")
                             else
-                                articleData[item] = HtmlParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, true, options[item].attributes, instructions.endPoint)
+                                articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, true, options[item].attributes, instructions.endPoint)
                         } else articleData[item] = cheerioLoad(element).find(options[item].class).text()
                     }
                     // It stores the article data to an instance of Article class.
@@ -208,32 +218,29 @@ export default class HtmlParser {
                     parsedArticles.push(tmpArticle)
                 })
             })
-
-        // TODO - .catch(error) and return
+            .catch((e: any) => {
+                throw new Error(`HTMLParserException failed to retrieve articles, original error: ${e.message}`)
+            })
         return parsedArticles
     }
 
-    /**
-     * This method analyzes the content of an html
-     * page and returns a map containing the requested
-     * announcements.
-     *
-     * @param instructions How does the parser gonna parse the html content.
-     * @param amount How much article to withdraw.
-     * @return Array<Article> The articles.
-     */
-    static async parse(instructions: Instructions,
-                       amount: Number = 10): Promise<Array<Article>> {
+    async parse(job: Job): Promise<Article[]> {
+        let instructions = job.getInstructions();
+        let amount = 10;
 
-        let parsedArticles: Array<Article> = []
+        let articles: Article[] = []
 
-        if (typeof instructions.url == 'string')
-            parsedArticles.push(...(await this.parse2(undefined, instructions.url, instructions, amount)))
+        if (typeof instructions.url == 'string') {
+            let arts = await HTMLParser.parse2(undefined, instructions.url, instructions, amount)
+            articles.push(...arts)
+        }
         else {
-            for (const pair of instructions.url)
-                parsedArticles.push(...(await this.parse2(pair[0], pair[1], instructions, amount)))
+            for (const pair of instructions.url) {
+                let arts = await HTMLParser.parse2(pair[0], pair[1], instructions, amount)
+                articles.push(...arts)
+            }
         }
 
-        return parsedArticles
+        return articles
     }
 }

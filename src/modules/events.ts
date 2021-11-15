@@ -16,7 +16,7 @@ export default class Events {
         return Events.antennae
     }
 
-    static registerLogListeners(): void {
+    static registerAllLogListeners(): void {
         this.getAntennae().on("scheduler.sources.new", (names: string[]) => Logger(LoggerTypes.INFO, `Loaded ${names.length} sources`))
 
         this.getAntennae().on("scheduler.job.new", (job: Job) => Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - add new job(${job.id}) to stack for ${job.getSource().name}.`))

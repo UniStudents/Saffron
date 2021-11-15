@@ -46,7 +46,14 @@ export default class Scheduler {
                         path: `${file}`,
                         ...require(`${file}`)
                     }))
-                    sources.forEach(async (source: any) => await Source.parseFileObject(source))
+                    sources.forEach(async (source: any) => {
+                        try {
+                            await Source.parseFileObject(source)
+                        }
+                        catch (e) {
+                            // TODO - error during parsing.
+                        }
+                    })
                     resolve()
 
                 }
