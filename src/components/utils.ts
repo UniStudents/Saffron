@@ -2,6 +2,7 @@ import Article from "./articles";
 import Source from "./source";
 import Job from "./job";
 import Worker from "../modules/workers";
+import Instructions from "./instructions";
 
 export default class Utils {
 
@@ -30,25 +31,19 @@ export default class Utils {
 
     /**
      * Get a source file and return an array of the parsed articles
-     * @param fileContents
+     * @param sourceJson The json object of the source file.
+     * @throws SourceException if there is a problem parsing the source file.
      */
-    parse = async (fileContents: string) => {
-        let source: Source | object = await Source.parseFileObject(fileContents, false)
-        if (!(source instanceof Source)) return source
-
+    parse = async (sourceJson: object): Promise<Article[]> => {
+        let source: Source = await Source.parseFileObject(sourceJson, false)
         source.instructions.getSource = (): Source => source as Source;
 
         let job = new Job()
         job.source = {id: source.getId()}
-        job.getSource = (): Source => source as Source;
-        let articles = await Worker.parse(source.instructions, new Job())
+        job.getSource = (): Source => source;
+        job.getInstructions = (): Instructions => source.instructions
 
-        if (Array.isArray(articles)) {
-            for (const article of articles)
-                article.getSource = (): Source => source as Source;
-        }
-
-        return articles;
+        return await Worker.parse(job);
     }
 
     /**

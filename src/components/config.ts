@@ -33,7 +33,7 @@ export default class Config {
             distributed: false
         },
         misc: {
-            log: "info"
+            log: "all"
         }
     }
 

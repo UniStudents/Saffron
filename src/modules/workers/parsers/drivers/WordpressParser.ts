@@ -1,35 +1,38 @@
-import Instructions from "../../../components/instructions";
-import Article from "../../../components/articles";
-import Logger from "../../../middleware/logger";
-import {LoggerTypes} from "../../../middleware/LoggerTypes";
-import axios from "axios"
-import Utils from "./Utils";
-import Config from "../../../components/config";
+import {ParserClass} from "../ParserClass";
+import Instructions from "../../../../components/instructions";
+import Job from "../../../../components/job";
+import Article from "../../../../components/articles";
+import axios from "axios";
+import Logger from "../../../../middleware/logger";
+import {LoggerTypes} from "../../../../middleware/LoggerTypes";
+import Utils from "../Utils";
 
+export class WordpressParser extends ParserClass {
+    validateScrape(scrape: object): string {
+        return "";
+    }
 
-export default class WordpressParser {
+    assignInstructions(instructions: Instructions, sourceJson: any): void {
+        instructions.url = `${sourceJson.url}${(sourceJson.url.endsWith('/')) ? '' : '/'}`
+    }
 
-    /**
-     * This method uses a custom function made from the user
-     * and returns a map containing the requested announcements.
-     *
-     * @param instructions How does the parser gonna parse the html content.
-     * @return Array<Article> The articles.
-     */
-    public static async parse(instructions: Instructions): Promise<Array<Article> | object> {
-        let parsedArticles: Array<Article> = [];
+    async parse(job: Job): Promise<Article[]> {
+        let instructions = job.getInstructions();
 
-        let categoriesUrl = instructions.url + 'wp-json/wp/v2/categories/'
-        let postsUrl = instructions.url + 'wp-json/wp/v2/posts/'
+        let categoriesUrl = instructions.url + 'wp-json/wp/v2/categories/';
+        let postsUrl = instructions.url + 'wp-json/wp/v2/posts/';
 
-        let categories: any, posts: any
+        let categories: any, posts: any;
         try {
             categories = (await axios.get(categoriesUrl, {timeout: instructions.getSource().requestTimeout}))?.data
             posts = (await axios.get(postsUrl, {timeout: instructions.getSource().requestTimeout}))?.data
         } catch (e: any) {
-            Logger(LoggerTypes.ERROR, `Request error ${e.message}.`);
-            return {errorMessage: 'Request error: ' + e.message}
+            let message = `WordpressParserRequestException error during request, original ${e.message}`;
+            Logger(LoggerTypes.ERROR, message);
+            throw new Error(message);
         }
+
+        let articles: Article[] = [];
 
         const parsedCategories = categories.map((category: any) => {
             let links = []
@@ -73,10 +76,10 @@ export default class WordpressParser {
                     article.categories.push(cat)
             }
 
-            parsedArticles.push(article)
+            articles.push(article)
         }
-        // console.log(util.inspect(parsedArticles, false, null, true))
 
-        return parsedArticles
+        return articles;
     }
+
 }
