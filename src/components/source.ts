@@ -6,9 +6,7 @@ import {LoggerTypes} from "../middleware/LoggerTypes";
 import Article from "./articles";
 import hash from 'crypto-js/sha256';
 import Config from "./config";
-import {ParserClass} from "../modules/workers/parsers/ParserClass";
 import ParserLoader from "../modules/workers/parsers/ParserLoader";
-
 
 
 export default class Source {
