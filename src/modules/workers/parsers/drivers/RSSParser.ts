@@ -1,13 +1,31 @@
+import {ParserClass} from "../ParserClass";
+import Instructions from "../../../../components/instructions";
+import Job from "../../../../components/job";
+import Article from "../../../../components/articles";
 import Parser from "rss-parser";
-import Logger from "../../../middleware/logger";
-import {LoggerTypes} from "../../../middleware/LoggerTypes";
-import Utils from "./Utils";
-import Article from "../../../components/articles";
-import Instructions from "../../../components/instructions";
-import Config from "../../../components/config";
+import Utils from "../Utils";
+import Logger from "../../../../middleware/logger";
+import {LoggerTypes} from "../../../../middleware/LoggerTypes";
+import {reject} from "lodash";
 
 
-export default class rssParser {
+export class RSSParser extends ParserClass {
+    validateScrape(scrape: object): string {
+        return "";
+    }
+
+    assignInstructions(instructions: Instructions, sourceJson: any): void {
+        instructions.scrapeOptions = {}
+        if (sourceJson.renameFields) {
+
+            let map = new Map()
+            Object.entries(sourceJson.renameFields).forEach(([key, value]) => {
+                map.set(key, value)
+            })
+            instructions.scrapeOptions.renameFields = map
+        }
+    }
+
     private static requested_fields: String[] = ["title", "link", "content", "pubDate", "categories"]
 
     /**
@@ -30,6 +48,33 @@ export default class rssParser {
     }
 
     /**
+     * Creates the parser object
+     * that is able to parse
+     * given rss data
+     *
+     * @param instructions
+     * @param renameFields
+     * @private
+     */
+    private static async generateParser(instructions: Instructions, renameFields: Map<string, string>): Promise<Parser> {
+        let customFields = await this.generateRenamedFields(renameFields);
+        return new Parser({
+            // define the request headers.
+            timeout: instructions.getSource().requestTimeout,
+            headers: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'},
+            // define requests options.
+            requestOptions: {
+                rejectUnauthorized: instructions["ignoreCertificates"]
+            },
+            // a few custom fields.
+            customFields: {
+                // @ts-ignore
+                item: customFields
+            }
+        });
+    }
+
+    /**
      *
      Takes a url as argument an the number,
      of announcements. and an optional map
@@ -46,7 +91,7 @@ export default class rssParser {
     public static async rssParser(instructions: Instructions, url: string, amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()) {
         let dataJson: any = {}; // there is where the returned data are stored.
         let customFieldsKeys = Array.from(renameFields.keys());
-        let parser: Parser = await this.generateParser(instructions, renameFields)
+        let parser: Parser = await RSSParser.generateParser(instructions, renameFields)
         return await parser.parseURL(url).then(feed => {
             let count = 0
             feed.items.forEach(item => {
@@ -66,39 +111,28 @@ export default class rssParser {
             })
 
             return dataJson
-        }).catch(e => {
-            Logger(LoggerTypes.ERROR, `RSS parser error ${e.message}.`);
+        }).catch((e: any) => {
+            let message = `RSSParserException error during request, original error ${e.message}`
+            Logger(LoggerTypes.ERROR, `${message}`)
+            throw new Error(message)
         })
     }
 
     /**
-     * Creates the parser object
-     * that is able to parse
-     * given rss data
-     *
-     * @param instructions
-     * @param renameFields
+     * Function that returns object without specified fields
+     * @param target
+     * @param source
      * @private
      */
-    private static async generateParser(instructions: Instructions, renameFields: Map<string, string>): Promise<Parser> {
-        let customFields = await this.generateRenamedFields(renameFields);
-        return new Parser({
-            // define the request headers.
-            timeout: instructions.getSource().requestTimeout,
-            headers: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'},
-            // define requests options.
-            requestOptions: {
-                rejectUnauthorized: false
-            },
-            // a few custom fields.
-            customFields: {
-                // @ts-ignore
-                item: customFields
-            }
+    private static unAssign(target: any, source: any) {
+        source.forEach((key: any) => {
+            delete target[key];
         });
-    }
+        return target
+    };
 
-    private static async mapArticles(articles: any, alias: string | undefined, url: string, renameFields: Map<string, string>, instructions: Instructions): Promise<Array<Article>> {
+    private static async mapArticles(articles: any, alias: string | undefined, url: string,
+                                     renameFields: Map<string, string>, instructions: Instructions): Promise<Array<Article>> {
         let parsedArticles: Array<Article> = [];
 
         Array.from(new Map(Object.entries(articles)).values()).forEach((article: any) => {
@@ -135,7 +169,7 @@ export default class rssParser {
             //Add extras
             tmpArticle.extras = {}
             //Find remaining values
-            let remain = this.unAssign(article, this.requested_fields)
+            let remain = RSSParser.unAssign(article, this.requested_fields)
             new Map(Object.entries(remain)).forEach((value, key) => {
                 tmpArticle.extras[key] = value;
             })
@@ -148,46 +182,31 @@ export default class rssParser {
         return parsedArticles
     }
 
+    async parse(job: Job): Promise<Article[]> {
+        let instructions = job.getInstructions();
+        let amount = 10;
 
-    /**
-     * Returns an array of articles based on rssParser function results
-     * @param instructions
-     * @param amount The amount of articles that wil be returned
-     * @param renameFields
-     * @return Array<Article> The articles.
-     */
-    public static async parse(instructions: Instructions, amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()): Promise<Array<Article> | undefined> {
-        let parsedArticles: Array<Article> = [];
+        let articles: Article[] = [];
 
+        // Rename fields
+        let renameFields: Map<string, string> = new Map<string, string>()
+        if (instructions.scrapeOptions.hasOwnProperty("renameFields"))
+            renameFields = instructions.scrapeOptions.renameFields
+
+        // Parse
         if (typeof instructions.url == 'string') {
-            let articles = await this.rssParser(instructions, instructions.url, amount, renameFields)
-            if (!articles) return
-
-            parsedArticles.push(...(await this.mapArticles(articles, undefined, instructions.url, renameFields, instructions)))
+            let arts = await RSSParser.rssParser(instructions, instructions.url, amount, renameFields)
+            let mapped = await RSSParser.mapArticles(arts, undefined, instructions.url, renameFields, instructions)
+            articles.push(...mapped)
         } else {
             for (const pair of instructions.url) {
-                let articles = await this.rssParser(instructions, pair[1], amount, renameFields)
-                if (!articles) continue
-
-                parsedArticles.push(...(await this.mapArticles(articles, pair[0], pair[1], renameFields, instructions)))
+                let arts = await RSSParser.rssParser(instructions, pair[1], amount, renameFields)
+                let mapped = await RSSParser.mapArticles(arts, pair[0], pair[1], renameFields, instructions)
+                articles.push(...mapped)
             }
         }
 
-        return parsedArticles
+        return articles
     }
 
-    /**
-     * Function that returns object without specified fields
-     * @param target
-     * @param source
-     * @private
-     */
-    private static unAssign(target: any, source: any) {
-        source.forEach((key: any) => {
-            delete target[key];
-        });
-        return target
-    };
 }
-
-

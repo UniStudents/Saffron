@@ -10,11 +10,11 @@ import Worker from "./modules/workers";
 
 import Article from "./components/articles";
 import Utils from "./components/utils";
-import Exceptions from "./components/exceptions";
 
 import Job from "./components/job"
 import Source from "./components/source"
 import Extensions from "./modules/extensions";
+import Instructions from "./components/instructions";
 
 declare function require(name: string): any;
 
@@ -31,59 +31,65 @@ export = {
      * Initialize saffron with the given configuration file.
      * It will also connect to the database if it is given and add a route to the server instance if it given.
      * @param config The config file path or object
-     * @see https://github.com/poiw-org/saffron/wiki
+     * @see https://saffron.poiw.org
      */
     initialize: async (config: any = undefined) => {
-        Logger(LoggerTypes.TITLE, "Simple Abstract Framework For the Retrieval Of News")
+        Logger(LoggerTypes.TITLE, "Simple Abstract Framework For the Retrieval Of News");
 
         // Load config file
-        Config.load(config)
+        Config.load(config);
 
         // Initialize database
-        let database = Database.getInstance()
+        let database = Database.getInstance();
         if (database == null) {
-            Logger(LoggerTypes.INSTALL_ERROR, "Database driver is not valid")
+            Logger(LoggerTypes.INSTALL_ERROR, "Database driver is not valid");
         }
-        db = database
+        db = database;
         await db.connect()
-            .then(() => Logger(LoggerTypes.STEP, "Successfully connected to the offload database."))
+            .then(() => Logger(LoggerTypes.STEP, "Successfully connected to the offload database."));
 
         // Initialize and start grid
         if (Config.load().grid.distributed) {
             grid = Grid.getInstance();
             await grid.connect()
-                .then(() => Logger(LoggerTypes.STEP, "The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."))
+                .then(() => Logger(LoggerTypes.STEP, "The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."));
         }
 
         // Initialize workers
-        let workersSize = Config.load().workers.nodes
+        let workersSize = Config.load().workers.nodes;
         for (let i = 0; i < workersSize; i++)
-            workers.push(new Worker())
+            workers.push(new Worker());
 
         // Initialize grid
-        grid = Grid.getInstance()
-        await grid.connect()
+        grid = Grid.getInstance();
+        await grid.connect();
 
         // Initialize scheduler
         if (Config.load().mode === 'main')
-            scheduler = new Scheduler()
+            scheduler = new Scheduler();
         else
-            Logger(LoggerTypes.INFO, "This instance has been initialized as a WORKER node.")
+            Logger(LoggerTypes.INFO, "This instance has been initialized as a WORKER node.");
 
         // Event for workers
         antennae.on("start", () => {
             for (let worker of workers) {
                 // TODO - Start worker on new node thread
-                worker.start()
+                worker.start();
             }
         })
 
         antennae.on("stop", (force: boolean) => {
             for (let worker of workers)
-                worker.stop(force)
+                worker.stop(force);
         })
 
-        Events.registerLogListeners()
+        switch (Config.load().misc?.log) {
+            case "all":
+                Events.registerAllLogListeners();
+                break;
+            case "none":
+                break;
+        }
     },
     /**
      * Starts a Saffron instance.
@@ -105,25 +111,19 @@ export = {
 
     /**
      * Get a source file and return an array of the parsed articles
-     * @param fileContents
+     * @param sourceJson The json object of the source file.
+     * @throws SourceException if there is a problem parsing the source file.
      */
-    async parse(fileContents: any): Promise<Array<Article> | object> {
-        let source: Source | object = await Source.parseFileObject(fileContents, false)
-        if (!(source instanceof Source)) return source
-
+    async parse(sourceJson: object): Promise<Article[]> {
+        let source: Source = await Source.parseFileObject(sourceJson, false)
         source.instructions.getSource = (): Source => source as Source;
 
         let job = new Job()
         job.source = {id: source.getId()}
-        job.getSource = (): Source => source as Source;
-        let articles = await Worker.parse(source.instructions, new Job())
+        job.getSource = (): Source => source;
+        job.getInstructions = (): Instructions => source.instructions
 
-        if (Array.isArray(articles)) {
-            for (const article of articles)
-                article.getSource = (): Source => source as Source;
-        }
-
-        return articles;
+        return await Worker.parse(job);
     },
 
     /**
@@ -149,6 +149,6 @@ export = {
         return articles
     },
 
-    types: {Article, Utils, Exceptions}
+    types: {Article, Utils}
 
 }

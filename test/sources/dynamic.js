@@ -10,8 +10,5 @@ module.exports = {
         // article.title = "Hey"
         // // ...
         // await utils.onNewArticle(article)
-
-
-        return new Exceptions("Error1")
     }
 }

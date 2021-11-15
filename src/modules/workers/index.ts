@@ -1,14 +1,10 @@
 import Events from "../events"
 import Job from "../../components/job";
 import randomId from "../../middleware/randomId";
-import HtmlParser from "./parsers/htmlParser";
-import {ParserType} from "./parsers/ParserType";
 import Grid from "../grid";
-import rssParser from "./parsers/rssParser";
-import DynamicParser from "./parsers/dynamicParser";
 import Article from "../../components/articles";
-import Instructions from "../../components/instructions";
-import WordpressParser from "./parsers/wordpress";
+import {ParserClass} from "./parsers/ParserClass";
+import ParserLoader from "./parsers/ParserLoader";
 
 
 export default class Worker {
@@ -49,95 +45,42 @@ export default class Worker {
             if (!this.isRunning) return
             if (this.id !== job.worker.id) return
 
-            let instructions = job.getInstructions()
-
-            let articles = await Worker.parse(instructions, job)
+            let articles: Article[]
+            try {
+                articles = await Worker.parse(job)
+            } catch (e: any) {
+                await Grid.getInstance().onParserError(e.message)
+                await Grid.getInstance().failedJob(job)
+                return
+            }
 
             if (this.isForcedStopped) return
 
-            if (Array.isArray(articles)) {
-                articles.forEach((article: Article) => {
-                    article.source = {
-                        id: job.getSource().getId(),
-                        name: job.getSource().name
-                    }
-                })
+            articles.forEach((article: Article) => {
+                article.source = {
+                    id: job.getSource().getId(),
+                    name: job.getSource().name
+                }
+            })
 
+            let collection = job.getSource().collection_name
+            if (!collection)
+                collection = job.getSource().name
 
-                let collection = job.getSource().collection_name
-                if (!collection || collection.length == 0)
-                    collection = job.getSource().name
-
-                await Grid.getInstance().mergeArticles(collection, articles)
-                await Grid.getInstance().finishedJob(job)
-            } else await Grid.getInstance().failedJob(job)
+            await Grid.getInstance().mergeArticles(collection, articles)
+            await Grid.getInstance().finishedJob(job)
         })
     }
 
-    static async parse(instructions: Instructions, job: Job): Promise<Array<Article> | object> {
-        let articles: Array<Article> = [];
-        let parseFailed = false
-        let errorMessage = ""
+    static async parse(job: Job): Promise<Article[]> {
+        let instructions = job.getInstructions();
 
-        switch (instructions.parserType) {
-            case ParserType.HTML: {
-                let result = await HtmlParser.parse(instructions, 10)
-                if (Array.isArray(result))
-                    articles.push.apply(articles, result)
-                else {
-                    parseFailed = true
-                    errorMessage = "html parser failed."
-                }
-            }
-                break
-            case ParserType.RSS: {
-                let rename_fields: Map<string, string> = new Map<string, string>()
-                if (instructions.scrapeOptions.hasOwnProperty("renameFields"))
-                    rename_fields = instructions.scrapeOptions.renameFields
-
-                let result = await rssParser.parse(instructions, 10, rename_fields)
-                if (Array.isArray(result))
-                    articles.push.apply(articles, result)
-                else {
-                    parseFailed = true
-                    errorMessage = "rss parser failed."
-                }
-            }
-                break
-            case ParserType.DYNAMIC: {
-                let result: any = await DynamicParser.parse(job, instructions)
-                if (Array.isArray(result))
-                    articles.push.apply(articles, result)
-                else {
-                    parseFailed = true
-                    errorMessage = result.errorMessage
-                }
-            }
-                break
-            case ParserType.WORDPRESS: {
-                let result: any = await WordpressParser.parse(instructions)
-                if (Array.isArray(result))
-                    articles.push.apply(articles, result)
-                else {
-                    parseFailed = true
-                    errorMessage = result.errorMessage
-                }
-            }
-                break
+        try {
+            let articles: Article[] = await (ParserLoader.getParser(instructions.parserType))!!.parse(job);
+            return articles;
+        } catch (e: any) {
+            throw new Error(`WorkerException failed to complete job for ${job.getSource().name}, original error: ${e.message}`);
         }
-
-        if (parseFailed) {
-            let message = {
-                sourceName: instructions.getSource().name,
-                parser: ParserType.toString(instructions.parserType),
-                message: "Failed to fetch the articles from the site."
-            }
-
-            await Grid.getInstance().onParserError(message)
-            return message
-        }
-
-        return articles
     }
 
     /**
