@@ -82,14 +82,6 @@ export = {
             for (let worker of workers)
                 worker.stop(force);
         })
-
-        switch (Config.load().misc?.log) {
-            case "all":
-                Events.registerAllLogListeners();
-                break;
-            case "none":
-                break;
-        }
     },
     /**
      * Starts a Saffron instance.

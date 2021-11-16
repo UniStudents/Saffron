@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import Events from "../modules/events";
 import {LoggerTypes} from "./LoggerTypes"
 import {DateTime} from "luxon";
+import Config from "../components/config";
 
 /**
  * Logs information in to the console
@@ -21,6 +22,15 @@ export default (type: LoggerTypes, data: any) => {
         second: '2-digit',
         hour12: false
     })}`)
+
+    switch (Config.load().misc?.log) {
+        case "all": break;
+        case "errors":
+            if(type !== LoggerTypes.ERROR && type !== LoggerTypes.INSTALL_ERROR)
+                return;
+        case "none":
+            return;
+    }
 
     switch (type) {
         case LoggerTypes.INSTALL_ERROR:
