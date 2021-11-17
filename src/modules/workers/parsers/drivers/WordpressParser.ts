@@ -44,7 +44,7 @@ export class WordpressParser extends ParserClass {
 
         let articles: Article[] = [];
 
-        const parsedCategories = categories ? categories.map((category: any) => {
+        const parsedCategories = Array.isArray(categories) ? categories.map((category: any) => {
             let links = []
 
             for (let href of category._links.self)
