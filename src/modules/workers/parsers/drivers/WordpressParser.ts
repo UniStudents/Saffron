@@ -44,7 +44,7 @@ export class WordpressParser extends ParserClass {
 
         let articles: Article[] = [];
 
-        const parsedCategories = categories.map((category: any) => {
+        const parsedCategories = categories ? categories.map((category: any) => {
             let links = []
 
             for (let href of category._links.self)
@@ -62,7 +62,7 @@ export class WordpressParser extends ParserClass {
                 name: Utils.htmlStrip(category.name, false).toString(),
                 links
             }
-        })
+        }) : []
 
         for (let p of posts) {
             const article = new Article()
