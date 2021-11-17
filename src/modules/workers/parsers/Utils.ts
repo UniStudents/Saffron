@@ -261,7 +261,8 @@ export default class Utils {
         '&#034;': '"'
     }
 
-    private static decode(str: String) {
+    private static decode(str: String = "") {
+        if(!str) str = ""
         for (let key in this.htmlEntries) {
             let entity = key
             let regex = new RegExp(entity, 'g')
