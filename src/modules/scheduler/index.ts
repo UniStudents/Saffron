@@ -48,8 +48,7 @@ export default class Scheduler {
                     }))
                     sources.forEach(async (sourceFile: any) => {
                         try {
-                            let parsed = await Source.parseFileObject(sourceFile)
-                            Source._sources.push(parsed);
+                            await Source.parseFileObject(sourceFile)
                         }
                         catch (e) {
                             Events.getAntennae().emit("scheduler.sources.error", sourceFile,  e)

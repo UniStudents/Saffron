@@ -120,6 +120,9 @@ export default class Source {
 
         ParserLoader.validateScrapeInstructions(parserType, ret.instructions, source);
 
+        if(!isStatic)
+            this._sources.push(ret)
+
         return ret
     }
 
