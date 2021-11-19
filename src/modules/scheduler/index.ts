@@ -52,7 +52,7 @@ export default class Scheduler {
                             Source._sources.push(parsed);
                         }
                         catch (e) {
-                            Events.getAntennae().emit("scheduler.sources.error",sourceFile,  e)
+                            Events.getAntennae().emit("scheduler.sources.error", sourceFile,  e)
                         }
                     })
                     resolve()
