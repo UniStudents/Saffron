@@ -82,6 +82,8 @@ export = {
             for (let worker of workers)
                 worker.stop(force);
         })
+
+        Events.registerAllLogListeners();
     },
     /**
      * Starts a Saffron instance.
@@ -107,7 +109,7 @@ export = {
      * @throws SourceException if there is a problem parsing the source file.
      */
     async parse(sourceJson: object): Promise<Article[]> {
-        let source: Source = await Source.parseFileObject(sourceJson, false)
+        let source: Source = await Source.parseFileObject(sourceJson, true)
         source.instructions.getSource = (): Source => source as Source;
 
         let job = new Job()

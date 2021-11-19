@@ -19,6 +19,7 @@ export default class Events {
     static registerAllLogListeners(): void {
         this.getAntennae().on("scheduler.sources.new", (names: string[]) => Logger(LoggerTypes.INFO, `Loaded ${names.length} sources`))
 
+        this.getAntennae().on("scheduler.sources.error", (sourceFile: any, error: any) => Logger(LoggerTypes.DEBUG, `${chalk.red('Scheduler')} - failed to parse source with error`))
         this.getAntennae().on("scheduler.job.new", (job: Job) => Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - add new job(${job.id}) to stack for ${job.getSource().name}.`))
         this.getAntennae().on("scheduler.job.push", (job: Job) => Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - pushing job(${job.id}) to workers.`))
         this.getAntennae().on("scheduler.job.finished", (job: Job) => Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - found finished job(${job.id}).`))
