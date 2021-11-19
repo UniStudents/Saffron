@@ -46,16 +46,15 @@ export default class Scheduler {
                         path: `${file}`,
                         ...require(`${file}`)
                     }))
-                    sources.forEach(async (source: any) => {
+                    sources.forEach(async (sourceFile: any) => {
                         try {
-                            await Source.parseFileObject(source)
+                            await Source.parseFileObject(sourceFile)
                         }
                         catch (e) {
-                            // TODO - error during parsing.
+                            Events.getAntennae().emit("scheduler.sources.error", sourceFile,  e)
                         }
                     })
                     resolve()
-
                 }
             })
         })
@@ -134,17 +133,27 @@ export default class Scheduler {
      * Starts the scheduler
      */
     async start(): Promise<void> {
-        let checkInterval = Config.load().scheduler.intervalBetweenChecks
-        if (!checkInterval) checkInterval = 120000 // 2 minutes
+        let checkInterval = Config.load().scheduler.intervalBetweenChecks;
+        if (!checkInterval) checkInterval = 120000; // 2 minutes
 
-        this.isRunning = true
-        this.isForcedStopped = false
+        this.isRunning = true;
+        this.isForcedStopped = false;
 
         // Read all source files
-        await this.scanSourceFiles()
-        let sources = Source.getSources()
-        let excluded = Config.load().sources.excluded
-        if(!Array.isArray(excluded)) throw new Error("Config.sources.excluded is not an array.")
+        await this.scanSourceFiles();
+        let sources = Source.getSources();
+        let includeOnly = Config.load().sources.includeOnly;
+        let excluded = Config.load().sources.excluded;
+
+        if(!Array.isArray(includeOnly)) throw new Error("Config.sources.includeOnly is not an array.");
+        if(!Array.isArray(excluded)) throw new Error("Config.sources.excluded is not an array.");
+
+        let tmpSources: Source[] = [];
+        sources.forEach((source: Source) => {
+            if (includeOnly.includes(source.name))
+                tmpSources.push(source);
+        });
+        sources = tmpSources;
 
         excluded.forEach((ex_source: any) => {
             if(typeof ex_source !== 'string')

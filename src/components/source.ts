@@ -13,62 +13,63 @@ export default class Source {
 
     /**
      * Parse and store a source file contents to an array in memory
-     * @param source
-     * @param addToList
+     * @param source the source file
+     * @param isStatic If is called by static function or the scheduler.
      */
-    static async parseFileObject(source: any, addToList: boolean = true): Promise<Source> {
-        let ret = new Source()
+    static async parseFileObject(source: any, isStatic: boolean = false): Promise<Source> {
+        let ret = new Source();
 
         if (!source.name || source.name.length < 3) {
             let message = `SourceException: ${source.filename}: name: is not valid, must be type string with a least 3 characters.`;
-            logger(LoggerTypes.INSTALL_ERROR, message)
+            logger(LoggerTypes.INSTALL_ERROR, message);
             throw new Error(message);
         }
-        ret.name = source.name
+        ret.name = source.name;
 
         if (["saffron", "config", "workers"].includes(source.collection_name)) {
             let message = `SourceException: ${source.filename}: collection_name: is blacklisted.`;
-            logger(LoggerTypes.INSTALL_ERROR, message)
+            logger(LoggerTypes.INSTALL_ERROR, message);
             throw new Error(message);
         }
         if (source.collection_name && (typeof source.collection_name !== 'string' || source.collection_name.length < 3)) {
             let message = `SourceException: ${source.filename}: collection_name: is not valid, must be type string with a least 3 characters.`;
-            logger(LoggerTypes.INSTALL_ERROR, message)
+            logger(LoggerTypes.INSTALL_ERROR, message);
             throw new Error(message);
         }
-        ret.collection_name = source.collection_name
+        ret.collection_name = source.collection_name;
 
         if (source.scrapeInterval && (typeof source.scrapeInterval != 'number' || source.scrapeInterval < 0)) {
             let message = `SourceException: ${source.filename}: scrapeInterval: is not valid, must be a positive number.`;
-            logger(LoggerTypes.INSTALL_ERROR, message)
+            logger(LoggerTypes.INSTALL_ERROR, message);
             throw new Error(message);
         }
-        ret.scrapeInterval = source.scrapeInterval
+        ret.scrapeInterval = source.scrapeInterval;
 
         if (source.retryInterval && (typeof source.retryInterval != 'number' || source.retryInterval < 0)) {
             let message = `SourceException: ${source.filename}: retryInterval: is not valid, must be a positive number.`;
-            logger(LoggerTypes.INSTALL_ERROR, message)
+            logger(LoggerTypes.INSTALL_ERROR, message);
             throw new Error(message);
         }
-        ret.retryInterval = source.retryInterval
+        ret.retryInterval = source.retryInterval;
 
         if (source.requestTimeout && (typeof source.requestTimeout != 'number' || source.requestTimeout < 0)) {
             let message = `SourceException: ${source.filename}: requestTimeout: is not valid, must be a positive number.`;
-            logger(LoggerTypes.INSTALL_ERROR, message)
+            logger(LoggerTypes.INSTALL_ERROR, message);
             throw new Error(message);
         }
 
         // If it is not one time scrape:
-        ret.requestTimeout = source.requestTimeout ? source.requestTimeout : (addToList ? Config.load().workers.jobs.requestTimeout : 5000)
+        ret.requestTimeout = source.requestTimeout ? source.requestTimeout : (isStatic ? Config.load().workers.jobs.requestTimeout : 5000)
         ret.instructions = new Instructions()
         ret.instructions.source = {id: ret.getId()}
 
-        if (source.hasOwnProperty("ignoreCertificates")) {
-            ret.instructions.ignoreCertificates = source["ignoreCertificates"]
-        }else{
+        if (source.hasOwnProperty("ignoreCertificates"))
+            ret.instructions.ignoreCertificates = source.ignoreCertificates;
+        else
             ret.instructions.ignoreCertificates = false
-        }
 
+        if(source.hasOwnProperty("extra"))
+            ret.extra = source.extra;
 
         if (typeof source.url === 'string') {
             if (source.url.length == 0) {
@@ -76,22 +77,22 @@ export default class Source {
                 logger(LoggerTypes.INSTALL_ERROR, message)
                 throw new Error(message);
             }
-            ret.instructions.url = source.url
+            ret.instructions.url = source.url;
         }
         else if (Array.isArray(source.url)) {
-            ret.instructions.url = []
+            ret.instructions.url = [];
             for (const pair of source.url) {
                 if (typeof pair[0] !== 'string' || pair[0].length == 0) {
                     let message = `SourceException: ${source.filename}: url: is not valid, invalid alias '${pair[0]}'.`;
-                    logger(LoggerTypes.INSTALL_ERROR, message)
+                    logger(LoggerTypes.INSTALL_ERROR, message);
                     throw new Error(message);
                 }
                 if (typeof pair[1] !== 'string' || pair[1].length == 0) {
                     let message = `SourceException: ${source.filename}: url: is not valid, invalid url '${pair[1]}'.`;
-                    logger(LoggerTypes.INSTALL_ERROR, message)
+                    logger(LoggerTypes.INSTALL_ERROR, message);
                     throw new Error(message);
                 }
-                ret.instructions.url.push([pair[0], pair[1]])
+                ret.instructions.url.push([pair[0], pair[1]]);
             }
         }
         else {
@@ -103,24 +104,25 @@ export default class Source {
         let parserType = await ParserType.getFromString(source.type)
         if (parserType === ParserType.UNKNOWN) {
             let message = `SourceException: ${source.filename}: type: is not valid.`;
-            logger(LoggerTypes.INSTALL_ERROR, message)
+            logger(LoggerTypes.INSTALL_ERROR, message);
             throw new Error(message);
         }
-        ret.instructions.parserType = parserType
+        ret.instructions.parserType = parserType;
 
         try {
             ParserLoader.validateScrapeOptions(parserType, source.scrape);
         }
         catch (e: any) {
             let message = `SourceException: ${source.filename}: invalid scrape method, parser error: ${e.message}`;
-            logger(LoggerTypes.INSTALL_ERROR, message)
+            logger(LoggerTypes.INSTALL_ERROR, message);
             throw new Error(message);
         }
 
         ParserLoader.validateScrapeInstructions(parserType, ret.instructions, source);
 
-        if (addToList)
+        if(!isStatic)
             this._sources.push(ret)
+
         return ret
     }
 
@@ -157,6 +159,7 @@ export default class Source {
     declare retryInterval: number
     declare requestTimeout: number
     declare instructions: Instructions
+    declare extra: any
 
     constructor(id: string = "") {
         if (id !== "") this.id = id
@@ -178,7 +181,8 @@ export default class Source {
             collection_name: this.collection_name,
             scrapeInterval: this.scrapeInterval,
             retryInterval: this.retryInterval,
-            instructions: this.instructions.toJSON()
+            instructions: this.instructions.toJSON(),
+            extra: this.extra
         }
     }
 
@@ -189,6 +193,7 @@ export default class Source {
         source.scrapeInterval = json.scrapeInterval
         source.retryInterval = json.retryInterval
         source.instructions = Instructions.fromJSON(json.instructions)
+        source.extra = json.extra
 
         return source
     }

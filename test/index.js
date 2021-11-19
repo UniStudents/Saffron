@@ -18,7 +18,8 @@ try {
             } : {driver: "memory"},
         sources: {
             path: "/test/sources",
-            excluded: ["custom-cs.unipi.gr", "wordpress-cs.unipi.gr", "rss-cs.unipi.gr", "unipi.gr"]
+            includeOnly: ['wordpress-cs.unipi.gr']
+            // excluded: ["custom-cs.unipi.gr", "wordpress-cs.unipi.gr", "rss-cs.unipi.gr", "unipi.gr"]
         },
         scheduler: {
             intervalBetweenJobs: 10000,

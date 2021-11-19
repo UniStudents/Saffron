@@ -15,6 +15,7 @@ export default class Config {
         },
         sources: {
             path: "../../../sources",
+            includeOnly: [],
             excluded: []
         },
         mode: "main",
