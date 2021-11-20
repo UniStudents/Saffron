@@ -27,8 +27,6 @@ export class RSSParser extends ParserClass {
     }
 
     private static requested_fields: String[] = ["title", "link", "content", "pubDate", "categories"]
-    //todo add extra links eg description
-
     /**
      This function finds the RSS fields that are not
      contained in the requested_fields array and returns
