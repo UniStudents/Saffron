@@ -18,6 +18,8 @@ export default class Instructions {
     declare elementSelector: string;
     declare scrapeFunction: string;
     declare ignoreCertificates: boolean;
+    declare extraFields: String[];
+
 
     /**
      * @param id instruction id.
@@ -55,7 +57,9 @@ export default class Instructions {
             endPoint: this.endPoint,
             scrapeOptions: this.scrapeOptions,
             elementSelector: this.elementSelector,
-            scrapeFunction: this.scrapeFunction
+            scrapeFunction: this.scrapeFunction,
+            ignoreCertificates: this.ignoreCertificates,
+            extraFields: this.extraFields
         }
     }
 
@@ -69,6 +73,8 @@ export default class Instructions {
         inst.scrapeOptions = json.scrapeOptions
         inst.elementSelector = json.elementSelector
         inst.scrapeFunction = json.scrapeFunction
+        inst.ignoreCertificates = json.ignoreCertificates
+        inst.extraFields = json.extraFields
 
         return inst
     }

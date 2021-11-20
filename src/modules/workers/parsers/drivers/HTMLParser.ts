@@ -187,7 +187,17 @@ export class HTMLParser extends ParserClass {
                                 articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, false, [], "")
                             else
                                 articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, true, options[item].attributes, instructions.endPoint)
-                        } else articleData[item] = cheerioLoad(element).find(options[item].class).text()
+                        } else
+                            articleData[item] = cheerioLoad(element).find(options[item].class).text()
+                    }
+
+                    //Utility to merge other items with the basic Data of the article
+                    for (let item in options) {
+                        if(options[item].hasOwnProperty("parent") && options[item] !== "attachments"){
+                           if(articleData[options[item].parent]) articleData[options[item].parent] += articleData[item]
+                        }else{
+                           if(Array.isArray(articleData[options[item]])) articleData[options[item].parent].push(...((articleData[item]) ? articleData[item] : []))
+                        }
                     }
                     // It stores the article data to an instance of Article class.
                     tmpArticle = new Article()

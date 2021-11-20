@@ -18,8 +18,8 @@ try {
             } : {driver: "memory"},
         sources: {
             path: "/test/sources",
-            includeOnly: ['wordpress-cs.unipi.gr']
-            // excluded: ["custom-cs.unipi.gr", "wordpress-cs.unipi.gr", "rss-cs.unipi.gr", "unipi.gr"]
+            //includeOnly: ['unipi.gr']
+             excluded: ["custom-cs.unipi.gr"]
         },
         scheduler: {
             intervalBetweenJobs: 10000,
@@ -55,10 +55,10 @@ try {
         await saffron.initialize(config)
         await saffron.start()
 
-        // saffron.on("workers.articles.found", (articles)=>{
-        //     console.log(articles)
-        //
-        // })
+/*        saffron.on("workers.articles.found", (articles)=>{
+            console.log(articles)
+
+        })*/
     } catch (error) {
         errors.push(error)
     }
@@ -71,5 +71,5 @@ try {
             process.exit(0)
         }
     }, 15000)
-    // saffron.on("new-articles-pushed", articles=> console.log("new-articles",articles))
+     //saffron.on("new-articles-pushed", articles=> console.log("new-articles",articles))
 })()

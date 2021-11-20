@@ -150,8 +150,13 @@ export default class Scheduler {
 
         let tmpSources: Source[] = [];
         sources.forEach((source: Source) => {
-            if (includeOnly.includes(source.name))
-                tmpSources.push(source);
+            if(includeOnly.length>=1){
+                if (includeOnly.includes(source.name))
+                    tmpSources.push(source);
+            }else{
+                tmpSources.push(source)
+            }
+
         });
         sources = tmpSources;
 
