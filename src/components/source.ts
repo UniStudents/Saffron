@@ -68,6 +68,12 @@ export default class Source {
         else
             ret.instructions.ignoreCertificates = false
 
+        if(source.hasOwnProperty("extraFields"))
+            ret.instructions.extraFields = source.extraFields
+        else
+            ret.instructions.extraFields = []
+
+
         if(source.hasOwnProperty("extra"))
             ret.extra = source.extra;
 

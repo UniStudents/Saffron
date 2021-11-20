@@ -27,6 +27,7 @@ export class RSSParser extends ParserClass {
     }
 
     private static requested_fields: String[] = ["title", "link", "content", "pubDate", "categories"]
+    //todo add extra links eg description
 
     /**
      This function finds the RSS fields that are not
@@ -92,6 +93,8 @@ export class RSSParser extends ParserClass {
         let dataJson: any = {}; // there is where the returned data are stored.
         let customFieldsKeys = Array.from(renameFields.keys());
         let parser: Parser = await RSSParser.generateParser(instructions, renameFields)
+        if(instructions.extraFields && instructions.extraFields.length >=1)
+            await instructions.extraFields.forEach(extraField => this.requested_fields.push(extraField))
         return await parser.parseURL(url).then(feed => {
             let count = 0
             feed.items.forEach(item => {
@@ -109,7 +112,6 @@ export class RSSParser extends ParserClass {
                 })
                 count++
             })
-
             return dataJson
         }).catch((e: any) => {
             let message = `RSSParserException error during request, original error ${e.message}`

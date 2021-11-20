@@ -3,8 +3,8 @@
   "name": "rss-cs.unipi.gr",
   "type": "rss",
   "__comment__": "Optional  defaults  [\"title\",\"link\",\"content\",\"pubDate\"]",
+  "extraFields": ["description"],
   "renameFields": {
-    "title": "test",
-    "pubDate": "publishdate"
+    "pubDate": "publishedDate"
   }
 }
