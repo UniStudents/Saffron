@@ -194,7 +194,7 @@ export class HTMLParser extends ParserClass {
                     //Utility to merge other items with the basic Data of the article
                     for (let item in options) {
                         if(options[item].hasOwnProperty("parent") && options[item] !== "attachments"){
-                           if(articleData[options[item].parent]) articleData[options[item].parent] += articleData[item]
+                           if(articleData.hasOwnProperty(options[item].parent)) articleData[options[item].parent] += articleData[item]
                         }else{
                            if(Array.isArray(articleData[options[item]])) articleData[options[item].parent].push(...((articleData[item]) ? articleData[item] : []))
                         }
