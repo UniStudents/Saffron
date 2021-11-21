@@ -59,7 +59,7 @@ export default class Source {
         }
 
         // If it is not one time scrape:
-        ret.requestTimeout = source.requestTimeout ? source.requestTimeout : (isStatic ? Config.load().workers.jobs.requestTimeout : 5000)
+        ret.requestTimeout = source.requestTimeout ? source.requestTimeout : (!isStatic ? Config.load().workers.jobs.requestTimeout : 5000)
         ret.instructions = new Instructions()
         ret.instructions.source = {id: ret.getId()}
 
