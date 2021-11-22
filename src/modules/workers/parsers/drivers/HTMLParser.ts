@@ -213,6 +213,9 @@ export class HTMLParser extends ParserClass {
                     tmpArticle.content = content
                     tmpArticle.attachments = []
                     tmpArticle.categories = []
+                    if(!alias && articleData.hasOwnProperty("category")){
+                        tmpArticle.categories.push({name: articleData["category"], links: [url]})
+                    }
 
                     tmpArticle.attachments.push(...((articleData.attachments) ? articleData.attachments : []))
                     tmpArticle.attachments.push(...Utils.extractLinks(content))
@@ -245,14 +248,19 @@ export class HTMLParser extends ParserClass {
         let amount = 10;
 
         let articles: Article[] = []
-
         if (typeof instructions.url == 'string') {
             let arts = await HTMLParser.parse2(undefined, instructions.url, instructions, amount)
             articles.push(...arts)
         }
         else {
             for (const pair of instructions.url) {
-                let arts = await HTMLParser.parse2(pair[0], pair[1], instructions, amount)
+                let arts = []
+                if(Array.isArray(pair) && pair.length == 1){
+                    arts = await HTMLParser.parse2(undefined, instructions.url[0].toString(), instructions, amount)
+                }else{
+                     arts = await HTMLParser.parse2(pair[0], pair[1], instructions, amount)
+
+                }
                 articles.push(...arts)
             }
         }
