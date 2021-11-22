@@ -93,12 +93,16 @@ export default class Source {
                     logger(LoggerTypes.INSTALL_ERROR, message);
                     throw new Error(message);
                 }
-                if (typeof pair[1] !== 'string' || pair[1].length == 0) {
+                if (pair[1] &&( typeof pair[1] !== 'string' || pair[1].length == 0)) {
                     let message = `SourceException: ${source.filename}: url: is not valid, invalid url '${pair[1]}'.`;
                     logger(LoggerTypes.INSTALL_ERROR, message);
                     throw new Error(message);
                 }
-                ret.instructions.url.push([pair[0], pair[1]]);
+                if(!pair[1]){
+                    ret.instructions.url.push([pair[0]]);
+                }else{
+                    ret.instructions.url.push([pair[0], pair[1]]);
+                }
             }
         }
         else {
