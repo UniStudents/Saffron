@@ -49,7 +49,7 @@ export default class Worker {
             try {
                 articles = await Worker.parse(job)
             } catch (e: any) {
-                await Grid.getInstance().onParserError(e.message)
+                await Grid.getInstance().onParserError(e)
                 await Grid.getInstance().failedJob(job)
                 return
             }
@@ -80,12 +80,8 @@ export default class Worker {
             let url = pair[0];
             let alias = pair[1] ? pair[1] : "";
 
-            try {
-                articles.push(...await (ParserLoader.getParser(instructions.parserType))!!.parse(job, alias, url));
-            }
-            catch (e: any) {
-                throw new Error(`WorkerException failed to complete job for ${job.getSource().name}, original error: ${e.message}`);
-            }
+            // Will throw error in case of fail (catch in call function).
+            articles.push(...await (ParserLoader.getParser(instructions.parserType))!!.parse(job, alias, url));
         }
         return articles;
     }

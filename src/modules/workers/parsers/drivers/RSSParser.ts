@@ -112,9 +112,7 @@ export class RSSParser extends ParserClass {
             })
             return dataJson
         }).catch((e: any) => {
-            let message = `RSSParserException error during request, original error ${e.message}`
-            Logger(LoggerTypes.ERROR, `${message}`)
-            throw new Error(message)
+            throw new Error(`RSSParserException job failed for ${instructions.getSource().name}, original error ${e.message}`);
         })
     }
 
