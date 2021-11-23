@@ -75,12 +75,19 @@ export default class Worker {
     static async parse(job: Job): Promise<Article[]> {
         let instructions = job.getInstructions();
 
-        try {
-            let articles: Article[] = await (ParserLoader.getParser(instructions.parserType))!!.parse(job);
-            return articles;
-        } catch (e: any) {
-            throw new Error(`WorkerException failed to complete job for ${job.getSource().name}, original error: ${e.message}`);
+        let articles: Article[] = [];
+        for (const pair of instructions.url) {
+            let url = pair[0];
+            let alias = pair[1] ? pair[1] : "";
+
+            try {
+                articles.push(...await (ParserLoader.getParser(instructions.parserType))!!.parse(job, alias, url));
+            }
+            catch (e: any) {
+                throw new Error(`WorkerException failed to complete job for ${job.getSource().name}, original error: ${e.message}`);
+            }
         }
+        return articles;
     }
 
     /**

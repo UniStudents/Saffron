@@ -88,20 +88,34 @@ export default class Source {
         else if (Array.isArray(source.url)) {
             ret.instructions.url = [];
             for (const pair of source.url) {
-                if (typeof pair[0] !== 'string' || pair[0].length == 0) {
-                    let message = `SourceException: ${source.filename}: url: is not valid, invalid alias '${pair[0]}'.`;
+                if(Array.isArray(pair) && pair.length == 2) {
+                    let alias = pair[0];
+                    let url = pair[1];
+
+                    if(typeof alias !== 'string' || alias.trim() === '') {
+                        let message = `SourceException: ${source.filename}: url: is not valid, invalid alias '${alias}'.`;
+                        logger(LoggerTypes.INSTALL_ERROR, message);
+                        throw new Error(message);
+                    }
+
+                    if(typeof url !== 'string' || url.trim() === '') {
+                        let message = `SourceException: ${source.filename}: url: is not valid, invalid url '${url}'.`;
+                        logger(LoggerTypes.INSTALL_ERROR, message);
+                        throw new Error(message);
+                    }
+
+                    ret.instructions.url.push([url, alias]);
+                }
+                else if(typeof pair === 'string' || ((Array.isArray(pair) && pair.length == 1))) {
+                    let url: any = pair;
+                    if(Array.isArray(pair)) url = pair[0];
+
+                    ret.instructions.url.push([url]);
+                }
+                else {
+                    let message = `SourceException: ${source.filename}: url: is not valid, error during parsing pair: ${pair}.`;
                     logger(LoggerTypes.INSTALL_ERROR, message);
                     throw new Error(message);
-                }
-                if (pair[1] &&( typeof pair[1] !== 'string' || pair[1].length == 0)) {
-                    let message = `SourceException: ${source.filename}: url: is not valid, invalid url '${pair[1]}'.`;
-                    logger(LoggerTypes.INSTALL_ERROR, message);
-                    throw new Error(message);
-                }
-                if(!pair[1]){
-                    ret.instructions.url.push([pair[0]]);
-                }else{
-                    ret.instructions.url.push([pair[0], pair[1]]);
                 }
             }
         }

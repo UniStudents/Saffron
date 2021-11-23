@@ -20,11 +20,11 @@ export class WordpressParser extends ParserClass {
         instructions.url = `${sourceJson.url}${(sourceJson.url.endsWith('/')) ? '' : '/'}`
     }
 
-    async parse(job: Job): Promise<Article[]> {
+    async parse(job: Job, alias: string, url: string): Promise<Article[]> {
         let instructions = job.getInstructions();
 
-        let categoriesUrl = instructions.url + 'wp-json/wp/v2/categories/';
-        let postsUrl = instructions.url + 'wp-json/wp/v2/posts/';
+        let categoriesUrl = `${url}wp-json/wp/v2/categories/`;
+        let postsUrl = `${url}wp-json/wp/v2/posts/`;
 
         let categories: any, posts: any;
 

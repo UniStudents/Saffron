@@ -243,28 +243,10 @@ export class HTMLParser extends ParserClass {
         return parsedArticles
     }
 
-    async parse(job: Job): Promise<Article[]> {
+    async parse(job: Job, alias: string, url: string): Promise<Article[]> {
         let instructions = job.getInstructions();
         let amount = 10;
 
-        let articles: Article[] = []
-        if (typeof instructions.url == 'string') {
-            let arts = await HTMLParser.parse2(undefined, instructions.url, instructions, amount)
-            articles.push(...arts)
-        }
-        else {
-            for (const pair of instructions.url) {
-                let arts = []
-                if(Array.isArray(pair) && pair.length == 1){
-                    arts = await HTMLParser.parse2(undefined, instructions.url[0].toString(), instructions, amount)
-                }else{
-                     arts = await HTMLParser.parse2(pair[0], pair[1], instructions, amount)
-
-                }
-                articles.push(...arts)
-            }
-        }
-
-        return articles
+        return await HTMLParser.parse2(alias, url, instructions, amount)
     }
 }

@@ -29,61 +29,55 @@ export class DynamicParser extends ParserClass {
             , "(Article, utils)")
     }
 
-    async parse(job: Job): Promise<Article[]> {
+    async parse(job: Job, alias: string, url: string): Promise<Article[]> {
         let instructions = job.getInstructions();
-        let articles: Article[] = [];
+        let parsedArticles: Article[] = [];
 
         let scrapeFunc = eval(instructions.scrapeFunction)
 
-        let urls: (string[])[] = []
-        if (typeof instructions.url !== 'string')
-            urls = instructions.url
-        else urls.push(["", instructions.url])
+        let utils = new Utils(url);
 
-        for (const pair of urls) {
-            let utils = new Utils(pair[1]);
+        let collection = instructions.getSource().collection_name
+        if (!collection || collection.length == 0)
+            collection = instructions.getSource().name
+        if (!collection || collection.length == 0)
+            collection = instructions.getSource().getId()
 
-            let collection = instructions.getSource().collection_name
-            if (!collection || collection.length == 0)
-                collection = instructions.getSource().name
-            if (!collection || collection.length == 0)
-                collection = instructions.getSource().getId()
+        let articles = await Database.getInstance()!!.getArticles(collection, {pageNo: 1, articlesPerPage: 50})
+        utils.isFirstScrape = articles.length === 0
+        utils.isScrapeAfterError = job.attempts !== 0
 
-            let articles = await Database.getInstance()!!.getArticles(collection, {pageNo: 1, articlesPerPage: 100})
-            utils.isFirstScrape = articles.length === 0
-            utils.isScrapeAfterError = job.attempts !== 0
-
-            utils.getArticles = (count: number): Article[] => articles.slice(0, count)
-            utils.onNewArticle = (article: Article) => {
-                article.source = {
-                    id: job.getSource().getId(),
-                    name: job.getSource().name
-                }
-
-                if (!article.extras) article.extras = {}
-
-                if (pair[0].length !== 0)
-                    article.extras = {
-                        categories: [
-                            {name: pair[0], links: [pair[1]]}
-                        ]
-                    }
-
-                articles.unshift(article)
-                utils.getArticles = (count: number): Article[] => [...articles, ...articles].slice(0, count)
+        utils.getArticles = (count: number): Article[] => articles.slice(0, count)
+        utils.onNewArticle = (article: Article) => {
+            article.source = {
+                id: job.getSource().getId(),
+                name: job.getSource().name
             }
 
-            try {
-                await scrapeFunc(Article, utils)
+            if (!article.extras) article.extras = {}
+
+            if (alias.length !== 0) {
+                if(!article.categories)
+                    article.categories = [];
+
+                article.categories.push({name: alias, links: [url]});
             }
-            catch (e: any) {
-                let message = `DynamicParserException error during parsing, original ${e.message}`;
-                Logger(LoggerTypes.ERROR, message);
-                throw new Error(message);
-            }
+
+            articles.unshift(article)
+            parsedArticles.push(article);
+            utils.getArticles = (count: number): Article[] => [...articles].slice(0, count);
         }
 
-        return articles
+        try {
+            await scrapeFunc(Article, utils)
+        }
+        catch (e: any) {
+            let message = `DynamicParserException error during parsing, original ${e.message}`;
+            Logger(LoggerTypes.ERROR, message);
+            throw new Error(message);
+        }
+
+        return parsedArticles
     }
 
 }
