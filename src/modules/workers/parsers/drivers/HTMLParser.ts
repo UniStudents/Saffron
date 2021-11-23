@@ -205,15 +205,23 @@ export class HTMLParser extends ParserClass {
                         id: instructions.getSource().getId(),
                         name: instructions.getSource().name
                     }
-                    tmpArticle.link = (Array.isArray(articleData.link) && articleData.link[0]?.value)? articleData.link[0].value : ''
-                    tmpArticle.title = (articleData.title) ? Utils.htmlStrip(articleData.title) : ''
-                    tmpArticle.pubDate = (articleData.pubDate) ? Utils.htmlStrip(articleData.pubDate) : ''
+                    tmpArticle.link = (Array.isArray(articleData.link) && articleData.link[0]?.value) ? articleData.link[0].value : (articleData.link ? articleData.link : '');
+                    tmpArticle.title = (Array.isArray(articleData.title) && articleData.title[0]?.value)
+                        ? Utils.htmlStrip(articleData.title[0].value)
+                        : (articleData.title ? articleData.title : '');
 
-                    let content = (articleData.content) ? articleData.content : ''
+                    tmpArticle.pubDate = (Array.isArray(articleData.pubDate) && articleData.pubDate[0]?.value)
+                        ? Utils.htmlStrip(articleData.pubDate[0].value)
+                        : (articleData.pubDate ? articleData.pubDate : '');
+
+                    let content = (Array.isArray(articleData.content) && articleData.content[0]?.value)
+                        ? Utils.htmlStrip(articleData.content[0].value)
+                        : (articleData.content ? articleData.content : '');
+
                     tmpArticle.content = content
                     tmpArticle.attachments = []
                     tmpArticle.categories = []
-                    if(!alias && articleData.hasOwnProperty("category")){
+                    if(!alias && articleData.hasOwnProperty("category")) {
                         tmpArticle.categories.push({name: articleData["category"], links: [url]})
                     }
 
@@ -238,6 +246,7 @@ export class HTMLParser extends ParserClass {
                 })
             })
             .catch((e: any) => {
+                console.log(e)
                 throw new Error(`HTMLParserException job failed for ${instructions.getSource().name}, original error: ${e.message}`)
             })
         return parsedArticles

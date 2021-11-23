@@ -1,0 +1,53 @@
+{
+  "url": [
+    ["https://www.law.uoa.gr/anakoinoseis_kai_ekdiloseis/"]
+  ],
+  "name": "law.uoa.gr",
+  "type": "html",
+  "extra": {
+    "dateParserType": 2
+  },
+  "scrape": {
+    "endPoint": "law.uoa.gr",
+    "container": "body > section > div > div.col-md-9.col-sm-8.single_page.col-md-push-3.col-sm-push-4 > div.single_page--content > div.article.clearfix.articletype-0 > div.article__content.matchHeight",
+    "article": {
+      "link": {
+        "class": ".article__title",
+        "find": [
+          "a"
+        ],
+        "attributes": [
+          "href"
+        ],
+        "multiple": false
+      },
+      "pubDate": {
+        "class": ".article__info > span",
+        "find": [
+          "time"
+        ],
+        "attributes": [
+          "datetime"
+        ],
+        "multiple": false
+      },
+      "title": {
+        "class": ".article__title",
+        "find": [
+          "a"
+        ],
+        "multiple": false
+      },
+      "content": {
+        "class": ".teaser-text",
+        "find": null,
+        "multiple": false
+      },
+      "category": {
+        "class": ".article__info > a > span",
+        "find": null,
+        "multiple": true
+      }
+    }
+  }
+}
