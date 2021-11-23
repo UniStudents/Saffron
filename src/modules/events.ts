@@ -39,7 +39,10 @@ export default class Events {
         this.getAntennae().on("workers.articles.found", (articles: Article[]) => Logger(LoggerTypes.DEBUG, `${chalk.cyan('Articles')} - Finished job returned ${articles.length} articles for ${articles[0].getSource().name}.`));
         this.getAntennae().on("workers.articles.new", (articles: Article[]) => Logger(LoggerTypes.INFO, `${chalk.cyan('Articles')} - ${articles.length} articles will be added to to the db for ${articles[0].getSource().name}.`));
 
-        this.getAntennae().on("workers.parsers.error", (data: string) => Logger(LoggerTypes.INFO, `${chalk.red('Parsers')} - failed to scrape the articles with error message: ${data}.`));
+        this.getAntennae().on("workers.parsers.error", (e: any) => {
+            Logger(LoggerTypes.INFO, `${chalk.red('Parsers')} - failed to scrape the articles.`);
+            console.log(e);
+        });
     }
 }
 

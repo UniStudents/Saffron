@@ -20,11 +20,11 @@ export class WordpressParser extends ParserClass {
         instructions.url = `${sourceJson.url}${(sourceJson.url.endsWith('/')) ? '' : '/'}`
     }
 
-    async parse(job: Job): Promise<Article[]> {
+    async parse(job: Job, alias: string, url: string): Promise<Article[]> {
         let instructions = job.getInstructions();
 
-        let categoriesUrl = instructions.url + 'wp-json/wp/v2/categories/';
-        let postsUrl = instructions.url + 'wp-json/wp/v2/posts/';
+        let categoriesUrl = `${url}wp-json/wp/v2/categories/`;
+        let postsUrl = `${url}wp-json/wp/v2/posts/`;
 
         let categories: any, posts: any;
 
@@ -37,9 +37,7 @@ export class WordpressParser extends ParserClass {
             categories = (await axios.get(categoriesUrl, (config as AxiosRequestConfig)))?.data
             posts = (await axios.get(postsUrl, (config as AxiosRequestConfig)))?.data
         } catch (e: any) {
-            let message = `WordpressParserException error during request, original error: ${e.message}`;
-            Logger(LoggerTypes.ERROR, message);
-            throw new Error(message);
+            throw new Error(`WordpressParserException job failed for ${instructions.getSource().name}, original error: ${e.message}`);
         }
 
         let articles: Article[] = [];

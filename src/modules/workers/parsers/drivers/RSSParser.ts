@@ -112,9 +112,7 @@ export class RSSParser extends ParserClass {
             })
             return dataJson
         }).catch((e: any) => {
-            let message = `RSSParserException error during request, original error ${e.message}`
-            Logger(LoggerTypes.ERROR, `${message}`)
-            throw new Error(message)
+            throw new Error(`RSSParserException job failed for ${instructions.getSource().name}, original error ${e.message}`);
         })
     }
 
@@ -182,31 +180,18 @@ export class RSSParser extends ParserClass {
         return parsedArticles
     }
 
-    async parse(job: Job): Promise<Article[]> {
+    async parse(job: Job, alias: string, url: string): Promise<Article[]> {
         let instructions = job.getInstructions();
         let amount = 10;
-
-        let articles: Article[] = [];
 
         // Rename fields
         let renameFields: Map<string, string> = new Map<string, string>()
         if (instructions.scrapeOptions.hasOwnProperty("renameFields"))
             renameFields = instructions.scrapeOptions.renameFields
 
-        // Parse
-        if (typeof instructions.url == 'string') {
-            let arts = await RSSParser.rssParser(instructions, instructions.url, amount, renameFields)
-            let mapped = await RSSParser.mapArticles(arts, undefined, instructions.url, renameFields, instructions)
-            articles.push(...mapped)
-        } else {
-            for (const pair of instructions.url) {
-                let arts = await RSSParser.rssParser(instructions, pair[1], amount, renameFields)
-                let mapped = await RSSParser.mapArticles(arts, pair[0], pair[1], renameFields, instructions)
-                articles.push(...mapped)
-            }
-        }
+        let articles = await RSSParser.rssParser(instructions, url, amount, renameFields);
 
-        return articles
+        return await RSSParser.mapArticles(articles, alias, url, renameFields, instructions);
     }
 
 }

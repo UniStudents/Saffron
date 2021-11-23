@@ -273,7 +273,7 @@ export default class Utils {
     }
 
 
-    public static htmlStrip(text: String = "", stripTags: boolean = true): string {
+    public static htmlStrip(text: any = "", stripTags: boolean = true): string {
         if (stripTags) {
             text = this.decode(text)
             text = text.replace(/\n/g, '')
