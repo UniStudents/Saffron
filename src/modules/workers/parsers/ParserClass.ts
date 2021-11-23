@@ -8,5 +8,5 @@ export abstract class ParserClass {
 
     abstract assignInstructions(instructions: Instructions, sourceJson: object): void
 
-    abstract parse(job: Job): Promise<Article[]>
+    abstract parse(job: Job, alias: string, url: string): Promise<Article[]>
 }

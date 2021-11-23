@@ -148,17 +148,14 @@ export default class Scheduler {
         if(!Array.isArray(includeOnly)) throw new Error("Config.sources.includeOnly is not an array.");
         if(!Array.isArray(excluded)) throw new Error("Config.sources.excluded is not an array.");
 
-        let tmpSources: Source[] = [];
-        sources.forEach((source: Source) => {
-            if(includeOnly.length>=1){
+        if(includeOnly.length > 0) {
+            let tmpSources: Source[] = [];
+            sources.forEach((source: Source) => {
                 if (includeOnly.includes(source.name))
                     tmpSources.push(source);
-            }else{
-                tmpSources.push(source)
-            }
-
-        });
-        sources = tmpSources;
+            });
+            sources = tmpSources;
+        }
 
         excluded.forEach((ex_source: any) => {
             if(typeof ex_source !== 'string')

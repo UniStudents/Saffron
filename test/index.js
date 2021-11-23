@@ -18,7 +18,7 @@ try {
             } : {driver: "memory"},
         sources: {
             path: "/test/sources",
-            //includeOnly: ['unipi.gr']
+            includeOnly: ['unipi.gr'],
              excluded: ["custom-cs.unipi.gr"]
         },
         scheduler: {
@@ -55,10 +55,10 @@ try {
         await saffron.initialize(config)
         await saffron.start()
 
-/*        saffron.on("workers.articles.found", (articles)=>{
+        saffron.on("workers.articles.found", (articles)=>{
             console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}))
 
-        })*/
+        })
     } catch (error) {
         errors.push(error)
     }
