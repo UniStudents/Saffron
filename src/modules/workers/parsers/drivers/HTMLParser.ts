@@ -37,8 +37,7 @@ export class HTMLParser extends ParserClass {
             let config : AxiosConfig = {
                 method: 'get',
                 url,
-                httpsAgent: httpsAgent,
-                timeout
+                timeout,
             }
 
             if(instructions["ignoreCertificates"]) config.httpsAgent = httpsAgent

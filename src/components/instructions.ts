@@ -11,14 +11,14 @@ export default class Instructions {
     declare id: string;
 
     declare source : { id: string; };
-    declare url: string | (string[])[];
+    declare url: (string[])[];
     declare parserType: ParserType;
     declare endPoint: string;
     declare scrapeOptions: any;
     declare elementSelector: string;
     declare scrapeFunction: string;
     declare ignoreCertificates: boolean;
-    declare extraFields: String[];
+    declare extraFields: string[];
 
 
     /**
@@ -34,10 +34,10 @@ export default class Instructions {
      *
      * @return Map<String, Object>
      */
-    getOptions(): Map<String, Object> | null {
+    getOptions(): Map<string, object> | null {
         if (!this.scrapeOptions) return null;
 
-        return new Map<String, Object>(Object.entries(this.scrapeOptions));
+        return new Map<string, object>(Object.entries(this.scrapeOptions));
     }
 
     /**

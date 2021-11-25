@@ -17,7 +17,13 @@ export class WordpressParser extends ParserClass {
     }
 
     assignInstructions(instructions: Instructions, sourceJson: any): void {
-        instructions.url = `${sourceJson.url}${(sourceJson.url.endsWith('/')) ? '' : '/'}`
+        for (let pair of instructions.url) {
+            if(pair.length == 1)
+                pair[0] = `${pair[0]}${pair[0].endsWith('/') ? '' : '/'}`
+            else if(pair.length == 2)
+                pair[1] = `${pair[1]}${pair[1].endsWith('/') ? '' : '/'}`
+
+        }
     }
 
     async parse(job: Job, alias: string, url: string): Promise<Article[]> {

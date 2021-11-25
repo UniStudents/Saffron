@@ -72,8 +72,11 @@ export class DynamicParser extends ParserClass {
             await scrapeFunc(Article, utils)
         }
         catch (e: any) {
-            throw new Error(`DynamicParserException job failed for ${job.getSource().name}, original ${e.message}`);
+            throw new Error(`DynamicParserException job failed for ${job.getSource().name}, original error: ${e.message}`);
         }
+
+        if(parsedArticles.length == 0)
+            throw new Error(`DynamicParserException job failed for ${job.getSource().name}, original error: no articles found.`);
 
         return parsedArticles
     }
