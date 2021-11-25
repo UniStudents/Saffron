@@ -3,6 +3,7 @@ const saffron = require('../dist/index');
 const loggerTypes = require('../dist/middleware/LoggerTypes')
 const logger = require('../dist/middleware/logger').default
 const util = require("util");
+
 let config = {}
 try {
     config = require("./saffron.json")
@@ -18,8 +19,8 @@ try {
             } : {driver: "memory"},
         sources: {
             path: "/test/sources",
-            includeOnly: ['unipi.gr'],
-             excluded: ["custom-cs.unipi.gr"]
+            // includeOnly: ['math.upatras.gr'],
+            // excluded: ["custom-cs.unipi.gr"]
         },
         scheduler: {
             intervalBetweenJobs: 10000,
@@ -30,7 +31,7 @@ try {
         workers: {
             nodes: 1,
             job: {
-                timeout: 5000
+                requestTimeout: 10000
             }
         },
         grid:{
@@ -56,19 +57,20 @@ try {
         await saffron.start()
 
         saffron.on("workers.articles.found", (articles)=>{
-            console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}))
-
+            console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
         })
-    } catch (error) {
+    }
+    catch (error) {
         errors.push(error)
     }
+
     if(process.env.NODE_ENV === "testing") setTimeout(() => {
         if(errors.length > 0) {
-            logger(loggerTypes.LoggerTypes.ERROR,`Saffron failed at runtime. The CI workflow will be terminated. The errors that occured where the following: \n\n${errors}\n\n`)
-            process.exit(1)
+            logger(loggerTypes.LoggerTypes.ERROR,`Saffron failed at runtime. The CI workflow will be terminated. The errors that occured where the following: \n\n${errors}\n\n`);
+            process.exit(1);
         }else{
             logger(loggerTypes.LoggerTypes.STEP,`Saffron doesn\'t show any signs of malfunction with this commit.\n`);
-            process.exit(0)
+            process.exit(0);
         }
     }, 15000)
      //saffron.on("new-articles-pushed", articles=> console.log("new-articles",articles))

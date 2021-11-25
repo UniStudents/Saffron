@@ -77,16 +77,16 @@ export default class Source {
         if(source.hasOwnProperty("extra"))
             ret.extra = source.extra;
 
+        ret.instructions.url = [];
         if (typeof source.url === 'string') {
             if (source.url.length == 0) {
                 let message = `SourceException: ${source.filename}: url: is not valid, url cannot be empty.`;
                 logger(LoggerTypes.INSTALL_ERROR, message)
                 throw new Error(message);
             }
-            ret.instructions.url = source.url;
+            ret.instructions.url.push([source.url]);
         }
         else if (Array.isArray(source.url)) {
-            ret.instructions.url = [];
             for (const pair of source.url) {
                 if(Array.isArray(pair) && pair.length == 2) {
                     let alias = pair[0];
