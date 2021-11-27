@@ -108,11 +108,11 @@ export class HTMLParser extends ParserClass {
 
         if (multiple) {
             // save the point where the data is stored.
-            dataStoredAt = (instructions)? instructions[instructions.length - 1] : htmlClass
-            tmpArray = (instructions)? instructions.slice(0, instructions.length - 1) : [];
+            dataStoredAt = (instructions && instructions.length >=1) ? instructions[instructions.length - 1] : ""
+            tmpArray = (instructions) ? instructions.slice(0, instructions.length - 1) : [];
         } else {
             tmpArray = []
-            dataStoredAt = (instructions)? instructions[instructions.length - 1] : htmlClass
+            dataStoredAt = (instructions && instructions.length >=1)? instructions[instructions.length - 1] : ""
         }
 
 
@@ -132,9 +132,14 @@ export class HTMLParser extends ParserClass {
 
                 if (!hasAttributes) {
                     // If we do not want to get the attributes, then we just get the information found in the location stored in the variable dataStoredAt.
-                    if (finalData.find(dataStoredAt).text() === '') return
+                    if (dataStoredAt.length >=1 && finalData.find(dataStoredAt).text() === '') return
+                    if (dataStoredAt.length <1 && finalData.text() === '') return
 
-                    results.push(finalData.find(dataStoredAt).text())
+                    if(dataStoredAt)
+                        results.push(finalData.find(dataStoredAt).text())
+                    else
+                        results.push(finalData.text())
+
                 } else {
                     tmp = HTMLParser.attributes(finalData, dataStoredAt, attributesArr);
                     if (tmp) {
@@ -181,13 +186,14 @@ export class HTMLParser extends ParserClass {
 
                     // for each option. The options provided by instructions.
                     for (let item in options) {
-                        if (options.hasOwnProperty(item) && options[item].find) {
+                        if(options.hasOwnProperty(item) && !options[item].find && !options[item].multiple){
+                            articleData[item] = cheerioLoad(element).find(options[item].class).text()
+                        }else if(options.hasOwnProperty(item)) {
                             if (!options[item].attributes)
                                 articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, false, [], "")
                             else
                                 articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, true, options[item].attributes, instructions.endPoint)
-                        } else
-                            articleData[item] = cheerioLoad(element).find(options[item].class).text()
+                        }
                     }
 
                     //Utility to merge other items with the basic Data of the article
@@ -221,7 +227,13 @@ export class HTMLParser extends ParserClass {
                     tmpArticle.attachments = []
                     tmpArticle.categories = []
                     if(!alias && articleData.hasOwnProperty("category")) {
-                        tmpArticle.categories.push({name: articleData["category"], links: [url]})
+                        if(Array.isArray(articleData["category"])){
+                            articleData["category"].forEach(category =>{
+                                tmpArticle.categories.push({name: category, links: [url]})
+                            })
+                        }
+                        else
+                            tmpArticle.categories.push({name: articleData["category"], links: [url]})
                     }
 
                     tmpArticle.attachments.push(...((articleData.attachments) ? articleData.attachments : []))
