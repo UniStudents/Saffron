@@ -62,6 +62,8 @@ export default class Source {
         ret.requestTimeout = source.requestTimeout ? source.requestTimeout : (!isStatic ? Config.load().workers.jobs.requestTimeout : 5000)
         ret.instructions = new Instructions()
         ret.instructions.source = {id: ret.getId()}
+        ret.instructions.amount = source.amount ? source.amount : (!isStatic ? Config.load().workers.jobs.amount : 10)
+
 
         if (source.hasOwnProperty("ignoreCertificates"))
             ret.instructions.ignoreCertificates = source.ignoreCertificates;

@@ -14,6 +14,7 @@ export default class Instructions {
     declare url: (string[])[];
     declare parserType: ParserType;
     declare endPoint: string;
+    declare amount: number;
     declare scrapeOptions: any;
     declare elementSelector: string;
     declare scrapeFunction: string;

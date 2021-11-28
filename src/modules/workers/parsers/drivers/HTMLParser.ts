@@ -17,12 +17,12 @@ interface ArticleImage { [key: string]: any }
 export class HTMLParser extends ParserClass {
 
     validateScrape(scrape: any): string {
-        let value = Object.entries(scrape.article).some((key: any) => key[1].class === undefined || key === undefined);
+        let value = Object.entries(scrape.article).some((key: any) =>  key === undefined || key[1].class === undefined);
 
         if(value)
             return ""
             // TODO
-        else return "HTMLParserSourceException error message"
+        else return "HTMLParserSourceException found empty key or key with no class"
     }
 
     assignInstructions(instructions: Instructions, sourceJson: any): void {
@@ -167,7 +167,7 @@ export class HTMLParser extends ParserClass {
         return results
     }
 
-    static async parse2(alias: string | undefined, url: string, instructions: Instructions, amount: Number = 10): Promise<Article[]> {
+    static async parse2(alias: string, url: string, instructions: Instructions, amount: Number = 10): Promise<Article[]> {
         let parsedArticles: Article[] = []
 
         await HTMLParser.request(url, instructions.getSource().requestTimeout,instructions)
@@ -177,7 +177,7 @@ export class HTMLParser extends ParserClass {
                 // for each article.
                 cheerioLoad(instructions.elementSelector).each((index, element) => {
 
-                    if (index === amount) return
+                    if (index >= amount) return
 
                     let articleData: ArticleImage = {}
                     let tmpArticle: Article
@@ -263,10 +263,8 @@ export class HTMLParser extends ParserClass {
         return parsedArticles
     }
 
-    async parse(job: Job, alias: string, url: string): Promise<Article[]> {
+    async parse(job: Job, alias: string, url: string, amount: number): Promise<Article[]> {
         let instructions = job.getInstructions();
-        let amount = 10;
-
         return await HTMLParser.parse2(alias, url, instructions, amount)
     }
 }
