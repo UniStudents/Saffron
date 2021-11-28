@@ -96,6 +96,9 @@ export class RSSParser extends ParserClass {
         return await parser.parseURL(url).then(feed => {
             let count = 0
             feed.items.forEach(item => {
+
+                if (count >= amount) return
+
                 // console.log(item)
                 //Initializing json object
                 dataJson[count] = {} as any
@@ -180,9 +183,8 @@ export class RSSParser extends ParserClass {
         return parsedArticles
     }
 
-    async parse(job: Job, alias: string, url: string): Promise<Article[]> {
+    async parse(job: Job, alias: string, url: string, amount: number): Promise<Article[]> {
         let instructions = job.getInstructions();
-        let amount = 10;
 
         // Rename fields
         let renameFields: Map<string, string> = new Map<string, string>()

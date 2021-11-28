@@ -26,13 +26,13 @@ export class WordpressParser extends ParserClass {
         }
     }
 
-    async parse(job: Job, alias: string, url: string): Promise<Article[]> {
+    async parse(job: Job, alias: string, url: string, amount: number): Promise<Article[]> {
         let instructions = job.getInstructions();
 
         let categoriesUrl = `${url}wp-json/wp/v2/categories/`;
         let postsUrl = `${url}wp-json/wp/v2/posts/`;
 
-        let categories: any, posts: any;
+        let categories: any, posts: any[];
 
         let config: (AxiosConfig)  = {
             timeout: instructions.getSource().requestTimeout
@@ -68,7 +68,11 @@ export class WordpressParser extends ParserClass {
             }
         }) : []
 
+        let count = 0
         for (let p of posts) {
+            if (count >= instructions.amount) continue;
+            count++;
+
             const article = new Article()
             article.title = Utils.htmlStrip(p.title.rendered, false).toString()
 

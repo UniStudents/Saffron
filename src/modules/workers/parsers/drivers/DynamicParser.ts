@@ -4,8 +4,6 @@ import Job from "../../../../components/job";
 import Article from "../../../../components/articles";
 import Utils from "../../../../components/utils";
 import Database from "../../../database";
-import Logger from "../../../../middleware/logger";
-import {LoggerTypes} from "../../../../middleware/LoggerTypes";
 
 export class DynamicParser extends ParserClass {
     validateScrape(scrape: any): string {
@@ -29,7 +27,7 @@ export class DynamicParser extends ParserClass {
             , "(Article, utils)")
     }
 
-    async parse(job: Job, alias: string, url: string): Promise<Article[]> {
+    async parse(job: Job, alias: string, url: string, amount: number): Promise<Article[]> {
         let instructions = job.getInstructions();
         let parsedArticles: Article[] = [];
 

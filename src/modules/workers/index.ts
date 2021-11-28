@@ -3,7 +3,6 @@ import Job from "../../components/job";
 import randomId from "../../middleware/randomId";
 import Grid from "../grid";
 import Article from "../../components/articles";
-import {ParserClass} from "./parsers/ParserClass";
 import ParserLoader from "./parsers/ParserLoader";
 
 
@@ -81,7 +80,7 @@ export default class Worker {
             let alias = pair[1] ? pair[1] : "";
 
             // Will throw error in case of fail (catch in call function).
-            articles.push(...await (ParserLoader.getParser(instructions.parserType))!!.parse(job, alias, url));
+            articles.push(...await (ParserLoader.getParser(instructions.parserType))!!.parse(job, alias, url, job.getInstructions().amount));
         }
         return articles;
     }

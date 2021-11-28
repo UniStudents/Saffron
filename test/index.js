@@ -19,7 +19,7 @@ try {
             } : {driver: "memory"},
         sources: {
             path: "/test/sources",
-            // includeOnly: ['math.upatras.gr'],
+            // includeOnly: ['arch.upatras.gr'],
             // excluded: ["custom-cs.unipi.gr"]
         },
         scheduler: {
@@ -30,8 +30,9 @@ try {
         mode: process.env.MODE || "main",
         workers: {
             nodes: 1,
-            job: {
-                requestTimeout: 10000
+            jobs: {
+                requestTimeout: 10000,
+                amount: 30
             }
         },
         grid:{

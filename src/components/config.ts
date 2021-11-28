@@ -22,7 +22,8 @@ export default class Config {
         workers: {
             nodes: 1, // Start one workers
             jobs: {
-                timeout: 5000
+                timeout: 5000,
+                amount: 10
             }
         },
         scheduler: {
