@@ -36,7 +36,7 @@ export default class Events {
         this.getAntennae().on("workers.job.failed", (job: Job) => Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - failed job(${job.id}).`));
         this.getAntennae().on("workers.articles.errorOffloading", (article: Article) => Logger(LoggerTypes.ERROR, `${chalk.green('Worker')} - failed to upload articles to the database for ${article.getSource().name}.`));
 
-        this.getAntennae().on("workers.articles.found", (articles: Article[]) => Logger(LoggerTypes.DEBUG, `${chalk.cyan('Articles')} - Finished job returned ${articles.length} articles for ${articles[0].getSource().name}.`));
+        this.getAntennae().on("workers.articles.found", (articles: Article[], src: string) => Logger(LoggerTypes.DEBUG, `${chalk.cyan('Articles')} - Finished job returned ${articles.length} articles for ${src}.`));
         this.getAntennae().on("workers.articles.new", (articles: Article[]) => Logger(LoggerTypes.INFO, `${chalk.cyan('Articles')} - ${articles.length} articles will be added to to the db for ${articles[0].getSource().name}.`));
 
         this.getAntennae().on("workers.parsers.error", (e: any) => {

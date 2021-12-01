@@ -65,8 +65,8 @@ export default abstract class Database {
      * @param articles An array of Article objects that are meant to be merged into the database.
      */
     async mergeArticles(src: string, articles: Article[]) {
-        if(articles.length > 0)
-            await Grid.getInstance().onFoundArticles(articles)
+        // if(articles.length > 0)
+        await Grid.getInstance().onFoundArticles(articles, src)
 
         // First edit the articles
         if (Extensions.getInstance().hasEvent("article.format")) {
