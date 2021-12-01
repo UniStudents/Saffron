@@ -12,6 +12,7 @@ import Article from "../../components/articles";
 import Server from "./server";
 import Client from "./client";
 import {Pack, Unpack} from "./transformer"
+import * as stream from "stream";
 export default class Grid {
 
     private static instance: Grid
@@ -272,11 +273,11 @@ export default class Grid {
         })
     }
 
-    async onFoundArticles(articles: Article[]): Promise<void> {
+    async onFoundArticles(articles: Article[], src: string): Promise<void> {
         // TODO - Client emit will be removed if articles are all added from the main saffron
         if (this.isMain)
-            Events.getAntennae().emit("workers.articles.found", articles)
-        else await this.client.emit('workers.articles.found', articles.map(a => a.toJSON()))
+            Events.getAntennae().emit("workers.articles.found", articles, src)
+        else await this.client.emit('workers.articles.found', {articles: articles.map(a => a.toJSON()), src})
     }
 
     async onFailedUploadingArticle(article: Article): Promise<void> {
