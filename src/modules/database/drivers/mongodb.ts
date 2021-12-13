@@ -1,53 +1,27 @@
-import {MongoClient} from "mongodb";
+import {Db, MongoClient} from "mongodb";
 import Logger from "../../../middleware/logger";
 import {LoggerTypes} from "../../../middleware/LoggerTypes"
 import Article from "../../../components/articles";
 import Database from "../database";
 import Config from "../../../components/config"
+import {ConfigOptions} from "../../../middleware/ConfigOptions";
 
 export default class MongoDB extends Database {
 
     declare client: MongoClient;
+    declare db: Db
 
-
-    async connect(): Promise<boolean> {
-        try {
-            this.client = new MongoClient(Config.load()!!.database.config.url)
-            await this.client.connect();
-            Logger(LoggerTypes.DEBUG, "Testing database connection")
-
-            return true
-        } catch (e: any) {
-            Logger(LoggerTypes.INSTALL_ERROR, `Database error: ${e.message}.`)
-            throw Error();
-        }
-
-        return false
+    constructor() {
+        super();
+        this.client = new MongoClient(Config.getOption(ConfigOptions.DB_CONFIG).url)
     }
 
-    async onConnectionLost(callback: () => void): Promise<void> {
-        this.client.on('close', callback)
-    }
+    async connect(): Promise<void> {
+        await this.client.connect();
+        this.db = this.client.db(Config.getOption(ConfigOptions.DB_CONFIG).name);
 
-    async deleteArticle(src: string, id: string): Promise<void> {
-        try {
-            await this.client.db(Config.load()!!.database.config.name).collection(src).deleteOne({id})
-
-        } catch (e: any) {
-            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
-        }
-    }
-
-    async getArticle(src: string, id: string): Promise<Article | undefined> {
-        try {
-            let fetched = await this.client.db(Config.load()!!.database.config.name).collection(src).findOne({id})
-            if(!fetched) return undefined;
-            return Article.fromJSON(fetched);
-
-        } catch (e: any) {
-            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
-        }
-        return undefined
+        // Establish and verify connection
+        await this.db.command({ping: 1});
     }
 
     async getArticles(src: string, options?: {
@@ -57,7 +31,7 @@ export default class MongoDB extends Database {
     }): Promise<Array<Article>> {
         try {
             if (!options) {
-                return (await this.client.db(Config.load()!!.database.config.name).collection(src).find().toArray())
+                return (await this.db.collection(src).find().toArray())
                     .map((_article: object) => Article.fromJSON(_article))
             }
 
@@ -67,7 +41,7 @@ export default class MongoDB extends Database {
                 sort: options.sort ? options.sort : {"_id": -1},
             }
 
-            let _articles = await this.client.db(Config.load()!!.database.config.name).collection(src)
+            let _articles = await this.db.collection(src)
                 .find()
                 .sort(opts.sort)
                 .skip((opts.pageNo - 1) * opts.articlesPerPage)
@@ -85,7 +59,7 @@ export default class MongoDB extends Database {
     async pushArticle(src: string, article: Article): Promise<string> {
         try {
             article.timestamp = Date.now()
-            await this.client.db(Config.load()!!.database.config.name).collection(src).insertOne(await article.toJSON())
+            await this.db.collection(src).insertOne(await article.toJSON())
             return article.id
         } catch (e: any) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
@@ -93,16 +67,8 @@ export default class MongoDB extends Database {
         return ""
     }
 
-    async updateArticle(src: string, article: Article): Promise<void> {
-        try {
-            await this.client.db(Config.load()!!.database.config.name).collection(src).updateOne({id: article.id}, await article.toJSON())
-        } catch (e: any) {
-            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
-        }
-    }
-
     async insertGridNode(id: string, publicIP: object, privateIP: string, encryptionKey: string): Promise<void> {
-        await this.client.db(Config.load()!!.database.config.name).collection('grid').updateOne({id}, {
+        await this.db.collection('grid').updateOne({id}, {
             id, publicIP, privateIP, encryptionKey
         }, {upsert: true})
     }

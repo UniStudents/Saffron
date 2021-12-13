@@ -4,9 +4,6 @@ import Job from "../../../../components/job";
 import Article from "../../../../components/articles";
 import Parser from "rss-parser";
 import Utils from "../Utils";
-import Logger from "../../../../middleware/logger";
-import {LoggerTypes} from "../../../../middleware/LoggerTypes";
-import {reject} from "lodash";
 
 
 export class RSSParser extends ParserClass {
@@ -27,6 +24,7 @@ export class RSSParser extends ParserClass {
     }
 
     private static requested_fields: String[] = ["title", "link", "content", "pubDate", "categories"]
+
     /**
      This function finds the RSS fields that are not
      contained in the requested_fields array and returns
@@ -91,7 +89,7 @@ export class RSSParser extends ParserClass {
         let dataJson: any = {}; // there is where the returned data are stored.
         let customFieldsKeys = Array.from(renameFields.keys());
         let parser: Parser = await RSSParser.generateParser(instructions, renameFields)
-        if(instructions.extraFields && instructions.extraFields.length >=1)
+        if (instructions.extraFields && instructions.extraFields.length >= 1)
             await instructions.extraFields.forEach(extraField => this.requested_fields.push(extraField))
         return await parser.parseURL(url).then(feed => {
             let count = 0
@@ -139,46 +137,42 @@ export class RSSParser extends ParserClass {
         Array.from(new Map(Object.entries(articles)).values()).forEach((article: any) => {
             let tmpArticle = new Article()
 
-            tmpArticle.source = {
-                id: instructions.getSource().getId(),
-                name: instructions.getSource().name
-            }
+            tmpArticle.setSource(instructions.getSource().getId(), instructions.getSource().name);
+            tmpArticle.setTitle(Utils.htmlStrip(article.hasOwnProperty("title")
+                ? article["title"]
+                : renameFields.get("title") && article.hasOwnProperty(renameFields.get("title")!) ? article[renameFields.get("title")!] : ""
+            ));
 
-            tmpArticle.title = Utils.htmlStrip(article.hasOwnProperty("title") ? article["title"] :
-                renameFields.get("title") && article.hasOwnProperty(renameFields.get("title")!) ? article[renameFields.get("title")!] : "")
+            tmpArticle.setContent(article.hasOwnProperty("content")
+                ? article["content"]
+                : renameFields.get("content") && article.hasOwnProperty(renameFields.get("content")!) ? article[renameFields.get("content")!] : ""
+            );
 
-            let content = article.hasOwnProperty("content") ? article["content"] :
-                renameFields.get("content") && article.hasOwnProperty(renameFields.get("content")!) ? article[renameFields.get("content")!] : ""
+            tmpArticle.setPubDate(article.hasOwnProperty("pubDate")
+                ? article["pubDate"]
+                : renameFields.get("pubDate") && article.hasOwnProperty(renameFields.get("pubDate")!) ? article[renameFields.get("pubDate")!] : ""
+            );
 
-            tmpArticle.content = content
+            tmpArticle.setLink(article.hasOwnProperty("link")
+                ? article["link"]
+                : renameFields.get("link") && article.hasOwnProperty(renameFields.get("link")!) ? article[renameFields.get("link")!] : "");
 
-            tmpArticle.pubDate = article.hasOwnProperty("pubDate") ? article["pubDate"] :
-                renameFields.get("pubDate") && article.hasOwnProperty(renameFields.get("pubDate")!) ? article[renameFields.get("pubDate")!] : ""
+            tmpArticle.pushAttachments(Utils.extractLinks(tmpArticle.content))
 
-            tmpArticle.link = article.hasOwnProperty("link") ? article["link"] :
-                renameFields.get("link") && article.hasOwnProperty(renameFields.get("link")!) ? article[renameFields.get("link")!] : ""
-
-            tmpArticle.attachments = Utils.extractLinks(content)
-
-            tmpArticle.categories = []
             if (article.categories)
-                article.categories.forEach((c: any) => tmpArticle.categories.push({name: c}))
+                article.categories.forEach((c: any) => tmpArticle.pushCategory(c, []));
 
             if (alias)
-                tmpArticle.categories.push({name: alias, links: [url]})
+                tmpArticle.pushCategory(alias, [url]);
 
-            //Add extras
-            tmpArticle.extras = {}
             //Find remaining values
             let remain = RSSParser.unAssign(article, this.requested_fields)
             new Map(Object.entries(remain)).forEach((value, key) => {
-                tmpArticle.extras[key] = value;
+                tmpArticle.addExtra(key, value);
             })
 
-            //Return value
             parsedArticles.push(tmpArticle)
         })
-        // console.log(util.inspect(parsedArticles, false, null, true))
 
         return parsedArticles
     }

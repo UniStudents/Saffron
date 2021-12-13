@@ -2,15 +2,13 @@ import Logger from "../middleware/logger"
 import {LoggerTypes} from "../middleware/LoggerTypes"
 import _ from "lodash"
 import path from "path"
+import {ConfigOptions} from "../middleware/ConfigOptions";
 
-interface _type {
-    [key: string]: any
-}
 
 export default class Config {
-    _config: _type = {
+    _config: { [key: string]: any } = {
         database: {
-            driver: "memory",
+            driver: "none",
             config: {}
         },
         sources: {
@@ -20,9 +18,9 @@ export default class Config {
         },
         mode: "main",
         workers: {
-            nodes: 1, // Start one workers
+            nodes: 1, // Start one worker
             jobs: {
-                timeout: 5000,
+                timeout: 10000,
                 amount: 10
             }
         },
@@ -44,7 +42,7 @@ export default class Config {
 
     private mergeObject(src: any, original: object): object {
         return _.mergeWith({}, original, src, (o, s) => {
-            if(Array.isArray(o))
+            if (Array.isArray(o))
                 return s ? s : o
             else if (typeof o == 'object')
                 return this.mergeObject(s, o)
@@ -55,14 +53,14 @@ export default class Config {
     /**
      * Loads an external configuration object and merges the parameters with the default ones.
      */
-    static load(config: _type | string | undefined = undefined): _type {
+    static load(config?: object | string): any {
         if (!this.instance)
             this.instance = new Config(config)
 
         return this.instance._config
     }
 
-    private constructor(config: _type | string | undefined) {
+    private constructor(config: any) {
         if (typeof config === "string") {
             try {
                 if (path.isAbsolute(config))
@@ -86,21 +84,15 @@ export default class Config {
 
         switch (process.env.NODE_ENV) {
             case "production":
-                //@ts-ignore
-                if (config.production) //this._config = _.mergeWith({}, this._config, config.production, (o, s) => s ? s : o)
-                    //@ts-ignore
+                if (config.production)
                     this._config = this.mergeObject(config.production, this._config)
                 break
             case "development":
-                //@ts-ignore
-                if (config.development) // this._config = _.mergeWith({}, this._config, config.development, (o, s) => s ? s : o)
-                    //@ts-ignore
+                if (config.development)
                     this._config = this.mergeObject(config.development, this._config)
                 break
             case "testing":
-                //@ts-ignore
-                if (config.testing) //this._config = _.mergeWith({}, this._config, config.testing, (o, s) => s ? s : o)
-                    //@ts-ignore
+                if (config.testing)
                     this._config = this.mergeObject(config.testing, this._config)
                 break
             default:
@@ -116,5 +108,44 @@ export default class Config {
         delete this._config.testing
 
         Config.isHydrated = true
+    }
+
+    static getOption(option: ConfigOptions): any {
+        let isStatic: boolean = false;
+        try {Config.load()}
+        catch (e) {
+            isStatic = true;
+        }
+
+        switch (option) {
+            case ConfigOptions.DB_DRIVER:
+                return !isStatic ? Config.load().database.driver : "memory";
+            case ConfigOptions.DB_CONFIG:
+                return !isStatic ? Config.load().database.config : {};
+            case ConfigOptions.SOURCES_PATH:
+                return !isStatic ? Config.load().sources.path : '../../../sources';
+            case ConfigOptions.SOURCES_INCLUDE_ONLY:
+                return !isStatic ? Config.load().sources.includeOnly : [];
+            case ConfigOptions.SOURCES_EXCLUDE:
+                return !isStatic ? Config.load().sources.excluded : [];
+            case ConfigOptions.SAFFRON_MODE:
+                return !isStatic ? Config.load().mode : "main";
+            case ConfigOptions.WORKER_NODES:
+                return !isStatic ? Config.load().workers.nodes : 1;
+            case ConfigOptions.REQUEST_TIMEOUT:
+                return !isStatic ? Config.load().workers.jobs.timeout : 10000;
+            case ConfigOptions.ARTICLE_AMOUNT:
+                return !isStatic ? Config.load().workers.jobs.amount : 10;
+            case ConfigOptions.SCHEDULER_JOB_INT:
+                return !isStatic ? Config.load().scheduler.intervalBetweenJobs : 3600000;
+            case ConfigOptions.SCHEDULER_JOB_HEAVY_INT:
+                return !isStatic ? Config.load().scheduler.heavyJobFailureInterval : 86400000;
+            case ConfigOptions.SCHEDULER_CHECKS_INT:
+                return !isStatic ? Config.load().scheduler.intervalBetweenChecks : 120000;
+            case ConfigOptions.GRID_DISTRIBUTED:
+                return !isStatic ? Config.load().grid.distributed : false;
+            case ConfigOptions.MISC_LOG_LEVEL:
+                return !isStatic ? Config.load().misc.log : "all";
+        }
     }
 }

@@ -76,4 +76,59 @@ export default class Article {
 
         return this.hash
     }
+
+    public setTitle(title: string) {
+        this.title = title;
+    }
+
+    public setContent(content: string) {
+        this.content = content;
+    }
+
+    public setLink(link: string) {
+        this.link = link;
+    }
+
+    public setPubDate(pubDate: string) {
+        this.pubDate = pubDate;
+    }
+
+    public addExtra(key: string, value: any) {
+        if(typeof this.extras === 'undefined')
+            this.extras = {};
+
+        this.extras[key] = value;
+    }
+
+    public setSource(id: string, name: string) {
+        this.source = {id, name};
+    }
+
+    public pushAttachment(attachment: object) {
+        if(typeof this.attachments === 'undefined')
+            this.attachments = [];
+
+        this.attachments.push(attachment);
+    }
+
+    public pushAttachments(attachments: object[]) {
+        if(typeof this.attachments === 'undefined')
+            this.attachments = [];
+
+        this.attachments.push(...attachments);
+    }
+
+    public pushCategory(name: string, links: string[]) {
+        if(typeof this.categories === 'undefined')
+            this.categories = [];
+
+        this.categories.push({name, links});
+    }
+
+    public pushCategories(categories: {name: string, links: string[]}[]) {
+        if(typeof this.categories === 'undefined')
+            this.categories = [];
+
+        this.categories.push(...categories);
+    }
 }
