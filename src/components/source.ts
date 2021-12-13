@@ -7,6 +7,7 @@ import Article from "./articles";
 import hash from 'crypto-js/sha256';
 import Config from "./config";
 import ParserLoader from "../modules/workers/parsers/ParserLoader";
+import {ConfigOptions} from "../middleware/ConfigOptions";
 
 
 export default class Source {
@@ -59,10 +60,10 @@ export default class Source {
         }
 
         // If it is not one time scrape:
-        ret.requestTimeout = source.requestTimeout ? source.requestTimeout : (!isStatic ? Config.load().workers.jobs.requestTimeout : 5000)
+        ret.requestTimeout = source.requestTimeout ? source.requestTimeout : Config.getOption(ConfigOptions.REQUEST_TIMEOUT)
         ret.instructions = new Instructions()
         ret.instructions.source = {id: ret.getId()}
-        ret.instructions.amount = source.amount ? source.amount : (!isStatic ? Config.load().workers.jobs.amount : 10)
+        ret.instructions.amount = source.amount ? source.amount : Config.getOption(ConfigOptions.ARTICLE_AMOUNT)
 
 
         if (source.hasOwnProperty("ignoreCertificates"))

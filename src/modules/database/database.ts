@@ -1,5 +1,4 @@
 import Article from "../../components/articles"
-import Grid from "../grid";
 import Extensions from "../extensions";
 import Events from "../events";
 
@@ -8,13 +7,7 @@ export default abstract class Database {
     /**
      * Connect to database
      */
-    abstract connect(): Promise<boolean>
-
-    /**
-     * If connection is lost with database.
-     * @param callback The callback that will be fired.
-     */
-    abstract onConnectionLost(callback: () => void): Promise<void>
+    abstract connect(): Promise<void>
 
     /**
      * Get an array of articles.
@@ -29,13 +22,6 @@ export default abstract class Database {
     }): Promise<Array<Article>>
 
     /**
-     * Return an article based on id or null if it is not found
-     * @param src Some string of source distinction.
-     * @param id The article's id
-     */
-    abstract getArticle(src: string, id: string): Promise<Article | undefined>
-
-    /**
      * Add a new article on the database. Unless you know
      * what you are doing, DO NOT use this function to upload
      * new articles. Instead, use mergeArticles().
@@ -44,20 +30,6 @@ export default abstract class Database {
      * @return The article id if it pushed successfully.
      */
     abstract pushArticle(src: string, article: Article): Promise<string>
-
-    /**
-     * Update an article based on article.id and override all the other values
-     * @param src Some string of source distinction.
-     * @param article The article object that will be updated
-     */
-    abstract updateArticle(src: string, article: Article): Promise<void>
-
-    /**
-     * Delete a specific article.
-     * @param src Some string of source distinction.
-     * @param id The id of the article that will be deleted
-     */
-    abstract deleteArticle(src: string, id: string): Promise<void>
 
     /**
      * The RECOMMENDED way to push articles to the database.

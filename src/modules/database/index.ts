@@ -3,6 +3,7 @@ import Config from "../../components/config"
 import MongoDB from "./drivers/mongodb"
 import Memory from "./drivers/memory"
 import None from "./drivers/none";
+import {ConfigOptions} from "../../middleware/ConfigOptions";
 
 export default class Driver {
     
@@ -13,7 +14,7 @@ export default class Driver {
      */
     static getInstance(): Database | undefined {
         if(!this.instance)
-            switch(Config.load()!!.database.driver){
+            switch(Config.getOption(ConfigOptions.DB_DRIVER)){
                 case "mongodb":
                     this.instance =  new MongoDB()
                     break

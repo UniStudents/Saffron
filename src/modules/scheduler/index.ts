@@ -7,6 +7,7 @@ import Source from "../../components/source";
 import Grid from "../grid/index";
 import {JobStatus} from "../../components/JobStatus";
 import Worker from "../workers";
+import {ConfigOptions} from "../../middleware/ConfigOptions";
 
 const path = process.cwd();
 const glob = require("glob")
@@ -26,7 +27,7 @@ export default class Scheduler {
      */
     private scanSourceFiles(): Promise<void> {
         return new Promise((resolve, reject) => {
-            let sourcesPath = Config.load().sources.path
+            let sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH)
             glob(`${path + sourcesPath}/**`, null, (error: any, files: string[]) => {
                 if (error) {
                     Logger(LoggerTypes.INSTALL_ERROR, "Path is invalid or there are insufficient permissions.")
@@ -78,17 +79,14 @@ export default class Scheduler {
      * Starts the scheduler
      */
     async start(): Promise<void> {
-        let checkInterval = Config.load().scheduler.intervalBetweenChecks;
-        if (!checkInterval) checkInterval = 120000; // 2 minutes
-
         this.isRunning = true;
         this.isForcedStopped = false;
 
         // Read all source files
         await this.scanSourceFiles();
         let sources = Source.getSources();
-        let includeOnly = Config.load().sources.includeOnly;
-        let excluded = Config.load().sources.excluded;
+        let includeOnly = Config.getOption(ConfigOptions.SOURCES_INCLUDE_ONLY);
+        let excluded = Config.getOption(ConfigOptions.SOURCES_EXCLUDE);
 
         if (!Array.isArray(includeOnly)) throw new Error("Config.sources.includeOnly is not an array.");
         if (!Array.isArray(excluded)) throw new Error("Config.sources.excluded is not an array.");
@@ -183,7 +181,7 @@ export default class Scheduler {
                         break;
                 }
             }
-        }, checkInterval)
+        }, Config.getOption(ConfigOptions.SCHEDULER_CHECKS_INT))
     }
 
     /**

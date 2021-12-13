@@ -22,10 +22,6 @@ export default class Server {
 
     }
 
-    async emit(who: any, event: string, data: any): Promise<void> {
-
-    }
-
     async broadcast(event: string, ...data: any[]): Promise<void> {
         this.socket.local.emit(event, ...data);
     }

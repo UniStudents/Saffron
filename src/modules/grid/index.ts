@@ -39,15 +39,12 @@ export default class Grid {
     declare jobsStorage: Job[]
 
     private constructor() {
-        this.isMain = Config.load()!!.mode === 'main'
+        this.isMain = Config.load().mode === 'main'
         this.workersIds = []
         this.workersClients = []
-
         this.jobsStorage = []
-
         this.encryptionKey = nanoid(256)
 
-        // // If main saffron
         if (this.isMain)
             this.server = new Server();
         else this.client = new Client();
