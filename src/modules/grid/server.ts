@@ -2,10 +2,9 @@ import * as socketio from "socket.io"
 import logger from "../../middleware/logger";
 import {LoggerTypes} from "../../middleware/LoggerTypes";
 import Config from "../../components/config";
-import Events from "../events"
 
 export default class Server {
-    declare socket: any;
+    declare socket: socketio.Server;
     constructor() {
         this.socket = new socketio.Server(Config.load()?.grid?.port || 3000)
         // console.log(this.socket)
@@ -27,11 +26,11 @@ export default class Server {
 
     }
 
-    async broadcast(event: string, data: any): Promise<void> {
-
+    async broadcast(event: string, ...data: any[]): Promise<void> {
+        this.socket.local.emit(event, ...data);
     }
 
     on(event: string, callback: (...data: any[]) => void): void {
-
+        this.socket.on(event, callback);
     }
 }

@@ -11,8 +11,8 @@ import randomId from "../../middleware/randomId";
 import Article from "../../components/articles";
 import Server from "./server";
 import Client from "./client";
-import {Pack, Unpack} from "./transformer"
-import * as stream from "stream";
+
+
 export default class Grid {
 
     private static instance: Grid
@@ -34,7 +34,7 @@ export default class Grid {
 
     private declare readonly workersIds: string[];
     private declare workersClients: { workersIds: string[], socketId: string }[];
-    private declare encryptionKey: string
+    private declare readonly encryptionKey: string
 
     declare jobsStorage: Job[]
 
@@ -48,18 +48,18 @@ export default class Grid {
         this.encryptionKey = nanoid(256)
 
         // // If main saffron
-        if (this.isMain) {
+        if (this.isMain)
             this.server = new Server();
-        }else{
-            this.client = new Client();
-        }
+        else this.client = new Client();
     }
 
-    emit(eventName: string, firstPayload?: any, secondPayload?:any, thirdPayload?:any, lastPayload?:any): Promise<void>{
+    emit(eventName: string, ...args: any[]): Promise<void> {
         return new Promise<void>(async resolve => {
+            // TODO - emit event to other nodes
+            if (this.isMain)
+                await this.server.broadcast(eventName, ...args);
+            else await this.client.emit(eventName, ...args)
             resolve()
-
-
         })
     }
 
@@ -73,36 +73,65 @@ export default class Grid {
     }
 
     /**
-     * Connects to the grid
+     * Connect to grid network.
      */
     async connect(): Promise<void> {
         if (this.isMain) {
             if (Config.load().grid.distributed)
-                await this.server.listen()
-                this.server.socket.on("connection", ()=>{
-                    this.registerGridNode()
-                })
-        } else if (Config.load()!!.workers.nodes > 0) {
+                await this.server.listen();
+
+            this.server.on("connection", this.registerGridNode);
+
+            this.server.on("workers.job.finished", data => {
+                let id = data.id;
+                let job = this.jobsStorage.find((job: Job) => job.id == id);
+
+                if(job) {
+                    job.status = JobStatus.FINISHED;
+                    Events.emit("workers.job.finished", job)
+                }
+            })
+
+            this.server.on("workers.job.failed", data => {
+                let id = data.id;
+                let job = this.jobsStorage.find((job: Job) => job.id == id);
+
+                if(job) {
+                    job.status = JobStatus.FAILED;
+                    Events.emit("workers.job.failed", job)
+                }
+            })
+        }
+        else if (Config.load()!!.workers.nodes > 0) {
             await this.client.connect()
 
-            this.client.socket.on('connect', () => {
+            this.client.on('connect', () => {
                 for (const workerId of this.workersIds)
-                    this.client.socket.emit('grid.worker.announced', {id: workerId})
+                    Events.emit("grid.worker.announced", workerId);
             })
 
             this.client.on('scheduler.job.push', (data: any) => {
                 let job = Job.fromJSON(data)
-                Events.getAntennae().emit("scheduler.job.push", job)
+                Events.emit("scheduler.job.push", job)
             })
         }
     }
 
     /**
-     * <h1>Scheduler</h1>
-     * Return all workers
+     * Deletes all jobs.
+     * This function is used by the scheduler to reset all jobs.
      */
-    async getWorkers(): Promise<Worker[]> {
-        return [...this.workersIds.map(id => new Worker(id))];
+    deleteJob(job: Job) {
+        let index = this.jobsStorage.findIndex((obj: Job) => obj.id === job.id)
+        if (index !== -1) this.jobsStorage.splice(index, 1)
+    }
+
+    /**
+     * Return all connected workers' ids.
+     * This function is used by the scheduler to access all the connected workers.
+     */
+    getWorkers(): string[] {
+        return this.workersIds;
     }
 
     /**
@@ -110,39 +139,26 @@ export default class Grid {
      * Initialize a new worker on the grid
      * @param worker
      */
-    async announceWorker(worker: Worker): Promise<void> {
+    announceWorker(worker: Worker): void {
         this.workersIds.push(worker.id)
-        if (!this.isMain)
-            await this.client.emit('grid.worker.announced', {id: worker.id})
-        else {
-            this.workersIds.push(worker.id)
-            Events.getAntennae().emit("grid.worker.announced", worker.id)
-        }
+        Events.emit("grid.worker.announced", worker.id);
     }
 
     /**
      * Remove a worker from the grid
      * @param worker
      */
-    async destroyWorker(worker: Worker): Promise<void> {
+    destroyWorker(worker: Worker): void {
         let index = this.workersIds.findIndex(id => id == worker.id)
         this.workersIds.splice(index, 1)
-
-        if (!this.isMain)
-            await this.client.emit('grid.worker.destroyed', {id: worker.id})
-        else {
-            Events.getAntennae().emit("grid.worker.destroyed", worker.id)
-
-            let j = this.workersIds.findIndex((obj: string) => obj === worker.id)
-            if (j != -1) this.workersIds.splice(j, 1)
-        }
+        Events.emit("grid.worker.destroyed", worker.id)
     }
 
     /**
-     * Remove a worker from the grid
+     * Forcefully remove a worker from the grid
      * @param workerId
      */
-    async fireWorker(workerId: string): Promise<void> {
+    fireWorker(workerId: string): void {
         if (!this.isMain) return
 
         let index = this.workersClients.findIndex(js => {
@@ -163,76 +179,16 @@ export default class Grid {
     }
 
     /**
-     * <h1>Scheduler</h1>
-     * Push a new job to the grid
-     * @param job The job object
-     */
-    async addNewJob(job: Job): Promise<void> {
-        if (!this.isMain) return
-
-        this.jobsStorage.push(job)
-        Events.getAntennae().emit("scheduler.job.new", job)
-    }
-
-    /**
-     * <h1>Scheduler</h1>
-     * Clears all the jobs from the grid
-     */
-    async clearAllJobs(): Promise<void> {
-        if (!this.isMain) return
-        this.jobsStorage.splice(0, this.jobsStorage.length)
-    }
-
-    /**
-     * <h1>Scheduler</h1>
-     * Returns a copy array of all the jobs
-     */
-    async getJobs(): Promise<Array<Job>> {
-        if (!this.isMain) return []
-        return [...this.jobsStorage]
-    }
-
-    /**
-     * <h1>Scheduler</h1>
-     * Delete a job from the grid based on id
-     * @param job
-     */
-    async deleteJob(job: Job): Promise<void> {
-        if (!this.isMain) return
-        Events.getAntennae().emit("scheduler.job.finished", job)
-
-        let index = this.jobsStorage.findIndex((obj: Job) => obj.id === job.id)
-        if (index !== -1) this.jobsStorage.splice(index, 1)
-    }
-
-    async reincarnateJob(job: Job): Promise<void> {
-        job.status = JobStatus.PENDING
-        await this.updateJob(job)
-
-        Events.getAntennae().emit("scheduler.job.reincarnate", job)
-    }
-
-    /**
-     * <h1>Grid</h1>
-     * Update a job based on id
-     * @param job
-     */
-    private async updateJob(job: Job): Promise<void> {
-        let index = this.jobsStorage.findIndex((obj: Job) => obj.id === job.id)
-        if (index !== -1) this.jobsStorage[index] = job
-    }
-
-    /**
      * <h1>Worker</h1>
      * Flags the job as finished and update the grid
      * @param job
      */
     async finishedJob(job: Job): Promise<void> {
         job.status = JobStatus.FINISHED
-        if (this.isMain) {
-            await this.updateJob(job)
-            Events.getAntennae().emit('workers.job.finished', job)
-        } else await this.client.emit('workers.job.finished', {id: job.id})
+        if (this.isMain)
+            Events.emit('workers.job.finished', job)
+        else
+            await this.client.emit('workers.job.finished', {id: job.id})
     }
 
     /**
@@ -242,58 +198,15 @@ export default class Grid {
      */
     async failedJob(job: Job): Promise<void> {
         job.status = JobStatus.FAILED
-        if (this.isMain) {
-            await this.updateJob(job)
-            Events.getAntennae().emit("workers.job.failed", job)
-        } else await this.client.emit('workers.job.failed', {id: job.id})
-    }
-
-    /**
-     * <h1>Scheduler</h1>
-     * Tells all the workers in the network that a job must be done
-     * @param job
-     */
-    async spreadJob(job: Job): Promise<void> {
-        if (!this.isMain) return
-
-        job.emitAttempts++
-        await this.updateJob(job)
-        Events.getAntennae().emit("scheduler.job.push", job)
-
-        if (Config.load().grid.distributed)
-            await this.server.broadcast('scheduler.job.push', {job: job.toJSON()})
-    }
-
-    async onNewArticles(articles: Article[]): Promise<void> {
-        // TODO - Client emit will be removed if articles are all added from the main saffron
         if (this.isMain)
-            Events.getAntennae().emit("workers.articles.new", articles)
-        else await this.client.emit('workers.articles.new', {
-            articles: articles.map(a => a.toJSON())
-        })
-    }
-
-    async onFoundArticles(articles: Article[], src: string): Promise<void> {
-        // TODO - Client emit will be removed if articles are all added from the main saffron
-        if (this.isMain)
-            Events.getAntennae().emit("workers.articles.found", articles, src)
-        else await this.client.emit('workers.articles.found', {articles: articles.map(a => a.toJSON()), src})
-    }
-
-    async onFailedUploadingArticle(article: Article): Promise<void> {
-        // TODO - Client emit will be removed if articles are all added from the main saffron
-        if (this.isMain) Events.getAntennae().emit("workers.articles.errorOffloading", article.toJSON())
-        else await this.client.emit('workers.articles.errorOffloading', article)
-    }
-
-    async onParserError(message: any): Promise<void> {
-        if (this.isMain) Events.getAntennae().emit("workers.parsers.error", message)
-        else await this.client.emit('workers.parsers.error', message)
+            Events.emit("workers.job.failed", job)
+        else
+            await this.client.emit('workers.job.failed', {id: job.id})
     }
 
     async mergeArticles(collection: string, articles: Article[]): Promise<void> {
-        // TODO - if main then merge
-        await Database.getInstance()?.mergeArticles(collection, articles)
+        if(this.isMain)
+            await Database.getInstance()?.mergeArticles(collection, articles)
         // else emit only articles to server on workers.articles.new
     }
 }

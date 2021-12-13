@@ -1,6 +1,7 @@
 import Article from "../../components/articles"
 import Grid from "../grid";
 import Extensions from "../extensions";
+import Events from "../events";
 
 export default abstract class Database {
 
@@ -66,7 +67,7 @@ export default abstract class Database {
      */
     async mergeArticles(src: string, articles: Article[]) {
         // if(articles.length > 0)
-        await Grid.getInstance().onFoundArticles(articles, src)
+        Events.emit("workers.articles.found", articles, src)
 
         // First edit the articles
         if (Extensions.getInstance().hasEvent("article.format")) {
@@ -125,11 +126,12 @@ export default abstract class Database {
         // And then check if they already exist.
         let hashes = dbArticles.map((article: Article) => article.getHash())
         articles = articles.filter((article: Article) => !hashes.includes(article.getHash()))
-        if (articles.length > 0) await Grid.getInstance().onNewArticles(articles)
+        if (articles.length > 0)
+            Events.emit("workers.articles.new", articles);
 
         for (const article of articles) {
             let id = await this.pushArticle(src, article)
-            if (id == "") await Grid.getInstance().onFailedUploadingArticle(article)
+            if (id == "") Events.emit("workers.articles.errorOffloading", article.toJSON())
         }
 
         return articles

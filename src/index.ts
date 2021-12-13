@@ -1,4 +1,3 @@
-// Module imports
 import Logger from "./middleware/logger"
 import {LoggerTypes} from "./middleware/LoggerTypes"
 import Database from "./modules/database/index"
@@ -16,14 +15,9 @@ import Source from "./components/source"
 import Extensions from "./modules/extensions";
 import Instructions from "./components/instructions";
 
-declare function require(name: string): any;
-
-
-// This is a centralized array that collects all the logs and errors, so that the report handler can easily collect and report them.
 let db: any
     , grid: Grid
     , scheduler: Scheduler
-    , antennae = Events.getAntennae()
     , workers: Worker[] = []
 
 export = {
@@ -71,37 +65,40 @@ export = {
             Logger(LoggerTypes.INFO, "This instance has been initialized as a WORKER node.");
 
         // Event for workers
-        antennae.on("start", () => {
+        Events.on("start", () => {
             for (let worker of workers) {
                 // TODO - Start worker on new node thread
                 worker.start();
             }
         })
 
-        antennae.on("stop", (force: boolean) => {
+        Events.on("stop", (force: boolean) => {
             for (let worker of workers)
                 worker.stop(force);
         })
 
         Events.registerAllLogListeners();
     },
+
     /**
      * Starts a Saffron instance.
      */
-    start: async () => antennae.emit("start"),
+    start: async () => Events.emit("start"),
+
     /**
      * Stops the saffron instance
      * If mode equals 'main' then the scheduler will stop giving jobs to the workers.
      * else if mode equals 'worker' then the worker will stop getting future jobs and disconnect from the main saffron instance.
      * @param force If true then scheduler will clear all active jobs and stop all the workers. If mode is 'worker' then the worker will abandon the current job.
      */
-    stop: async (force: boolean) => antennae.emit("stop", force),
+    stop: async (force: boolean) => Events.emit("stop", force),
+
     /**
      * Register a new event
      * @param event The name of the event
-     * @param data The callback that will send the data
+     * @param cb The callback that will send the data
      */
-    on: async (event: string, data: any) => antennae.on(event, data),
+    on: async (event: string, cb: (...args: any[]) => void) => Events.on(event, cb),
 
     /**
      * Get a source file and return an array of the parsed articles
@@ -138,11 +135,9 @@ export = {
         pageNo?: number,
         articlesPerPage?: number,
         sort?: { [key: string]: -1 | 1 }
-    }): Promise<Article[] | undefined> {
-        let articles = await Database.getInstance()?.getArticles(src, options);
-        return articles
+    }): Promise<Article[]> {
+        return await Database.getInstance()!!.getArticles(src, options)
     },
 
     types: {Article, Utils}
-
 }

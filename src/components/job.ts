@@ -2,6 +2,7 @@ import Source from "./source";
 import {JobStatus} from "./JobStatus";
 import randomId from "../middleware/randomId"
 import Instructions from "../components/instructions"
+import hashCode from "../middleware/hashCode";
 
 export default class Job {
     declare id: string
@@ -65,6 +66,41 @@ export default class Job {
 
         job.worker = json.worker
 
+        return job
+    }
+
+    private static times = [
+        -400, -360, -300, -280, -240, -210, -180, -160, -120, -90, -60, -30, -10, -5,
+        0, 5, 10, 30, 60, 90, 120, 160, 180, 210, 240, 280, 300, 360, 400
+    ]
+
+    /**
+     * Return a random time in milliseconds
+     * @param source_id Helps to get a more random time
+     */
+    private static getRandomTime(source_id: string): number {
+        if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
+            return 0
+
+        // return a random number of some minutes
+        return this.times[Math.abs(hashCode(source_id + randomId())) % this.times.length] * 1000;
+    }
+
+    /**
+     * Create a job for a source
+     * @param sourceId The source id
+     * @param workerId The worker that the job will be assigned
+     * @param interval The time from now the job will be issued to a worker
+     */
+    static createJob(sourceId: string, workerId: string, interval: number): Job {
+        let job = new Job()
+        job.source = {id: sourceId}
+        // nextRetry = The time the job finished (just now) + interval + randomTIme
+        job.nextRetry = Date.now() + interval + this.getRandomTime(sourceId)
+        job.worker = {id: workerId}
+        job.status = JobStatus.PENDING
+        job.attempts = 0
+        job.emitAttempts = 0
         return job
     }
 }

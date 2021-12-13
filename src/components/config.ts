@@ -3,14 +3,11 @@ import {LoggerTypes} from "../middleware/LoggerTypes"
 import _ from "lodash"
 import path from "path"
 
-interface _type {
-    [key: string]: any
-}
 
 export default class Config {
-    _config: _type = {
+    _config: {[key: string]: any} = {
         database: {
-            driver: "memory",
+            driver: "none",
             config: {}
         },
         sources: {
@@ -20,7 +17,7 @@ export default class Config {
         },
         mode: "main",
         workers: {
-            nodes: 1, // Start one workers
+            nodes: 1, // Start one worker
             jobs: {
                 timeout: 5000,
                 amount: 10
@@ -55,14 +52,14 @@ export default class Config {
     /**
      * Loads an external configuration object and merges the parameters with the default ones.
      */
-    static load(config: _type | string | undefined = undefined): _type {
+    static load(config: object | string | undefined = undefined): any {
         if (!this.instance)
             this.instance = new Config(config)
 
         return this.instance._config
     }
 
-    private constructor(config: _type | string | undefined) {
+    private constructor(config: object | string | undefined) {
         if (typeof config === "string") {
             try {
                 if (path.isAbsolute(config))
@@ -116,5 +113,9 @@ export default class Config {
         delete this._config.testing
 
         Config.isHydrated = true
+    }
+
+    static getOption(option: string): any {
+
     }
 }

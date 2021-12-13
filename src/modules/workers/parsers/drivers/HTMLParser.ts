@@ -257,7 +257,6 @@ export class HTMLParser extends ParserClass {
                 })
             })
             .catch((e: any) => {
-                console.log(e)
                 throw new Error(`HTMLParserException job failed for ${instructions.getSource().name}, original error: ${e.message}`)
             })
         return parsedArticles

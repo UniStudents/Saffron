@@ -73,9 +73,6 @@ export class DynamicParser extends ParserClass {
             throw new Error(`DynamicParserException job failed for ${job.getSource().name}, original error: ${e.message}`);
         }
 
-        if(parsedArticles.length == 0)
-            throw new Error(`DynamicParserException job failed for ${job.getSource().name}, original error: no articles found.`);
-
         return parsedArticles
     }
 
