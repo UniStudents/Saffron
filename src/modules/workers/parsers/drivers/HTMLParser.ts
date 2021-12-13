@@ -175,8 +175,7 @@ export class HTMLParser extends ParserClass {
                 const cheerioLoad: cheerio.Root = cheerio.load(response.data)
 
                 // for each article.
-                cheerioLoad(instructions.elementSelector).each((index, element) => {
-
+                cheerioLoad(`${instructions.elementSelector}`).each((index, element) => {
                     if (index >= amount) return
 
                     let articleData: ArticleImage = {}
@@ -249,6 +248,7 @@ export class HTMLParser extends ParserClass {
                 })
             })
             .catch((e: any) => {
+                console.log(e)
                 throw new Error(`HTMLParserException job failed for ${instructions.getSource().name}, original error: ${e.message}`)
             })
         return parsedArticles

@@ -20,7 +20,7 @@ try {
         },
         sources: {
             path: "/test/sources",
-            // includeOnly: ['arch.upatras.gr'],
+            // includeOnly: ['aua.gr'],
             // excluded: ["custom-cs.unipi.gr"]
         },
         scheduler: {
@@ -51,7 +51,7 @@ try {
 }
 
 (async () => {
-
+    Error.stackTraceLimit = 200;
     let errors = []
 
     try {
@@ -59,7 +59,7 @@ try {
         await saffron.start()
 
         saffron.on("workers.articles.found", (articles)=>{
-            console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
+            // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
         })
     }
     catch (error) {
