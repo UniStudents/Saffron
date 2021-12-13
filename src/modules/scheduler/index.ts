@@ -66,7 +66,7 @@ export default class Scheduler {
      */
     issueJobForSource(source: Source, lasWorkerId: string = "", interval: number = -1): void {
         if (interval == -1)
-            interval = source.scrapeInterval ? source.scrapeInterval : Config.load().scheduler.intervalBetweenJobs
+            interval = source.scrapeInterval ? source.scrapeInterval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT)
 
         let worker = Worker.electWorker(lasWorkerId)
         let nJob = Job.createJob(source.getId(), worker, interval)
@@ -111,7 +111,7 @@ export default class Scheduler {
         Events.emit("scheduler.sources.new", sources.map((source: Source) => source.name))
 
         // Create separation interval
-        let separationInterval = Config.load().scheduler.intervalBetweenJobs / sources.length
+        let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT) / sources.length
 
         // Initialize jobs for first time for every loaded source
         Grid.getInstance().jobsStorage.splice(0, Grid.getInstance().jobsStorage.length)
@@ -155,8 +155,8 @@ export default class Scheduler {
                         // If attempts > e.x. 10 increase interval to check on e.x. a day after
                         let source = job.getSource()
                         let interval = job.attempts > 10
-                            ? Config.load().scheduler.heavyJobFailureInterval
-                            : (source.retryInterval ? source.retryInterval : Config.load().scheduler.intervalBetweenJobs / 2)
+                            ? Config.getOption(ConfigOptions.SCHEDULER_JOB_HEAVY_INT)
+                            : (source.retryInterval ? source.retryInterval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT) / 2)
 
                         job.nextRetry = Date.now() + interval
                         job.status = JobStatus.PENDING

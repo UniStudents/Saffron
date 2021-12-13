@@ -11,6 +11,7 @@ import randomId from "../../middleware/randomId";
 import Article from "../../components/articles";
 import Server from "./server";
 import Client from "./client";
+import {ConfigOptions} from "../../middleware/ConfigOptions";
 
 
 export default class Grid {
@@ -39,7 +40,7 @@ export default class Grid {
     declare jobsStorage: Job[]
 
     private constructor() {
-        this.isMain = Config.load().mode === 'main'
+        this.isMain = Config.getOption(ConfigOptions.SAFFRON_MODE) === 'main'
         this.workersIds = []
         this.workersClients = []
         this.jobsStorage = []
@@ -74,7 +75,7 @@ export default class Grid {
      */
     async connect(): Promise<void> {
         if (this.isMain) {
-            if (Config.load().grid.distributed)
+            if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED))
                 await this.server.listen();
 
             this.server.on("connection", this.registerGridNode);
@@ -99,7 +100,7 @@ export default class Grid {
                 }
             })
         }
-        else if (Config.load()!!.workers.nodes > 0) {
+        else if (Config.getOption(ConfigOptions.WORKER_NODES) > 0) {
             await this.client.connect()
 
             this.client.on('connect', () => {
