@@ -114,7 +114,7 @@ export default class Scheduler {
         let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT) / sources.length
 
         // Initialize jobs for first time for every loaded source
-        Grid.getInstance().jobsStorage.splice(0, Grid.getInstance().jobsStorage.length)
+        Grid.getInstance().deleteAllJobs()
 
         let workersIds = Grid.getInstance().getWorkers();
         let sI = 0, wI = 0;
@@ -129,7 +129,7 @@ export default class Scheduler {
         const mInterval = setInterval(async () => {
             // Clear jobs
             if (this.isForcedStopped)
-                Grid.getInstance().jobsStorage.splice(0, Grid.getInstance().jobsStorage.length)
+                Grid.getInstance().deleteAllJobs()
 
             if (!this.isRunning)
                 clearInterval(mInterval)

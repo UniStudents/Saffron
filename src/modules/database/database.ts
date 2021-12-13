@@ -41,52 +41,15 @@ export default abstract class Database {
         // if(articles.length > 0)
         Events.emit("workers.articles.found", articles, src)
 
-        // First edit the articles
-        if (Extensions.getInstance().hasEvent("article.format")) {
-            for (const article of articles) {
-                let formattedArticle = await Extensions.getInstance().callEvent("article.format", article)
-
-                if (!(formattedArticle instanceof Article))
-                    throw new Error("Extension article.format does not return article class.")
-
-                // Override - Except hash
-                article.id = formattedArticle.id
-                article.source = formattedArticle.source
-                article.timestamp = formattedArticle.timestamp
-                article.title = formattedArticle.title
-                article.content = formattedArticle.content
-                article.link = formattedArticle.link
-                article.pubDate = formattedArticle.pubDate
-                article.extras = formattedArticle.extras
-                article.attachments = formattedArticle.attachments
-                article.categories = formattedArticle.categories
+        let getExtPair = Extensions.getInstance().startCount();
+        let pair: any;
+        while ((pair = getExtPair()) != null) {
+            if(pair.event === 'article.format') {
+                for (const i in articles)
+                    articles[i] = await pair.callback(articles[i]);
             }
-        }
-
-        // check for sort
-        if (Extensions.getInstance().hasEvent("articles.sort")) {
-            let result: any[] = await Extensions.getInstance().callEvent("articles.sort", articles)
-
-            if (!Array.isArray(result))
-                throw new Error("Extension articles.sort does not return articles array of articles.")
-
-            for (let article of result)
-                if (!(article instanceof Article))
-                    throw new Error("Extension articles.sort does not return articles array of articles.")
-
-            articles = result
-        }
-
-        // First edit the articles
-        if (Extensions.getInstance().hasEvent("article.hash")) {
-            for (const article of articles) {
-                let newHash = await Extensions.getInstance().callEvent("article.hash", article)
-
-                if (typeof newHash != "string")
-                    throw new Error("Extension article.hash does not return string type.")
-
-                // Override - Except hash
-                article.hash = newHash
+            else if(pair.event === 'articles.sort') {
+                articles = await pair.callback(articles);
             }
         }
 

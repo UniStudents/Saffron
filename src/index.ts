@@ -129,7 +129,7 @@ export = {
      * @param callback The callback function that will be called.
      */
     use(event: string, callback: (...args: any[]) => any): void {
-        Extensions.getInstance().addPair({event, callback})
+        Extensions.getInstance().push({event, callback})
     },
 
     /**

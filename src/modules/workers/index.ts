@@ -101,7 +101,7 @@ export default class Worker {
      * @param lastWorkerId The job's previous worker id. It will be excluded from the election only if the workers are greater that one
      */
     static electWorker(lastWorkerId: string): string {
-        let workers = Grid.getInstance()!!.getWorkers().slice()
+        let workers = Grid.getInstance().getWorkers().slice()
         if (workers.length > 1) {
             let index = workers.findIndex((id: string) => id === lastWorkerId)
             if (index != -1)

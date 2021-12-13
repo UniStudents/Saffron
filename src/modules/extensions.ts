@@ -7,7 +7,7 @@ export default class Extensions {
 
     private static instance: Extensions
 
-    static getInstance(): any {
+    static getInstance(): Extensions {
         if (Extensions.instance == null)
             this.instance = new Extensions()
 
@@ -20,19 +20,25 @@ export default class Extensions {
         this.pairs = []
     }
 
-    addPair(p: pair): void {
+    push(p: pair): void {
         if (this.pairs.filter(pr => pr.event == p.event).length > 0)
             throw new Error(`Cannot register an extension event twice. Event '${p.event}' already exists.`)
 
         this.pairs.push(p)
     }
 
-    hasEvent(event: string): boolean {
-        return this.pairs.findIndex(p => p.event == event) != -1
+    startCount(): (() => pair | null) {
+        let i = 0;
+        return (): pair | null => {
+            if (i >= this.pairs.length) return null;
+            let pair = this.pairs[i];
+            i++;
+            return pair;
+        };
     }
 
-    removeEvent(event: string): void {
-        this.pairs = this.pairs.filter(p => p.event == event)
+    hasEvent(event: string): boolean {
+        return this.pairs.findIndex(p => p.event == event) != -1
     }
 
     async callEvent(event: String, ...data: any[]): Promise<any> {

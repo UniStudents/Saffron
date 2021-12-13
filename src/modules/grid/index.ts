@@ -119,6 +119,14 @@ export default class Grid {
      * Deletes all jobs.
      * This function is used by the scheduler to reset all jobs.
      */
+    deleteAllJobs(): void {
+        this.jobsStorage.splice(0, this.jobsStorage.length)
+    }
+
+    /**
+     * Delete a job from storage so a new one can be issued.
+     * @param job
+     */
     deleteJob(job: Job) {
         let index = this.jobsStorage.findIndex((obj: Job) => obj.id === job.id)
         if (index !== -1) this.jobsStorage.splice(index, 1)
