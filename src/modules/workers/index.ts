@@ -4,6 +4,7 @@ import randomId from "../../middleware/randomId";
 import Grid from "../grid";
 import Article from "../../components/articles";
 import ParserLoader from "./parsers/ParserLoader";
+import hashCode from "../../middleware/hashCode";
 
 
 export default class Worker {
@@ -35,7 +36,7 @@ export default class Worker {
      * Worker will start accepting jobs
      */
     async start(): Promise<void> {
-        await Grid.getInstance()!!.announceWorker(this)
+        Grid.getInstance().announceWorker(this)
         this.isForcedStopped = false
         this.isRunning = true
 
@@ -48,7 +49,7 @@ export default class Worker {
             try {
                 articles = await Worker.parse(job)
             } catch (e: any) {
-                await Grid.getInstance().onParserError(e)
+                Events.emit("workers.parsers.error", e);
                 await Grid.getInstance().failedJob(job)
                 return
             }
@@ -89,9 +90,27 @@ export default class Worker {
      * Worker will stop accepting jobs
      * @param force if true the it will abandon the current job
      */
-    async stop(force: boolean): Promise<void> {
+    stop(force: boolean): void {
         this.isForcedStopped = force
         this.isRunning = false
-        await Grid.getInstance().destroyWorker(this)
+        Grid.getInstance().destroyWorker(this)
+    }
+
+    /**
+     * Return the id of a worker that will be used for the next job
+     * @param lastWorkerId The job's previous worker id. It will be excluded from the election only if the workers are greater that one
+     */
+    static electWorker(lastWorkerId: string): string {
+        let workers = Grid.getInstance().getWorkers().slice()
+        if (workers.length > 1) {
+            let index = workers.findIndex((id: string) => id === lastWorkerId)
+            if (index != -1)
+                workers.splice(index, 1)
+        }
+
+        if (workers.length == 0)
+            return lastWorkerId;
+
+        return workers[Math.abs(hashCode(lastWorkerId)) % workers.length]
     }
 }

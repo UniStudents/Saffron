@@ -1,19 +1,13 @@
 import Article from "../../components/articles"
-import Grid from "../grid";
 import Extensions from "../extensions";
+import Events from "../events";
 
 export default abstract class Database {
 
     /**
      * Connect to database
      */
-    abstract connect(): Promise<boolean>
-
-    /**
-     * If connection is lost with database.
-     * @param callback The callback that will be fired.
-     */
-    abstract onConnectionLost(callback: () => void): Promise<void>
+    abstract connect(): Promise<void>
 
     /**
      * Get an array of articles.
@@ -28,13 +22,6 @@ export default abstract class Database {
     }): Promise<Array<Article>>
 
     /**
-     * Return an article based on id or null if it is not found
-     * @param src Some string of source distinction.
-     * @param id The article's id
-     */
-    abstract getArticle(src: string, id: string): Promise<Article | undefined>
-
-    /**
      * Add a new article on the database. Unless you know
      * what you are doing, DO NOT use this function to upload
      * new articles. Instead, use mergeArticles().
@@ -45,20 +32,6 @@ export default abstract class Database {
     abstract pushArticle(src: string, article: Article): Promise<string>
 
     /**
-     * Update an article based on article.id and override all the other values
-     * @param src Some string of source distinction.
-     * @param article The article object that will be updated
-     */
-    abstract updateArticle(src: string, article: Article): Promise<void>
-
-    /**
-     * Delete a specific article.
-     * @param src Some string of source distinction.
-     * @param id The id of the article that will be deleted
-     */
-    abstract deleteArticle(src: string, id: string): Promise<void>
-
-    /**
      * The RECOMMENDED way to push articles to the database.
      * It will try to compare the previous pushed articles with the new ones and upload the ones that their hashes aren't present in the aforementioned articles.
      * @param src Some string of source distinction.
@@ -66,54 +39,17 @@ export default abstract class Database {
      */
     async mergeArticles(src: string, articles: Article[]) {
         // if(articles.length > 0)
-        await Grid.getInstance().onFoundArticles(articles, src)
+        Events.emit("workers.articles.found", articles, src)
 
-        // First edit the articles
-        if (Extensions.getInstance().hasEvent("article.format")) {
-            for (const article of articles) {
-                let formattedArticle = await Extensions.getInstance().callEvent("article.format", article)
-
-                if (!(formattedArticle instanceof Article))
-                    throw new Error("Extension article.format does not return article class.")
-
-                // Override - Except hash
-                article.id = formattedArticle.id
-                article.source = formattedArticle.source
-                article.timestamp = formattedArticle.timestamp
-                article.title = formattedArticle.title
-                article.content = formattedArticle.content
-                article.link = formattedArticle.link
-                article.pubDate = formattedArticle.pubDate
-                article.extras = formattedArticle.extras
-                article.attachments = formattedArticle.attachments
-                article.categories = formattedArticle.categories
+        let getExtPair = Extensions.getInstance().startCount();
+        let pair: any;
+        while ((pair = getExtPair()) != null) {
+            if(pair.event === 'article.format') {
+                for (const i in articles)
+                    articles[i] = await pair.callback(articles[i]);
             }
-        }
-
-        // check for sort
-        if (Extensions.getInstance().hasEvent("articles.sort")) {
-            let result: any[] = await Extensions.getInstance().callEvent("articles.sort", articles)
-
-            if (!Array.isArray(result))
-                throw new Error("Extension articles.sort does not return articles array of articles.")
-
-            for (let article of result)
-                if (!(article instanceof Article))
-                    throw new Error("Extension articles.sort does not return articles array of articles.")
-
-            articles = result
-        }
-
-        // First edit the articles
-        if (Extensions.getInstance().hasEvent("article.hash")) {
-            for (const article of articles) {
-                let newHash = await Extensions.getInstance().callEvent("article.hash", article)
-
-                if (typeof newHash != "string")
-                    throw new Error("Extension article.hash does not return string type.")
-
-                // Override - Except hash
-                article.hash = newHash
+            else if(pair.event === 'articles.sort') {
+                articles = await pair.callback(articles);
             }
         }
 
@@ -125,11 +61,12 @@ export default abstract class Database {
         // And then check if they already exist.
         let hashes = dbArticles.map((article: Article) => article.getHash())
         articles = articles.filter((article: Article) => !hashes.includes(article.getHash()))
-        if (articles.length > 0) await Grid.getInstance().onNewArticles(articles)
+        if (articles.length > 0)
+            Events.emit("workers.articles.new", articles);
 
         for (const article of articles) {
             let id = await this.pushArticle(src, article)
-            if (id == "") await Grid.getInstance().onFailedUploadingArticle(article)
+            if (id == "") Events.emit("workers.articles.errorOffloading", article.toJSON())
         }
 
         return articles
