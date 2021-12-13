@@ -59,7 +59,7 @@ try {
         await saffron.start()
 
         saffron.on("workers.articles.found", (articles)=>{
-            // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
+            console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
         })
     }
     catch (error) {

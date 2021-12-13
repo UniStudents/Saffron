@@ -41,25 +41,16 @@ export class DynamicParser extends ParserClass {
         if (!collection || collection.length == 0)
             collection = instructions.getSource().getId()
 
-        let articles = await Database.getInstance()!!.getArticles(collection, {pageNo: 1, articlesPerPage: 50})
-        utils.isFirstScrape = articles.length === 0
-        utils.isScrapeAfterError = job.attempts !== 0
+        let articles = await Database.getInstance()!!.getArticles(collection, {pageNo: 1, articlesPerPage: 50});
+        utils.isFirstScrape = articles.length === 0;
+        utils.isScrapeAfterError = job.attempts !== 0;
 
-        utils.getArticles = (count: number): Article[] => articles.slice(0, count)
+        utils.getArticles = (count: number): Article[] => articles.slice(0, count);
         utils.onNewArticle = (article: Article) => {
-            article.source = {
-                id: job.getSource().getId(),
-                name: job.getSource().name
-            }
+            article.setSource(instructions.getSource().getId(), instructions.getSource().name);
 
-            if (!article.extras) article.extras = {}
-
-            if (alias.length !== 0) {
-                if(!article.categories)
-                    article.categories = [];
-
-                article.categories.push({name: alias, links: [url]});
-            }
+            if (alias.length !== 0)
+                article.pushCategory(alias, [url]);
 
             articles.unshift(article)
             parsedArticles.push(article);

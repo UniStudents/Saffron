@@ -36,12 +36,4 @@ export default class Extensions {
             return pair;
         };
     }
-
-    hasEvent(event: string): boolean {
-        return this.pairs.findIndex(p => p.event == event) != -1
-    }
-
-    async callEvent(event: String, ...data: any[]): Promise<any> {
-        return await this.pairs.find(p1 => p1.event == event)!!.callback(...data)
-    }
 }

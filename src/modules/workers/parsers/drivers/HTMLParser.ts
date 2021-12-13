@@ -206,53 +206,45 @@ export class HTMLParser extends ParserClass {
                     }
                     // It stores the article data to an instance of Article class.
                     tmpArticle = new Article()
-                    tmpArticle.source = {
-                        id: instructions.getSource().getId(),
-                        name: instructions.getSource().name
-                    }
-                    tmpArticle.link = (Array.isArray(articleData.link) && articleData.link[0]?.value) ? articleData.link[0].value : (articleData.link ? articleData.link : '');
-                    tmpArticle.title = (Array.isArray(articleData.title) && articleData.title[0]?.value)
+                    tmpArticle.setSource(instructions.getSource().getId(), instructions.getSource().name);
+                    tmpArticle.setLink((Array.isArray(articleData.link) && articleData.link[0]?.value)
+                        ? articleData.link[0].value
+                        : (articleData.link ? articleData.link : ''));
+
+                    tmpArticle.setTitle((Array.isArray(articleData.title) && articleData.title[0]?.value)
                         ? Utils.htmlStrip(articleData.title[0].value)
-                        : (articleData.title ? articleData.title : '');
+                        : (articleData.title ? articleData.title : ''));
 
-                    tmpArticle.pubDate = (Array.isArray(articleData.pubDate) && articleData.pubDate[0]?.value)
+                    tmpArticle.setPubDate((Array.isArray(articleData.pubDate) && articleData.pubDate[0]?.value)
                         ? Utils.htmlStrip(articleData.pubDate[0].value)
-                        : (articleData.pubDate ? articleData.pubDate : '');
+                        : (articleData.pubDate ? articleData.pubDate : ''))
 
-                    let content = (Array.isArray(articleData.content) && articleData.content[0]?.value)
+                    tmpArticle.setContent((Array.isArray(articleData.content) && articleData.content[0]?.value)
                         ? Utils.htmlStrip(articleData.content[0].value)
-                        : (articleData.content ? articleData.content : '');
+                        : (articleData.content ? articleData.content : ''));
 
-                    tmpArticle.content = content
-                    tmpArticle.attachments = []
-                    tmpArticle.categories = []
                     if(!alias && articleData.hasOwnProperty("category")) {
                         if(Array.isArray(articleData["category"])){
-                            articleData["category"].forEach(category =>{
-                                tmpArticle.categories.push({name: category, links: [url]})
-                            })
+                            articleData["category"].forEach(category =>
+                                tmpArticle.pushCategory(category, [url]));
                         }
-                        else
-                            tmpArticle.categories.push({name: articleData["category"], links: [url]})
+                        else tmpArticle.pushCategory(articleData["category"], [url]);
                     }
 
-                    tmpArticle.attachments.push(...((articleData.attachments) ? articleData.attachments : []))
-                    tmpArticle.attachments.push(...Utils.extractLinks(content))
-                    tmpArticle.extras = {}
+                    tmpArticle.pushAttachments(articleData.attachments ? articleData.attachments : []);
+                    tmpArticle.pushAttachment(Utils.extractLinks(tmpArticle.content))
 
-                    if (alias)
-                        tmpArticle.categories.push({name: alias, links: [url]})
+                    if (alias) tmpArticle.pushCategory(alias, [url]);
 
                     // for each extra data. Data that are not described in the baseData variable.
                     Object.entries(articleData).forEach((extra) => {
                         if (basicData.indexOf(extra[0]) !== -1) return
                         if (extra[1] === '') return
 
-                        tmpArticle.extras[extra[0]] = extra[1]
+                        tmpArticle.addExtra(extra[0], extra[1]);
                     })
 
                     if (tmpArticle.title === '') return
-
                     parsedArticles.push(tmpArticle)
                 })
             })
