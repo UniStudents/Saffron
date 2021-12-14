@@ -1,5 +1,3 @@
-import Logger from "./middleware/logger"
-import {LoggerTypes} from "./middleware/LoggerTypes"
 import DatabaseLoader from "./modules/database/index"
 import Config from "./components/config"
 import Scheduler from "./modules/scheduler";
@@ -18,7 +16,6 @@ import Database from "./modules/database/database";
 import {ConfigOptions} from "./middleware/ConfigOptions";
 
 let db: Database
-    , grid: Grid
     , scheduler: Scheduler
     , workers: Worker[] = []
 
@@ -30,7 +27,8 @@ export = {
      * @see https://saffron.poiw.org
      */
     initialize: async (config: any = undefined) => {
-        Logger(LoggerTypes.TITLE, "Simple Abstract Framework For the Retrieval Of News");
+        Events.registerLogListeners();
+        Events.emit('title');
 
         // Load config file
         Config.load(config);
@@ -38,21 +36,26 @@ export = {
         // Initialize database
         let database = DatabaseLoader.getInstance();
         if (database == null)
-            return Logger(LoggerTypes.INSTALL_ERROR, "Database driver is not valid");
+            return Events.emit('database.driver.error')
 
         db = database;
-        await db.connect()
-            .then(() => Logger(LoggerTypes.STEP, "Successfully connected to the offload database."))
-            .catch((e: any) => {
-                Logger(LoggerTypes.INSTALL_ERROR, "Failed to connect to the offload database.");
-                console.log(e);
-            });
+        try {
+            await db.connect()
+            Events.emit('database.connection.okay')
+        }
+        catch (e) {
+            return Events.emit('database.connection.failed')
+        }
 
         // Initialize and start grid
         if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED)) {
-            grid = Grid.getInstance();
-            await grid.connect().then(() =>
-                Logger(LoggerTypes.STEP, "The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."));
+            try {
+                await Grid.getInstance().connect();
+                Events.emit('grid.connection.okay');
+            }
+            catch (e) {
+                return Events.emit('grid.connection.failed', e);
+            }
         }
 
         // Initialize workers
@@ -60,15 +63,9 @@ export = {
         for (let i = 0; i < workersSize; i++)
             workers.push(new Worker());
 
-        // Initialize grid
-        grid = Grid.getInstance();
-        await grid.connect();
-
         // Initialize scheduler
         if (Config.getOption(ConfigOptions.SAFFRON_MODE) === 'main')
             scheduler = new Scheduler();
-        else
-            Logger(LoggerTypes.INFO, "This instance has been initialized as a WORKER node.");
 
         // Event for workers
         Events.on("start", () => {
@@ -82,8 +79,6 @@ export = {
             for (let worker of workers)
                 worker.stop(force);
         })
-
-        Events.registerAllLogListeners();
     },
 
     /**

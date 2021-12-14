@@ -4,6 +4,9 @@ import Job from "../components/job";
 import Article from "../components/articles";
 import chalk from "chalk";
 import Grid from "./grid/index";
+import Config from "../components/config";
+import {ConfigOptions} from "../middleware/ConfigOptions";
+
 export default class Events {
 
     private static antennae: any
@@ -24,7 +27,35 @@ export default class Events {
         this.getAntennae().on(eventName, callback);
     }
 
-    static registerAllLogListeners(): void {
+    static registerLogListeners(): void {
+        let logLevel = Config.getOption(ConfigOptions.MISC_LOG_LEVEL);
+        if(logLevel === 'none') return;
+
+        this.getAntennae().on('title', () =>
+            Logger(LoggerTypes.TITLE, "Simple Abstract Framework For the Retrieval Of News"));
+
+        this.getAntennae().on('database.driver.error', () =>
+            Logger(LoggerTypes.INSTALL_ERROR, 'Database driver is not valid.'));
+        this.getAntennae().on('database.connection.okay', () =>
+            Logger(LoggerTypes.STEP, 'Successfully connected to the offload database.'));
+        this.getAntennae().on('database.connection.failed', () =>
+            Logger(LoggerTypes.INSTALL_ERROR, 'Failed to connect to the offload database.'));
+        this.getAntennae().on('database.operation.error', (funcName: string, e: any) => {
+            Logger(LoggerTypes.ERROR, `Database encountered an operation error at ${funcName}.`);
+            console.log(e);
+        });
+
+        this.getAntennae().on('grid.connection.okay', () =>
+            Logger(LoggerTypes.STEP, 'The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."'));
+        this.getAntennae().on('grid.connection.failed', (error: any) => {
+            Logger(LoggerTypes.INSTALL_ERROR, 'Failed to start grid.')
+            console.log(error)
+        });
+
+        this.getAntennae().on("scheduler.path.error", (error: any) => {
+            Logger(LoggerTypes.DEBUG, `${chalk.red('Scheduler')} - Path is invalid or there are insufficient permissions.`);
+            console.log(error);
+        });
         this.getAntennae().on("scheduler.sources.new", (names: string[]) =>
             Logger(LoggerTypes.INFO, `Loaded ${names.length} sources`))
         this.getAntennae().on("scheduler.sources.error", (sourceFile: any, error: any) =>
@@ -44,6 +75,12 @@ export default class Events {
         this.getAntennae().on("scheduler.job.push", (job: Job) =>
             Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - pushing job(${job.id}) to workers.`));
 
+        this.getAntennae().on("grid.init", (port: number) => {
+            if(port != -1)
+                Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - WebSocket has started on port ${port}.`)
+            else
+                Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - WebSocket connected.`)
+        });
         this.getAntennae().on("grid.node.connected", () =>
             Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - node connected.`));
         this.getAntennae().on("grid.node.disconnected", () =>
@@ -73,7 +110,6 @@ export default class Events {
 }
 
 class Antennae {
-    private _config: any;
     private _callbacks: any = {};
 
     public on(eventName: string, callback: (...args: any[]) => void): void {

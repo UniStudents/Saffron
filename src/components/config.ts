@@ -1,5 +1,3 @@
-import Logger from "../middleware/logger"
-import {LoggerTypes} from "../middleware/LoggerTypes"
 import _ from "lodash"
 import path from "path"
 import {ConfigOptions} from "../middleware/ConfigOptions";
@@ -68,14 +66,12 @@ export default class Config {
                 else
                     config = require((config.startsWith('./') ? '.' : '../') + config)
             } catch (error: any) {
-                Logger(LoggerTypes.INSTALL_ERROR, `Saffron couldn\'t load the configuration file from the path specified.\n${error}\n`)
                 throw new Error(error)
             }
         } else if (!config) {
             try {
                 config = require("../../saffron.json")
             } catch (error: any) {
-                Logger(LoggerTypes.INSTALL_ERROR, "You did not supply any configuration or the supplied configuration file is improperly configured.")
                 throw new Error(error)
             }
         }
@@ -144,6 +140,8 @@ export default class Config {
                 return !isStatic ? Config.load().scheduler.intervalBetweenChecks : 120000;
             case ConfigOptions.GRID_DISTRIBUTED:
                 return !isStatic ? Config.load().grid.distributed : false;
+            case ConfigOptions.GRID_PORT:
+                return !isStatic ? Config.load().grid.port : 3000;
             case ConfigOptions.MISC_LOG_LEVEL:
                 return !isStatic ? Config.load().misc.log : "all";
         }

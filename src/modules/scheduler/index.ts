@@ -1,6 +1,4 @@
 import Config from "../../components/config";
-import Logger from "../../middleware/logger"
-import {LoggerTypes} from "../../middleware/LoggerTypes";
 import Events from "../events";
 import Job from "../../components/job";
 import Source from "../../components/source";
@@ -30,29 +28,29 @@ export default class Scheduler {
             let sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH)
             glob(`${path + sourcesPath}/**`, null, (error: any, files: string[]) => {
                 if (error) {
-                    Logger(LoggerTypes.INSTALL_ERROR, "Path is invalid or there are insufficient permissions.")
-                    reject(error)
-                } else {
-                    let acceptedFiles = new RegExp(/.*js/)
-                    if (!files || files.length <= 0) {
-                        Logger(LoggerTypes.INSTALL_ERROR, "No source files were found.")
-                        reject(new Error("No source files were found."))
-                    }
-                    let rawSources = files.filter((file: any) => acceptedFiles.test(file))
-                    let sources = rawSources.map((file: any) => Object({
-                        filename: `${file.split("/").pop()}`,
-                        path: `${file}`,
-                        ...require(`${file}`)
-                    }))
-                    sources.forEach(async (sourceFile: any) => {
-                        try {
-                            await Source.parseFileObject(sourceFile)
-                        } catch (e) {
-                            Events.emit("scheduler.sources.error", sourceFile, e)
-                        }
-                    })
-                    resolve()
+                    Events.emit('scheduler.path.error', error)
+                    return reject(error)
                 }
+
+                let acceptedFiles = new RegExp(/.*js/)
+                if (!files || files.length <= 0)
+                    return reject(new Error("No source files were found."))
+
+                let rawSources = files.filter((file: any) => acceptedFiles.test(file))
+                let sources = rawSources.map((file: any) => Object({
+                    filename: `${file.split("/").pop()}`,
+                    path: `${file}`,
+                    ...require(`${file}`)
+                }))
+
+                sources.forEach(async (sourceFile: any) => {
+                    try {
+                        await Source.parseFileObject(sourceFile)
+                    } catch (e) {
+                        Events.emit("scheduler.sources.error", sourceFile, e)
+                    }
+                })
+                resolve()
             })
         })
     }

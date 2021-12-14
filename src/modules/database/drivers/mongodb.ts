@@ -1,10 +1,9 @@
 import {Db, MongoClient} from "mongodb";
-import Logger from "../../../middleware/logger";
-import {LoggerTypes} from "../../../middleware/LoggerTypes"
 import Article from "../../../components/articles";
 import Database from "../database";
 import Config from "../../../components/config"
 import {ConfigOptions} from "../../../middleware/ConfigOptions";
+import Events from "../../events";
 
 export default class MongoDB extends Database {
 
@@ -53,7 +52,7 @@ export default class MongoDB extends Database {
             return _articles.map((_article: object) => Article.fromJSON(_article))
 
         } catch (e: any) {
-            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
+            Events.emit('database.operation.error', 'getArticles', e);
         }
         return []
     }
@@ -64,7 +63,7 @@ export default class MongoDB extends Database {
             await this.db.collection(src).insertOne(await article.toJSON())
             return true
         } catch (e: any) {
-            Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
+            Events.emit('database.operation.error', 'pushArticle', e);
         }
         return false;
     }

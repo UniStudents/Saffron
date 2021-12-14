@@ -12,5 +12,6 @@ export enum ConfigOptions {
     SCHEDULER_JOB_HEAVY_INT,
     SCHEDULER_CHECKS_INT,
     GRID_DISTRIBUTED,
+    GRID_PORT,
     MISC_LOG_LEVEL
 }

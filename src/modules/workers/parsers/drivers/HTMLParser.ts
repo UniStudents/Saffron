@@ -45,7 +45,6 @@ export class HTMLParser extends ParserClass {
                 resolve(result)
             }).catch((e: any) => {
                 let message = `HTMLParserException error during request, original error ${e.message}`
-                Logger(LoggerTypes.ERROR, `${message}`)
                 reject(new Error(message))
             })
 

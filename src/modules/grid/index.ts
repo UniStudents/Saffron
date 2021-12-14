@@ -75,34 +75,37 @@ export default class Grid {
      */
     async connect(): Promise<void> {
         if (this.isMain) {
-            if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED))
+            if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED)) {
+                this.server.on("connection", () => {
+                    this.registerGridNode();
+                    Events.emit('grid.node.connected')
+                });
+
+                this.server.on("workers.job.finished", data => {
+                    let id = data.id;
+                    let job = this.jobsStorage.find((job: Job) => job.id == id);
+
+                    if (job) {
+                        job.status = JobStatus.FINISHED;
+                        Events.emit("workers.job.finished", job)
+                    }
+                })
+
+                this.server.on("workers.job.failed", data => {
+                    let id = data.id;
+                    let job = this.jobsStorage.find((job: Job) => job.id == id);
+
+                    if (job) {
+                        job.status = JobStatus.FAILED;
+                        Events.emit("workers.job.failed", job)
+                    }
+                })
+
                 await this.server.listen();
-
-            this.server.on("connection", this.registerGridNode);
-
-            this.server.on("workers.job.finished", data => {
-                let id = data.id;
-                let job = this.jobsStorage.find((job: Job) => job.id == id);
-
-                if(job) {
-                    job.status = JobStatus.FINISHED;
-                    Events.emit("workers.job.finished", job)
-                }
-            })
-
-            this.server.on("workers.job.failed", data => {
-                let id = data.id;
-                let job = this.jobsStorage.find((job: Job) => job.id == id);
-
-                if(job) {
-                    job.status = JobStatus.FAILED;
-                    Events.emit("workers.job.failed", job)
-                }
-            })
+                Events.emit('grid.init', Config.getOption(ConfigOptions.GRID_PORT));
+            }
         }
         else if (Config.getOption(ConfigOptions.WORKER_NODES) > 0) {
-            await this.client.connect()
-
             this.client.on('connect', () => {
                 for (const workerId of this.workersIds)
                     Events.emit("grid.worker.announced", workerId);
@@ -112,6 +115,9 @@ export default class Grid {
                 let job = Job.fromJSON(data)
                 Events.emit("scheduler.job.push", job)
             })
+
+            await this.client.connect()
+            Events.emit('grid.init', -1);
         }
     }
 
