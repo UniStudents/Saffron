@@ -8,13 +8,8 @@ export default class Client {
 
     constructor() {}
 
-
     async connect(): Promise<void> {
         this.socket = io(`http://${Config.load()?.grid.address}:${Config.load()?.grid.port}`)
-
-        this.socket.on("connect", (details: any)=>{
-            logger(LoggerTypes.STEP, "A socket has been established with the main node");
-        })
     }
 
     async disconnect(): Promise<void> {

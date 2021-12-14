@@ -1,17 +1,11 @@
 import * as socketio from "socket.io"
-import logger from "../../middleware/logger";
-import {LoggerTypes} from "../../middleware/LoggerTypes";
 import Config from "../../components/config";
+import {ConfigOptions} from "../../middleware/ConfigOptions";
 
 export default class Server {
     declare socket: socketio.Server;
     constructor() {
-        this.socket = new socketio.Server(Config.load()?.grid?.port || 3000)
-        // console.log(this.socket)
-        logger(LoggerTypes.STEP, `The incoming WebSocket listener has started on port ${Config.load()?.grid?.port || 3000}`)
-        this.socket.on("connection", (details: any)=>{
-            logger(LoggerTypes.STEP, "Connected to worker node");
-        })
+        this.socket = new socketio.Server(Config.getOption(ConfigOptions.GRID_PORT))
     }
 
     async listen(): Promise<void> {
