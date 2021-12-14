@@ -9,8 +9,8 @@ export default class None extends Database {
         return []
     }
 
-    async pushArticle(src: string, article: Article): Promise<string> {
-        return ""
+    async pushArticle(src: string, article: Article): Promise<boolean> {
+        return true
     }
 
     async insertGridNode(id: string, publicIP: object, privateIP: string, encryptionKey: string): Promise<void> {}

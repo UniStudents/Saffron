@@ -14,9 +14,9 @@ export default class Memory extends Database {
         return [..._articles]
     }
 
-    async pushArticle(src: string, article: Article): Promise<string> {
+    async pushArticle(src: string, article: Article): Promise<boolean> {
         this.articles.push(article)
-        return article.id
+        return true
     }
     async insertGridNode(id: string, publicIP: object, privateIP: string, encryptionKey: string): Promise<void> {
         return

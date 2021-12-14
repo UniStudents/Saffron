@@ -28,6 +28,7 @@ export default class MongoDB extends Database {
         pageNo?: number,
         articlesPerPage?: number,
         sort?: { [key: string]: -1 | 1 },
+        filter?: any
     }): Promise<Array<Article>> {
         try {
             if (!options) {
@@ -37,12 +38,13 @@ export default class MongoDB extends Database {
 
             let opts: any = {
                 pageNo: options.pageNo ? options.pageNo : 1,
-                articlesPerPage: options.articlesPerPage ? options.articlesPerPage : 10,
+                articlesPerPage: options.articlesPerPage ? options.articlesPerPage : 20,
                 sort: options.sort ? options.sort : {"_id": -1},
+                filter: options.filter ? options.filter : {}
             }
 
             let _articles = await this.db.collection(src)
-                .find()
+                .find({})
                 .sort(opts.sort)
                 .skip((opts.pageNo - 1) * opts.articlesPerPage)
                 .limit(opts.articlesPerPage)
@@ -56,15 +58,15 @@ export default class MongoDB extends Database {
         return []
     }
 
-    async pushArticle(src: string, article: Article): Promise<string> {
+    async pushArticle(src: string, article: Article): Promise<boolean> {
         try {
             article.timestamp = Date.now()
             await this.db.collection(src).insertOne(await article.toJSON())
-            return article.id
+            return true
         } catch (e: any) {
             Logger(LoggerTypes.ERROR, `Database error: ${e.message}.`)
         }
-        return ""
+        return false;
     }
 
     async insertGridNode(id: string, publicIP: object, privateIP: string, encryptionKey: string): Promise<void> {
