@@ -6,11 +6,8 @@ import Utils from "../../../../components/utils";
 import Database from "../../../database";
 
 export class DynamicParser extends ParserClass {
-    validateScrape(scrape: any): string {
-        let value = typeof scrape != 'function'
-        if(value)
-            return ""
-        else return "DynamicParser: scrape is not a function"
+    validateScrape(scrape: any): void {
+        if(typeof scrape !== 'function') throw new Error("DynamicParser: scrape is not a function");
     }
 
     private static splice (base: string, idx: number, rem: number, str: string): string {
@@ -35,7 +32,7 @@ export class DynamicParser extends ParserClass {
 
         let utils = new Utils(url);
 
-        let collection = instructions.getSource().collection_name
+        let collection = instructions.getSource().tableName
         if (!collection || collection.length == 0)
             collection = instructions.getSource().name
         if (!collection || collection.length == 0)

@@ -1,6 +1,7 @@
 require('dotenv').config()
 const saffron = require('../dist/index');
 const loggerTypes = require('../dist/middleware/LoggerTypes')
+const util = require("util");
 const logger = require('../dist/middleware/logger').default
 
 let config = {}
@@ -19,19 +20,21 @@ try {
         },
         sources: {
             path: "/test/sources",
-            // includeOnly: ['aua.gr'],
-            // excluded: ["custom-cs.unipi.gr"]
+            // includeOnly: ['rss-cs.unipi.gr'],
+            // exclude: ["custom-cs.unipi.gr"]
         },
         scheduler: {
-            intervalBetweenJobs: 10000,
+            jobsInterval: 10000,
             heavyJobFailureInterval: 86400000,
-            intervalBetweenChecks: 5000
+            checksInterval: 5000
         },
         mode: process.env.MODE || "main",
         workers: {
             nodes: 1,
             jobs: {
-                requestTimeout: 10000,
+                timeout: 10000
+            },
+            articles: {
                 amount: 30
             }
         },
@@ -39,7 +42,7 @@ try {
             mode: "auto" || "manual",
             // Following options are optional during auto mode
             address: "192.168.2.9",
-            port: 3000,
+            port: 3001,
             keypair: {
                 bits: "2048",
                 privateKey: "-----BEGIN RSA PRIVATE KEY-----MIIEoQIBAAKCAQBecuykL8bSQlUxGxpU574Xh4HSyoTFqlxVc7dok3InXQ0wpchv8WjbWWEcfJPRLXc9zdixrRSRWIUeBC+Jlsl1nbtpz30769Fnw6ZGvjW9DCn/NYdZv5N5zw0gfapYyZkFWt3gAwbXRoVzYwbPEOMmVBZzLS9ZyZraSWYRy9OfcFYL16L5ma7/0LwdBRxaR80lVGj3a+kECKH7AQoKAV/r55oOa6puCZmxAkWmhwaTyfb9q+OqkBEVffsmPyfgKno2cXoiWTur2+OmAbwdD6EmVf61z4wrBDiCX91ZiqNIlnt2k95MmZ/m+AeImbyEUPLY4JuzbcIgKWhU6HizSCupAgMBAAECggEADYAwA2gw620/8D0HjotxyLs9+3unbvnjKPPZi8FH2AidEg8gj5/adUBZeVD1cDknilYaW4t6HSyiGqBOi0Ral81sNLvMEvyqekKlSgd2dwd+GVT1fAa+dfL61WIhL3/ht7o9bQABwlP6T3wgRQkM7zWl3+Ddm+ANmpZTWMfiADBKF89TS2dM2nTJgJijWY4lFM3BUAWyPHuPXeRe8ZUpssw0xT2rFoKx/8uzsGbQT0prIc2u2KxHz8MzGT0vkOtb40mUeWFyo/4Avk7oTigjIRYd3becgpHmmcZuLHB1kzOX+D4GFPaQpJ/CyZkTU5FPqK7mwRUnq7Tkr1rnt/C9gQKBgQCkDAiLnAwh0s9+SSKHLCHU0elYPgtrBrGEcGYHQMg65Dz1gUDLkKAEiH7fFx5GedU4s1YYNmng6Z1RDkJJHTJovtk43v1sonffkpyg6aYiytE9+aPG1meVbkNlFn8+V/hf3knDrim8CCisdYpjfkJMR2Qk+vSR3mxu7b0Bqyhz3QKBgQCTY+WGISTTva8m8cbt4O+SXrVySbDhnoVbXsex9C2v2kBoLHjoXqznEkb3nAVCqtMCmhuf/nKw03lmM4aTm/mvkF4cBHQvFE3OZZq0iAEtp5AmSXdZ7h/GZNyimFei7U5x1/YzdaW8Nq7MR9wOkTBys6E06t3zPT26i0CyMvXQPQKBgHSZsQE6e00XQDBs30Pg1HMmeIsmHouGCGswUPTa0Pc6/zEpG9sVAwf11OfQ0M4bDrjsj0dKddtNcWoJjofVXt0gudk4djzfBgE9fmLJcDLOogdBB23vO1T1OKYDZZH0iS/rGdciVbu2uOJL8X9iYNFC9SVr0qZTyBLYnD0xYOFpAoGAZmCTQ3GuNO2ixfhW51DA1/i1LCeHl5AWrXrOVwt22JlO9408hpuMmgyWAtP6y24Al+QXoDCL1ctundDYf5tt+cbbt7ZYRYNi8CSfKxr1RpMHi7CoGG1Q4OuaXc5XwTH4tRb/SotDjdKl4/teHTg4YNPo++rQNG6re/HSBHVlTTkCgYAcjsqnL0xlbOHeC8780ubfc6eTuP+XfAEySoBbCmemEHfJw/Zxy1JoOwr66CsY1dPTp0YSPuxgQ+QcJ+YzWzgH32ToK14Cntn4V92kJbEd71S1S8n1E4iYyOULp9Gp6BQdQIWqGvyQsgLzdItDhLNJOO12hxi1D0CJCtl/Tmz8yg==-----END RSA PRIVATE KEY-----",
@@ -58,7 +61,7 @@ try {
         await saffron.start()
 
         saffron.on("workers.articles.found", (articles)=>{
-            // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
+            console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
         })
     }
     catch (error) {

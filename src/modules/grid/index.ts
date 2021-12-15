@@ -102,7 +102,6 @@ export default class Grid {
                 })
 
                 await this.server.listen();
-                Events.emit('grid.init', Config.getOption(ConfigOptions.GRID_PORT));
             }
         }
         else if (Config.getOption(ConfigOptions.WORKER_NODES) > 0) {
@@ -117,7 +116,6 @@ export default class Grid {
             })
 
             await this.client.connect()
-            Events.emit('grid.init', -1);
         }
     }
 

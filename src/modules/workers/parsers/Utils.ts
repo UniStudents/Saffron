@@ -3,7 +3,7 @@ import cheerio from "cheerio";
 const striptags = require('striptags');
 export default class Utils {
 
-    private static htmlEntries = {
+    private static htmlEntries: any = {
         '&apos;': "'",
         '&lt;': '<',
         '&gt;': '>',
@@ -266,7 +266,6 @@ export default class Utils {
         for (let key in this.htmlEntries) {
             let entity = key
             let regex = new RegExp(entity, 'g')
-            // @ts-ignore
             str = str.replace(regex, this.htmlEntries[entity])
         }
         return str

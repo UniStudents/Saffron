@@ -39,7 +39,6 @@ export default (type: LoggerTypes, data: any) => {
             console.log(chalk.white(`${chalk.blue(" | ")}`))
             console.log(chalk.white(`${chalk.blue(" ◉ ")} ${time}: ${data}`))
             return
-        // @ts-ignore
         case LoggerTypes.DEBUG:
             console.log(chalk.white(`${chalk.blue(" | ")}`))
             console.log(chalk.white(`${chalk.blue(" ⦿ ")} ${time}: ${data}`))

@@ -1,8 +1,6 @@
 import Job from "../components/job";
 import Instructions from "./instructions";
 import {ParserType} from "../modules/workers/parsers/ParserType";
-import logger from "../middleware/logger";
-import {LoggerTypes} from "../middleware/LoggerTypes";
 import Article from "./articles";
 import hash from 'crypto-js/sha256';
 import Config from "./config";
@@ -18,68 +16,60 @@ export default class Source {
      * @param isStatic If is called by static function or the scheduler.
      */
     static async parseFileObject(source: any, isStatic: boolean = false): Promise<Source> {
+        try {
+            source = {
+                ...source,
+                ...require(`${source.path}`)
+            }
+        }
+        catch (e) {
+            throw new Error(`SourceException: ${source.filename}: failed to read file.`);
+        }
+
         let ret = new Source();
 
-        if (!source.name || source.name.length < 3) {
-            let message = `SourceException: ${source.filename}: name: is not valid, must be type string with a least 3 characters.`;
-            throw new Error(message);
-        }
+        // Source name
+        if (!source.name || source.name.length < 3)
+            throw new Error(`SourceException: ${source.filename}: name: is not valid, must be type string with a least 3 characters.`);
         ret.name = source.name;
 
-        if (["saffron", "config", "workers"].includes(source.collection_name)) {
-            let message = `SourceException: ${source.filename}: collection_name: is blacklisted.`;
-            throw new Error(message);
-        }
-        if (source.collection_name && (typeof source.collection_name !== 'string' || source.collection_name.length < 3)) {
-            let message = `SourceException: ${source.filename}: collection_name: is not valid, must be type string with a least 3 characters.`;
-            throw new Error(message);
-        }
-        ret.collection_name = source.collection_name;
+        // Source tableName
+        if (source.tableName && (typeof source.tableName !== 'string' || source.tableName.length < 3))
+            throw new Error(`SourceException: ${source.filename}: tableName: is not valid, must be type string with a least 3 characters.`);
+        if (["saffron", "config", "workers"].includes(source.tableName))
+            throw new Error(`SourceException: ${source.filename}: tableName: is blacklisted.`);
+        ret.tableName = source.tableName;
 
-        if (source.scrapeInterval && (typeof source.scrapeInterval != 'number' || source.scrapeInterval < 0)) {
-            let message = `SourceException: ${source.filename}: scrapeInterval: is not valid, must be a positive number.`;
-            throw new Error(message);
-        }
-        ret.scrapeInterval = source.scrapeInterval;
+        if (source.interval && (typeof source.interval != 'number' || source.interval < 0))
+            throw new Error(`SourceException: ${source.filename}: interval: is not valid, must be a positive number.`);
+        ret.interval = source.interval;
 
-        if (source.retryInterval && (typeof source.retryInterval != 'number' || source.retryInterval < 0)) {
-            let message = `SourceException: ${source.filename}: retryInterval: is not valid, must be a positive number.`;
-            throw new Error(message);
-        }
+        if (source.retryInterval && (typeof source.retryInterval != 'number' || source.retryInterval < 0))
+            throw new Error(`SourceException: ${source.filename}: retryInterval: is not valid, must be a positive number.`);
         ret.retryInterval = source.retryInterval;
 
-        if (source.requestTimeout && (typeof source.requestTimeout != 'number' || source.requestTimeout < 0)) {
-            let message = `SourceException: ${source.filename}: requestTimeout: is not valid, must be a positive number.`;
-            throw new Error(message);
-        }
+        if (source.timeout && (typeof source.timeout != 'number' || source.timeout < 0))
+            throw new Error(`SourceException: ${source.filename}: timeout: is not valid, must be a positive number.`);
+        ret.timeout = source.timeout ? source.timeout : Config.getOption(ConfigOptions.REQUEST_TIMEOUT)
 
         // If it is not one time scrape:
-        ret.requestTimeout = source.requestTimeout ? source.requestTimeout : Config.getOption(ConfigOptions.REQUEST_TIMEOUT)
         ret.instructions = new Instructions()
         ret.instructions.source = {id: ret.getId()}
+
+        if (source.amount && (typeof source.amount != 'number' || source.amount < 0))
+            throw new Error(`SourceException: ${source.filename}: amount: is not valid, must be a positive number.`);
         ret.instructions.amount = source.amount ? source.amount : Config.getOption(ConfigOptions.ARTICLE_AMOUNT)
 
+        if (typeof source.ignoreCertificates !== 'undefined' && typeof source.ignoreCertificates !== 'boolean')
+            throw new Error(`SourceException: ${source.filename}: ignoreCertificates: is not valid, must be boolean.`);
+        ret.instructions.ignoreCertificates = source.ignoreCertificates ? source.ignoreCertificates : false;
 
-        if (source.hasOwnProperty("ignoreCertificates"))
-            ret.instructions.ignoreCertificates = source.ignoreCertificates;
-        else
-            ret.instructions.ignoreCertificates = false
-
-        if(source.hasOwnProperty("extraFields"))
-            ret.instructions.extraFields = source.extraFields
-        else
-            ret.instructions.extraFields = []
-
-
-        if(source.hasOwnProperty("extra"))
-            ret.extra = source.extra;
+        ret.extra = source.extra;
 
         ret.instructions.url = [];
         if (typeof source.url === 'string') {
-            if (source.url.length == 0) {
-                let message = `SourceException: ${source.filename}: url: is not valid, url cannot be empty.`;
-                throw new Error(message);
-            }
+            if (source.url.length == 0)
+                throw new Error(`SourceException: ${source.filename}: url: is not valid, url cannot be empty.`);
             ret.instructions.url.push([source.url]);
         }
         else if (Array.isArray(source.url)) {
@@ -88,15 +78,11 @@ export default class Source {
                     let alias = pair[0];
                     let url = pair[1];
 
-                    if(typeof alias !== 'string' || alias.trim() === '') {
-                        let message = `SourceException: ${source.filename}: url: is not valid, invalid alias '${alias}'.`;
-                        throw new Error(message);
-                    }
+                    if(typeof alias !== 'string' || alias.trim() === '')
+                        throw new Error(`SourceException: ${source.filename}: url: is not valid, invalid alias '${alias}'.`);
 
-                    if(typeof url !== 'string' || url.trim() === '') {
-                        let message = `SourceException: ${source.filename}: url: is not valid, invalid url '${url}'.`;
-                        throw new Error(message);
-                    }
+                    if(typeof url !== 'string' || url.trim() === '')
+                        throw new Error(`SourceException: ${source.filename}: url: is not valid, invalid url '${url}'.`);
 
                     ret.instructions.url.push([url, alias]);
                 }
@@ -106,33 +92,24 @@ export default class Source {
 
                     ret.instructions.url.push([url]);
                 }
-                else {
-                    let message = `SourceException: ${source.filename}: url: is not valid, error during parsing pair: ${pair}.`;
-                    throw new Error(message);
-                }
+                else throw new Error(`SourceException: ${source.filename}: url: is not valid, error during parsing pair: ${pair}.`);
             }
         }
-        else {
-            let message = `SourceException: ${source.filename}: url: is not valid, must be a string type or an array.`;
-            throw new Error(message);
-        }
+        else throw new Error(`SourceException: ${source.filename}: url: is not valid, must be a string type or an array.`)
 
         let parserType = await ParserType.getFromString(source.type)
-        if (parserType === ParserType.UNKNOWN) {
-            let message = `SourceException: ${source.filename}: type: is not valid.`;
-            throw new Error(message);
-        }
+        if (parserType === ParserType.UNKNOWN)
+            throw new Error(`SourceException: ${source.filename}: type: is not valid.`);
         ret.instructions.parserType = parserType;
 
         try {
             ParserLoader.validateScrapeOptions(parserType, source.scrape);
         }
         catch (e: any) {
-            let message = `SourceException: ${source.filename}: invalid scrape method, parser error: ${e.message}`;
-            throw new Error(message);
+            throw new Error(`SourceException: ${source.filename}: invalid scrape method, parser error: ${e.message}`);
         }
 
-        ParserLoader.validateScrapeInstructions(parserType, ret.instructions, source);
+        ParserLoader.assignScrapeInstructions(parserType, ret.instructions, source);
 
         if(!isStatic)
             this._sources.push(ret)
@@ -168,10 +145,10 @@ export default class Source {
 
     private declare id: string
     declare name: string
-    declare collection_name: string
-    declare scrapeInterval: number
+    declare tableName: string
+    declare interval: number
     declare retryInterval: number
-    declare requestTimeout: number
+    declare timeout: number
     declare instructions: Instructions
     declare extra: any
 
@@ -192,8 +169,8 @@ export default class Source {
         return {
             id: this.id,
             name: this.name,
-            collection_name: this.collection_name,
-            scrapeInterval: this.scrapeInterval,
+            tableName: this.tableName,
+            interval: this.interval,
             retryInterval: this.retryInterval,
             instructions: this.instructions.toJSON(),
             extra: this.extra
@@ -203,8 +180,8 @@ export default class Source {
     static fromJSON(json: any): Source {
         let source = new Source(json.id)
         source.name = json.name
-        source.collection_name = json.collection_name
-        source.scrapeInterval = json.scrapeInterval
+        source.tableName = json.tableName
+        source.interval = json.interval
         source.retryInterval = json.retryInterval
         source.instructions = Instructions.fromJSON(json.instructions)
         source.extra = json.extra
