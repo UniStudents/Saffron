@@ -16,15 +16,17 @@ export default class Source {
      * @param isStatic If is called by static function or the scheduler.
      */
     static async parseFileObject(source: any, isStatic: boolean = false): Promise<Source> {
-        try {
-            source = {
-                ...source,
-                ...require(`${source.path}`)
+        if(!isStatic) {
+            try {
+                source = {
+                    ...source,
+                    ...require(`${source.path}`)
+                }
+            } catch (e) {
+                throw new Error(`SourceException: ${source.filename}: failed to read file.`);
             }
         }
-        catch (e) {
-            throw new Error(`SourceException: ${source.filename}: failed to read file.`);
-        }
+        else source.filename = source.name ? source.name : '[no name]';
 
         let ret = new Source();
 
