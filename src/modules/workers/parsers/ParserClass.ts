@@ -4,7 +4,7 @@ import Article from "../../../components/articles";
 
 export abstract class ParserClass {
 
-    abstract validateScrape(scrape: object): string
+    abstract validateScrape(scrape: object): void
 
     abstract assignInstructions(instructions: Instructions, sourceJson: object): void
 

@@ -2,9 +2,11 @@
   "url": "https://eclass.uoa.gr/modules/announcements/rss.php?c=AEROSPACE119",
   "name": "rss-cs.unipi.gr",
   "type": "rss",
-  "__comment__": "Optional  defaults  [\"title\",\"link\",\"content\",\"pubDate\"]",
-  "extraFields": ["description"],
-  "renameFields": {
-    "pubDate": "publishedDate"
+  "scrape": {
+    "__comment__": "Optional  defaults  [\"title\",\"link\",\"content\",\"pubDate\"]",
+    "extraFields": ["description"],
+    "renameFields": {
+      "pubDate": "publishedDate"
+    }
   }
 }

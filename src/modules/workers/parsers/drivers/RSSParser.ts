@@ -7,20 +7,31 @@ import Utils from "../Utils";
 
 
 export class RSSParser extends ParserClass {
-    validateScrape(scrape: object): string {
-        return "";
+
+    validateScrape(scrape: any): void {
+        if(!scrape) return
+
+        if(!(scrape.extraFields ? Array.isArray(scrape.extraFields) : true)) throw new Error('RSSParserSourceException extraFields is not an array.');
+
+        if(scrape.renameFields && (typeof scrape.renameFields !== 'object' || Array.isArray(scrape.renameFields)))
+            throw new Error('RSSParserSourceException renameFields is not a JSON object.');
     }
 
     assignInstructions(instructions: Instructions, sourceJson: any): void {
-        instructions.scrapeOptions = {}
-        if (sourceJson.renameFields) {
+        instructions.scrapeOptions = {};
+        instructions.extraFields = [];
 
+        if(!sourceJson.scrape) return;
+
+        if (sourceJson.scrape.renameFields) {
             let map = new Map()
-            Object.entries(sourceJson.renameFields).forEach(([key, value]) => {
+            Object.entries(sourceJson.scrape.renameFields).forEach(([key, value]) => {
                 map.set(key, value)
             })
             instructions.scrapeOptions.renameFields = map
         }
+
+        instructions.extraFields = sourceJson.scrape.extraFields ? sourceJson.scrape.extraFields : [];
     }
 
     private static requested_fields: String[] = ["title", "link", "content", "pubDate", "categories"]
@@ -34,8 +45,8 @@ export class RSSParser extends ParserClass {
      * @returns {Promise<[]>}
      * @param fields
      **/
-    private static async generateRenamedFields(fields: Map<string, string>): Promise<Array<String[]>> {
-        let array: Array<String[]> = []
+    private static async generateRenamedFields(fields: Map<string, string>): Promise<string[][]> {
+        let array: string[][] = []
         fields.forEach((value: string, key: string) => {
             if (this.requested_fields.some(item => item === key)) {
                 array.push([key, value]);
@@ -57,7 +68,7 @@ export class RSSParser extends ParserClass {
         let customFields = await this.generateRenamedFields(renameFields);
         return new Parser({
             // define the request headers.
-            timeout: instructions.getSource().requestTimeout,
+            timeout: instructions.getSource().timeout,
             headers: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'},
             // define requests options.
             requestOptions: {
@@ -65,7 +76,6 @@ export class RSSParser extends ParserClass {
             },
             // a few custom fields.
             customFields: {
-                // @ts-ignore
                 item: customFields
             }
         });

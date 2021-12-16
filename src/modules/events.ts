@@ -45,13 +45,6 @@ export default class Events {
             console.log(e);
         });
 
-        this.getAntennae().on('grid.connection.okay', () =>
-            Logger(LoggerTypes.STEP, 'The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."'));
-        this.getAntennae().on('grid.connection.failed', (error: any) => {
-            Logger(LoggerTypes.INSTALL_ERROR, 'Failed to start grid.')
-            console.log(error)
-        });
-
         this.getAntennae().on("scheduler.path.error", (error: any) => {
             Logger(LoggerTypes.DEBUG, `${chalk.red('Scheduler')} - Path is invalid or there are insufficient permissions.`);
             console.log(error);
@@ -75,12 +68,13 @@ export default class Events {
         this.getAntennae().on("scheduler.job.push", (job: Job) =>
             Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - pushing job(${job.id}) to workers.`));
 
-        this.getAntennae().on("grid.init", (port: number) => {
-            if(port != -1)
-                Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - WebSocket has started on port ${port}.`)
-            else
-                Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - WebSocket connected.`)
+        this.getAntennae().on('grid.connection.okay', () =>
+            Logger(LoggerTypes.STEP, 'The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."'));
+        this.getAntennae().on('grid.connection.failed', (error: any) => {
+            Logger(LoggerTypes.INSTALL_ERROR, 'Failed to start grid.')
+            console.log(error)
         });
+
         this.getAntennae().on("grid.node.connected", () =>
             Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - node connected.`));
         this.getAntennae().on("grid.node.disconnected", () =>

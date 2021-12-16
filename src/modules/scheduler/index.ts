@@ -37,11 +37,13 @@ export default class Scheduler {
                     return reject(new Error("No source files were found."))
 
                 let rawSources = files.filter((file: any) => acceptedFiles.test(file))
-                let sources = rawSources.map((file: any) => Object({
-                    filename: `${file.split("/").pop()}`,
-                    path: `${file}`,
-                    ...require(`${file}`)
-                }))
+
+                let sources = rawSources.map((file: string) => {
+                    return {
+                        filename: `${file.split("/").pop()}`,
+                        path: `${file}`,
+                    }
+                })
 
                 sources.forEach(async (sourceFile: any) => {
                     try {
@@ -64,7 +66,7 @@ export default class Scheduler {
      */
     issueJobForSource(source: Source, lasWorkerId: string = "", interval: number = -1): void {
         if (interval == -1)
-            interval = source.scrapeInterval ? source.scrapeInterval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT)
+            interval = source.interval ? source.interval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT)
 
         let worker = Worker.electWorker(lasWorkerId)
         let nJob = Job.createJob(source.getId(), worker, interval)
