@@ -12,24 +12,27 @@ try {
             process.env.MONGO_URL && true ? {
                 driver: "mongodb",
                 config: {
-                    url: process.env.SAFFRON_TESTING == "DOCKER_COMPOSE_LOCAL" ? "mongodb://mongo:27017" : process.env.MONGO_URL,
+                    url: process.env.SAFFRON_TESTING === "DOCKER_COMPOSE_LOCAL" ? "mongodb://mongo:27017" : process.env.MONGO_URL,
                     name: 'saffron-sandbox'
                 }
             } : {driver: "memory"},
         sources: {
             path: "/test/sources",
-            excluded: ["custom-cs.unipi.gr", "wordpress-cs.unipi.gr", "rss-cs.unipi.gr"]
+            exclude: ["custom-cs.unipi.gr", "wordpress-cs.unipi.gr", "rss-cs.unipi.gr"]
         },
         scheduler: {
-            intervalBetweenJobs: 10000,
+            jobsInterval: 10000,
             heavyJobFailureInterval: 86400000,
-            intervalBetweenChecks: 5000
+            checksInterval: 5000
         },
         mode: process.env.MODE || "main",
         workers: {
             nodes: 3,
             job: {
                 timeout: 5000
+            },
+            articles: {
+                amount: 30
             }
         },
         grid:{
@@ -62,7 +65,7 @@ try {
         errors.push(error)
     }
 
-    if(process.env.NODE_ENV == "testing") setTimeout(() => {
+    if(process.env.NODE_ENV === "testing") setTimeout(() => {
         if(errors.length > 0) {
             logger(loggerTypes.LoggerTypes.ERROR,`Saffron failed at runtime. The CI workflow will be terminated. The errors that occured where the following: \n\n${errors}\n\n`)
             process.exit(1)

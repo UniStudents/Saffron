@@ -63,7 +63,7 @@ export default class Worker {
                 }
             })
 
-            let collection = job.getSource().collection_name
+            let collection = job.getSource().tableName
             if (!collection)
                 collection = job.getSource().name
 

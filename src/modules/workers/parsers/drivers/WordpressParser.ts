@@ -12,9 +12,7 @@ const httpsAgent = new https.Agent({rejectUnauthorized: false})
 
 
 export class WordpressParser extends ParserClass {
-    validateScrape(scrape: object): string {
-        return "";
-    }
+    validateScrape(scrape: object): void {}
 
     assignInstructions(instructions: Instructions, sourceJson: any): void {
         for (let pair of instructions.url) {
@@ -35,7 +33,7 @@ export class WordpressParser extends ParserClass {
         let categories: any, posts: any[];
 
         let config: (AxiosConfig)  = {
-            timeout: instructions.getSource().requestTimeout
+            timeout: instructions.getSource().timeout
         }
         if(instructions["ignoreCertificates"]) config.httpsAgent = httpsAgent
 

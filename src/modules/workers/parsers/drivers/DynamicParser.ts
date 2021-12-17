@@ -6,11 +6,8 @@ import Utils from "../../../../components/utils";
 import Database from "../../../database";
 
 export class DynamicParser extends ParserClass {
-    validateScrape(scrape: any): string {
-        let value = typeof scrape != 'function'
-        if(value)
-            return ""
-        else return "DynamicParser: scrape is not a function"
+    validateScrape(scrape: any): void {
+        if(typeof scrape !== 'function') throw new Error("DynamicParser: scrape is not a function");
     }
 
     private static splice (base: string, idx: number, rem: number, str: string): string {
@@ -35,20 +32,25 @@ export class DynamicParser extends ParserClass {
 
         let utils = new Utils(url);
 
-        let collection = instructions.getSource().collection_name
+        let collection = instructions.getSource().tableName
         if (!collection || collection.length == 0)
             collection = instructions.getSource().name
         if (!collection || collection.length == 0)
             collection = instructions.getSource().getId()
 
         let articles = await Database.getInstance()!!.getArticles(collection, {pageNo: 1, articlesPerPage: 50});
+        articles.forEach((article: Article) => {
+            article.getSource = job.getSource;
+        })
+
         utils.isFirstScrape = articles.length === 0;
         utils.isScrapeAfterError = job.attempts !== 0;
 
         utils.getArticles = (count: number): Article[] => articles.slice(0, count);
         utils.onNewArticle = (article: Article) => {
             article.setSource(instructions.getSource().getId(), instructions.getSource().name);
-
+            article.getSource = job.getSource;
+            
             if (alias.length !== 0)
                 article.pushCategory(alias, [url]);
 

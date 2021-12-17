@@ -8,22 +8,24 @@ import Instructions from "../../../components/instructions";
 
 export default class ParserLoader {
 
-    static validateScrapeOptions(parser: ParserType, scrapeOptions: object): string {
+    static validateScrapeOptions(parser: ParserType, scrapeOptions: object): void {
         switch (parser) {
             case ParserType.HTML:
-                return new HTMLParser().validateScrape(scrapeOptions);
+                new HTMLParser().validateScrape(scrapeOptions);
+                break;
             case ParserType.RSS:
-                return new RSSParser().validateScrape(scrapeOptions);
+                new RSSParser().validateScrape(scrapeOptions);
+                break;
             case ParserType.WORDPRESS:
-                return new WordpressParser().validateScrape(scrapeOptions);
+                new WordpressParser().validateScrape(scrapeOptions);
+                break;
             case ParserType.DYNAMIC:
-                return new DynamicParser().validateScrape(scrapeOptions);
-            default:
-                return "Invalid parser.";
+                new DynamicParser().validateScrape(scrapeOptions);
+                break;
         }
     }
 
-    static validateScrapeInstructions(parser: ParserType, instructions: Instructions, sourceJson: object): void {
+    static assignScrapeInstructions(parser: ParserType, instructions: Instructions, sourceJson: object): void {
         switch (parser) {
             case ParserType.HTML:
                 new HTMLParser().assignInstructions(instructions, sourceJson);

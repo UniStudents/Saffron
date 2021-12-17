@@ -108,7 +108,7 @@ export = {
      */
     async parse(sourceJson: object): Promise<Article[]> {
         let source: Source = await Source.parseFileObject(sourceJson, true)
-        source.instructions.getSource = (): Source => source as Source;
+        source.instructions.getSource = (): Source => source;
 
         let job = new Job()
         job.source = {id: source.getId()}

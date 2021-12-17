@@ -2,10 +2,6 @@ import Source from "./source";
 import randomId from "../middleware/randomId"
 import hash from 'crypto-js/sha256';
 
-interface _extras {
-    [key: string]: any
-}
-
 export default class Article {
     declare id: string
     declare title: string
@@ -14,7 +10,7 @@ export default class Article {
     declare pubDate: string
     declare timestamp: number
     declare hash: string
-    declare extras: _extras
+    declare extras: {[key: string]: any}
     declare source: {
         id: string
         name: string
@@ -72,7 +68,7 @@ export default class Article {
      */
     getHash() {
         if (!this.hash)
-            this.hash = (hash(`${this.title} ${this.content} ${this.extras?.toString()} ${this.getSource()?.getId()}`)).toString()
+            this.hash = (hash(`${this.title} ${this.content} ${this.extras?.toString()} ${this.source.id}`)).toString()
 
         return this.hash
     }

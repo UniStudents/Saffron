@@ -4,8 +4,6 @@ import Job from "../../../../components/job";
 import Article from "../../../../components/articles";
 import https from "https";
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
-import Logger from "../../../../middleware/logger";
-import {LoggerTypes} from "../../../../middleware/LoggerTypes";
 import {reject} from "lodash";
 import cheerio from "cheerio";
 import Utils from "../Utils";
@@ -16,13 +14,9 @@ interface ArticleImage { [key: string]: any }
 
 export class HTMLParser extends ParserClass {
 
-    validateScrape(scrape: any): string {
+    validateScrape(scrape: any): void {
         let value = Object.entries(scrape.article).some((key: any) =>  key === undefined || key[1].class === undefined);
-
-        if(value)
-            return ""
-            // TODO
-        else return "HTMLParserSourceException found empty key or key with no class"
+        if(value) throw new Error("HTMLParserSourceException found empty key or key with no class.")
     }
 
     assignInstructions(instructions: Instructions, sourceJson: any): void {
@@ -169,7 +163,7 @@ export class HTMLParser extends ParserClass {
     static async parse2(alias: string, url: string, instructions: Instructions, amount: Number = 10): Promise<Article[]> {
         let parsedArticles: Article[] = []
 
-        await HTMLParser.request(url, instructions.getSource().requestTimeout,instructions)
+        await HTMLParser.request(url, instructions.getSource().timeout,instructions)
             .then((response: AxiosResponse) => {
                 const cheerioLoad: cheerio.Root = cheerio.load(response.data)
 
