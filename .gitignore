@@ -108,3 +108,5 @@ yarn.lock
 
 .parcel-cache/
 package-lock.json
+
+pnpm-lock.yaml
