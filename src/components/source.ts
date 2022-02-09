@@ -122,8 +122,8 @@ export default class Source {
     /**
      * Return a copy array of the sources
      */
-    static getSources(): Array<Source> {
-        return [...this._sources]
+    static getSources(): Source[] {
+        return this._sources
     }
 
     /**

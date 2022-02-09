@@ -1,6 +1,8 @@
 import Article from "../../components/articles"
 import Extensions from "../extensions";
 import Events from "../events";
+import Config from "../../components/config";
+import {ConfigOptions} from "../../middleware/ConfigOptions";
 
 export default abstract class Database {
 
@@ -42,6 +44,8 @@ export default abstract class Database {
         Events.emit("workers.articles.found", articles, src); // Can be empty array
         if(articles.length == 0) return;
 
+        Events.emit("middleware.before", articles);
+
         let getExtPair = Extensions.getInstance().startCount();
         let pair: any;
         while ((pair = getExtPair()) != null) {
@@ -53,6 +57,10 @@ export default abstract class Database {
                 articles = await pair.callback(articles);
             }
         }
+
+        if(Config.getOption(ConfigOptions.DB_DRIVER) === 'none') return;
+
+        Events.emit("middleware.after", articles);
 
         let urls: string[] = articles[0].getSource().instructions.url.map((url: string[]) => url[0]);
         // if(urls.length > 1) {
@@ -68,7 +76,6 @@ export default abstract class Database {
         //
         //     return;
         // }
-
 
         let num = urls.length * articles.length // TODO - temporary until search for every url.
         let dbArticles = await this.getArticles(src, {
