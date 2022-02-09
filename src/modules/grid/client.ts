@@ -1,7 +1,5 @@
 import {io} from "socket.io-client";
 import Config from "../../components/config";
-import logger from "../../middleware/logger";
-import {LoggerTypes} from "../../middleware/LoggerTypes";
 
 export default class Client {
     declare socket: any;

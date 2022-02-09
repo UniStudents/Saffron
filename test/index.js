@@ -9,6 +9,9 @@ try {
     config = require("./saffron.json")
 } catch (e) {
     config = {
+        misc: {
+            log: 'all'
+        },
         database: process.env.MONGO_URL && true ? {
             driver: "mongodb",
             config: {
@@ -38,7 +41,7 @@ try {
                 amount: 30
             }
         },
-        grid:{
+        grid: {
             mode: "auto" || "manual",
             // Following options are optional during auto mode
             address: "192.168.2.9",
@@ -60,22 +63,31 @@ try {
         await saffron.initialize(config)
         await saffron.start()
 
-        saffron.on("workers.articles.found", (articles)=>{
+        saffron.on("workers.articles.found", (articles, src) => {
             // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
         })
-    }
-    catch (error) {
+
+        saffron.on("middleware.before", (articles) => {
+            // console.log('middleware.before')
+            // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
+        })
+
+        saffron.on("middleware.after", (articles) => {
+            // console.log('middleware.after')
+            // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
+        })
+    } catch (error) {
         errors.push(error)
     }
 
-    if(process.env.NODE_ENV === "testing") setTimeout(() => {
-        if(errors.length > 0) {
-            logger(loggerTypes.LoggerTypes.ERROR,`Saffron failed at runtime. The CI workflow will be terminated. The errors that occured where the following: \n\n${errors}\n\n`);
+    if (process.env.NODE_ENV === "testing") setTimeout(() => {
+        if (errors.length > 0) {
+            logger(loggerTypes.LoggerTypes.ERROR, `Saffron failed at runtime. The CI workflow will be terminated. The errors that occured where the following: \n\n${errors}\n\n`);
             process.exit(1);
-        }else{
-            logger(loggerTypes.LoggerTypes.STEP,`Saffron doesn\'t show any signs of malfunction with this commit.\n`);
+        } else {
+            logger(loggerTypes.LoggerTypes.STEP, `Saffron doesn\'t show any signs of malfunction with this commit.\n`);
             process.exit(0);
         }
     }, 15000)
-     //saffron.on("new-articles-pushed", articles=> console.log("new-articles",articles))
+    //saffron.on("new-articles-pushed", articles=> console.log("new-articles",articles))
 })()

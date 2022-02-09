@@ -27,11 +27,11 @@ export = {
      * @see https://saffron.poiw.org
      */
     initialize: async (config: any = undefined) => {
-        Events.registerLogListeners();
-        Events.emit('title');
-
         // Load config file
         Config.load(config);
+
+        Events.registerLogListeners();
+        Events.emit('title');
 
         // Initialize database
         let database = DatabaseLoader.getInstance();

@@ -1,5 +1,3 @@
-import Config from '../components/config';
-import { ConfigOptions } from './ConfigOptions';
 import {DateTime} from "luxon";
 import Events from "../modules/events";
 import {LoggerTypes} from "./LoggerTypes"
@@ -10,9 +8,6 @@ import chalk from 'chalk'
  * @param data The message that will be logged
  */
 export default (type: LoggerTypes, data: any) => {
-    let logLevel = Config.getOption(ConfigOptions.MISC_LOG_LEVEL);
-    if(logLevel === 'none') return;
-
     Events.getAntennae().emit("log", {type, log: data})
     let time = chalk.bold(`${DateTime.now().toLocaleString({
         day: '2-digit',
