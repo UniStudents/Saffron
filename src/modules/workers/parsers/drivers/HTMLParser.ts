@@ -26,7 +26,7 @@ export class HTMLParser extends ParserClass {
     }
 
     private static async request(url: string, timeout: number,instructions: Instructions): Promise<AxiosResponse> {
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
 
             let config : AxiosConfig = {
                 method: 'get',
@@ -57,7 +57,16 @@ export class HTMLParser extends ParserClass {
     private static attributes(location: cheerio.Cheerio,
                               dataStoredAt: string,
                               attributesArr: Array<string>): Array<Object> | null {
-
+        //Search into same element if Instructions(Find = null) and class is the same
+        if(!dataStoredAt || dataStoredAt.length <= 0){
+            return attributesArr.filter(item => location.attr(item)).map(item => {
+                return {
+                    attribute: item, //attribute
+                    value: (location.attr(item)) ? location.attr(item) : "", //value_of__requested_attribute
+                    text: (location.text()) ? location.text() : "", //tag value
+                }
+            })
+        }
         return attributesArr.filter(item => location.find(dataStoredAt).attr(item)).map(item => {
             return {
                 attribute: item, //attribute
@@ -178,7 +187,7 @@ export class HTMLParser extends ParserClass {
 
                     // for each option. The options provided by instructions.
                     for (let item in options) {
-                        if(options.hasOwnProperty(item) && !options[item].find && !options[item].multiple){
+                        if(options.hasOwnProperty(item) && !options[item].find && !options[item].multiple && !options[item].attributes){
                             articleData[item] = cheerioLoad(element).find(options[item].class).text()
                         }else if(options.hasOwnProperty(item)) {
                             if (!options[item].attributes)
