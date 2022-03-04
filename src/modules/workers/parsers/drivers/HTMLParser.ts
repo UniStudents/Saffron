@@ -26,7 +26,7 @@ export class HTMLParser extends ParserClass {
     }
 
     private static async request(url: string, timeout: number,instructions: Instructions): Promise<AxiosResponse> {
-        return new Promise((resolve) => {
+        return new Promise((resolve,reject) => {
 
             let config : AxiosConfig = {
                 method: 'get',
