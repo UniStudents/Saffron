@@ -18,6 +18,7 @@ export default class Instructions {
     declare scrapeOptions: any;
     declare elementSelector: string;
     declare scrapeFunction: string;
+    declare textDecoder: TextDecoder;
     declare ignoreCertificates: boolean;
     declare extraFields: string[];
 
@@ -60,6 +61,7 @@ export default class Instructions {
             elementSelector: this.elementSelector,
             scrapeFunction: this.scrapeFunction,
             ignoreCertificates: this.ignoreCertificates,
+            textDecoder: this.textDecoder,
             extraFields: this.extraFields
         }
     }
@@ -75,6 +77,7 @@ export default class Instructions {
         inst.elementSelector = json.elementSelector
         inst.scrapeFunction = json.scrapeFunction
         inst.ignoreCertificates = json.ignoreCertificates
+        inst.textDecoder = json.textDecoder
         inst.extraFields = json.extraFields
 
         return inst

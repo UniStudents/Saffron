@@ -6,5 +6,7 @@ export interface AxiosConfig {
     timeout: number,
     url?: string,
     method?: string
+    responseType: string,
+    responseEncoding: string
 
 }
