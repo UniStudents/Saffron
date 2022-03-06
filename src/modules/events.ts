@@ -76,8 +76,8 @@ export default class Events {
 
             this.getAntennae().on("workers.articles.found", (articles: Article[], src: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.cyan('Articles')} - Finished job returned ${articles.length} articles for ${src}.`));
-            this.getAntennae().on("workers.articles.new", (articles: Article[]) =>
-                Logger(LoggerTypes.INFO, `${chalk.cyan('Articles')} - ${articles.length} articles will be added to to the db for ${articles[0].getSource().name}.`));
+            this.getAntennae().on("workers.articles.new", (articles: Article[],src: string) =>
+                Logger(LoggerTypes.INFO, `${chalk.cyan('Articles')} - ${articles.length} articles will be added to to the db for ${src}.`));
         }
 
         if(logLevel === 'all' || logLevel === 'info' || logLevel === 'errors') {

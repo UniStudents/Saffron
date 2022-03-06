@@ -1,0 +1,56 @@
+{
+  "url": [
+    ["Γενικές Ανακοινώσεις","http://www.naval.ntua.gr/news"]
+  ],
+  "name": "naval.ntua.gr",
+  "encoding": "iso-8859-7",
+  "type": "html",
+  "scrape": {
+    "container": "#page-content > .news_container",
+    "article": {
+      "link": {
+        "class": ".catItemTitle",
+        "find": [
+          "a"
+        ],
+        "attributes": [
+          "href"
+        ],
+        "multiple": false
+      },
+      "pubDate": {
+        "class": ".catItemDateCreated",
+        "attributes": [
+          "value",
+          "href"
+        ],
+        "find": null,
+        "multiple": false
+      },
+      "title": {
+        "class": ".news_title",
+        "find": null,
+        "multiple": false
+      },
+      "content": {
+        "class": ".catItemIntroText",
+        "find": null,
+        "multiple": false
+      },
+      "attachments": {
+        "class": ".catItemLinks",
+        "attributes": [
+          "value",
+          "href",
+          "title"
+        ],
+        "find": [
+          ".catItemAttachmentsBlock",
+          "li",
+          "a"
+        ],
+        "multiple": true
+      }
+    }
+  }
+}
