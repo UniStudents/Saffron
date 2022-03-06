@@ -31,13 +31,15 @@ export class WordpressParser extends ParserClass {
         let categories: any, posts: any[];
 
         let config: (AxiosConfig)  = {
-            timeout: instructions.getSource().timeout
+            timeout: instructions.getSource().timeout,
+            responseType: 'arraybuffer',
+            responseEncoding: 'binary'
         }
         if(instructions["ignoreCertificates"]) config.httpsAgent = httpsAgent
 
         try {
-            categories = (await axios.get(categoriesUrl, (config as AxiosRequestConfig)))?.data
-            posts = (await axios.get(postsUrl, (config as AxiosRequestConfig)))?.data
+            categories = JSON.parse(instructions.textDecoder.decode((await axios.get(categoriesUrl, (config as AxiosRequestConfig)))?.data))
+            posts = JSON.parse(instructions.textDecoder.decode((await axios.get(postsUrl, (config as AxiosRequestConfig)))?.data))
         } catch (e: any) {
             throw new Error(`WordpressParserException job failed for ${instructions.getSource().name}, original error: ${e.message}`);
         }

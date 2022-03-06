@@ -66,6 +66,10 @@ export default class Source {
             throw new Error(`SourceException: ${source.filename}: ignoreCertificates: is not valid, must be boolean.`);
         ret.instructions.ignoreCertificates = source.ignoreCertificates ? source.ignoreCertificates : false;
 
+        if (typeof source.encoding !== 'undefined' && typeof source.encoding !== 'string')
+            throw new Error(`SourceException: ${source.filename}: encoding: is not valid, must be string value.`);
+        ret.instructions.textDecoder = source.encoding ? new TextDecoder(`${source.encoding}`) : new TextDecoder();
+
         ret.extra = source.extra;
 
         ret.instructions.url = [];

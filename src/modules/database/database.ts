@@ -86,7 +86,7 @@ export default abstract class Database {
         // And then check if they already exist.
         let hashes = dbArticles.map((article: Article) => article.getHash());
         articles = articles.filter((article: Article) => !hashes.includes(article.getHash()));
-        Events.emit("workers.articles.new", articles); // Can be empty array
+        Events.emit("workers.articles.new", articles,src); // Can be empty array
 
         for (const article of articles) {
             let added = await this.pushArticle(src, article);

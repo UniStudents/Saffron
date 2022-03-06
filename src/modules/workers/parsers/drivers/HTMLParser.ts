@@ -32,6 +32,8 @@ export class HTMLParser extends ParserClass {
                 method: 'get',
                 url,
                 timeout,
+                responseType: 'arraybuffer',
+                responseEncoding: 'binary'
             }
 
             if(instructions["ignoreCertificates"]) config.httpsAgent = httpsAgent
@@ -174,7 +176,7 @@ export class HTMLParser extends ParserClass {
 
         await HTMLParser.request(url, instructions.getSource().timeout,instructions)
             .then((response: AxiosResponse) => {
-                const cheerioLoad: cheerio.Root = cheerio.load(response.data)
+                const cheerioLoad: cheerio.Root = cheerio.load( instructions.textDecoder.decode(response.data))
 
                 // for each article.
                 cheerioLoad(`${instructions.elementSelector}`).each((index, element) => {
