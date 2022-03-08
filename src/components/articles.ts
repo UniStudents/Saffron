@@ -100,14 +100,14 @@ export default class Article {
         this.source = {id, name};
     }
 
-    public pushAttachment(attachment: object) {
+    public pushAttachment(attachment: {text: string,value: string, attribute: string}) {
         if(typeof this.attachments === 'undefined')
             this.attachments = [];
 
         this.attachments.push(attachment);
     }
 
-    public pushAttachments(attachments: object[]) {
+    public pushAttachments(attachments: {text: string,value: string, attribute: string}[]) {
         if(typeof this.attachments === 'undefined')
             this.attachments = [];
 
