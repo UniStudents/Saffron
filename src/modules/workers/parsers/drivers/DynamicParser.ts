@@ -4,6 +4,7 @@ import Job from "../../../../components/job";
 import Article from "../../../../components/articles";
 import Utils from "../../../../components/utils";
 import Database from "../../../database";
+import randomId from "../../../../middleware/randomId";
 
 export class DynamicParser extends ParserClass {
     validateScrape(scrape: any): void {
@@ -48,6 +49,7 @@ export class DynamicParser extends ParserClass {
 
         utils.getArticles = (count: number): Article[] => articles.slice(0, count);
         utils.onNewArticle = (article: Article) => {
+            article.id = randomId("art")
             article.setSource(instructions.getSource().getId(), instructions.getSource().name);
             article.getSource = job.getSource;
             
