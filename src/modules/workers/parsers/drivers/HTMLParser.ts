@@ -235,7 +235,7 @@ export class HTMLParser extends ParserClass {
                     }
 
                     tmpArticle.pushAttachments(articleData.attachments ? articleData.attachments : []);
-                    tmpArticle.pushAttachment(Utils.extractLinks(tmpArticle.content))
+                    tmpArticle.pushAttachments(Utils.extractLinks(tmpArticle.content))
 
                     if (alias) tmpArticle.pushCategory(alias, [url]);
 
