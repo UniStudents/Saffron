@@ -1,10 +1,11 @@
 import {ParserType} from "./ParserType";
 import {HTMLParser} from "./drivers/HTMLParser";
 import {RSSParser} from "./drivers/RSSParser";
-import {WordpressParser} from "./drivers/WordpressParser";
+import {WordpressV2Parser} from "./drivers/wordpress/WordpressV2Parser";
 import {DynamicParser} from "./drivers/DynamicParser";
 import {ParserClass} from "./ParserClass";
 import Instructions from "../../../components/instructions";
+import {WordpressV1Parser} from "./drivers/wordpress/WordpressV1Parser";
 
 export default class ParserLoader {
 
@@ -16,8 +17,11 @@ export default class ParserLoader {
             case ParserType.RSS:
                 new RSSParser().validateScrape(scrapeOptions);
                 break;
-            case ParserType.WORDPRESS:
-                new WordpressParser().validateScrape(scrapeOptions);
+            case ParserType.WORDPRESS_V1:
+                new WordpressV1Parser().validateScrape(scrapeOptions);
+                break;
+            case ParserType.WORDPRESS_V2:
+                new WordpressV2Parser().validateScrape(scrapeOptions);
                 break;
             case ParserType.DYNAMIC:
                 new DynamicParser().validateScrape(scrapeOptions);
@@ -33,8 +37,11 @@ export default class ParserLoader {
             case ParserType.RSS:
                 new RSSParser().assignInstructions(instructions, sourceJson);
                 break
-            case ParserType.WORDPRESS:
-                new WordpressParser().assignInstructions(instructions, sourceJson);
+            case ParserType.WORDPRESS_V1:
+                new WordpressV1Parser().assignInstructions(instructions, sourceJson);
+                break
+            case ParserType.WORDPRESS_V2:
+                new WordpressV2Parser().assignInstructions(instructions, sourceJson);
                 break
             case ParserType.DYNAMIC:
                 new DynamicParser().assignInstructions(instructions, sourceJson);
@@ -48,8 +55,10 @@ export default class ParserLoader {
                 return new HTMLParser();
             case ParserType.RSS:
                 return new RSSParser();
-            case ParserType.WORDPRESS:
-                return new WordpressParser();
+            case ParserType.WORDPRESS_V1:
+                return new WordpressV1Parser();
+            case ParserType.WORDPRESS_V2:
+                return new WordpressV2Parser();
             case ParserType.DYNAMIC:
                 return new DynamicParser();
         }
