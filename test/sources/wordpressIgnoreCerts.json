@@ -1,6 +1,21 @@
 {
   "url": "https://www.geo.hua.gr/",
   "name": "geo.hua.gr",
-  "type": "wordpress",
-  "ignoreCertificates": true
+  "type": "wordpress-v2",
+  "ignoreCertificates": true,
+  "scrape": {
+    "articles": {
+      "include": [
+        "id",
+        "date",
+        "date_gmt"
+      ],
+      "filter": {
+        "search": "Δηλώσεις",
+        "author": 4,
+        "sticky": true,
+        "offset": 10
+      }
+    }
+  }
 }

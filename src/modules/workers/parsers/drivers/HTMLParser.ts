@@ -4,7 +4,6 @@ import Job from "../../../../components/job";
 import Article from "../../../../components/articles";
 import https from "https";
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
-import {reject} from "lodash";
 import cheerio from "cheerio";
 import Utils from "../Utils";
 import {AxiosConfig} from "../../../../components/AxiosConfig";

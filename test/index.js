@@ -23,7 +23,7 @@ try {
         },
         sources: {
             path: "/test/sources",
-            // includeOnly: ['rss-cs.unipi.gr'],
+            includeOnly: ['geo.hua.gr'],
             // exclude: ["custom-cs.unipi.gr"]
         },
         scheduler: {
@@ -65,7 +65,8 @@ try {
         await saffron.start()
 
         saffron.on("workers.articles.found", (articles, src) => {
-            // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
+            console.log(articles.length)
+            console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
         })
 
         saffron.on("middleware.before", (articles) => {
