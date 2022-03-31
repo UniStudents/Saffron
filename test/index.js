@@ -23,7 +23,7 @@ try {
         },
         sources: {
             path: "/test/sources",
-            // includeOnly: ['rss-cs.unipi.gr'],
+            // includeOnly: ['wordpress-financeclub.unipi.gr'],
             // exclude: ["custom-cs.unipi.gr"]
         },
         scheduler: {
@@ -65,6 +65,7 @@ try {
         await saffron.start()
 
         saffron.on("workers.articles.found", (articles, src) => {
+            console.log(src, articles.length)
             // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
         })
 
