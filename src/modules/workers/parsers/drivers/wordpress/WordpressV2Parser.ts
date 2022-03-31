@@ -17,45 +17,56 @@ export class WordpressV2Parser extends ParserClass {
     assignInstructions(instructions: Instructions, sourceJson: any): void {
         for (let pair of instructions.url) {
             if (pair.length == 1)
-                pair[0] = `${pair[0]}${pair[0].endsWith('/') ? '' : '/'}`
+                pair[0] = `${pair[0]}${pair[0].endsWith('/') ? '' : '/'}`;
             else if (pair.length == 2)
-                pair[1] = `${pair[1]}${pair[1].endsWith('/') ? '' : '/'}`
+                pair[1] = `${pair[1]}${pair[1].endsWith('/') ? '' : '/'}`;
         }
 
-        let include: string[] = [];
-        if(Array.isArray(sourceJson.scrape?.articles?.include)) {
-            for(const item of sourceJson.scrape.articles.include) {
-                if(typeof item === 'string')
-                    include.push(item)
+        let artScrapeOpts = sourceJson.scrape?.articles;
+        let articlesOpts: any = {
+            include: [],
+            dates: {},
+            filter: {},
+            thumbnail: "thumbnail"
+        };
+
+        if(artScrapeOpts != null) {
+            if(Array.isArray(sourceJson.scrape?.articles?.include)) {
+                for(const item of sourceJson.scrape.articles.include) {
+                    if(typeof item === 'string')
+                        articlesOpts.include.push(item)
+                }
             }
+
+            if(artScrapeOpts.dates) {
+                articlesOpts.dates.gmt = typeof artScrapeOpts.dates.gmt === 'boolean' ? artScrapeOpts.dates.gmt : false;
+                articlesOpts.dates.fallback = typeof artScrapeOpts.dates.fallback === 'boolean' ? artScrapeOpts.dates.fallback : false;
+            }
+
+            if(artScrapeOpts.filter) {
+                articlesOpts.filter.search = typeof artScrapeOpts.filter?.search === 'string' ? artScrapeOpts.filter.search : null;
+                articlesOpts.filter.author = typeof artScrapeOpts.filter?.author === 'string' ? artScrapeOpts.filter.author : null;
+                articlesOpts.filter.authorExclude = typeof artScrapeOpts.filter?.authorExclude === 'string' ? artScrapeOpts.filter.authorExclude : null;
+
+                // ISO8601 compliant date
+                articlesOpts.filter.after = typeof artScrapeOpts.filter?.after === 'string' ? artScrapeOpts.filter.after : null;
+                articlesOpts.filter.before = typeof artScrapeOpts.filter?.before === 'string' ? artScrapeOpts.filter.before : null;
+
+                // offset: typeof articleOptions.filter?.offset === 'number' ? articleOptions.filter.offset : 0,
+                articlesOpts.filter.slug = typeof artScrapeOpts.filter?.slug === 'string' ? artScrapeOpts.filter.slug : null;
+                articlesOpts.filter.status = typeof artScrapeOpts.filter?.status === 'string' ? artScrapeOpts.filter.status : null;
+                articlesOpts.filter.categories = typeof artScrapeOpts.filter?.categories === 'string' ? artScrapeOpts.filter.categories : null;
+                articlesOpts.filter.categoriesExclude = typeof artScrapeOpts.filter?.categoriesExclude === 'string' ? artScrapeOpts.filter.categoriesExclude : null;
+                articlesOpts.filter.tags = typeof artScrapeOpts.filter?.tags === 'string' ? artScrapeOpts.filter.tags : null;
+                articlesOpts.filter.tagsExclude = typeof artScrapeOpts.filter?.tagsExclude === 'string' ? artScrapeOpts.filter.tagsExclude : null;
+                articlesOpts.filter.sticky = typeof artScrapeOpts.filter?.sticky === 'boolean' ? artScrapeOpts.filter.sticky : null;
+            }
+
+            articlesOpts.thumbnail = typeof artScrapeOpts.thumbnail === 'string' ? artScrapeOpts.thumbnail : 'thumbnail';
         }
 
         instructions.scrapeOptions = {
-            articles: {
-                include,
-                dates: {
-                    gmt: typeof sourceJson.scrape?.articles?.dates?.gmt === 'boolean' ? sourceJson.scrape.articles.dates.gmt : false,
-                    fallback: typeof sourceJson.scrape?.articles?.dates?.fallback === 'boolean' ? sourceJson.scrape.articles.dates.fallback : false,
-                },
-                filter: {
-                    search: typeof sourceJson.scrape?.articles?.filter?.search === 'string' ? sourceJson.scrape.articles.filter.search : '',
-                    author: typeof sourceJson.scrape?.articles?.filter?.author === 'string' ? sourceJson.scrape.articles.filter.author : '',
-                    authorExclude: typeof sourceJson.scrape?.articles?.filter?.authorExclude === 'string' ? sourceJson.scrape.articles.filter.authorExclude : '',
-
-                    // ISO8601 compliant date
-                    after: typeof sourceJson.scrape?.articles?.filter?.after === 'string' ? sourceJson.scrape.articles.filter.after : '',
-                    before: typeof sourceJson.scrape?.articles?.filter?.before === 'string' ? sourceJson.scrape.articles.filter.before : '',
-
-                    // offset: typeof sourceJson.scrape?.articles?.filter?.offset === 'number' ? sourceJson.scrape.articles.filter.offset : 0,
-                    slug: typeof sourceJson.scrape?.articles?.filter?.slug === 'string' ? sourceJson.scrape.articles.filter.slug : '',
-                    status: typeof sourceJson.scrape?.articles?.filter?.status === 'string' ? sourceJson.scrape.articles.filter.status : '',
-                    categories: typeof sourceJson.scrape?.articles?.filter?.categories === 'string' ? sourceJson.scrape.articles.filter.categories : '',
-                    categoriesExclude: typeof sourceJson.scrape?.articles?.filter?.categoriesExclude === 'string' ? sourceJson.scrape.articles.filter.categoriesExclude : '',
-                    tags: typeof sourceJson.scrape?.articles?.filter?.tags === 'string' ? sourceJson.scrape.articles.filter.tags : '',
-                    tagsExclude: typeof sourceJson.scrape?.articles?.filter?.tagsExclude === 'string' ? sourceJson.scrape.articles.filter.tagsExclude : '',
-                    sticky: typeof sourceJson.scrape?.articles?.filter?.sticky === 'boolean' ? sourceJson.scrape.articles.filter.sticky : false,
-                }
-            }
+            articles: articlesOpts
         };
     }
 
@@ -66,32 +77,33 @@ export class WordpressV2Parser extends ParserClass {
         let postsUrl = `${url}wp-json/wp/v2/posts?_embed&per_page=${amount}`;
 
         const filters = instructions.scrapeOptions.articles.filter;
-        if(filters.search !== '') postsUrl +=`&search=${encodeURIComponent(filters.search)}`;
-        if(filters.author !== '') postsUrl +=`&author=${filters.author}`;
-        if(filters.authorExclude !== '') postsUrl +=`&author_exclude=${filters.authorExclude}`;
-        if(filters.after !== '') postsUrl +=`&after=${filters.after}`;
-        if(filters.before !== '') postsUrl +=`&before=${filters.before}`;
-        // if(filters.offset > 0) postsUrl +=`&offset=${filters.offset}`;
-        if(filters.slug !== '') postsUrl +=`&slug=${filters.slug}`;
-        if(filters.status !== '') postsUrl +=`&status=${filters.status}`;
-        if(filters.categories !== '') postsUrl +=`&categories=${filters.categories}`;
-        if(filters.categoriesExclude !== '') postsUrl +=`&categories_exclude=${filters.categoriesExclude}`;
-        if(filters.tags !== '') postsUrl +=`&tags=${filters.tags}`;
-        if(filters.tagsExclude !== '') postsUrl +=`&tags_exclude=${filters.tagsExclude}`;
+        if(filters.search) postsUrl +=`&search=${encodeURIComponent(filters.search)}`;
+        if(filters.author) postsUrl +=`&author=${filters.author}`;
+        if(filters.authorExclude) postsUrl +=`&author_exclude=${filters.authorExclude}`;
+        if(filters.after) postsUrl +=`&after=${filters.after}`;
+        if(filters.before) postsUrl +=`&before=${filters.before}`;
+        // if(filters.offset != null && filters.offset > 0) postsUrl +=`&offset=${filters.offset}`;
+        if(filters.slug) postsUrl +=`&slug=${filters.slug}`;
+        if(filters.status) postsUrl +=`&status=${filters.status}`;
+        if(filters.categories) postsUrl +=`&categories=${filters.categories}`;
+        if(filters.categoriesExclude) postsUrl +=`&categories_exclude=${filters.categoriesExclude}`;
+        if(filters.tags) postsUrl +=`&tags=${filters.tags}`;
+        if(filters.tagsExclude) postsUrl +=`&tags_exclude=${filters.tagsExclude}`;
         if(filters.sticky) postsUrl +=`&_sticky`;
 
-        let categories: any, posts: any[];
+        let categories: any
+            , posts: any[];
 
-        let config: (AxiosConfig) = {
+        let config: AxiosConfig & AxiosRequestConfig = {
             timeout: instructions.getSource().timeout,
             responseType: 'arraybuffer',
             responseEncoding: 'binary'
-        }
-        if (instructions["ignoreCertificates"]) config.httpsAgent = httpsAgent
+        };
+        if (instructions["ignoreCertificates"]) config.httpsAgent = httpsAgent;
 
         try {
-            categories = JSON.parse(instructions.textDecoder.decode((await axios.get(categoriesUrl, (config as AxiosRequestConfig)))?.data))
-            posts = JSON.parse(instructions.textDecoder.decode((await axios.get(postsUrl, (config as AxiosRequestConfig)))?.data))
+            categories = JSON.parse(instructions.textDecoder.decode((await axios.get(categoriesUrl, config))?.data))
+            posts = JSON.parse(instructions.textDecoder.decode((await axios.get(postsUrl, config))?.data))
         } catch (e: any) {
             throw new Error(`WordpressParserException job failed for ${instructions.getSource().name}, original error: ${e.message}`);
         }
@@ -142,9 +154,13 @@ export class WordpressV2Parser extends ParserClass {
                 if (cat) article.pushCategory(cat.name, cat.links);
             }
 
-            // INCLUDE
-            let include: string[] = instructions.scrapeOptions.articles.include;
+            // Thumbnail
+            let thumbnailSize = instructions.scrapeOptions.articles.thumbnail;
+            let thumbnailUrl: string = p._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes[thumbnailSize]?.source_url;
 
+            article.setThumbnail(thumbnailUrl)
+
+            let include: string[] = instructions.scrapeOptions.articles.include;
             // The date the object was last modified.
             if(include.includes('modified')) {
                 if (instructions.scrapeOptions.articles.dates.gmt) {

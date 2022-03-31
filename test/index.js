@@ -23,7 +23,7 @@ try {
         },
         sources: {
             path: "/test/sources",
-            includeOnly: ['geo.hua.gr'],
+            // includeOnly: ['wordpress-financeclub.unipi.gr'],
             // exclude: ["custom-cs.unipi.gr"]
         },
         scheduler: {
@@ -65,8 +65,8 @@ try {
         await saffron.start()
 
         saffron.on("workers.articles.found", (articles, src) => {
-            console.log(articles.length)
-            console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
+            console.log(src, articles.length)
+            // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
         })
 
         saffron.on("middleware.before", (articles) => {

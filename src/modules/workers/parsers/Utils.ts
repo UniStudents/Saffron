@@ -1,4 +1,5 @@
 import cheerio from "cheerio";
+import {Attachment} from "../../../components/articles";
 
 const striptags = require('striptags');
 export default class Utils {
@@ -290,11 +291,11 @@ export default class Utils {
         return text.toString()
     }
 
-    public static extractLinks(html: string): object[] {
+    public static extractLinks(html: string): Attachment[] {
         if(!html || html == '') return [];
 
         const $ = cheerio.load(html);
-        const links: object[] = [];
+        const links: Attachment[] = [];
 
         $('a').each((index, element) => {
             links.push({
