@@ -9,7 +9,6 @@ import {AxiosConfig} from "../../../../../components/AxiosConfig";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})
 
-
 export class WordpressV2Parser extends ParserClass {
     validateScrape(scrape: object): void {
     }
@@ -139,6 +138,7 @@ export class WordpressV2Parser extends ParserClass {
             article.setTitle(Utils.htmlStrip(p.title.rendered, false));
             article.setContent(p.content.rendered);
             article.setLink(p.link);
+            article.pushCategory(alias, [url]);
 
             if (instructions.scrapeOptions.articles.dates.gmt) {
                 if(p.date_gmt != null)
