@@ -2,9 +2,44 @@ import _ from "lodash"
 import {ConfigOptions} from "../middleware/ConfigOptions";
 import Article from "./articles";
 
+export type ConfigType = {
+    mode: 'main' | 'worker';
+    database: {
+        pushArticles: (articles: Article[]) => Promise<void>;
+        getArticles: (opts: {
+            tableName: string;
+        }) => Promise<Article[]>;
+    };
+    sources: {
+        path: string;
+        includeOnly?: string[];
+        exclude?: string[];
+    };
+    workers: {
+        nodes?: number;
+        jobs?: {
+            timeout?: number;
+        };
+        articles: {
+            amount?: number;
+        };
+    };
+    scheduler: {
+        jobsInterval?: number,
+        heavyJobFailureInterval?: number,
+        checksInterval?: number;
+    };
+    grid: {
+        distributed: boolean;
+    };
+    misc: {
+        log?: 'all' | 'info' | 'errors' | 'none';
+    };
+}
+
 export default class Config {
     private static instance: Config
-    _config: { [key: string]: any } = {
+    _config: ConfigType = {
         mode: "main",
         database: {
             pushArticles: async (articles: Article[]): Promise<void> => {
@@ -43,34 +78,38 @@ export default class Config {
         }
     }
 
-    private constructor(config?: any) {
-        this._config = this.mergeObject(config, this._config)
-
+    private constructor(config?: Partial<ConfigType> | {
+        production: Partial<ConfigType>;
+    } | {
+        development: Partial<ConfigType>;
+    } | {
+        testing: Partial<ConfigType>;
+    }) {
         switch (process.env.NODE_ENV) {
             case "production":
-                if (config.production)
-                    this._config = this.mergeObject(config.production, this._config)
+                if ((config as any).production)
+                    this._config = this.mergeObject((config as any).production, this._config)
                 break
             case "development":
-                if (config.development)
-                    this._config = this.mergeObject(config.development, this._config)
+                if ((config as any).development)
+                    this._config = this.mergeObject((config as any).development, this._config)
                 break
             case "testing":
-                if (config.testing)
-                    this._config = this.mergeObject(config.testing, this._config)
+                if ((config as any).testing)
+                    this._config = this.mergeObject((config as any).testing, this._config)
                 break
             default:
-
+                this._config = this.mergeObject(config, this._config)
         }
 
         if (process.env.SAFFRON_MODE && ["main", "worker"].includes(process.env.SAFFRON_MODE))
-            this._config.mode = process.env.SAFFRON_MODE
+            this._config.mode = process.env.SAFFRON_MODE as any;
     }
 
     /**
      * Loads an external configuration object and merges the parameters with the default ones.
      */
-    static load(config?: object): any {
+    static load(config?: Partial<ConfigType>): any {
         if (!this.instance)
             this.instance = new Config(config)
 
@@ -122,7 +161,7 @@ export default class Config {
         }
     }
 
-    private mergeObject(src: any, original: object): object {
+    private mergeObject(src: any, original: object): any {
         return _.mergeWith({}, original, src, (o, s) => {
             if (Array.isArray(o))
                 return s ? s : o

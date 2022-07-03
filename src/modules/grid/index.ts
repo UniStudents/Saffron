@@ -5,22 +5,24 @@ import Worker from "../workers";
 import Config from "../../components/config";
 import {nanoid} from "nanoid";
 import Article from "../../components/articles";
-import Server from "./server";
-import Client from "./client";
 import {ConfigOptions} from "../../middleware/ConfigOptions";
 import Extensions from "../extensions";
 import Source from "../../components/source";
+import Scheduler from "../scheduler";
+import * as ServerIO from "socket.io"
+import * as ClientIO from "socket.io-client";
 
 
 export default class Grid {
 
     private static instance: Grid
     private declare readonly isMain: boolean
-    private declare server: Server
-    private declare client: Client
     private declare readonly workersIds: string[];
     private declare workersClients: { workersIds: string[], socketId: string }[];
     private declare readonly encryptionKey: string
+
+    private declare server: ServerIO.Server;
+    private declare client: ClientIO.Socket;
 
     private constructor() {
         this.isMain = Config.getOption(ConfigOptions.SAFFRON_MODE) === 'main'
@@ -29,8 +31,13 @@ export default class Grid {
         this.encryptionKey = nanoid(256)
 
         if (this.isMain)
-            this.server = new Server();
-        else this.client = new Client();
+            this.server = new ServerIO.Server({
+                // TODO
+            });
+        else
+            this.client = ClientIO.io({
+                // TODO
+            });
     }
 
     /**
@@ -45,10 +52,16 @@ export default class Grid {
 
     emit(eventName: string, ...args: any[]): Promise<void> {
         return new Promise<void>(async resolve => {
-            if (this.isMain)
-                await this.server.broadcast(eventName, ...args);
-            else await this.client.emit(eventName, ...args)
-            resolve()
+            if (this.isMain) {
+                if(['scheduler.job.push'].includes(eventName))
+                    this.server.emit(eventName, ...args);
+            }
+            else {
+                if(['workers.job.finished', 'workers.job.failed',
+                    'grid.worker.announced', 'grid.worker.destroyed'].includes(eventName))
+                    await this.client.emit(eventName, ...args);
+            }
+            resolve();
         })
     }
 
@@ -58,31 +71,32 @@ export default class Grid {
     async connect(): Promise<void> {
         if (this.isMain) {
             if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED)) {
-                this.server.on("connection", () => {
-                    Events.emit('grid.node.connected')
+                this.server.on("connection", socket => {
+                    Events.emit('grid.node.connected', socket);
+
+                    socket.on("disconnect", () => {
+                        Events.emit('grid.node.disconnected', socket);
+                    });
+
+                    socket.on("workers.job.finished", jobId => {
+                        Scheduler.getInstance().changeJobStatus(jobId, JobStatus.FINISHED);
+                    });
+
+                    socket.on("workers.job.failed", jobId => {
+                        Scheduler.getInstance().changeJobStatus(jobId, JobStatus.FAILED);
+                    });
+
+                    socket.on("grid.worker.announced", id => {
+                        this.workersIds.push(id);
+                    });
+
+                    socket.on("grid.worker.destroyed", workerId => {
+                        let index = this.workersIds.findIndex(id => id === workerId);
+                        if (index !== -1) this.workersIds.splice(index, 1);
+                    });
                 });
 
-                this.server.on("workers.job.finished", data => {
-                    // let id = data.id;
-                    // let job = this.jobsStorage.find((job: Job) => job.id == id);
-                    //
-                    // if (job) {
-                    //     job.status = JobStatus.FINISHED;
-                    //     Events.emit("workers.job.finished", job)
-                    // }
-                })
-
-                this.server.on("workers.job.failed", data => {
-                    // let id = data.id;
-                    // let job = this.jobsStorage.find((job: Job) => job.id == id);
-                    //
-                    // if (job) {
-                    //     job.status = JobStatus.FAILED;
-                    //     Events.emit("workers.job.failed", job)
-                    // }
-                })
-
-                await this.server.listen();
+                // await this.server.listen(); // TODO - listen with express
             }
         } else if (Config.getOption(ConfigOptions.WORKER_NODES) > 0) {
             this.client.on('connect', () => {
@@ -157,11 +171,11 @@ export default class Grid {
      * @param job
      */
     async finishedJob(job: Job): Promise<void> {
-        job.status = JobStatus.FINISHED
+        job.status = JobStatus.FINISHED;
         if (this.isMain)
             Events.emit('workers.job.finished', job)
         else
-            await this.client.emit('workers.job.finished', {id: job.id})
+            await this.client.emit('workers.job.finished', job.id);
     }
 
     /**
@@ -177,6 +191,12 @@ export default class Grid {
             await this.client.emit('workers.job.failed', {id: job.id})
     }
 
+    /**
+     * Will be called from both the main and sub programs
+     * @param source
+     * @param tableName
+     * @param articles
+     */
     async mergeArticles(source: Source, tableName: string, articles: Article[]): Promise<void> {
         Events.emit("workers.articles.found", articles, tableName); // Can be empty array
         if (articles.length == 0) return;

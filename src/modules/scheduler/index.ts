@@ -12,6 +12,13 @@ const path = process.cwd();
 
 export default class Scheduler {
 
+    private static instance: Scheduler | null = null;
+    static getInstance(): Scheduler {
+        if(this.instance === null)
+            this.instance = new Scheduler();
+        return this.instance!!
+    }
+
     private declare isRunning: boolean;
     private declare jobsStorage: Job[];
 
@@ -171,6 +178,11 @@ export default class Scheduler {
 
         Events.emit("scheduler.sources.new", sources.map((source: Source) => source.name));
         return sources;
+    }
+
+    changeJobStatus(id: string, status: JobStatus) {
+        let job = this.jobsStorage.find((obj: Job) => obj.id === id);
+        if(job) job.status = status;
     }
 
     /**

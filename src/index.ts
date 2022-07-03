@@ -1,4 +1,4 @@
-import Config from "./components/config"
+import Config, {ConfigType} from "./components/config"
 import Scheduler from "./modules/scheduler";
 import Grid from "./modules/grid";
 import Events from "./modules/events";
@@ -26,7 +26,7 @@ export default class Saffron {
      * @param config The config file path or object
      * @see https://saffron.poiw.org
      */
-    async initialize(config: any = undefined) {
+    async initialize(config?: Partial<ConfigType>) {
         // Load config file
         Config.load(config);
 
@@ -51,7 +51,7 @@ export default class Saffron {
 
         // Initialize scheduler
         if (Config.getOption(ConfigOptions.SAFFRON_MODE) === 'main')
-            this.scheduler = new Scheduler();
+            this.scheduler = Scheduler.getInstance();
 
         // Event for workers
         Events.on("start", () => {
