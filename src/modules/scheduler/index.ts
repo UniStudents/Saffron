@@ -7,8 +7,9 @@ import {JobStatus} from "../../components/JobStatus";
 import Worker from "../workers";
 import {ConfigOptions} from "../../middleware/ConfigOptions";
 import glob from "glob";
+import * as path from "path";
 
-const path = process.cwd();
+const pathCwd = process.cwd();
 
 export default class Scheduler {
 
@@ -191,16 +192,16 @@ export default class Scheduler {
     private scanSourceFiles(): Promise<void> {
         return new Promise((resolve, reject) => {
             let sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH);
-            glob(`${path + sourcesPath}/**`, {}, (error: any, files: string[]) => {
+            glob(`${path.resolve(pathCwd, sourcesPath)}/**`, {}, (error: any, files: string[]) => {
                 if (error) {
                     Events.emit('scheduler.path.error', error);
                     return reject(error);
                 }
 
-                let acceptedFiles = new RegExp(/.*js/);
                 if (!files || files.length <= 0)
                     return reject(new Error("No source files were found."));
 
+                let acceptedFiles = new RegExp(/.*js/);
                 let rawSources = files.filter((file: any) => acceptedFiles.test(file))
 
                 let sources = rawSources.map((file: string) => {

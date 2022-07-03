@@ -81,21 +81,22 @@ export default class Config {
     } | {
         testing: Partial<ConfigType>;
     }) {
+        this._config = this.mergeObject(config, this._config);
+
         switch (process.env.NODE_ENV) {
             case "production":
                 if ((config as any).production)
-                    this._config = this.mergeObject((config as any).production, this._config)
-                break
+                    this._config = this.mergeObject((config as any).production, this._config);
+                break;
             case "development":
                 if ((config as any).development)
-                    this._config = this.mergeObject((config as any).development, this._config)
-                break
+                    this._config = this.mergeObject((config as any).development, this._config);
+                break;
             case "testing":
                 if ((config as any).testing)
-                    this._config = this.mergeObject((config as any).testing, this._config)
-                break
+                    this._config = this.mergeObject((config as any).testing, this._config);
+                break;
             default:
-                this._config = this.mergeObject(config, this._config)
         }
 
         if (process.env.SAFFRON_MODE && ["main", "worker"].includes(process.env.SAFFRON_MODE))
