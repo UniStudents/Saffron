@@ -192,7 +192,7 @@ export default class Scheduler {
     private scanSourceFiles(): Promise<void> {
         return new Promise((resolve, reject) => {
             let sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH);
-            glob(`${path.resolve(pathCwd, sourcesPath)}/**`, {}, (error: any, files: string[]) => {
+            glob(`${path.join(pathCwd, sourcesPath)}/**`, {}, (error: any, files: string[]) => {
                 if (error) {
                     Events.emit('scheduler.path.error', error);
                     return reject(error);
