@@ -6,9 +6,7 @@ export type ConfigType = {
     mode: 'main' | 'worker';
     database: {
         pushArticles: (articles: Article[]) => Promise<void>;
-        getArticles: (opts: {
-            tableName: string;
-        }) => Promise<Article[]>;
+        getArticles: (opts: { tableName: string; }) => Promise<Article[]>;
     };
     sources: {
         path: string;
@@ -31,6 +29,8 @@ export type ConfigType = {
     };
     grid: {
         distributed: boolean;
+        serverAddress?: string;
+        serverPort?: number;
     };
     misc: {
         log?: 'all' | 'info' | 'errors' | 'none';
@@ -42,14 +42,8 @@ export default class Config {
     _config: ConfigType = {
         mode: "main",
         database: {
-            pushArticles: async (articles: Article[]): Promise<void> => {
-
-            },
-            getArticles: async (opts: {
-                tableName: string;
-            }): Promise<any[]> => {
-                return [];
-            }
+            pushArticles: async (articles: Article[]): Promise<void> => undefined,
+            getArticles: async (opts: any): Promise<Article[]> => [],
         },
         sources: {
             path: "../../../sources",
@@ -71,7 +65,9 @@ export default class Config {
             checksInterval: 120000
         },
         grid: {
-            distributed: false
+            distributed: false,
+            serverAddress: undefined,
+            serverPort: 3000,
         },
         misc: {
             log: "all"
@@ -147,15 +143,16 @@ export default class Config {
 
             case ConfigOptions.GRID_DISTRIBUTED:
                 return !isStatic ? Config.load().grid.distributed : false;
-            case ConfigOptions.GRID_PORT:
-                return !isStatic ? Config.load().grid.port : 3000;
+            case ConfigOptions.GRID_SERVER_ADDRESS:
+                return !isStatic ? Config.load().grid.serverAddress : 'localhost';
+                case ConfigOptions.GRID_SERVER_PORT:
+                return !isStatic ? Config.load().grid.serverPort : 3000;
 
             case ConfigOptions.MISC_LOG_LEVEL:
                 return !isStatic ? Config.load().misc.log : "all";
 
             case ConfigOptions.DB_PUSH_ARTICLES:
-                return !isStatic ? Config.load().database.pushArticles : (articles: Article[]) => {
-                };
+                return !isStatic ? Config.load().database.pushArticles : (articles: Article[]) => undefined;
             case ConfigOptions.DB_GET_ARTICLES:
                 return !isStatic ? Config.load().database?.getArticles : (opts: any) => [];
         }

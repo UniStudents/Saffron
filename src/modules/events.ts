@@ -117,9 +117,11 @@ class Antennae {
     public emit(eventName: string, ...args: any[]): void {
         if (!this._callbacks[eventName]) return;
 
-        Grid.getInstance().emit(eventName, ...args)
+        Grid.getInstance().emit(eventName, ...args);
 
-        this._callbacks[eventName].forEach((callback: any) => callback(...args))
-        if (this._callbacks['*']) this._callbacks["*"].forEach((callback: any) => callback(...args))
+        this._callbacks[eventName].forEach((callback: any) => callback(...args));
+
+        if (this._callbacks['*'])
+            this._callbacks["*"].forEach((callback: any) => callback(...args));
     }
 }

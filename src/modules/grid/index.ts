@@ -50,19 +50,19 @@ export default class Grid {
         return this.instance
     }
 
-    emit(eventName: string, ...args: any[]): Promise<void> {
-        return new Promise<void>(async resolve => {
-            if (this.isMain) {
-                if(['scheduler.job.push'].includes(eventName))
-                    this.server.emit(eventName, ...args);
-            }
-            else {
-                if(['workers.job.finished', 'workers.job.failed',
-                    'grid.worker.announced', 'grid.worker.destroyed'].includes(eventName))
-                    await this.client.emit(eventName, ...args);
-            }
-            resolve();
-        })
+    emit(eventName: string, ...args: any[]): void {
+        if(!Config.getOption(ConfigOptions.GRID_DISTRIBUTED))
+            return;
+
+        if (this.isMain) {
+            if(['scheduler.job.push'].includes(eventName))
+                this.server.emit(eventName, ...args);
+        }
+        else {
+            if(['workers.job.finished', 'workers.job.failed',
+                'grid.worker.announced', 'grid.worker.destroyed'].includes(eventName))
+                this.client.emit(eventName, ...args);
+        }
     }
 
     /**
