@@ -13,7 +13,7 @@ export default class Utils {
     /**
      * The specified URL.
      */
-    declare readonly url: string;
+    declare url: string;
 
     /**
      * Get a source file and return an array of the parsed articles
@@ -32,8 +32,7 @@ export default class Utils {
         return await Worker.parse(job);
     }
 
-    constructor(url: string) {
-        this.url = url;
+    constructor() {
     }
 
 }

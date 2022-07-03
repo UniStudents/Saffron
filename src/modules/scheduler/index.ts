@@ -38,31 +38,34 @@ export default class Scheduler {
                 if (!files || files.length <= 0)
                     return reject(new Error("No source files were found."));
 
-                files.filter(file =>
-                    acceptedFiles.test(file)
-                ).map((file: string) => {
+                let rawSources = files.filter((file: any) => acceptedFiles.test(file))
+
+                let sources = rawSources.map((file: string) => {
                     return {
                         filename: `${file.split("/").pop()}`,
                         path: `${file}`,
                     };
-                }).forEach(async (sourceFile: any) => {
+                });
+
+                sources.forEach((sourceFile: any) => {
                     try {
                         sourceFile = {
                             ...sourceFile,
                             ...require(`${sourceFile.path}`)
                         };
                     } catch (e) {
-                        Events.emit("scheduler.sources.error", sourceFile,
-                            new Error(`SourceException: ${sourceFile.filename}: failed to read file.`));
+                        Events.emit("scheduler.sources.error", sourceFile, e);
+                        return;
                     }
 
                     try {
-                        const newSource = await Source.fileToSource(sourceFile);
+                        const newSource = Source.fileToSource(sourceFile);
                         Source.pushSource(newSource);
                     } catch (e) {
                         Events.emit("scheduler.sources.error", sourceFile, e);
                     }
                 });
+
                 resolve();
             });
         });
@@ -96,6 +99,7 @@ export default class Scheduler {
         // Read all source files
         await this.scanSourceFiles();
         let sources = Source.getSources();
+
         let includeOnly = Config.getOption(ConfigOptions.SOURCES_INCLUDE_ONLY);
         let excluded = Config.getOption(ConfigOptions.SOURCES_EXCLUDE);
 

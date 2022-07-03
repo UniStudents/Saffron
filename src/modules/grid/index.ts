@@ -60,7 +60,7 @@ export default class Grid {
     }
 
     async registerGridNode(): Promise<string> {
-        let _publicIp = {ipv4: (await publicIp.publicIpv4()), ipv6: (await publicIp.publicIpv6())}
+        let _publicIp = {ipv4: (await publicIp.v4()), ipv6: (await publicIp.v6())}
         let _privateIp = privateIp.address()
         let id = (this.isMain ? 'grd-main' : randomId("grd"))
         // await Database.getInstance()!!.insertGridNode(id, _publicIp, _privateIp, this.encryptionKey)

@@ -27,8 +27,9 @@ export class DynamicParser extends ParserClass {
     async parse(job: Job, alias: string, url: string, amount: number): Promise<Article[]> {
         let instructions = job.getInstructions();
         let scrapeFunc = eval(instructions.scrapeFunction)
-        let utils = new Utils(url);
+        let utils = new Utils();
 
+        utils.url = url;
         utils.isScrapeAfterError = job.attempts !== 0;
 
         let articles: Article[];

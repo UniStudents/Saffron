@@ -11,8 +11,8 @@ export default class Config {
             },
             getArticles: async (opts: {
                 tableName: string;
-            }): Promise<void> => {
-
+            }): Promise<any[]> => {
+                return [];
             }
         },
         sources: {
@@ -128,7 +128,7 @@ export default class Config {
             case ConfigOptions.DB_PUSH_ARTICLES:
                 return !isStatic ? Config.load().database.pushArticles : (articles: Article[]) => {};
             case ConfigOptions.DB_GET_ARTICLES:
-                return !isStatic ? Config.load().database.getArticles : (opts: any) => [];
+                return !isStatic ? Config.load().database?.getArticles : (opts: any) => [];
         }
     }
 }

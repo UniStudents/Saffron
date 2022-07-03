@@ -1,25 +1,16 @@
-require('dotenv').config()
-const saffron = require('../dist/index');
-const loggerTypes = require('../dist/middleware/LoggerTypes')
+require('dotenv').config();
+const Saffron = require('../dist/index').default;
+const loggerTypes = require('../dist/middleware/LoggerTypes');
 const util = require("util");
-const logger = require('../dist/middleware/logger').default
+const logger = require('../dist/middleware/logger').default;
 
 let config = {}
 try {
-    config = require("./saffron.json")
+    config = require("./saffron.json");
 } catch (e) {
     config = {
         misc: {
             log: 'all'
-        },
-        database: process.env.MONGO_URL && true ? {
-            driver: "mongodb",
-            config: {
-                url: process.env.SAFFRON_TESTING === "DOCKER_COMPOSE_LOCAL" ? "mongodb://mongo:27017" : process.env.MONGO_URL,
-                name: 'saffron-sandbox'
-            }
-        } : {
-            driver: "memory"
         },
         sources: {
             path: "/test/sources",
@@ -59,25 +50,33 @@ try {
 (async () => {
     Error.stackTraceLimit = 200;
     let errors = []
+    const saffron = new Saffron();
 
     try {
         await saffron.initialize(config)
         await saffron.start()
 
         saffron.on("workers.articles.found", (articles, src) => {
+            console.log('articles.found')
             console.log(src, articles.length)
             // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
-        })
+        });
+
+        // saffron.on("workers.articles.new", (articles, src) => {
+        //     console.log('articles.new')
+        //     console.log(src, articles.length);
+        //     console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
+        // });
 
         saffron.on("middleware.before", (articles) => {
             // console.log('middleware.before')
             // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
-        })
+        });
 
         saffron.on("middleware.after", (articles) => {
             // console.log('middleware.after')
             // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
-        })
+        });
     } catch (error) {
         errors.push(error)
     }

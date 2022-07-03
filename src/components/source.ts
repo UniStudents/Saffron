@@ -15,7 +15,7 @@ export default class Source {
      * Parse and store a source file contents to an array in memory
      * @param source the source file
      */
-    static async fileToSource(source: any): Promise<Source> {
+    static fileToSource(source: any): Source {
         source.filename = source.filename ? source.filename : source.name ? source.name : '[unknown filename]';
 
         let ret = new Source();
@@ -93,7 +93,7 @@ export default class Source {
         }
         else throw new Error(`SourceException: ${source.filename}: url: is not valid, must be a string type or an array.`)
 
-        let parserType = await ParserType.getFromString(source.type)
+        let parserType = ParserType.getFromString(source.type)
         if (parserType === ParserType.UNKNOWN)
             throw new Error(`SourceException: ${source.filename}: type: is not valid.`);
         ret.instructions.parserType = parserType;
