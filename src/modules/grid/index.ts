@@ -4,9 +4,6 @@ import {JobStatus} from "../../components/JobStatus";
 import Worker from "../workers";
 import Config from "../../components/config";
 import {nanoid} from "nanoid";
-import publicIp from "public-ip";
-import privateIp from "ip";
-import randomId from "../../middleware/randomId";
 import Article from "../../components/articles";
 import Server from "./server";
 import Client from "./client";
@@ -18,22 +15,9 @@ import Source from "../../components/source";
 export default class Grid {
 
     private static instance: Grid
-
-    /**
-     * Returns an instance of Grid
-     */
-    static getInstance(): Grid {
-        if (this.instance == null)
-            this.instance = new Grid()
-
-        return this.instance
-    }
-
     private declare readonly isMain: boolean
-
     private declare server: Server
     private declare client: Client
-
     private declare readonly workersIds: string[];
     private declare workersClients: { workersIds: string[], socketId: string }[];
     private declare readonly encryptionKey: string
@@ -49,23 +33,23 @@ export default class Grid {
         else this.client = new Client();
     }
 
+    /**
+     * Returns an instance of Grid
+     */
+    static getInstance(): Grid {
+        if (this.instance == null)
+            this.instance = new Grid()
+
+        return this.instance
+    }
+
     emit(eventName: string, ...args: any[]): Promise<void> {
         return new Promise<void>(async resolve => {
-            // TODO - emit event to other nodes
             if (this.isMain)
                 await this.server.broadcast(eventName, ...args);
             else await this.client.emit(eventName, ...args)
             resolve()
         })
-    }
-
-    async registerGridNode(): Promise<string> {
-        let _publicIp = {ipv4: (await publicIp.v4()), ipv6: (await publicIp.v6())}
-        let _privateIp = privateIp.address()
-        let id = (this.isMain ? 'grd-main' : randomId("grd"))
-        // await Database.getInstance()!!.insertGridNode(id, _publicIp, _privateIp, this.encryptionKey)
-
-        return id
     }
 
     /**
@@ -75,7 +59,6 @@ export default class Grid {
         if (this.isMain) {
             if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED)) {
                 this.server.on("connection", () => {
-                    this.registerGridNode();
                     Events.emit('grid.node.connected')
                 });
 
@@ -101,8 +84,7 @@ export default class Grid {
 
                 await this.server.listen();
             }
-        }
-        else if (Config.getOption(ConfigOptions.WORKER_NODES) > 0) {
+        } else if (Config.getOption(ConfigOptions.WORKER_NODES) > 0) {
             this.client.on('connect', () => {
                 for (const workerId of this.workersIds)
                     Events.emit("grid.worker.announced", workerId);
@@ -197,7 +179,7 @@ export default class Grid {
 
     async mergeArticles(source: Source, tableName: string, articles: Article[]): Promise<void> {
         Events.emit("workers.articles.found", articles, tableName); // Can be empty array
-        if(articles.length == 0) return;
+        if (articles.length == 0) return;
 
         articles.forEach(article => article.timestamp = Date.now());
 
@@ -206,11 +188,10 @@ export default class Grid {
         let getExtPair = Extensions.getInstance().startCount();
         let pair: any;
         while ((pair = getExtPair()) != null) {
-            if(pair.event === 'article.format') {
+            if (pair.event === 'article.format') {
                 for (const i in articles)
                     articles[i] = await pair.callback(articles[i]);
-            }
-            else if(pair.event === 'articles') {
+            } else if (pair.event === 'articles') {
                 articles = await pair.callback(articles);
             }
         }

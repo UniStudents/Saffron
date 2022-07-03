@@ -4,7 +4,8 @@ import Config from "../../components/config";
 export default class Client {
     declare socket: any;
 
-    constructor() {}
+    constructor() {
+    }
 
     async connect(): Promise<void> {
         this.socket = io(`http://${Config.load()?.grid.address}:${Config.load()?.grid.port}`)

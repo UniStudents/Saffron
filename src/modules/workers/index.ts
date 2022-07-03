@@ -17,6 +17,42 @@ export default class Worker {
         this.id = randomId("wkr");
     }
 
+    static async parse(job: Job): Promise<Article[]> {
+        let instructions = job.getInstructions();
+
+        let articles: Article[] = []; // TODO - do not merge url per article
+        for (const pair of instructions.url) {
+            const parser = ParserLoader.getParser(instructions.parserType)!!;
+            // Will throw error in case of fail (catch in call function).
+            const newArticles = await parser.parse(job, pair.aliases, pair.url, job.getInstructions().amount);
+            articles.push(...newArticles);
+        }
+
+        return articles;
+    }
+
+    /**
+     * Return the id of a worker that will be used for the next job
+     * @param lastWorkerId The job's previous worker id. It will be excluded from the election only if the workers are greater that one
+     */
+    static electWorker(lastWorkerId: string): string {
+        let workers = Grid.getInstance().getWorkers().slice();
+
+        // If only one worker, return the same
+        if (workers.length === 1 && workers[0] === lastWorkerId)
+            return lastWorkerId;
+
+        // If more than one worker, delete the last one
+        if (workers.length > 1) {
+            let index = workers.findIndex((id: string) => id === lastWorkerId)
+            if (index != -1)
+                workers.splice(index, 1)
+        }
+
+        // From the remaining workers select one
+        return workers[Math.abs(hashCode(lastWorkerId)) % workers.length]
+    }
+
     /**
      * Worker will start accepting jobs
      */
@@ -56,23 +92,6 @@ export default class Worker {
         })
     }
 
-    static async parse(job: Job): Promise<Article[]> {
-        let instructions = job.getInstructions();
-
-        let articles: Article[] = []; // TODO - do not merge url per article
-        for (const pair of instructions.url) {
-            let url = pair[0];
-            let alias = pair[1] ? pair[1] : "";
-
-            const parser = ParserLoader.getParser(instructions.parserType)!!;
-            // Will throw error in case of fail (catch in call function).
-            const newArticles = await parser.parse(job, alias, url, job.getInstructions().amount);
-            articles.push(...newArticles);
-        }
-
-        return articles;
-    }
-
     /**
      * Worker will stop accepting jobs
      * @param force if true the it will abandon the current job
@@ -81,27 +100,5 @@ export default class Worker {
         this.isForcedStopped = force
         this.isRunning = false
         Grid.getInstance().destroyWorker(this)
-    }
-
-    /**
-     * Return the id of a worker that will be used for the next job
-     * @param lastWorkerId The job's previous worker id. It will be excluded from the election only if the workers are greater that one
-     */
-    static electWorker(lastWorkerId: string): string {
-        let workers = Grid.getInstance().getWorkers().slice();
-
-        // If only one worker, return the same
-        if(workers.length === 1 && workers[0] === lastWorkerId)
-            return lastWorkerId;
-
-        // If more than one worker, delete the last one
-        if (workers.length > 1) {
-            let index = workers.findIndex((id: string) => id === lastWorkerId)
-            if (index != -1)
-                workers.splice(index, 1)
-        }
-
-        // From the remaining workers select one
-        return workers[Math.abs(hashCode(lastWorkerId)) % workers.length]
     }
 }

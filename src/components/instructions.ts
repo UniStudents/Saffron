@@ -1,6 +1,7 @@
 import Source from "./source";
 import {ParserType} from "../middleware/ParserType";
 import randomId from "../middleware/randomId"
+
 /**
  * The instructions class is used mainly by parsers.
  * Its general use is to provide instructions on how
@@ -10,8 +11,11 @@ import randomId from "../middleware/randomId"
 export default class Instructions {
     declare id: string;
 
-    declare source : { id: string; };
-    declare url: (string[])[];
+    declare source: { id: string; };
+    declare url: {
+        url: string;
+        aliases: string[];
+    }[];
     declare parserType: ParserType;
     declare endPoint: string;
     declare amount: number;

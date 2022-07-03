@@ -6,7 +6,7 @@ import Source from "../../components/source";
 export const Unpack = (payload: Payload): Job | Article | Source | object => {
     let chunk: any;
 
-    switch (payload.title){
+    switch (payload.title) {
         case "Object":
             return payload.payload;
         case "Job":

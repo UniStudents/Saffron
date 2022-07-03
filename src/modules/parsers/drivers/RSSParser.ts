@@ -8,78 +8,7 @@ import Utils from "../Utils";
 
 export class RSSParser extends ParserClass {
 
-    validateScrape(scrape: any): void {
-        if(!scrape) return
-
-        if(!(scrape.extraFields ? Array.isArray(scrape.extraFields) : true)) throw new Error('RSSParserSourceException extraFields is not an array.');
-
-        if(scrape.renameFields && (typeof scrape.renameFields !== 'object' || Array.isArray(scrape.renameFields)))
-            throw new Error('RSSParserSourceException renameFields is not a JSON object.');
-    }
-
-    assignInstructions(instructions: Instructions, sourceJson: any): void {
-        instructions.scrapeOptions = {};
-        instructions.extraFields = [];
-
-        if(!sourceJson.scrape) return;
-
-        if (sourceJson.scrape.renameFields) {
-            let map = new Map()
-            Object.entries(sourceJson.scrape.renameFields).forEach(([key, value]) => {
-                map.set(key, value)
-            })
-            instructions.scrapeOptions.renameFields = map
-        }
-
-        instructions.extraFields = sourceJson.scrape.extraFields ? sourceJson.scrape.extraFields : [];
-    }
-
     private static requested_fields: String[] = ["title", "link", "content", "pubDate", "categories"]
-
-    /**
-     This function finds the RSS fields that are not
-     contained in the requested_fields array and returns
-     a new array that contains the corrected names of the
-     fields.
-     *
-     * @returns {Promise<[]>}
-     * @param fields
-     **/
-    private static async generateRenamedFields(fields: Map<string, string>): Promise<string[][]> {
-        let array: string[][] = []
-        fields.forEach((value: string, key: string) => {
-            if (this.requested_fields.some(item => item === key)) {
-                array.push([key, value]);
-            }
-        })
-        return array;
-    }
-
-    /**
-     * Creates the parser object
-     * that is able to parse
-     * given rss data
-     *
-     * @param instructions
-     * @param renameFields
-     * @private
-     */
-    private static async generateParser(instructions: Instructions, renameFields: Map<string, string>): Promise<Parser> {
-        let customFields = await this.generateRenamedFields(renameFields);
-        return new Parser({
-            // define the request headers.
-            timeout: instructions.getSource().timeout,
-            headers: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'},
-            // define requests options.
-            requestOptions: {
-                rejectUnauthorized: instructions["ignoreCertificates"]
-            },
-            // a few custom fields.
-            customFields: {
-                item: customFields
-            }
-        });
-    }
 
     /**
      *
@@ -128,6 +57,51 @@ export class RSSParser extends ParserClass {
     }
 
     /**
+     This function finds the RSS fields that are not
+     contained in the requested_fields array and returns
+     a new array that contains the corrected names of the
+     fields.
+     *
+     * @returns {Promise<[]>}
+     * @param fields
+     **/
+    private static async generateRenamedFields(fields: Map<string, string>): Promise<string[][]> {
+        let array: string[][] = []
+        fields.forEach((value: string, key: string) => {
+            if (this.requested_fields.some(item => item === key)) {
+                array.push([key, value]);
+            }
+        })
+        return array;
+    }
+
+    /**
+     * Creates the parser object
+     * that is able to parse
+     * given rss data
+     *
+     * @param instructions
+     * @param renameFields
+     * @private
+     */
+    private static async generateParser(instructions: Instructions, renameFields: Map<string, string>): Promise<Parser> {
+        let customFields = await this.generateRenamedFields(renameFields);
+        return new Parser({
+            // define the request headers.
+            timeout: instructions.getSource().timeout,
+            headers: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'},
+            // define requests options.
+            requestOptions: {
+                rejectUnauthorized: instructions["ignoreCertificates"]
+            },
+            // a few custom fields.
+            customFields: {
+                item: customFields
+            }
+        });
+    }
+
+    /**
      * Function that returns object without specified fields
      * @param target
      * @param source
@@ -140,7 +114,7 @@ export class RSSParser extends ParserClass {
         return target
     };
 
-    private static async mapArticles(articles: any, alias: string | undefined, url: string,
+    private static async mapArticles(articles: any, aliases: string[], url: string,
                                      renameFields: Map<string, string>, instructions: Instructions): Promise<Array<Article>> {
         let parsedArticles: Array<Article> = [];
 
@@ -172,8 +146,12 @@ export class RSSParser extends ParserClass {
             if (article.categories)
                 article.categories.forEach((c: any) => tmpArticle.pushCategory(c, []));
 
-            if (alias)
-                tmpArticle.pushCategory(alias, [url]);
+            tmpArticle.pushCategories(aliases.map(alias => {
+                return {
+                    name: alias,
+                    links: [url]
+                };
+            }));
 
             //Find remaining values
             let remain = RSSParser.unAssign(article, this.requested_fields)
@@ -187,7 +165,33 @@ export class RSSParser extends ParserClass {
         return parsedArticles
     }
 
-    async parse(job: Job, alias: string, url: string, amount: number): Promise<Article[]> {
+    validateScrape(scrape: any): void {
+        if (!scrape) return
+
+        if (!(scrape.extraFields ? Array.isArray(scrape.extraFields) : true)) throw new Error('RSSParserSourceException extraFields is not an array.');
+
+        if (scrape.renameFields && (typeof scrape.renameFields !== 'object' || Array.isArray(scrape.renameFields)))
+            throw new Error('RSSParserSourceException renameFields is not a JSON object.');
+    }
+
+    assignInstructions(instructions: Instructions, sourceJson: any): void {
+        instructions.scrapeOptions = {};
+        instructions.extraFields = [];
+
+        if (!sourceJson.scrape) return;
+
+        if (sourceJson.scrape.renameFields) {
+            let map = new Map()
+            Object.entries(sourceJson.scrape.renameFields).forEach(([key, value]) => {
+                map.set(key, value)
+            })
+            instructions.scrapeOptions.renameFields = map
+        }
+
+        instructions.extraFields = sourceJson.scrape.extraFields ? sourceJson.scrape.extraFields : [];
+    }
+
+    async parse(job: Job, aliases: string[], url: string, amount: number): Promise<Article[]> {
         let instructions = job.getInstructions();
 
         // Rename fields
@@ -196,8 +200,7 @@ export class RSSParser extends ParserClass {
             renameFields = instructions.scrapeOptions.renameFields
 
         let articles = await RSSParser.rssParser(instructions, url, amount, renameFields);
-
-        return await RSSParser.mapArticles(articles, alias, url, renameFields, instructions);
+        return await RSSParser.mapArticles(articles, aliases, url, renameFields, instructions);
     }
 
 }

@@ -6,18 +6,17 @@ interface pair {
 export default class Extensions {
 
     private static instance: Extensions;
+    private declare readonly pairs: pair[];
+
+    private constructor() {
+        this.pairs = [];
+    }
 
     static getInstance(): Extensions {
         if (Extensions.instance == null)
             this.instance = new Extensions();
 
         return Extensions.instance;
-    }
-
-    private declare readonly pairs: pair[];
-
-    private constructor() {
-        this.pairs = [];
     }
 
     push(p: pair): void {
@@ -30,10 +29,9 @@ export default class Extensions {
     startCount(): (() => pair | null) {
         let i = 0;
         return (): pair | null => {
-            if (i >= this.pairs.length) return null;
-            let pair = this.pairs[i];
-            i++;
-            return pair;
+            if (i >= this.pairs.length)
+                return null;
+            return this.pairs[i++];
         };
     }
 }

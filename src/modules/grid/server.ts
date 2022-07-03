@@ -4,6 +4,7 @@ import {ConfigOptions} from "../../middleware/ConfigOptions";
 
 export default class Server {
     declare socket: socketio.Server;
+
     constructor() {
         this.socket = new socketio.Server(Config.getOption(ConfigOptions.GRID_PORT))
     }

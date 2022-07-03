@@ -3,6 +3,7 @@ import {ConfigOptions} from "../middleware/ConfigOptions";
 import Article from "./articles";
 
 export default class Config {
+    private static instance: Config
     _config: { [key: string]: any } = {
         mode: "main",
         database: {
@@ -42,28 +43,6 @@ export default class Config {
         }
     }
 
-    private static instance: Config
-
-    private mergeObject(src: any, original: object): object {
-        return _.mergeWith({}, original, src, (o, s) => {
-            if (Array.isArray(o))
-                return s ? s : o
-            else if (typeof o == 'object')
-                return this.mergeObject(s, o)
-            return s ? s : o
-        })
-    }
-
-    /**
-     * Loads an external configuration object and merges the parameters with the default ones.
-     */
-    static load(config?: object): any {
-        if (!this.instance)
-            this.instance = new Config(config)
-
-        return this.instance._config
-    }
-
     private constructor(config?: any) {
         this._config = this.mergeObject(config, this._config)
 
@@ -86,6 +65,16 @@ export default class Config {
 
         if (process.env.SAFFRON_MODE && ["main", "worker"].includes(process.env.SAFFRON_MODE))
             this._config.mode = process.env.SAFFRON_MODE
+    }
+
+    /**
+     * Loads an external configuration object and merges the parameters with the default ones.
+     */
+    static load(config?: object): any {
+        if (!this.instance)
+            this.instance = new Config(config)
+
+        return this.instance._config
     }
 
     static getOption(option: ConfigOptions): any {
@@ -126,9 +115,20 @@ export default class Config {
                 return !isStatic ? Config.load().misc.log : "all";
 
             case ConfigOptions.DB_PUSH_ARTICLES:
-                return !isStatic ? Config.load().database.pushArticles : (articles: Article[]) => {};
+                return !isStatic ? Config.load().database.pushArticles : (articles: Article[]) => {
+                };
             case ConfigOptions.DB_GET_ARTICLES:
                 return !isStatic ? Config.load().database?.getArticles : (opts: any) => [];
         }
+    }
+
+    private mergeObject(src: any, original: object): object {
+        return _.mergeWith({}, original, src, (o, s) => {
+            if (Array.isArray(o))
+                return s ? s : o
+            else if (typeof o == 'object')
+                return this.mergeObject(s, o)
+            return s ? s : o
+        })
     }
 }

@@ -14,7 +14,7 @@ export default class Article {
     declare link: string;
     declare pubDate: string;
     declare timestamp: number;
-    declare extras: {[key: string]: any};
+    declare extras: { [key: string]: any };
     declare source: {
         id: string;
         name: string;
@@ -62,7 +62,7 @@ export default class Article {
     }
 
     public addExtra(key: string, value: any) {
-        if(typeof this.extras === 'undefined')
+        if (typeof this.extras === 'undefined')
             this.extras = {};
 
         this.extras[key] = value;
@@ -73,28 +73,28 @@ export default class Article {
     }
 
     public pushAttachment(attachment: Attachment) {
-        if(typeof this.attachments === 'undefined')
+        if (typeof this.attachments === 'undefined')
             this.attachments = [];
 
         this.attachments.push(attachment);
     }
 
     public pushAttachments(attachments: Attachment[]) {
-        if(typeof this.attachments === 'undefined')
+        if (typeof this.attachments === 'undefined')
             this.attachments = [];
 
         this.attachments.push(...attachments);
     }
 
     public pushCategory(name: string, links: string[]) {
-        if(typeof this.categories === 'undefined')
+        if (typeof this.categories === 'undefined')
             this.categories = [];
 
         this.categories.push({name, links});
     }
 
-    public pushCategories(categories: {name: string, links: string[]}[]) {
-        if(typeof this.categories === 'undefined')
+    public pushCategories(categories: { name: string, links: string[] }[]) {
+        if (typeof this.categories === 'undefined')
             this.categories = [];
 
         this.categories.push(...categories);

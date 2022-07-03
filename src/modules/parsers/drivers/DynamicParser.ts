@@ -6,12 +6,12 @@ import Utils from "../../../components/utils";
 import randomId from "../../../middleware/randomId";
 
 export class DynamicParser extends ParserClass {
-    validateScrape(scrape: any): void {
-        if(typeof scrape !== 'function') throw new Error("DynamicParser: scrape is not a function");
+    private static splice(base: string, idx: number, rem: number, str: string): string {
+        return base.slice(0, idx) + str + base.slice(Math.abs(rem));
     }
 
-    private static splice (base: string, idx: number, rem: number, str: string): string {
-        return base.slice(0, idx) + str + base.slice(Math.abs(rem));
+    validateScrape(scrape: any): void {
+        if (typeof scrape !== 'function') throw new Error("DynamicParser: scrape is not a function");
     }
 
     assignInstructions(instructions: Instructions, sourceJson: any): void {
@@ -24,19 +24,19 @@ export class DynamicParser extends ParserClass {
             , "(Article, utils)")
     }
 
-    async parse(job: Job, alias: string, url: string, amount: number): Promise<Article[]> {
+    async parse(job: Job, aliases: string[], url: string, amount: number): Promise<Article[]> {
         let instructions = job.getInstructions();
         let scrapeFunc = eval(instructions.scrapeFunction)
         let utils = new Utils();
 
         utils.url = url;
         utils.isScrapeAfterError = job.attempts !== 0;
+        utils.instructions = instructions;
 
         let articles: Article[];
         try {
             articles = await scrapeFunc(Article, utils)
-        }
-        catch (e: any) {
+        } catch (e: any) {
             throw new Error(`DynamicParserException job failed for ${job.getSource().name}, original error: ${e.message}`);
         }
 
@@ -45,8 +45,12 @@ export class DynamicParser extends ParserClass {
             article.setSource(instructions.getSource().getId(), instructions.getSource().name);
             article.getSource = job.getSource;
 
-            if (alias.length !== 0)
-                article.pushCategory(alias, [url]);
+            article.pushCategories(aliases.map(alias => {
+                return {
+                    name: alias,
+                    links: [url]
+                };
+            }));
         });
 
         return articles;

@@ -1,5 +1,4 @@
 import https from "https";
-import {Axios} from "axios";
 
 export interface AxiosConfig {
     httpsAgent?: https.AgentOptions
@@ -8,5 +7,4 @@ export interface AxiosConfig {
     method?: string
     responseType: string,
     responseEncoding: string
-
 }

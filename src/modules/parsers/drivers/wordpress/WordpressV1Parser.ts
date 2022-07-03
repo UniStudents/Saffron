@@ -8,15 +8,11 @@ export class WordpressV1Parser extends ParserClass {
 
     assignInstructions(instructions: Instructions, sourceJson: any): void {
         for (let pair of instructions.url) {
-            if(pair.length == 1)
-                pair[0] = `${pair[0]}${pair[0].endsWith('/') ? '' : '/'}`
-            else if(pair.length == 2)
-                pair[1] = `${pair[1]}${pair[1].endsWith('/') ? '' : '/'}`
-
+            pair.url = `${pair.url}${pair.url.endsWith('/') ? '' : '/'}`
         }
     }
 
-    async parse(job: Job, alias: string, url: string, amount: number): Promise<Article[]> {
+    async parse(job: Job, aliases: string[], url: string, amount: number): Promise<Article[]> {
         throw new Error(`WordpressParserV1Exception job failed because it is not implemented yet.`);
     }
 

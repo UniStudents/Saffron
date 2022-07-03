@@ -10,6 +10,17 @@ import {ConfigOptions} from "../middleware/ConfigOptions";
 export default class Source {
 
     static _sources: Source[] = [];
+    declare name: string;
+    declare tableName: string;
+    declare interval: number;
+    declare retryInterval: number;
+    declare timeout: number;
+    declare instructions: Instructions;
+    declare extra: any;
+    private declare id: string;
+
+    constructor() {
+    }
 
     /**
      * Parse and store a source file contents to an array in memory
@@ -66,32 +77,30 @@ export default class Source {
         if (typeof source.url === 'string') {
             if (source.url.length == 0)
                 throw new Error(`SourceException: ${source.filename}: url: is not valid, url cannot be empty.`);
-            ret.instructions.url.push([source.url]);
-        }
-        else if (Array.isArray(source.url)) {
+            ret.instructions.url.push({url: source.url, aliases: []});
+        } else if (Array.isArray(source.url)) {
             for (const pair of source.url) {
-                if(Array.isArray(pair) && pair.length == 2) {
-                    let alias = pair[0];
-                    let url = pair[1];
+                if (Array.isArray(pair) && pair.length >= 2) {
+                    let aliases = pair.slice(0, pair.length - 1);
+                    let url = pair[pair.length - 1];
 
-                    if(typeof alias !== 'string' || alias.trim() === '')
-                        throw new Error(`SourceException: ${source.filename}: url: is not valid, invalid alias '${alias}'.`);
+                    aliases.forEach(alias => {
+                        if (typeof alias !== 'string' || alias.trim() === '')
+                            throw new Error(`SourceException: ${source.filename}: url: is not valid, invalid alias '${alias}'.`);
+                    });
 
-                    if(typeof url !== 'string' || url.trim() === '')
+                    if (typeof url !== 'string' || url.trim() === '')
                         throw new Error(`SourceException: ${source.filename}: url: is not valid, invalid url '${url}'.`);
 
-                    ret.instructions.url.push([url, alias]);
-                }
-                else if(typeof pair === 'string' || ((Array.isArray(pair) && pair.length == 1))) {
+                    ret.instructions.url.push({url, aliases});
+                } else if (typeof pair === 'string' || ((Array.isArray(pair) && pair.length == 1))) {
                     let url: any = pair;
-                    if(Array.isArray(pair)) url = pair[0];
+                    if (Array.isArray(pair)) url = pair[0];
 
-                    ret.instructions.url.push([url]);
-                }
-                else throw new Error(`SourceException: ${source.filename}: url: is not valid, error during parsing pair: ${pair}.`);
+                    ret.instructions.url.push({url, aliases: []});
+                } else throw new Error(`SourceException: ${source.filename}: url: is not valid, error during parsing pair: ${pair}.`);
             }
-        }
-        else throw new Error(`SourceException: ${source.filename}: url: is not valid, must be a string type or an array.`)
+        } else throw new Error(`SourceException: ${source.filename}: url: is not valid, must be a string type or an array.`)
 
         let parserType = ParserType.getFromString(source.type)
         if (parserType === ParserType.UNKNOWN)
@@ -100,8 +109,7 @@ export default class Source {
 
         try {
             ParserLoader.validateScrapeOptions(parserType, source.scrape);
-        }
-        catch (e: any) {
+        } catch (e: any) {
             throw new Error(`SourceException: ${source.filename}: invalid scrape method, parser error: ${e.message}`);
         }
 
@@ -137,17 +145,6 @@ export default class Source {
 
         return this._sources.find((source: Source) => source.getId() === from)!!
     }
-
-    private declare id: string;
-    declare name: string;
-    declare tableName: string;
-    declare interval: number;
-    declare retryInterval: number;
-    declare timeout: number;
-    declare instructions: Instructions;
-    declare extra: any;
-
-    constructor() {}
 
     /**
      * Generate and return the id of the source

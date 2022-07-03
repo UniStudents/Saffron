@@ -262,17 +262,6 @@ export default class Utils {
         '&#034;': '"'
     }
 
-    private static decode(str: String = "") {
-        if(!str) str = ""
-        for (let key in this.htmlEntries) {
-            let entity = key
-            let regex = new RegExp(entity, 'g')
-            str = str.replace(regex, this.htmlEntries[entity])
-        }
-        return str
-    }
-
-
     public static htmlStrip(text: any = "", stripTags: boolean = true): string {
         if (stripTags) {
             text = this.decode(text)
@@ -292,7 +281,7 @@ export default class Utils {
     }
 
     public static extractLinks(html: string): Attachment[] {
-        if(!html || html == '') return [];
+        if (!html || html == '') return [];
 
         const $ = cheerio.load(html);
         const links: Attachment[] = [];
@@ -322,5 +311,15 @@ export default class Utils {
         });
 
         return links
+    }
+
+    private static decode(str: String = "") {
+        if (!str) str = ""
+        for (let key in this.htmlEntries) {
+            let entity = key
+            let regex = new RegExp(entity, 'g')
+            str = str.replace(regex, this.htmlEntries[entity])
+        }
+        return str
     }
 }

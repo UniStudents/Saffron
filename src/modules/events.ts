@@ -30,12 +30,12 @@ export default class Events {
 
     static registerLogListeners(): void {
         let logLevel = Config.getOption(ConfigOptions.MISC_LOG_LEVEL);
-        if(logLevel === 'none') return;
+        if (logLevel === 'none') return;
 
         this.getAntennae().on('title', () =>
             Logger(LoggerTypes.TITLE, "Simple Abstract Framework For the Retrieval Of News"));
 
-        if(logLevel === 'all' || logLevel === 'info') {
+        if (logLevel === 'all' || logLevel === 'info') {
             this.getAntennae().on("scheduler.sources.new", (names: string[]) =>
                 Logger(LoggerTypes.INFO, `Loaded ${names.length} sources`))
 
@@ -72,11 +72,11 @@ export default class Events {
 
             this.getAntennae().on("workers.articles.found", (articles: Article[], src: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.cyan('Articles')} - Finished job returned ${articles.length} articles for ${src}.`));
-            this.getAntennae().on("workers.articles.new", (articles: Article[],src: string) =>
+            this.getAntennae().on("workers.articles.new", (articles: Article[], src: string) =>
                 Logger(LoggerTypes.INFO, `${chalk.cyan('Articles')} - ${articles.length} articles will be added to to the db for ${src}.`));
         }
 
-        if(logLevel === 'all' || logLevel === 'info' || logLevel === 'errors') {
+        if (logLevel === 'all' || logLevel === 'info' || logLevel === 'errors') {
             this.getAntennae().on("database.get.error", (source: Source, error: any) => {
                 Logger(LoggerTypes.DEBUG, `${chalk.red('Scheduler')} - Cannot get articles from ${source.name}.`);
                 console.log(error);
@@ -108,18 +108,18 @@ class Antennae {
     private _callbacks: any = {};
 
     public on(eventName: string, callback: (...args: any[]) => void): void {
-        if(eventName.length === 0) throw Error("You cannot create an event for nothing!")
+        if (eventName.length === 0) throw Error("You cannot create an event for nothing!")
 
-        if(!this._callbacks[eventName]) this._callbacks[eventName] = [];
+        if (!this._callbacks[eventName]) this._callbacks[eventName] = [];
         this._callbacks[eventName].push(callback)
     }
 
     public emit(eventName: string, ...args: any[]): void {
-        if(!this._callbacks[eventName]) return;
+        if (!this._callbacks[eventName]) return;
 
         Grid.getInstance().emit(eventName, ...args)
 
-        this._callbacks[eventName].forEach((callback: any)=>callback(...args))
-        if(this._callbacks['*']) this._callbacks["*"].forEach((callback: any)=>callback(...args))
+        this._callbacks[eventName].forEach((callback: any) => callback(...args))
+        if (this._callbacks['*']) this._callbacks["*"].forEach((callback: any) => callback(...args))
     }
 }

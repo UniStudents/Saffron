@@ -14,7 +14,7 @@ try {
         },
         sources: {
             path: "/test/sources",
-            // includeOnly: ['wordpress-financeclub.unipi.gr'],
+            includeOnly: ['geo.hua.gr'],
             // exclude: ["custom-cs.unipi.gr"]
         },
         scheduler: {
@@ -59,7 +59,7 @@ try {
         saffron.on("workers.articles.found", (articles, src) => {
             console.log('articles.found')
             console.log(src, articles.length)
-            // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
+            console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
         });
 
         // saffron.on("workers.articles.new", (articles, src) => {

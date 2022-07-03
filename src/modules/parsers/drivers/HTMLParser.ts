@@ -9,25 +9,110 @@ import Utils from "../Utils";
 import {AxiosConfig} from "../../../components/AxiosConfig";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})
-interface ArticleImage { [key: string]: any }
+
+interface ArticleImage {
+    [key: string]: any
+}
 
 export class HTMLParser extends ParserClass {
 
-    validateScrape(scrape: any): void {
-        let value = Object.entries(scrape.article).some((key: any) =>  key === undefined || key[1].class === undefined);
-        if(value) throw new Error("HTMLParserSourceException found empty key or key with no class.")
+    static async parse2(aliases: string[], url: string, instructions: Instructions, amount: Number = 10): Promise<Article[]> {
+        let parsedArticles: Article[] = []
+
+        await HTMLParser.request(url, instructions.getSource().timeout, instructions)
+            .then((response: AxiosResponse) => {
+                const cheerioLoad: cheerio.Root = cheerio.load(instructions.textDecoder.decode(response.data))
+
+                // for each article.
+                cheerioLoad(`${instructions.elementSelector}`).each((index, element) => {
+                    if (index >= amount) return
+
+                    let articleData: ArticleImage = {}
+                    let tmpArticle: Article
+                    let basicData = ["title", "pubDate", "content", "attachments", "link"] // Exp. If you remove the title, then the title is going to be on the extra information of each article.
+                    let options: any = instructions.scrapeOptions
+
+                    // for each option. The options provided by instructions.
+                    for (let item in options) {
+                        if (options.hasOwnProperty(item) && !options[item].find && !options[item].multiple && !options[item].attributes) {
+                            articleData[item] = cheerioLoad(element).find(options[item].class).text()
+                        } else if (options.hasOwnProperty(item)) {
+                            if (!options[item].attributes)
+                                articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, false, [], "")
+                            else
+                                articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, true, options[item].attributes, instructions.endPoint)
+                        }
+                    }
+
+                    //Utility to merge other items with the basic Data of the article
+                    for (let item in options) {
+                        if (options[item].hasOwnProperty("parent") && options[item] !== "attachments") {
+                            if (articleData.hasOwnProperty(options[item].parent)) articleData[options[item].parent] += articleData[item]
+                        } else {
+                            if (Array.isArray(articleData[options[item]])) articleData[options[item].parent].push(...((articleData[item]) ? articleData[item] : []))
+                        }
+                    }
+                    // It stores the article data to an instance of Article class.
+                    tmpArticle = new Article()
+                    tmpArticle.setSource(instructions.getSource().getId(), instructions.getSource().name);
+                    tmpArticle.setLink((Array.isArray(articleData.link) && articleData.link[0]?.value)
+                        ? articleData.link[0].value
+                        : (articleData.link ? articleData.link : ''));
+
+                    tmpArticle.setTitle((Array.isArray(articleData.title) && articleData.title[0]?.value)
+                        ? Utils.htmlStrip(articleData.title[0].value)
+                        : (articleData.title ? articleData.title : ''));
+
+                    tmpArticle.setPubDate((Array.isArray(articleData.pubDate) && articleData.pubDate[0]?.value)
+                        ? Utils.htmlStrip(articleData.pubDate[0].value)
+                        : (articleData.pubDate ? articleData.pubDate : ''))
+
+                    tmpArticle.setContent((Array.isArray(articleData.content) && articleData.content[0]?.value)
+                        ? Utils.htmlStrip(articleData.content[0].value)
+                        : (articleData.content ? articleData.content : ''));
+
+                    if (articleData.hasOwnProperty("category")) {
+                        if (Array.isArray(articleData["category"])) {
+                            articleData["category"].forEach(category =>
+                                tmpArticle.pushCategory(category, [url]));
+                        }
+                        else
+                            tmpArticle.pushCategory(articleData["category"], [url]);
+                    }
+
+                    tmpArticle.pushAttachments(articleData.attachments ? articleData.attachments : []);
+                    tmpArticle.pushAttachments(Utils.extractLinks(tmpArticle.content))
+
+                    tmpArticle.pushCategories(aliases.map(alias => {
+                        return {
+                            name: alias,
+                            links: [url]
+                        };
+                    }));
+
+                    // for each extra data. Data that are not described in the baseData variable.
+                    Object.entries(articleData).forEach((extra) => {
+                        if (basicData.indexOf(extra[0]) !== -1) return
+                        if (extra[1] === '') return
+
+                        tmpArticle.addExtra(extra[0], extra[1]);
+                    })
+
+                    if (tmpArticle.title === '') return
+                    parsedArticles.push(tmpArticle)
+                })
+            })
+            .catch((e: any) => {
+                console.log(e)
+                throw new Error(`HTMLParserException job failed for ${instructions.getSource().name}, original error: ${e.message}`)
+            })
+        return parsedArticles
     }
 
-    assignInstructions(instructions: Instructions, sourceJson: any): void {
-        instructions.elementSelector = sourceJson.scrape.container;
-        instructions.scrapeOptions = sourceJson.scrape.article;
-        instructions.endPoint = sourceJson.scrape.endPoint;
-    }
+    private static async request(url: string, timeout: number, instructions: Instructions): Promise<AxiosResponse> {
+        return new Promise((resolve, reject) => {
 
-    private static async request(url: string, timeout: number,instructions: Instructions): Promise<AxiosResponse> {
-        return new Promise((resolve,reject) => {
-
-            let config : AxiosConfig = {
+            let config: AxiosConfig = {
                 method: 'get',
                 url,
                 timeout,
@@ -35,7 +120,7 @@ export class HTMLParser extends ParserClass {
                 responseEncoding: 'binary'
             }
 
-            if(instructions["ignoreCertificates"]) config.httpsAgent = httpsAgent
+            if (instructions["ignoreCertificates"]) config.httpsAgent = httpsAgent
             axios((config as AxiosRequestConfig)).then((result: AxiosResponse) => {
                 resolve(result)
             }).catch((e: any) => {
@@ -59,7 +144,7 @@ export class HTMLParser extends ParserClass {
                               dataStoredAt: string,
                               attributesArr: Array<string>): Array<Object> | null {
         //Search into same element if Instructions(Find = null) and class is the same
-        if(!dataStoredAt || dataStoredAt.length <= 0){
+        if (!dataStoredAt || dataStoredAt.length <= 0) {
             return attributesArr.filter(item => location.attr(item)).map(item => {
                 return {
                     attribute: item, //attribute
@@ -111,11 +196,11 @@ export class HTMLParser extends ParserClass {
 
         if (multiple) {
             // save the point where the data is stored.
-            dataStoredAt = (instructions && instructions.length >=1) ? instructions[instructions.length - 1] : ""
+            dataStoredAt = (instructions && instructions.length >= 1) ? instructions[instructions.length - 1] : ""
             tmpArray = (instructions) ? instructions.slice(0, instructions.length - 1) : [];
         } else {
             tmpArray = []
-            dataStoredAt = (instructions && instructions.length >=1)? instructions[instructions.length - 1] : ""
+            dataStoredAt = (instructions && instructions.length >= 1) ? instructions[instructions.length - 1] : ""
         }
 
 
@@ -135,10 +220,10 @@ export class HTMLParser extends ParserClass {
 
                 if (!hasAttributes) {
                     // If we do not want to get the attributes, then we just get the information found in the location stored in the variable dataStoredAt.
-                    if (dataStoredAt.length >=1 && finalData.find(dataStoredAt).text() === '') return
-                    if (dataStoredAt.length <1 && finalData.text() === '') return
+                    if (dataStoredAt.length >= 1 && finalData.find(dataStoredAt).text() === '') return
+                    if (dataStoredAt.length < 1 && finalData.text() === '') return
 
-                    if(dataStoredAt)
+                    if (dataStoredAt)
                         results.push(finalData.find(dataStoredAt).text())
                     else
                         results.push(finalData.text())
@@ -146,7 +231,7 @@ export class HTMLParser extends ParserClass {
                 } else {
                     tmp = HTMLParser.attributes(finalData, dataStoredAt, attributesArr);
                     if (tmp) {
-                        tmp.map( (object : Object) => {
+                        tmp.map((object: Object) => {
                             results.push(object);
                         });
                     }
@@ -156,7 +241,7 @@ export class HTMLParser extends ParserClass {
             if (hasAttributes) {
                 tmp = HTMLParser.attributes(finalLocation, dataStoredAt, attributesArr)
                 if (tmp) {
-                    tmp.map( (object: Object) => {
+                    tmp.map((object: Object) => {
                         results.push(object)
                     })
                 }
@@ -170,95 +255,19 @@ export class HTMLParser extends ParserClass {
         return results
     }
 
-    static async parse2(alias: string, url: string, instructions: Instructions, amount: Number = 10): Promise<Article[]> {
-        let parsedArticles: Article[] = []
-
-        await HTMLParser.request(url, instructions.getSource().timeout,instructions)
-            .then((response: AxiosResponse) => {
-                const cheerioLoad: cheerio.Root = cheerio.load( instructions.textDecoder.decode(response.data))
-
-                // for each article.
-                cheerioLoad(`${instructions.elementSelector}`).each((index, element) => {
-                    if (index >= amount) return
-
-                    let articleData: ArticleImage = {}
-                    let tmpArticle: Article
-                    let basicData = ["title", "pubDate", "content", "attachments", "link"] // Exp. If you remove the title, then the title is going to be on the extra information of each article.
-                    let options: any = instructions.scrapeOptions
-
-                    // for each option. The options provided by instructions.
-                    for (let item in options) {
-                        if(options.hasOwnProperty(item) && !options[item].find && !options[item].multiple && !options[item].attributes){
-                            articleData[item] = cheerioLoad(element).find(options[item].class).text()
-                        }else if(options.hasOwnProperty(item)) {
-                            if (!options[item].attributes)
-                                articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, false, [], "")
-                            else
-                                articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, true, options[item].attributes, instructions.endPoint)
-                        }
-                    }
-
-                    //Utility to merge other items with the basic Data of the article
-                    for (let item in options) {
-                        if(options[item].hasOwnProperty("parent") && options[item] !== "attachments"){
-                           if(articleData.hasOwnProperty(options[item].parent)) articleData[options[item].parent] += articleData[item]
-                        }else{
-                           if(Array.isArray(articleData[options[item]])) articleData[options[item].parent].push(...((articleData[item]) ? articleData[item] : []))
-                        }
-                    }
-                    // It stores the article data to an instance of Article class.
-                    tmpArticle = new Article()
-                    tmpArticle.setSource(instructions.getSource().getId(), instructions.getSource().name);
-                    tmpArticle.setLink((Array.isArray(articleData.link) && articleData.link[0]?.value)
-                        ? articleData.link[0].value
-                        : (articleData.link ? articleData.link : ''));
-
-                    tmpArticle.setTitle((Array.isArray(articleData.title) && articleData.title[0]?.value)
-                        ? Utils.htmlStrip(articleData.title[0].value)
-                        : (articleData.title ? articleData.title : ''));
-
-                    tmpArticle.setPubDate((Array.isArray(articleData.pubDate) && articleData.pubDate[0]?.value)
-                        ? Utils.htmlStrip(articleData.pubDate[0].value)
-                        : (articleData.pubDate ? articleData.pubDate : ''))
-
-                    tmpArticle.setContent((Array.isArray(articleData.content) && articleData.content[0]?.value)
-                        ? Utils.htmlStrip(articleData.content[0].value)
-                        : (articleData.content ? articleData.content : ''));
-
-                    if(!alias && articleData.hasOwnProperty("category")) {
-                        if(Array.isArray(articleData["category"])){
-                            articleData["category"].forEach(category =>
-                                tmpArticle.pushCategory(category, [url]));
-                        }
-                        else tmpArticle.pushCategory(articleData["category"], [url]);
-                    }
-
-                    tmpArticle.pushAttachments(articleData.attachments ? articleData.attachments : []);
-                    tmpArticle.pushAttachments(Utils.extractLinks(tmpArticle.content))
-
-                    if (alias) tmpArticle.pushCategory(alias, [url]);
-
-                    // for each extra data. Data that are not described in the baseData variable.
-                    Object.entries(articleData).forEach((extra) => {
-                        if (basicData.indexOf(extra[0]) !== -1) return
-                        if (extra[1] === '') return
-
-                        tmpArticle.addExtra(extra[0], extra[1]);
-                    })
-
-                    if (tmpArticle.title === '') return
-                    parsedArticles.push(tmpArticle)
-                })
-            })
-            .catch((e: any) => {
-                console.log(e)
-                throw new Error(`HTMLParserException job failed for ${instructions.getSource().name}, original error: ${e.message}`)
-            })
-        return parsedArticles
+    validateScrape(scrape: any): void {
+        let value = Object.entries(scrape.article).some((key: any) => key === undefined || key[1].class === undefined);
+        if (value) throw new Error("HTMLParserSourceException found empty key or key with no class.")
     }
 
-    async parse(job: Job, alias: string, url: string, amount: number): Promise<Article[]> {
+    assignInstructions(instructions: Instructions, sourceJson: any): void {
+        instructions.elementSelector = sourceJson.scrape.container;
+        instructions.scrapeOptions = sourceJson.scrape.article;
+        instructions.endPoint = sourceJson.scrape.endPoint;
+    }
+
+    async parse(job: Job, aliases: string[], url: string, amount: number): Promise<Article[]> {
         let instructions = job.getInstructions();
-        return await HTMLParser.parse2(alias, url, instructions, amount)
+        return await HTMLParser.parse2(aliases, url, instructions, amount)
     }
 }

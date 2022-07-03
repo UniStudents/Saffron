@@ -2,6 +2,7 @@ import {DateTime} from "luxon";
 import Events from "../modules/events";
 import {LoggerTypes} from "./LoggerTypes"
 import chalk from 'chalk'
+
 /**
  * Logs information in to the console
  * @param type The type of log based on LoggerTypes

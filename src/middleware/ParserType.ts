@@ -2,12 +2,12 @@
  * The types of parsing
  */
 export enum ParserType {
-    RSS,
-    HTML,
-    DYNAMIC,
-    WORDPRESS_V1,
-    WORDPRESS_V2,
-    UNKNOWN
+    RSS = 'rss',
+    HTML = 'html',
+    DYNAMIC = 'dynamic',
+    WORDPRESS_V1 = 'wordpress-v1',
+    WORDPRESS_V2 = 'wordpress-v2',
+    UNKNOWN = 'unknown'
 }
 
 export namespace ParserType {
@@ -30,23 +30,6 @@ export namespace ParserType {
                 return ParserType.WORDPRESS_V2
             default:
                 return ParserType.UNKNOWN
-        }
-    }
-
-    export function toString(type: ParserType): string {
-        switch (type) {
-            case ParserType.HTML:
-                return "html"
-            case ParserType.RSS:
-                return "rss"
-            case ParserType.DYNAMIC:
-                return "dynamic"
-            case ParserType.WORDPRESS_V1:
-                return "wordpress-v1"
-            case ParserType.WORDPRESS_V2:
-                return "wordpress-v2"
-            default:
-                return "unknown"
         }
     }
 }
