@@ -13,12 +13,11 @@ const path = process.cwd();
 export default class Scheduler {
 
     private declare isRunning: boolean;
-    private declare isForcedStopped: boolean;
     private declare jobsStorage: Job[];
 
     constructor() {
-        Events.on("start", () => this.start());
-        Events.on("stop", (force: boolean) => this.stop(force));
+        Events.on("start", (keepPreviousSession) => this.start(keepPreviousSession));
+        Events.on("stop", () => this.stop());
         this.jobsStorage = [];
     }
 
@@ -43,63 +42,30 @@ export default class Scheduler {
     /**
      * Starts the scheduler
      */
-    async start(): Promise<void> {
+    async start(keepPreviousSession: boolean): Promise<void> {
         this.isRunning = true;
-        this.isForcedStopped = false;
 
-        // Read all source files
-        await this.scanSourceFiles();
-        let sources = Source.getSources();
-
-        let includeOnly = Config.getOption(ConfigOptions.SOURCES_INCLUDE_ONLY);
-        let excluded = Config.getOption(ConfigOptions.SOURCES_EXCLUDE);
-
-        if (!Array.isArray(includeOnly)) throw new Error("Config.sources.includeOnly is not an array.");
-        if (!Array.isArray(excluded)) throw new Error("Config.sources.excluded is not an array.");
-
-        // Include only
-        if (includeOnly.length > 0) {
-            let tmpSources: Source[] = [];
-            sources.forEach((source: Source) => {
-                if (includeOnly.includes(source.name))
-                    tmpSources.push(source);
+        if(!keepPreviousSession) {
+            const sources = await this.resetSources();
+            this.resetJobs(sources);
+        } else {
+            let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT) / this.jobsStorage.length;
+            let i = 0;
+            this.jobsStorage.filter(job => job.status === JobStatus.PENDING).forEach(job => {
+                // Push pending jobs to later date, so the jobs will not be pushed all together.
+                job.nextRetry = Date.now() + separationInterval * i++;
             });
-            sources = tmpSources;
-        }
-
-        // Exclude sources
-        excluded.forEach((ex_source: any) => {
-            let index = sources.findIndex((source: Source) => source.name === ex_source)
-            if (index !== -1)
-                sources.splice(index, 1)
-        })
-
-        Events.emit("scheduler.sources.new", sources.map((source: Source) => source.name))
-
-        // Create separation interval
-        let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT) / sources.length
-
-        let workersIds = Grid.getInstance().getWorkers();
-        let sI = 0, wI = 0;
-        for (let source of sources) {
-            this.issueJobForSource(source, workersIds[wI++], separationInterval * sI++);
-            if (wI == workersIds.length) wI = 0;
         }
 
         // Check grid for job status
         const mInterval = setInterval(async () => {
-            // Clear jobs
-            if (this.isForcedStopped)
-                this.jobsStorage = [];
-
             if (!this.isRunning) {
                 clearInterval(mInterval);
                 return;
             }
 
             // Load all jobs
-            let pendingJobs = this.jobsStorage;
-            for (let job of pendingJobs) {
+            for (let job of this.jobsStorage) {
                 switch (job.status) {
                     // Issue new job for this source
                     case JobStatus.FINISHED:
@@ -128,6 +94,7 @@ export default class Scheduler {
                         break;
                     // Pending jobs
                     case JobStatus.PENDING:
+                        // If nextRetry is in the past that means the time has come
                         if (job.nextRetry <= Date.now()) {
                             // If the worker did not complete the job after 5 times elect new worker
                             if (job.emitAttempts > 5) {
@@ -149,15 +116,61 @@ export default class Scheduler {
 
     /**
      * Stops the scheduler from issuing new jobs
-     * @param force If true it will delete all pending jobs
      */
-    async stop(force: boolean): Promise<void> {
+    async stop(): Promise<void> {
         this.isRunning = false;
-        this.isForcedStopped = force;
     }
 
-    exportQueue(): Job[] {
+    getJobs(): Job[] {
         return this.jobsStorage;
+    }
+
+    replaceCurrentJobs(jobs: Job[]) {
+        this.jobsStorage = jobs;
+    }
+
+    resetJobs(sources: Source[]) {
+        // Create separation interval
+        let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT) / sources.length
+
+        let workersIds = Grid.getInstance().getWorkers();
+        let sI = 0, wI = 0;
+        for (let source of sources) {
+            this.issueJobForSource(source, workersIds[wI++], separationInterval * sI++);
+            if (wI == workersIds.length) wI = 0;
+        }
+    }
+
+    async resetSources(): Promise<Source[]> {
+        // Read all source files
+        await this.scanSourceFiles();
+        let sources = Source.getSources();
+
+        let includeOnly = Config.getOption(ConfigOptions.SOURCES_INCLUDE_ONLY);
+        let excluded = Config.getOption(ConfigOptions.SOURCES_EXCLUDE);
+
+        if (!Array.isArray(includeOnly)) throw new Error("Config.sources.includeOnly is not an array.");
+        if (!Array.isArray(excluded)) throw new Error("Config.sources.excluded is not an array.");
+
+        // Include only
+        if (includeOnly.length > 0) {
+            let tmpSources: Source[] = [];
+            sources.forEach((source: Source) => {
+                if (includeOnly.includes(source.name))
+                    tmpSources.push(source);
+            });
+            sources = tmpSources;
+        }
+
+        // Exclude sources
+        excluded.forEach((ex_source: any) => {
+            let index = sources.findIndex((source: Source) => source.name === ex_source);
+            if (index !== -1)
+                sources.splice(index, 1);
+        });
+
+        Events.emit("scheduler.sources.new", sources.map((source: Source) => source.name));
+        return sources;
     }
 
     /**

@@ -59,7 +59,7 @@ export default class Source {
         ret.instructions = new Instructions()
         ret.instructions.source = {id: ret.getId()}
 
-        if (source.amount && (typeof source.amount != 'number' || source.amount < 0))
+        if (source.amount && (typeof source.amount != 'number' || source.amount <= 0))
             throw new Error(`SourceException: ${source.filename}: amount: is not valid, must be a positive number.`);
         ret.instructions.amount = source.amount ? source.amount : Config.getOption(ConfigOptions.ARTICLE_AMOUNT)
 
@@ -100,7 +100,8 @@ export default class Source {
                     ret.instructions.url.push({url, aliases: []});
                 } else throw new Error(`SourceException: ${source.filename}: url: is not valid, error during parsing pair: ${pair}.`);
             }
-        } else throw new Error(`SourceException: ${source.filename}: url: is not valid, must be a string type or an array.`)
+        } else
+            throw new Error(`SourceException: ${source.filename}: url: is not valid, must be a string type or an array.`)
 
         let parserType = ParserType.getFromString(source.type)
         if (parserType === ParserType.UNKNOWN)

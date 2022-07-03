@@ -69,19 +69,20 @@ export default class Saffron {
 
     /**
      * Starts a Saffron instance.
+     * @param keepPreviousSession If you want to start and stop the saffron without interrupting the schedule
+     * you can set keepPreviousSession to true.
      */
-    async start() {
-        Events.emit("start")
+    async start(keepPreviousSession: boolean = false) {
+        Events.emit("start", keepPreviousSession);
     }
 
     /**
      * Stops the saffron instance
      * If mode equals 'main' then the scheduler will stop giving jobs to the workers.
      * else if mode equals 'worker' then the worker will stop getting future jobs and disconnect from the main saffron instance.
-     * @param force If true then scheduler will clear all active jobs and stop all the workers. If mode is 'worker' then the worker will abandon the current job.
      */
-    async stop(force: boolean) {
-        Events.emit("stop", force)
+    async stop() {
+        Events.emit("stop")
     }
 
     /**
@@ -94,29 +95,55 @@ export default class Saffron {
     }
 
     /**
-     * Get a source file and return an array of the parsed articles
-     * @param sourceJson The json object of the source file.
-     * @throws SourceException if there is a problem parsing the source file.
-     */
-    async parse(sourceJson: object): Promise<Article[]> {
-        let source: Source = await Source.fileToSource(sourceJson)
-        source.instructions.getSource = (): Source => source;
-
-        let job = new Job()
-        job.source = {id: source.getId()}
-        job.getSource = (): Source => source;
-        job.getInstructions = (): Instructions => source.instructions
-
-        return await Worker.parse(job);
-    }
-
-    /**
      * Assign an extension function.
      * @param event The event of the function.
      * @param callback The callback function that will be called.
      */
     use(event: string, callback: (...args: any[]) => any): void {
         Extensions.getInstance().push({event, callback})
+    }
+
+    /**
+     * Get a source file and return an array of the parsed articles
+     * @param sourceJson The json object of the source file.
+     * @throws SourceException if there is a problem parsing the source file.
+     */
+    async parse(sourceJson: object): Promise<Article[]> {
+        let source: Source = await Source.fileToSource(sourceJson);
+        source.instructions.getSource = (): Source => source;
+
+        let job = new Job();
+        job.source = {id: source.getId()};
+        job.getSource = (): Source => source;
+        job.getInstructions = (): Instructions => source.instructions;
+
+        return await Worker.parse(job);
+    }
+
+    /**
+     * Get current source files.
+     * By editing the result of this function the main sources will be edited as well.
+     */
+    getSources(): Source[] {
+        return Source.getSources();
+    }
+
+    /**
+     * Get current jobs.
+     * By editing the result of this function the jobs will be edited as well.
+     */
+    getJobs(): Job[] {
+        if(this.scheduler != null)
+            return this.scheduler.getJobs();
+        throw new Error('Scheduler is not initialized. Set mode main to get active jobs');
+    }
+
+    /**
+     * Replace the current running jobs.
+     * @param jobs
+     */
+    replaceCurrentJobs(jobs: Job[]) {
+        this.scheduler.replaceCurrentJobs(jobs);
     }
 };
 

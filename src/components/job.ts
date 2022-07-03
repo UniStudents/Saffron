@@ -30,15 +30,15 @@ export default class Job {
      * @param interval The time from now the job will be issued to a worker
      */
     static createJob(sourceId: string, workerId: string, interval: number): Job {
-        let job = new Job()
-        job.source = {id: sourceId}
+        let job = new Job();
+        job.source = {id: sourceId};
         // nextRetry = The time the job finished (just now) + interval + randomTIme
-        job.nextRetry = Date.now() + interval + this.getRandomTime(sourceId)
-        job.worker = {id: workerId}
-        job.status = JobStatus.PENDING
-        job.attempts = 0
-        job.emitAttempts = 0
-        return job
+        job.nextRetry = Date.now() + interval + this.getRandomTime(sourceId);
+        job.worker = {id: workerId};
+        job.status = JobStatus.PENDING;
+        job.attempts = 0;
+        job.emitAttempts = 0;
+        return job;
     }
 
     /**
@@ -47,7 +47,7 @@ export default class Job {
      */
     private static getRandomTime(source_id: string): number {
         if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
-            return 0
+            return 0;
 
         const high = 500;
         const low = 0;

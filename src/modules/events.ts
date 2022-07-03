@@ -40,7 +40,7 @@ export default class Events {
                 Logger(LoggerTypes.INFO, `Loaded ${names.length} sources`))
 
             this.getAntennae().on("scheduler.job.new", (job: Job) =>
-                Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - add new job(${job.id}) to stack for ${job.getSource().name}.`));
+                Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - add new job(${job.id}) to queue for ${job.getSource().name}.`));
             this.getAntennae().on("scheduler.job.finished", (job: Job) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - found finished job(${job.id}).`));
             this.getAntennae().on("scheduler.job.failed", (job: Job) =>
