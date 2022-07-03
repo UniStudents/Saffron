@@ -1,14 +1,19 @@
 import _ from "lodash"
-import path from "path"
 import {ConfigOptions} from "../middleware/ConfigOptions";
-
+import Article from "./articles";
 
 export default class Config {
     _config: { [key: string]: any } = {
         mode: "main",
         database: {
-            driver: "none",
-            config: {}
+            pushArticles: async (articles: Article[]): Promise<void> => {
+
+            },
+            getArticles: async (opts: {
+                tableName: string;
+            }): Promise<void> => {
+
+            }
         },
         sources: {
             path: "../../../sources",
@@ -37,7 +42,6 @@ export default class Config {
         }
     }
 
-    public static isHydrated: boolean = false
     private static instance: Config
 
     private mergeObject(src: any, original: object): object {
@@ -53,31 +57,14 @@ export default class Config {
     /**
      * Loads an external configuration object and merges the parameters with the default ones.
      */
-    static load(config?: object | string): any {
+    static load(config?: object): any {
         if (!this.instance)
             this.instance = new Config(config)
 
         return this.instance._config
     }
 
-    private constructor(config: any) {
-        if (typeof config === "string") {
-            try {
-                if (path.isAbsolute(config))
-                    config = require(config);
-                else
-                    config = require((config.startsWith('./') ? '.' : '../') + config)
-            } catch (error: any) {
-                throw new Error(error)
-            }
-        } else if (!config) {
-            try {
-                config = require("../../saffron.json")
-            } catch (error: any) {
-                throw new Error(error)
-            }
-        }
-
+    private constructor(config?: any) {
         this._config = this.mergeObject(config, this._config)
 
         switch (process.env.NODE_ENV) {
@@ -97,15 +84,8 @@ export default class Config {
 
         }
 
-        if (process.env.SAFFRON_MODE && ["main", "worker"].includes(process.env.SAFFRON_MODE)) {
+        if (process.env.SAFFRON_MODE && ["main", "worker"].includes(process.env.SAFFRON_MODE))
             this._config.mode = process.env.SAFFRON_MODE
-        }
-
-        delete this._config.development
-        delete this._config.production
-        delete this._config.testing
-
-        Config.isHydrated = true
     }
 
     static getOption(option: ConfigOptions): any {
@@ -115,12 +95,7 @@ export default class Config {
             case ConfigOptions.SAFFRON_MODE:
                 return !isStatic ? Config.load().mode : "main";
 
-            case ConfigOptions.DB_DRIVER:
-                return !isStatic ? Config.load().database.driver : "memory";
-            case ConfigOptions.DB_CONFIG:
-                return !isStatic ? Config.load().database.config : {};
-
-                case ConfigOptions.SOURCES_PATH:
+            case ConfigOptions.SOURCES_PATH:
                 return !isStatic ? Config.load().sources.path : '../../../sources';
             case ConfigOptions.SOURCES_INCLUDE_ONLY:
                 return !isStatic ? Config.load().sources.includeOnly : [];
@@ -149,6 +124,11 @@ export default class Config {
 
             case ConfigOptions.MISC_LOG_LEVEL:
                 return !isStatic ? Config.load().misc.log : "all";
+
+            case ConfigOptions.DB_PUSH_ARTICLES:
+                return !isStatic ? Config.load().database.pushArticles : (articles: Article[]) => {};
+            case ConfigOptions.DB_GET_ARTICLES:
+                return !isStatic ? Config.load().database.getArticles : (opts: any) => [];
         }
     }
 }

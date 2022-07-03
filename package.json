@@ -4,20 +4,18 @@
   "description": "A  fairly intuitive & powerful framework that enables you to collect & save articles and news from all over the web. ",
   "main": "dist/index.js",
   "dependencies": {
-    "axios": "^0.24.0",
+    "axios": "^0.27.2",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0-rc.10",
-    "crypto-js": "^4.1.1",
-    "glob": "^7.2.0",
-    "ip": "^1.1.5",
+    "glob": "^7.2.3",
+    "ip": "^1.1.8",
     "lodash": "^4.17.21",
-    "luxon": "^2.2.0",
-    "mongodb": "^4.2.1",
-    "nanoid": "^3.1.30",
-    "public-ip": "^4.0.4",
+    "luxon": "^2.4.0",
+    "nanoid": "^4.0.0",
+    "public-ip": "^6.0.1",
     "rss-parser": "^3.12.0",
-    "socket.io": "^4.4.0",
-    "socket.io-client": "4.4.0",
+    "socket.io": "^4.5.1",
+    "socket.io-client": "4.5.1",
     "striptags": "^3.2.0"
   },
   "scripts": {
@@ -39,16 +37,15 @@
   },
   "homepage": "https://github.com/poiw-org/saffron#readme",
   "devDependencies": {
-    "@types/cheerio": "^0.22.30",
-    "@types/crypto-js": "^4.0.2",
+    "@types/cheerio": "^0.22.31",
+    "@types/glob": "^7.2.0",
     "@types/ip": "^1.1.0",
-    "@types/lodash": "^4.14.176",
-    "@types/luxon": "^2.0.7",
-    "@types/mongodb": "^4.0.7",
-    "@types/xml2js": "^0.4.9",
+    "@types/lodash": "^4.14.182",
+    "@types/luxon": "^2.3.2",
+    "@types/xml2js": "^0.4.11",
     "cross-env": "^7.0.3",
-    "tsc-watch": "^4.5.0",
-    "typescript": "^4.4.4",
-    "dotenv": "^10.0.0"
+    "dotenv": "^16.0.1",
+    "tsc-watch": "^5.0.3",
+    "typescript": "^4.7.4"
   }
 }

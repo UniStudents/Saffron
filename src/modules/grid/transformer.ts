@@ -10,11 +10,14 @@ export const Unpack = (payload: Payload): Job | Article | Source | object => {
         case "Object":
             return payload.payload;
         case "Job":
-            return Job.fromJSON(payload.payload)
+            (payload.payload as any).prototype = Job.prototype;
+            return payload.payload;
         case "Article":
-            return Article.fromJSON(payload.payload)
+            (payload.payload as any).prototype = Article.prototype;
+            return payload.payload;
         case "Source":
-            return Source.fromJSON(payload.payload)
+            (payload.payload as any).prototype = Source.prototype;
+            return payload.payload;
         default:
             new Error(`The transformer module received a payload that couldn\'t be unpacked: \n ${payload}`)
     }

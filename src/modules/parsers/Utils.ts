@@ -1,5 +1,5 @@
 import cheerio from "cheerio";
-import {Attachment} from "../../../components/articles";
+import {Attachment} from "../../components/articles";
 
 const striptags = require('striptags');
 export default class Utils {

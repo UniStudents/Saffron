@@ -3,86 +3,73 @@ import Job from "../../components/job";
 import randomId from "../../middleware/randomId";
 import Grid from "../grid";
 import Article from "../../components/articles";
-import ParserLoader from "./parsers/ParserLoader";
+import ParserLoader from "../parsers/ParserLoader";
 import hashCode from "../../middleware/hashCode";
 
 
 export default class Worker {
 
     declare readonly id: string;
-    private declare isForcedStopped: boolean
-    private declare isRunning: boolean
+    private declare isForcedStopped: boolean;
+    private declare isRunning: boolean;
 
-    /**
-     * Worker constructor
-     * @param id The worker's id (Optional, auto-generated)
-     */
-    constructor(id: string = "") {
-        if (id !== "")
-            this.id = id
-        else this.id = randomId("wkr")
-    }
-
-    /**
-     * Parse the worker class to a json object
-     */
-    async toJSON(): Promise<object> {
-        return {
-            id: this.id
-        }
+    constructor() {
+        this.id = randomId("wkr");
     }
 
     /**
      * Worker will start accepting jobs
      */
     async start(): Promise<void> {
-        Grid.getInstance().announceWorker(this)
-        this.isForcedStopped = false
-        this.isRunning = true
+        Grid.getInstance().announceWorker(this);
+        this.isForcedStopped = false;
+        this.isRunning = true;
 
         // start listening for new jobs
         Events.getAntennae().on("scheduler.job.push", async (job: Job) => {
-            if (!this.isRunning) return
-            if (this.id !== job.worker.id) return
+            if (!this.isRunning) return;
+            if (this.id !== job.worker.id) return;
 
-            let articles: Article[]
+            let articles: Article[];
             try {
-                articles = await Worker.parse(job)
+                articles = await Worker.parse(job);
             } catch (e: any) {
                 Events.emit("workers.parsers.error", e);
-                await Grid.getInstance().failedJob(job)
-                return
+                await Grid.getInstance().failedJob(job);
+                return;
             }
 
-            if (this.isForcedStopped) return
+            if (this.isForcedStopped) return;
 
+            const source = job.getSource();
             articles.forEach((article: Article) => {
                 article.source = {
-                    id: job.getSource().getId(),
-                    name: job.getSource().name
+                    id: source.getId(),
+                    name: source.name
                 }
-            })
+            });
 
-            let collection = job.getSource().tableName
-            if (!collection)
-                collection = job.getSource().name
+            const tableName = source.tableName || source.name;
 
-            await Grid.getInstance().mergeArticles(collection, articles)
-            await Grid.getInstance().finishedJob(job)
+            await Grid.getInstance().mergeArticles(source, tableName, articles);
+            await Grid.getInstance().finishedJob(job);
         })
     }
 
     static async parse(job: Job): Promise<Article[]> {
         let instructions = job.getInstructions();
 
-        let articles: Article[] = [];
+        let articles: Article[] = []; // TODO - do not merge url per article
         for (const pair of instructions.url) {
             let url = pair[0];
             let alias = pair[1] ? pair[1] : "";
 
+            const parser = ParserLoader.getParser(instructions.parserType)!!;
             // Will throw error in case of fail (catch in call function).
-            articles.push(...await (ParserLoader.getParser(instructions.parserType))!!.parse(job, alias, url, job.getInstructions().amount));
+            const newArticles = await parser.parse(job, alias, url, job.getInstructions().amount);
+            articles.push(...newArticles);
         }
+
         return articles;
     }
 
@@ -101,16 +88,20 @@ export default class Worker {
      * @param lastWorkerId The job's previous worker id. It will be excluded from the election only if the workers are greater that one
      */
     static electWorker(lastWorkerId: string): string {
-        let workers = Grid.getInstance().getWorkers().slice()
+        let workers = Grid.getInstance().getWorkers().slice();
+
+        // If only one worker, return the same
+        if(workers.length === 1 && workers[0] === lastWorkerId)
+            return lastWorkerId;
+
+        // If more than one worker, delete the last one
         if (workers.length > 1) {
             let index = workers.findIndex((id: string) => id === lastWorkerId)
             if (index != -1)
                 workers.splice(index, 1)
         }
 
-        if (workers.length == 0)
-            return lastWorkerId;
-
+        // From the remaining workers select one
         return workers[Math.abs(hashCode(lastWorkerId)) % workers.length]
     }
 }

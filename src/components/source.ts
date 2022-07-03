@@ -1,32 +1,22 @@
 import Job from "../components/job";
 import Instructions from "./instructions";
-import {ParserType} from "../modules/workers/parsers/ParserType";
+import {ParserType} from "../middleware/ParserType";
 import Article from "./articles";
-import hash from 'crypto-js/sha256';
 import Config from "./config";
-import ParserLoader from "../modules/workers/parsers/ParserLoader";
+import ParserLoader from "../modules/parsers/ParserLoader";
 import {ConfigOptions} from "../middleware/ConfigOptions";
 
 
 export default class Source {
 
+    static _sources: Source[] = [];
+
     /**
      * Parse and store a source file contents to an array in memory
      * @param source the source file
-     * @param isStatic If is called by static function or the scheduler.
      */
-    static async parseFileObject(source: any, isStatic: boolean = false): Promise<Source> {
-        if(!isStatic) {
-            try {
-                source = {
-                    ...source,
-                    ...require(`${source.path}`)
-                }
-            } catch (e) {
-                throw new Error(`SourceException: ${source.filename}: failed to read file.`);
-            }
-        }
-        else source.filename = source.name ? source.name : '[no name]';
+    static async fileToSource(source: any): Promise<Source> {
+        source.filename = source.filename ? source.filename : source.name ? source.name : '[unknown filename]';
 
         let ret = new Source();
 
@@ -117,10 +107,11 @@ export default class Source {
 
         ParserLoader.assignScrapeInstructions(parserType, ret.instructions, source);
 
-        if(!isStatic)
-            this._sources.push(ret)
-
         return ret
+    }
+
+    static pushSource(source: Source) {
+        this._sources.push(source);
     }
 
     /**
@@ -147,51 +138,23 @@ export default class Source {
         return this._sources.find((source: Source) => source.getId() === from)!!
     }
 
-    static _sources: Source[] = []
+    private declare id: string;
+    declare name: string;
+    declare tableName: string;
+    declare interval: number;
+    declare retryInterval: number;
+    declare timeout: number;
+    declare instructions: Instructions;
+    declare extra: any;
 
-    private declare id: string
-    declare name: string
-    declare tableName: string
-    declare interval: number
-    declare retryInterval: number
-    declare timeout: number
-    declare instructions: Instructions
-    declare extra: any
-
-    constructor(id: string = "") {
-        if (id !== "") this.id = id
-    }
+    constructor() {}
 
     /**
      * Generate and return the id of the source
      */
     getId(): string {
         if (!this.id)
-            this.id = 'src_' + hash(this.name).toString().substr(0, 47)
-        return this.id
-    }
-
-    toJSON(): any {
-        return {
-            id: this.id,
-            name: this.name,
-            tableName: this.tableName,
-            interval: this.interval,
-            retryInterval: this.retryInterval,
-            instructions: this.instructions.toJSON(),
-            extra: this.extra
-        }
-    }
-
-    static fromJSON(json: any): Source {
-        let source = new Source(json.id)
-        source.name = json.name
-        source.tableName = json.tableName
-        source.interval = json.interval
-        source.retryInterval = json.retryInterval
-        source.instructions = Instructions.fromJSON(json.instructions)
-        source.extra = json.extra
-
-        return source
+            this.id = `src_${this.name}`;
+        return this.id;
     }
 }

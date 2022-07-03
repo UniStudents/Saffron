@@ -1,90 +1,78 @@
-import DatabaseLoader from "./modules/database/index"
 import Config from "./components/config"
 import Scheduler from "./modules/scheduler";
 import Grid from "./modules/grid";
 import Events from "./modules/events";
 import Worker from "./modules/workers";
-
 import Article from "./components/articles";
 import Utils from "./components/utils";
-
 import Job from "./components/job"
 import Source from "./components/source"
-import Extensions from "./modules/extensions";
 import Instructions from "./components/instructions";
-import Database from "./modules/database/database";
 import {ConfigOptions} from "./middleware/ConfigOptions";
+import Extensions from "./modules/extensions";
 
-let db: Database
-    , scheduler: Scheduler
-    , workers: Worker[] = []
 
-export = {
+export default class Saffron {
+
+    private declare scheduler: Scheduler;
+    private declare workers: Worker[];
+
+    constructor() {
+    }
+
     /**
      * Initialize saffron with the given configuration file.
      * It will also connect to the database if it is given and add a route to the server instance if it given.
      * @param config The config file path or object
      * @see https://saffron.poiw.org
      */
-    initialize: async (config: any = undefined) => {
+    async initialize(config: any = undefined) {
         // Load config file
         Config.load(config);
 
         Events.registerLogListeners();
         Events.emit('title');
 
-        // Initialize database
-        let database = DatabaseLoader.getInstance();
-        if (database == null)
-            return Events.emit('database.driver.error')
-
-        db = database;
-        try {
-            await db.connect()
-            Events.emit('database.connection.okay')
-        }
-        catch (e) {
-            return Events.emit('database.connection.failed')
-        }
-
         // Initialize and start grid
         if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED)) {
             try {
                 await Grid.getInstance().connect();
                 Events.emit('grid.connection.okay');
-            }
-            catch (e) {
+            } catch (e) {
                 return Events.emit('grid.connection.failed', e);
             }
         }
 
         // Initialize workers
+        this.workers = [];
         let workersSize = Config.getOption(ConfigOptions.WORKER_NODES);
         for (let i = 0; i < workersSize; i++)
-            workers.push(new Worker());
+            this.workers.push(new Worker());
 
         // Initialize scheduler
         if (Config.getOption(ConfigOptions.SAFFRON_MODE) === 'main')
-            scheduler = new Scheduler();
+            this.scheduler = new Scheduler();
 
         // Event for workers
         Events.on("start", () => {
-            for (let worker of workers) {
+            for (let worker of this.workers) {
                 // TODO - Start worker on new node thread
                 worker.start();
             }
         })
 
         Events.on("stop", (force: boolean) => {
-            for (let worker of workers)
+            for (let worker of this.workers)
                 worker.stop(force);
         })
-    },
+    }
 
     /**
      * Starts a Saffron instance.
      */
-    start: async () => Events.emit("start"),
+    async start() {
+        Events.emit("start")
+    }
 
     /**
      * Stops the saffron instance
@@ -92,14 +80,18 @@ export = {
      * else if mode equals 'worker' then the worker will stop getting future jobs and disconnect from the main saffron instance.
      * @param force If true then scheduler will clear all active jobs and stop all the workers. If mode is 'worker' then the worker will abandon the current job.
      */
-    stop: async (force: boolean) => Events.emit("stop", force),
+    async stop(force: boolean) {
+        Events.emit("stop", force)
+    }
 
     /**
      * Register a new event
      * @param event The name of the event
      * @param cb The callback that will send the data
      */
-    on: async (event: string, cb: (...args: any[]) => void) => Events.on(event, cb),
+    async on(event: string, cb: (...args: any[]) => void) {
+        Events.on(event, cb)
+    }
 
     /**
      * Get a source file and return an array of the parsed articles
@@ -107,7 +99,7 @@ export = {
      * @throws SourceException if there is a problem parsing the source file.
      */
     async parse(sourceJson: object): Promise<Article[]> {
-        let source: Source = await Source.parseFileObject(sourceJson, true)
+        let source: Source = await Source.fileToSource(sourceJson)
         source.instructions.getSource = (): Source => source;
 
         let job = new Job()
@@ -116,7 +108,7 @@ export = {
         job.getInstructions = (): Instructions => source.instructions
 
         return await Worker.parse(job);
-    },
+    }
 
     /**
      * Assign an extension function.
@@ -125,20 +117,7 @@ export = {
      */
     use(event: string, callback: (...args: any[]) => any): void {
         Extensions.getInstance().push({event, callback})
-    },
+    }
+};
 
-    /**
-     * Returns all the articles.
-     * @param src The collection name that the articles are saved.
-     * @param options The options that will be applied.
-     */
-    async getArticles(src: string, options?: {
-        pageNo?: number,
-        articlesPerPage?: number,
-        sort?: { [key: string]: -1 | 1 }
-    }): Promise<Article[]> {
-        return await DatabaseLoader.getInstance()!!.getArticles(src, options)
-    },
-
-    types: {Article, Utils}
-}
+export {Article, Utils};

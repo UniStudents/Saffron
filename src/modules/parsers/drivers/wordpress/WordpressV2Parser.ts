@@ -1,11 +1,11 @@
 import {ParserClass} from "../../ParserClass";
-import Instructions from "../../../../../components/instructions";
-import Job from "../../../../../components/job";
-import Article from "../../../../../components/articles";
+import Instructions from "../../../../components/instructions";
+import Job from "../../../../components/job";
+import Article from "../../../../components/articles";
 import axios, {AxiosRequestConfig} from "axios";
 import Utils from "../../Utils";
 import https from "https";
-import {AxiosConfig} from "../../../../../components/AxiosConfig";
+import {AxiosConfig} from "../../../../components/AxiosConfig";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})
 

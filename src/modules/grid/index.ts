@@ -6,12 +6,13 @@ import Config from "../../components/config";
 import {nanoid} from "nanoid";
 import publicIp from "public-ip";
 import privateIp from "ip";
-import Database from "../database/index";
 import randomId from "../../middleware/randomId";
 import Article from "../../components/articles";
 import Server from "./server";
 import Client from "./client";
 import {ConfigOptions} from "../../middleware/ConfigOptions";
+import Extensions from "../extensions";
+import Source from "../../components/source";
 
 
 export default class Grid {
@@ -37,13 +38,10 @@ export default class Grid {
     private declare workersClients: { workersIds: string[], socketId: string }[];
     private declare readonly encryptionKey: string
 
-    declare jobsStorage: Job[]
-
     private constructor() {
         this.isMain = Config.getOption(ConfigOptions.SAFFRON_MODE) === 'main'
         this.workersIds = []
         this.workersClients = []
-        this.jobsStorage = []
         this.encryptionKey = nanoid(256)
 
         if (this.isMain)
@@ -62,10 +60,10 @@ export default class Grid {
     }
 
     async registerGridNode(): Promise<string> {
-        let _publicIp = {ipv4: (await publicIp.v4()), ipv6: (await publicIp.v6)}
+        let _publicIp = {ipv4: (await publicIp.publicIpv4()), ipv6: (await publicIp.publicIpv6())}
         let _privateIp = privateIp.address()
         let id = (this.isMain ? 'grd-main' : randomId("grd"))
-        await Database.getInstance()!!.insertGridNode(id, _publicIp, _privateIp, this.encryptionKey)
+        // await Database.getInstance()!!.insertGridNode(id, _publicIp, _privateIp, this.encryptionKey)
 
         return id
     }
@@ -82,23 +80,23 @@ export default class Grid {
                 });
 
                 this.server.on("workers.job.finished", data => {
-                    let id = data.id;
-                    let job = this.jobsStorage.find((job: Job) => job.id == id);
-
-                    if (job) {
-                        job.status = JobStatus.FINISHED;
-                        Events.emit("workers.job.finished", job)
-                    }
+                    // let id = data.id;
+                    // let job = this.jobsStorage.find((job: Job) => job.id == id);
+                    //
+                    // if (job) {
+                    //     job.status = JobStatus.FINISHED;
+                    //     Events.emit("workers.job.finished", job)
+                    // }
                 })
 
                 this.server.on("workers.job.failed", data => {
-                    let id = data.id;
-                    let job = this.jobsStorage.find((job: Job) => job.id == id);
-
-                    if (job) {
-                        job.status = JobStatus.FAILED;
-                        Events.emit("workers.job.failed", job)
-                    }
+                    // let id = data.id;
+                    // let job = this.jobsStorage.find((job: Job) => job.id == id);
+                    //
+                    // if (job) {
+                    //     job.status = JobStatus.FAILED;
+                    //     Events.emit("workers.job.failed", job)
+                    // }
                 })
 
                 await this.server.listen();
@@ -108,32 +106,15 @@ export default class Grid {
             this.client.on('connect', () => {
                 for (const workerId of this.workersIds)
                     Events.emit("grid.worker.announced", workerId);
-            })
+            });
 
             this.client.on('scheduler.job.push', (data: any) => {
-                let job = Job.fromJSON(data)
-                Events.emit("scheduler.job.push", job)
-            })
+                data.prototype = Job.prototype;
+                Events.emit("scheduler.job.push", data);
+            });
 
             await this.client.connect()
         }
-    }
-
-    /**
-     * Deletes all jobs.
-     * This function is used by the scheduler to reset all jobs.
-     */
-    deleteAllJobs(): void {
-        this.jobsStorage.splice(0, this.jobsStorage.length)
-    }
-
-    /**
-     * Delete a job from storage so a new one can be issued.
-     * @param job
-     */
-    deleteJob(job: Job) {
-        let index = this.jobsStorage.findIndex((obj: Job) => obj.id === job.id)
-        if (index !== -1) this.jobsStorage.splice(index, 1)
     }
 
     /**
@@ -214,9 +195,56 @@ export default class Grid {
             await this.client.emit('workers.job.failed', {id: job.id})
     }
 
-    async mergeArticles(collection: string, articles: Article[]): Promise<void> {
-        if(this.isMain)
-            await Database.getInstance()?.mergeArticles(collection, articles)
-        // else emit only articles to server on workers.articles.new
+    async mergeArticles(source: Source, tableName: string, articles: Article[]): Promise<void> {
+        Events.emit("workers.articles.found", articles, tableName); // Can be empty array
+        if(articles.length == 0) return;
+
+        articles.forEach(article => article.timestamp = Date.now());
+
+        Events.emit("middleware.before", articles);
+
+        let getExtPair = Extensions.getInstance().startCount();
+        let pair: any;
+        while ((pair = getExtPair()) != null) {
+            if(pair.event === 'article.format') {
+                for (const i in articles)
+                    articles[i] = await pair.callback(articles[i]);
+            }
+            else if(pair.event === 'articles') {
+                articles = await pair.callback(articles);
+            }
+        }
+
+        Events.emit("middleware.after", articles);
+
+        let dbArticles: Article[];
+        try {
+            dbArticles = await Config.getOption(ConfigOptions.DB_GET_ARTICLES)({tableName});
+        } catch (e) {
+            Events.emit("middleware.after", source, e);
+            return;
+        }
+
+        // let urls: string[] = articles[0].getSource().instructions.url.map((url: string[]) => url[0]); // TODO
+        // if(urls.length > 1) {
+        //     for(const url of urls) {
+        //         let dbArticles = await this.getArticles(src, {
+        //             pageNo: 1,
+        //             articlesPerPage: articles.length >= 5 ? articles.length * 2 : 10,
+        //             filter: {}
+        //         })
+        //
+        //
+        //     }
+        //
+        //     return;
+        // }
+
+        // And then check if they already exist.
+        let hashes = dbArticles.map((article: Article) => article.getHash());
+        articles = articles.filter((article: Article) => !hashes.includes(article.getHash()));
+        Events.emit("workers.articles.new", articles, tableName); // Can be empty array
+
+        await Config.getOption(ConfigOptions.DB_PUSH_ARTICLES)(articles);
     }
 }

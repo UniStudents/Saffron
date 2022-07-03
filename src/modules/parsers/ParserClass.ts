@@ -1,6 +1,6 @@
-import Instructions from "../../../components/instructions";
-import Job from "../../../components/job";
-import Article from "../../../components/articles";
+import Instructions from "../../components/instructions";
+import Job from "../../components/job";
+import Article from "../../components/articles";
 
 export abstract class ParserClass {
 

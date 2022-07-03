@@ -1,6 +1,4 @@
 export enum ConfigOptions {
-    DB_DRIVER,
-    DB_CONFIG,
     SOURCES_PATH,
     SOURCES_INCLUDE_ONLY,
     SOURCES_EXCLUDE,
@@ -13,5 +11,7 @@ export enum ConfigOptions {
     SCHEDULER_CHECKS_INT,
     GRID_DISTRIBUTED,
     GRID_PORT,
-    MISC_LOG_LEVEL
+    MISC_LOG_LEVEL,
+    DB_PUSH_ARTICLES,
+    DB_GET_ARTICLES
 }

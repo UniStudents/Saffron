@@ -1,12 +1,12 @@
 import {ParserClass} from "../ParserClass";
-import Instructions from "../../../../components/instructions";
-import Job from "../../../../components/job";
-import Article from "../../../../components/articles";
+import Instructions from "../../../components/instructions";
+import Job from "../../../components/job";
+import Article from "../../../components/articles";
 import https from "https";
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
 import cheerio from "cheerio";
 import Utils from "../Utils";
-import {AxiosConfig} from "../../../../components/AxiosConfig";
+import {AxiosConfig} from "../../../components/AxiosConfig";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})
 interface ArticleImage { [key: string]: any }

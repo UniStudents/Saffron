@@ -6,18 +6,20 @@ import Grid from "../grid/index";
 import {JobStatus} from "../../components/JobStatus";
 import Worker from "../workers";
 import {ConfigOptions} from "../../middleware/ConfigOptions";
+import glob from "glob";
 
 const path = process.cwd();
-const glob = require("glob")
 
 export default class Scheduler {
 
-    private declare isRunning: boolean
-    private declare isForcedStopped: boolean
+    private declare isRunning: boolean;
+    private declare isForcedStopped: boolean;
+    private declare jobsStorage: Job[];
 
     constructor() {
-        Events.on("start", () => this.start())
-        Events.on("stop", (force: boolean) => this.stop(force))
+        Events.on("start", () => this.start());
+        Events.on("stop", (force: boolean) => this.stop(force));
+        this.jobsStorage = [];
     }
 
     /**
@@ -25,36 +27,45 @@ export default class Scheduler {
      */
     private scanSourceFiles(): Promise<void> {
         return new Promise((resolve, reject) => {
-            let sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH)
-            glob(`${path + sourcesPath}/**`, null, (error: any, files: string[]) => {
+            let sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH);
+            glob(`${path + sourcesPath}/**`, {}, (error: any, files: string[]) => {
                 if (error) {
-                    Events.emit('scheduler.path.error', error)
-                    return reject(error)
+                    Events.emit('scheduler.path.error', error);
+                    return reject(error);
                 }
 
-                let acceptedFiles = new RegExp(/.*js/)
+                let acceptedFiles = new RegExp(/.*js/);
                 if (!files || files.length <= 0)
-                    return reject(new Error("No source files were found."))
+                    return reject(new Error("No source files were found."));
 
-                let rawSources = files.filter((file: any) => acceptedFiles.test(file))
-
-                let sources = rawSources.map((file: string) => {
+                files.filter(file =>
+                    acceptedFiles.test(file)
+                ).map((file: string) => {
                     return {
                         filename: `${file.split("/").pop()}`,
                         path: `${file}`,
-                    }
-                })
-
-                sources.forEach(async (sourceFile: any) => {
+                    };
+                }).forEach(async (sourceFile: any) => {
                     try {
-                        await Source.parseFileObject(sourceFile)
+                        sourceFile = {
+                            ...sourceFile,
+                            ...require(`${sourceFile.path}`)
+                        };
                     } catch (e) {
-                        Events.emit("scheduler.sources.error", sourceFile, e)
+                        Events.emit("scheduler.sources.error", sourceFile,
+                            new Error(`SourceException: ${sourceFile.filename}: failed to read file.`));
                     }
-                })
-                resolve()
-            })
-        })
+
+                    try {
+                        const newSource = await Source.fileToSource(sourceFile);
+                        Source.pushSource(newSource);
+                    } catch (e) {
+                        Events.emit("scheduler.sources.error", sourceFile, e);
+                    }
+                });
+                resolve();
+            });
+        });
     }
 
     /**
@@ -66,12 +77,12 @@ export default class Scheduler {
      */
     issueJobForSource(source: Source, lasWorkerId: string = "", interval: number = -1): void {
         if (interval == -1)
-            interval = source.interval ? source.interval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT)
+            interval = source.interval ? source.interval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT);
 
-        let worker = Worker.electWorker(lasWorkerId)
-        let nJob = Job.createJob(source.getId(), worker, interval)
+        let worker = Worker.electWorker(lasWorkerId);
+        let nJob = Job.createJob(source.getId(), worker, interval);
 
-        Grid.getInstance().jobsStorage.push(nJob);
+        this.jobsStorage.push(nJob);
         Events.emit("scheduler.job.new", nJob);
     }
 
@@ -114,7 +125,7 @@ export default class Scheduler {
         let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT) / sources.length
 
         // Initialize jobs for first time for every loaded source
-        Grid.getInstance().deleteAllJobs()
+        this.jobsStorage = [];
 
         let workersIds = Grid.getInstance().getWorkers();
         let sI = 0, wI = 0;
@@ -129,19 +140,21 @@ export default class Scheduler {
         const mInterval = setInterval(async () => {
             // Clear jobs
             if (this.isForcedStopped)
-                Grid.getInstance().deleteAllJobs()
+                this.jobsStorage = [];
 
-            if (!this.isRunning)
-                clearInterval(mInterval)
+            if (!this.isRunning) {
+                clearInterval(mInterval);
+                return;
+            }
 
             // Load all jobs
-            let pendingJobs = Grid.getInstance().jobsStorage
+            let pendingJobs = this.jobsStorage;
             for (let job of pendingJobs) {
                 switch (job.status) {
                     // Issue new job for this source
                     case JobStatus.FINISHED:
                         Events.emit("scheduler.job.finished", job)
-                        Grid.getInstance().deleteJob(job);
+                        this.deleteJob(job);
 
                         await this.issueJobForSource(job.getSource(), job.worker.id)
                         break;
@@ -185,11 +198,24 @@ export default class Scheduler {
     }
 
     /**
+     * Delete a job from storage so a new one can be issued.
+     * @param job
+     */
+    private deleteJob(job: Job) {
+        let index = this.jobsStorage.findIndex((obj: Job) => obj.id === job.id)
+        if (index !== -1) this.jobsStorage.splice(index, 1)
+    }
+
+    /**
      * Stops the scheduler from issuing new jobs
      * @param force If true it will delete all pending jobs
      */
     async stop(force: boolean): Promise<void> {
         this.isRunning = false
         this.isForcedStopped = force
+    }
+
+    exportQueue(): Job[] {
+        return this.jobsStorage;
     }
 }

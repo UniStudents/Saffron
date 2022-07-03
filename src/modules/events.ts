@@ -6,6 +6,7 @@ import chalk from "chalk";
 import Grid from "./grid/index";
 import Config from "../components/config";
 import {ConfigOptions} from "../middleware/ConfigOptions";
+import Source from "../components/source";
 
 export default class Events {
 
@@ -35,11 +36,6 @@ export default class Events {
             Logger(LoggerTypes.TITLE, "Simple Abstract Framework For the Retrieval Of News"));
 
         if(logLevel === 'all' || logLevel === 'info') {
-            this.getAntennae().on('database.connection.okay', () =>
-                Logger(LoggerTypes.STEP, 'Successfully connected to the offload database.'));
-            this.getAntennae().on('database.connection.failed', () =>
-                Logger(LoggerTypes.INSTALL_ERROR, 'Failed to connect to the offload database.'));
-
             this.getAntennae().on("scheduler.sources.new", (names: string[]) =>
                 Logger(LoggerTypes.INFO, `Loaded ${names.length} sources`))
 
@@ -81,11 +77,9 @@ export default class Events {
         }
 
         if(logLevel === 'all' || logLevel === 'info' || logLevel === 'errors') {
-            this.getAntennae().on('database.driver.error', () =>
-                Logger(LoggerTypes.INSTALL_ERROR, 'Database driver is not valid.'));
-            this.getAntennae().on('database.operation.error', (funcName: string, e: any) => {
-                Logger(LoggerTypes.ERROR, `Database encountered an operation error at ${funcName}.`);
-                console.log(e);
+            this.getAntennae().on("database.get.error", (source: Source, error: any) => {
+                Logger(LoggerTypes.DEBUG, `${chalk.red('Scheduler')} - Cannot get articles from ${source.name}.`);
+                console.log(error);
             });
 
             this.getAntennae().on("scheduler.path.error", (error: any) => {
@@ -100,9 +94,6 @@ export default class Events {
                 Logger(LoggerTypes.INSTALL_ERROR, 'Failed to start grid.')
                 console.log(error)
             });
-
-            this.getAntennae().on("workers.articles.errorOffloading", (article: Article) =>
-                Logger(LoggerTypes.ERROR, `${chalk.green('Worker')} - failed to upload articles to the database for ${article.getSource().name}.`));
 
             this.getAntennae().on("workers.parsers.error", (e: any) => {
                 Logger(LoggerTypes.INFO, `${chalk.red('Parsers')} - failed to scrape the articles.`);
