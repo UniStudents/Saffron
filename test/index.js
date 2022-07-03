@@ -14,7 +14,7 @@ try {
         },
         sources: {
             path: "/test/sources",
-            includeOnly: ['geo.hua.gr'],
+            // includeOnly: ['geo.hua.gr'],
             // exclude: ["custom-cs.unipi.gr"]
         },
         scheduler: {
