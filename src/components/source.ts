@@ -10,6 +10,7 @@ import {ConfigOptions} from "../middleware/ConfigOptions";
 export default class Source {
 
     static _sources: Source[] = [];
+
     declare name: string;
     declare tableName: string;
     declare interval: number;

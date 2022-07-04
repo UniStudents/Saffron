@@ -7,6 +7,7 @@ export default class Job {
     declare id: string;
     declare source: {
         id: string;
+        source?: Source;
     };
     declare untilRetry: number;
     declare attempts: number;

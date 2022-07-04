@@ -86,6 +86,7 @@ export default class Grid {
         if (this.isMain) {
             if (eventName === 'scheduler.job.push') {
                 let job = args[0];
+                job.source.source = job.getSource();
                 this.server.emit(eventName, pack(job));
             }
         } else {
@@ -142,6 +143,7 @@ export default class Grid {
 
             this.client.on('scheduler.job.push', (newJob: any) => {
                 newJob = unpack(newJob);
+                newJob.getSource = () => newJob.source.source;
                 Events.emit("scheduler.job.push", newJob);
             });
 

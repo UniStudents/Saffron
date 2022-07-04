@@ -3,6 +3,8 @@ import Source from "../components/source";
 import Job from "../components/job";
 import Instructions from "../components/instructions";
 
+const types = [Article, Source, Job, Instructions, TextDecoder];
+
 export class Serializer {
     declare types: any[];
 
@@ -42,11 +44,11 @@ export class Serializer {
 }
 
 export function pack(data: any): string {
-    const serializer = new Serializer([Article, Source, Job, Instructions]);
+    const serializer = new Serializer(types);
     return serializer.serialize(data);
 }
 
 export function unpack(str: string): any {
-    const serializer = new Serializer([Article, Source, Job, Instructions]);
+    const serializer = new Serializer(types);
     return serializer.deserialize(str);
 }
