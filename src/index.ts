@@ -3,7 +3,7 @@ import Scheduler from "./modules/scheduler";
 import Grid from "./modules/grid";
 import Events from "./modules/events";
 import Worker from "./modules/workers";
-import Article from "./components/articles";
+import Article from "./components/article";
 import Utils from "./modules/parsers/Utils";
 import Job from "./components/job"
 import Source from "./components/source"
@@ -57,7 +57,7 @@ export default class Saffron {
         // Event for workers
         Events.on("start", () => {
             for (let worker of this.workers) {
-                // TODO - Start worker on new node thread
+                // TODO - Start worker on new node thread - https://nodejs.org/api/worker_threads.html
                 worker.start();
             }
         })

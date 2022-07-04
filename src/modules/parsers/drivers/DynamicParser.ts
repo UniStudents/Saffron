@@ -1,7 +1,7 @@
 import {ParserClass} from "../ParserClass";
 import Instructions from "../../../components/instructions";
 import Job from "../../../components/job";
-import Article from "../../../components/articles";
+import Article from "../../../components/article";
 import randomId from "../../../middleware/randomId";
 import Utils from "../Utils";
 

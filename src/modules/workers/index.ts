@@ -2,7 +2,7 @@ import Events from "../events"
 import Job from "../../components/job";
 import randomId from "../../middleware/randomId";
 import Grid from "../grid";
-import Article from "../../components/articles";
+import Article from "../../components/article";
 import ParserLoader from "../parsers/ParserLoader";
 import hashCode from "../../middleware/hashCode";
 import {ParserResult} from "../../components/types";
@@ -22,10 +22,9 @@ export default class Worker {
     static async parse(job: Job): Promise<ParserResult[]> {
         let instructions = job.getInstructions();
 
-        let results: ParserResult[] = []; // TODO - do not merge url per article
+        let results: ParserResult[] = [];
         for (const pair of instructions.url) {
             const parser = ParserLoader.getParser(instructions.parserType)!!;
-            // Will throw error in case of fail (catch in call function).
             const utils = new Utils();
             utils.url = pair.url;
             utils.aliases = pair.aliases;
@@ -33,6 +32,7 @@ export default class Worker {
             utils.amount = job.getInstructions().amount;
             utils.instructions = job.getInstructions();
 
+            // Will throw error in case of fail (catch in call function).
             const newArticles = await parser.parse(job, utils);
             results.push({
                 aliases: pair.aliases,

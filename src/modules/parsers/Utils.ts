@@ -1,5 +1,5 @@
 import cheerio from "cheerio";
-import {Attachment} from "../../components/articles";
+import {Attachment} from "../../components/article";
 import Instructions from "../../components/instructions";
 import https from "https";
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
@@ -305,8 +305,6 @@ export default class Utils {
         options.method = "GET";
         return this.request(options);
     }
-
-    // TODO - Merge Utils with utils, so these functions can be used on dynamic parser and axios can be used from utils in the other parsers.
 
     post(url: string, data: any, options?: AxiosRequestConfig): Promise<AxiosResponse> {
         if (!options) options = {};

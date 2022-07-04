@@ -1,4 +1,4 @@
-import Article from "./articles";
+import Article from "./article";
 
 export type ParserResult = {
     aliases: string[];

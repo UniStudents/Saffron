@@ -3,7 +3,7 @@ import Events from "../events";
 import {JobStatus} from "../../components/JobStatus";
 import Worker from "../workers";
 import Config from "../../components/config";
-import Article from "../../components/articles";
+import Article from "../../components/article";
 import {ConfigOptions} from "../../middleware/ConfigOptions";
 import Extensions from "../extensions";
 import Source from "../../components/source";
@@ -12,8 +12,8 @@ import * as ServerIO from "socket.io"
 import * as ClientIO from "socket.io-client";
 import * as http from "http";
 import * as https from "https";
-import Instructions from "../../components/instructions";
 import {ParserResult} from "../../components/types";
+import {pack, unpack} from "../../middleware/serializer";
 
 
 export default class Grid {
@@ -84,9 +84,9 @@ export default class Grid {
             return;
 
         if (this.isMain) {
-            if (['scheduler.job.push'].includes(eventName)) {
-                // TODO - send job as class with children classes - use transformer file
-                this.server.emit(eventName, ...args);
+            if (eventName === 'scheduler.job.push') {
+                let job = args[0];
+                this.server.emit(eventName, pack(job));
             }
         } else {
             if (['workers.job.finished', 'workers.job.failed', 'grid.worker.announced', 'grid.worker.destroyed'].includes(eventName))
@@ -141,7 +141,7 @@ export default class Grid {
             });
 
             this.client.on('scheduler.job.push', (newJob: any) => {
-                newJob.prototype = Job.prototype; // TODO - receive job as class with children classes
+                newJob = unpack(newJob);
                 Events.emit("scheduler.job.push", newJob);
             });
 

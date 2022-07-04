@@ -1,7 +1,7 @@
 import {ParserClass} from "../../ParserClass";
 import Instructions from "../../../../components/instructions";
 import Job from "../../../../components/job";
-import Article from "../../../../components/articles";
+import Article from "../../../../components/article";
 import axios, {AxiosRequestConfig} from "axios";
 import Utils from "../../Utils";
 import https from "https";

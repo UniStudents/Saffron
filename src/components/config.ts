@@ -1,6 +1,6 @@
 import _ from "lodash"
 import {ConfigOptions} from "../middleware/ConfigOptions";
-import Article from "./articles";
+import Article from "./article";
 
 export type ConfigType = {
     mode: 'main' | 'worker';

@@ -1,7 +1,7 @@
 import {ParserClass} from "../ParserClass";
 import Instructions from "../../../components/instructions";
 import Job from "../../../components/job";
-import Article from "../../../components/articles";
+import Article from "../../../components/article";
 import Parser from "rss-parser";
 import Utils from "../Utils";
 
