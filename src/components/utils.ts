@@ -51,13 +51,13 @@ export default class Utils {
      * @throws SourceException if there is a problem parsing the source file.
      */
     async parse(sourceJson: object): Promise<Article[]> {
-        let source: Source = await Source.fileToSource(sourceJson)
+        let source: Source = await Source.fileToSource(sourceJson);
         source.instructions.getSource = (): Source => source;
 
-        let job = new Job()
-        job.source = {id: source.getId()}
+        let job = new Job();
+        job.source = {id: source.getId()};
         job.getSource = (): Source => source;
-        job.getInstructions = (): Instructions => source.instructions
+        job.getInstructions = (): Instructions => source.instructions;
 
         return await Worker.parse(job);
     }

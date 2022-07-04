@@ -12,6 +12,7 @@ import * as ServerIO from "socket.io"
 import * as ClientIO from "socket.io-client";
 import * as http from "http";
 import * as https from "https";
+import Instructions from "../../components/instructions";
 
 
 export default class Grid {
@@ -82,8 +83,10 @@ export default class Grid {
             return;
 
         if (this.isMain) {
-            if (['scheduler.job.push'].includes(eventName))
+            if (['scheduler.job.push'].includes(eventName)) {
+                // TODO - send job as class with children classes - use transformer file
                 this.server.emit(eventName, ...args);
+            }
         } else {
             if (['workers.job.finished', 'workers.job.failed', 'grid.worker.announced', 'grid.worker.destroyed'].includes(eventName))
                 this.client.emit(eventName, ...args);
@@ -136,9 +139,9 @@ export default class Grid {
                     Events.emit("grid.worker.announced", workerId);
             });
 
-            this.client.on('scheduler.job.push', (data: any) => {
-                data.prototype = Job.prototype;
-                Events.emit("scheduler.job.push", data);
+            this.client.on('scheduler.job.push', (newJob: any) => {
+                newJob.prototype = Job.prototype; // TODO - receive job as class with children classes
+                Events.emit("scheduler.job.push", newJob);
             });
 
             await this.client.connect();

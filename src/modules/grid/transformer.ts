@@ -28,7 +28,7 @@ export const Pack = (payload: Job | Article | Source | object): Payload => {
     let chunk: Payload = {
         title: payload.constructor['name'] || "Object",
         // @ts-ignore
-        payload: payload.toJSON() || payload
+        payload
     }
 
     console.log(chunk)

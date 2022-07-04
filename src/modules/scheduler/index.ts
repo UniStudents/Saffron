@@ -17,7 +17,7 @@ export default class Scheduler {
     static getInstance(): Scheduler {
         if(this.instance === null)
             this.instance = new Scheduler();
-        return this.instance!!
+        return this.instance!!;
     }
 
     private declare isRunning: boolean;
@@ -51,18 +51,12 @@ export default class Scheduler {
      * Starts the scheduler
      */
     async start(keepPreviousSession: boolean): Promise<void> {
-        this.isRunning = true;
+        const checkInterval = Config.getOption(ConfigOptions.SCHEDULER_CHECKS_INT);
 
+        this.isRunning = true;
         if(!keepPreviousSession) {
             const sources = await this.resetSources();
             this.resetJobs(sources);
-        } else {
-            let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT) / this.jobsStorage.length;
-            let i = 0;
-            this.jobsStorage.filter(job => job.status === JobStatus.PENDING).forEach(job => {
-                // Push pending jobs to later date, so the jobs will not be pushed all together.
-                job.nextRetry = Date.now() + separationInterval * i++;
-            });
         }
 
         // Check grid for job status
@@ -74,6 +68,8 @@ export default class Scheduler {
 
             // Load all jobs
             for (let job of this.jobsStorage) {
+                job.untilRetry -= checkInterval;
+
                 switch (job.status) {
                     // Issue new job for this source
                     case JobStatus.FINISHED:
@@ -95,15 +91,14 @@ export default class Scheduler {
                             ? Config.getOption(ConfigOptions.SCHEDULER_JOB_HEAVY_INT)
                             : (source.retryInterval ? source.retryInterval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT) / 2);
 
-                        job.nextRetry = Date.now() + interval;
+                        job.untilRetry = interval;
                         job.status = JobStatus.PENDING;
 
                         Events.emit("scheduler.job.reincarnate", job);
                         break;
                     // Pending jobs
                     case JobStatus.PENDING:
-                        // If nextRetry is in the past that means the time has come
-                        if (job.nextRetry <= Date.now()) {
+                        if (job.untilRetry <= 0) {
                             // If the worker did not complete the job after 5 times elect new worker
                             if (job.emitAttempts > 5) {
                                 let oldWorker = job.worker.id;
@@ -119,7 +114,7 @@ export default class Scheduler {
                         break;
                 }
             }
-        }, Config.getOption(ConfigOptions.SCHEDULER_CHECKS_INT));
+        }, checkInterval);
     }
 
     /**

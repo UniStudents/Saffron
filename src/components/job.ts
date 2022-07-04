@@ -8,7 +8,7 @@ export default class Job {
     declare source: {
         id: string;
     };
-    declare nextRetry: number;
+    declare untilRetry: number;
     declare attempts: number;
     declare emitAttempts: number;
     declare status: JobStatus;
@@ -33,7 +33,7 @@ export default class Job {
         let job = new Job();
         job.source = {id: sourceId};
         // nextRetry = The time the job finished (just now) + interval + randomTIme
-        job.nextRetry = Date.now() + interval + this.getRandomTime(sourceId);
+        job.untilRetry = interval + this.getRandomTime(sourceId);
         job.worker = {id: workerId};
         job.status = JobStatus.PENDING;
         job.attempts = 0;

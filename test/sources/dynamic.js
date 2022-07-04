@@ -9,7 +9,7 @@ module.exports = {
         // const article = new Article()
         // article.title = "Hey"
         // // ...
-        // await utils.onNewArticle(article)
-        throw new Error("Error from dynamic");
+        // throw new Error("Error from dynamic");
+        return [];
     }
 }
