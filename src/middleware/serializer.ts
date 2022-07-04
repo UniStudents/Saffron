@@ -10,23 +10,34 @@ export class Serializer {
         this.types = types;
     }
 
-    serialize(object: any) {
-        let idx = this.types.findIndex((e) => {
-            return e.name == object.constructor.name
-        });
-        if (idx == -1) throw "type  '" + object.constructor.name + "' not initialized";
-
-        const entries = Object.entries(object);
-        return JSON.stringify([idx, entries]);
+    serialize(object: any): string {
+        return JSON.stringify(this._serialize(object));
     }
 
-    deserialize(str: string) {
-        let array = JSON.parse(str);
-        let object = new this.types[array[0]]();
-        array[1].map((e: any) => {
-            object[e[0]] = e[1];
-        });
-        return object;
+    deserialize(str: string): any {
+        return this._deserialize(JSON.parse(str));
+    }
+
+    _serialize(object: any): object {
+        if(!(object instanceof Object)) return object;
+
+        let i = this.types.findIndex(e => e.name == object.constructor.name);
+        if (i == -1) throw "type  '" + object.constructor.name + "' not initialized";
+
+        return {
+            index: i,
+            entries: Object.entries(object).map(entry => {
+                return [entry[0], this._serialize(entry[1])];
+            })
+        };
+    }
+
+    _deserialize(data: any): any {
+        if(data !== Object(data)) return data;
+
+        const obj = new this.types[data.index]();
+        data.entries.map((entry: any) => obj[entry[0]] = this._deserialize(entry[1]))
+        return obj;
     }
 }
 
