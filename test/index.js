@@ -4,65 +4,48 @@ const loggerTypes = require('../dist/middleware/LoggerTypes');
 const util = require("util");
 const logger = require('../dist/middleware/logger').default;
 
-let config = {}
-try {
-    config = require("./saffron.json");
-} catch (e) {
-    config = {
-        misc: {
-            log: 'all'
+Error.stackTraceLimit = 200;
+
+const config = {
+    misc: {
+        log: 'all'
+    },
+    sources: {
+        path: "/test/sources",
+        // includeOnly: ['geo.hua.gr'],
+        // exclude: ["custom-cs.unipi.gr"],
+    },
+    scheduler: {
+        jobsInterval: 10000,
+        heavyJobFailureInterval: 86400000,
+        checksInterval: 5000,
+    },
+    mode: process.env.MODE || "main",
+    workers: {
+        nodes: 1,
+        jobs: {
+            timeout: 10000,
         },
-        sources: {
-            path: "/test/sources",
-            // includeOnly: ['geo.hua.gr'],
-            // exclude: ["custom-cs.unipi.gr"]
-        },
-        scheduler: {
-            jobsInterval: 10000,
-            heavyJobFailureInterval: 86400000,
-            checksInterval: 5000
-        },
-        mode: process.env.MODE || "main",
-        workers: {
-            nodes: 1,
-            jobs: {
-                timeout: 10000
-            },
-            articles: {
-                amount: 30
-            }
-        },
-        grid: {
-            distributed: false,
-            address: "192.168.2.9",
-            port: 3000
+        articles: {
+            amount: 30,
         }
+    },
+    grid: {
+        distributed: false,
     }
-}
+};
 
+let errors = [];
+const saffron = new Saffron();
 
-(async () => {
-    Error.stackTraceLimit = 200;
-    let errors = []
-    const saffron = new Saffron();
+saffron.on("workers.articles.found", (articles, src) => {
+    // console.log('articles.found', src, articles.length);
+    // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
+});
 
-    saffron.on("workers.articles.found", (articles, src) => {
-        console.log('articles.found', src, articles.length)
-        // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
-    });
+saffron.on('workers.parsers.error', errors.push);
 
-    saffron.on('workers.parsers.error', (e) => errors.push(e));
-
-    saffron.on("middleware.before", (articles) => {
-        // console.log('middleware.before')
-        // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
-    });
-
-    saffron.on("middleware.after", (articles) => {
-        // console.log('middleware.after')
-        // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
-    });
-
+;(async () => {
     try {
         await saffron.initialize(config);
         await saffron.start();
@@ -70,14 +53,14 @@ try {
         errors.push(error);
     }
 
-    if (process.env.NODE_ENV === "testing") setTimeout(() => {
-        if (errors.length > 0) {
-            logger(loggerTypes.LoggerTypes.ERROR, `Saffron failed at runtime. The CI workflow will be terminated. The errors that occured where the following: \n\n${errors}\n\n`);
-            process.exit(1);
-        } else {
-            logger(loggerTypes.LoggerTypes.STEP, `Saffron doesn\'t show any signs of malfunction with this commit.\n`);
-            process.exit(0);
-        }
-    }, 15000)
-    //saffron.on("new-articles-pushed", articles=> console.log("new-articles",articles))
-})()
+    if (process.env.NODE_ENV === "testing")
+        setTimeout(() => {
+            if (errors.length > 0) {
+                logger(loggerTypes.LoggerTypes.ERROR, `Saffron failed at runtime. The CI workflow will be terminated. The errors that occured where the following: \n\n${errors}\n\n`);
+                process.exit(1);
+            } else {
+                logger(loggerTypes.LoggerTypes.STEP, `Saffron doesn\'t show any signs of malfunction with this commit.\n`);
+                process.exit(0);
+            }
+        }, 15000);
+})();
