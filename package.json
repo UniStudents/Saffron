@@ -1,22 +1,20 @@
 {
   "name": "@poiw/saffron",
   "version": "3.0.0",
-  "description": "A  fairly intuitive & powerful framework that enables you to collect & save articles and news from all over the web. ",
+  "description": "A fairly intuitive & powerful framework that enables you to collect & save articles and news from all over the web. ",
   "main": "dist/index.js",
   "types": "dist/index/d.ts",
   "dependencies": {
-    "axios": "^0.24.0",
+    "axios": "^0.27.2",
     "chalk": "^4.1.2",
-    "cheerio": "^1.0.0-rc.10",
-    "glob": "^7.2.0",
-    "ip": "^1.1.5",
+    "cheerio": "^1.0.0-rc.12",
+    "glob": "^7.2.3",
     "lodash": "^4.17.21",
-    "luxon": "^2.2.0",
-    "nanoid": "^3.1.30",
-    "public-ip": "^4.0.4",
+    "luxon": "^2.4.0",
+    "nanoid": "^3.3.4",
     "rss-parser": "^3.12.0",
-    "socket.io": "^4.4.0",
-    "socket.io-client": "4.4.0",
+    "socket.io": "^4.5.1",
+    "socket.io-client": "4.5.1",
     "striptags": "^3.2.0"
   },
   "scripts": {
@@ -40,13 +38,12 @@
   "devDependencies": {
     "@types/cheerio": "^0.22.30",
     "@types/glob": "^7.2.0",
-    "@types/ip": "^1.1.0",
     "@types/lodash": "^4.14.176",
     "@types/luxon": "^2.0.7",
     "@types/xml2js": "^0.4.9",
     "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
-    "tsc-watch": "^4.5.0",
-    "typescript": "^4.4.4"
+    "tsc-watch": "^4.6.2",
+    "typescript": "^4.7.4"
   }
 }
