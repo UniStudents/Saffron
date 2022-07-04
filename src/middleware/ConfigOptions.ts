@@ -12,6 +12,10 @@ export enum ConfigOptions {
     GRID_DISTRIBUTED = 'grid.distributed',
     GRID_SERVER_ADDRESS = 'grid.server.address',
     GRID_SERVER_PORT = 'grid.server.port',
+    GRID_AUTH = 'grid.auth',
+    GRID_USE_HTTP = 'grid.use_http',
+    GRID_HTTPS_KEY = 'grid.https.key',
+    GRID_HTTPS_CERT = 'grid.https.cert',
     MISC_LOG_LEVEL = 'misc.log',
     DB_PUSH_ARTICLES = 'db.articles.push',
     DB_GET_ARTICLES = 'db.articles.get'

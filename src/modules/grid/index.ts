@@ -3,7 +3,6 @@ import Events from "../events";
 import {JobStatus} from "../../components/JobStatus";
 import Worker from "../workers";
 import Config from "../../components/config";
-import {nanoid} from "nanoid";
 import Article from "../../components/articles";
 import {ConfigOptions} from "../../middleware/ConfigOptions";
 import Extensions from "../extensions";
@@ -11,6 +10,8 @@ import Source from "../../components/source";
 import Scheduler from "../scheduler";
 import * as ServerIO from "socket.io"
 import * as ClientIO from "socket.io-client";
+import * as http from "http";
+import * as https from "https";
 
 
 export default class Grid {
@@ -19,25 +20,50 @@ export default class Grid {
     private declare readonly isMain: boolean
     private declare readonly workersIds: string[];
     private declare workersClients: { workersIds: string[], socketId: string }[];
-    private declare readonly encryptionKey: string
 
-    private declare server: ServerIO.Server;
-    private declare client: ClientIO.Socket;
+    private declare readonly http_s_server: any;
+    private declare readonly server: ServerIO.Server;
+    private declare readonly client: ClientIO.Socket;
 
     private constructor() {
-        this.isMain = Config.getOption(ConfigOptions.SAFFRON_MODE) === 'main'
-        this.workersIds = []
-        this.workersClients = []
-        this.encryptionKey = nanoid(256)
+        this.isMain = Config.getOption(ConfigOptions.SAFFRON_MODE) === 'main';
+        this.workersIds = [];
+        this.workersClients = [];
 
-        if (this.isMain)
-            this.server = new ServerIO.Server({
-                // TODO
+        if(Config.getOption(ConfigOptions.GRID_DISTRIBUTED)) {
+            if (typeof Config.getOption(ConfigOptions.GRID_AUTH) !== 'string')
+                throw new Error('InvalidAuthException The grid authToken must be type string on distributed: true');
+        }
+
+        if (this.isMain) {
+            if (Config.getOption(ConfigOptions.GRID_USE_HTTP))
+                this.http_s_server = https.createServer({
+                    key: Config.getOption(ConfigOptions.GRID_HTTPS_KEY),
+                    cert: Config.getOption(ConfigOptions.GRID_HTTPS_CERT)
+                });
+            else
+                this.http_s_server = http.createServer();
+
+            this.server = new ServerIO.Server(this.http_s_server, {
+                serveClient: false, // No reason to server bundle client files
+                connectTimeout: 30 * 1000,
             });
-        else
-            this.client = ClientIO.io({
-                // TODO
+        } else {
+            let url = Config.getOption(ConfigOptions.GRID_USE_HTTP) ? 'http://' : 'https://';
+            url += Config.getOption(ConfigOptions.GRID_SERVER_ADDRESS);
+
+            const serverPort = Config.getOption(ConfigOptions.GRID_SERVER_ADDRESS);
+            if (serverPort != null) url += `:${serverPort}`;
+
+            this.client = ClientIO.io(url, {
+                reconnectionDelay: 5 * 1000,
+                timeout: 15 * 1000,
+                autoConnect: false,
+                auth: {
+                    token: Config.getOption(ConfigOptions.GRID_AUTH)
+                }
             });
+        }
     }
 
     /**
@@ -45,22 +71,20 @@ export default class Grid {
      */
     static getInstance(): Grid {
         if (this.instance == null)
-            this.instance = new Grid()
+            this.instance = new Grid();
 
-        return this.instance
+        return this.instance;
     }
 
     emit(eventName: string, ...args: any[]): void {
-        if(!Config.getOption(ConfigOptions.GRID_DISTRIBUTED))
+        if (!Config.getOption(ConfigOptions.GRID_DISTRIBUTED))
             return;
 
         if (this.isMain) {
-            if(['scheduler.job.push'].includes(eventName))
+            if (['scheduler.job.push'].includes(eventName))
                 this.server.emit(eventName, ...args);
-        }
-        else {
-            if(['workers.job.finished', 'workers.job.failed',
-                'grid.worker.announced', 'grid.worker.destroyed'].includes(eventName))
+        } else {
+            if (['workers.job.finished', 'workers.job.failed', 'grid.worker.announced', 'grid.worker.destroyed'].includes(eventName))
                 this.client.emit(eventName, ...args);
         }
     }
@@ -72,6 +96,12 @@ export default class Grid {
         if (this.isMain) {
             if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED)) {
                 this.server.on("connection", socket => {
+                    const clientAuthToken = socket.handshake.auth.token;
+                    if (!clientAuthToken || clientAuthToken !== Config.getOption(ConfigOptions.GRID_AUTH)) {
+                        socket.disconnect();
+                        return;
+                    }
+
                     Events.emit('grid.node.connected', socket);
 
                     socket.on("disconnect", () => {
@@ -92,11 +122,12 @@ export default class Grid {
 
                     socket.on("grid.worker.destroyed", workerId => {
                         let index = this.workersIds.findIndex(id => id === workerId);
-                        if (index !== -1) this.workersIds.splice(index, 1);
+                        if (index !== -1)
+                            this.workersIds.splice(index, 1);
                     });
                 });
 
-                // await this.server.listen(); // TODO - listen with express
+                this.http_s_server.listen(Config.getOption(ConfigOptions.GRID_SERVER_PORT));
             }
         } else if (Config.getOption(ConfigOptions.WORKER_NODES) > 0) {
             this.client.on('connect', () => {
@@ -109,7 +140,7 @@ export default class Grid {
                 Events.emit("scheduler.job.push", data);
             });
 
-            await this.client.connect()
+            await this.client.connect();
         }
     }
 
@@ -173,7 +204,7 @@ export default class Grid {
     async finishedJob(job: Job): Promise<void> {
         job.status = JobStatus.FINISHED;
         if (this.isMain)
-            Events.emit('workers.job.finished', job)
+            Events.emit('workers.job.finished', job.id);
         else
             await this.client.emit('workers.job.finished', job.id);
     }
@@ -184,11 +215,11 @@ export default class Grid {
      * @param job
      */
     async failedJob(job: Job): Promise<void> {
-        job.status = JobStatus.FAILED
+        job.status = JobStatus.FAILED;
         if (this.isMain)
-            Events.emit("workers.job.failed", job)
+            Events.emit("workers.job.failed", job.id);
         else
-            await this.client.emit('workers.job.failed', {id: job.id})
+            await this.client.emit('workers.job.failed', job.id);
     }
 
     /**

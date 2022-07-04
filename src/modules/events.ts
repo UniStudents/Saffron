@@ -65,10 +65,10 @@ export default class Events {
             this.getAntennae().on("grid.worker.destroyed", (worker_id: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - worker destroyed (${worker_id}).`));
 
-            this.getAntennae().on("workers.job.finished", (job: Job) =>
-                Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - finished job(${job.id}).`));
-            this.getAntennae().on("workers.job.failed", (job: Job) =>
-                Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - failed job(${job.id}).`));
+            this.getAntennae().on("workers.job.finished", (jobId: string) =>
+                Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - finished job(${jobId}).`));
+            this.getAntennae().on("workers.job.failed", (jobId: string) =>
+                Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - failed job(${jobId}).`));
 
             this.getAntennae().on("workers.articles.found", (articles: Article[], src: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.cyan('Articles')} - Finished job returned ${articles.length} articles for ${src}.`));

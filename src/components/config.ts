@@ -28,9 +28,21 @@ export type ConfigType = {
         checksInterval?: number;
     };
     grid: {
-        distributed: boolean;
-        serverAddress?: string;
+        distributed: false;
+    } | {
+        distributed: true;
+        serverAddress: string;
         serverPort?: number;
+        authToken: string;
+        useHTTP: false;
+    } | {
+        distributed: true;
+        serverAddress: string;
+        serverPort?: number;
+        authToken: string;
+        useHTTP: true;
+        key: any;
+        cert: any;
     };
     misc: {
         log?: 'all' | 'info' | 'errors' | 'none';
@@ -66,8 +78,10 @@ export default class Config {
         },
         grid: {
             distributed: false,
-            serverAddress: undefined,
+            // For default values on false
+            // @ts-ignore
             serverPort: 3000,
+            useHTTP: false
         },
         misc: {
             log: "all"
@@ -146,8 +160,16 @@ export default class Config {
                 return !isStatic ? Config.load().grid.distributed : false;
             case ConfigOptions.GRID_SERVER_ADDRESS:
                 return !isStatic ? Config.load().grid.serverAddress : 'localhost';
-                case ConfigOptions.GRID_SERVER_PORT:
+            case ConfigOptions.GRID_SERVER_PORT:
                 return !isStatic ? Config.load().grid.serverPort : 3000;
+            case ConfigOptions.GRID_AUTH:
+                return !isStatic ? Config.load().grid.authToken : undefined;
+            case ConfigOptions.GRID_USE_HTTP:
+                return !isStatic ? Config.load().grid.useHTTP : false;
+            case ConfigOptions.GRID_HTTPS_KEY:
+                return !isStatic ? Config.load().grid.key : undefined;
+            case ConfigOptions.GRID_HTTPS_CERT:
+                return !isStatic ? Config.load().grid.cert : undefined;
 
             case ConfigOptions.MISC_LOG_LEVEL:
                 return !isStatic ? Config.load().misc.log : "all";
