@@ -108,7 +108,7 @@ export default class Saffron {
      * @param sourceJson The json object of the source file.
      * @throws SourceException if there is a problem parsing the source file.
      */
-    async parse(sourceJson: object): Promise<Article[]> {
+    static async parse(sourceJson: object): Promise<Article[]> {
         let source: Source = await Source.fileToSource(sourceJson);
         source.instructions.getSource = (): Source => source;
 

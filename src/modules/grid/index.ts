@@ -17,9 +17,10 @@ import * as https from "https";
 export default class Grid {
 
     private static instance: Grid
+
     private declare readonly isMain: boolean
     private declare readonly workersIds: string[];
-    private declare workersClients: { workersIds: string[], socketId: string }[];
+    private declare readonly workersClients: { workersIds: string[], socketId: string }[];
 
     private declare readonly http_s_server: any;
     private declare readonly server: ServerIO.Server;
@@ -30,7 +31,7 @@ export default class Grid {
         this.workersIds = [];
         this.workersClients = [];
 
-        if(Config.getOption(ConfigOptions.GRID_DISTRIBUTED)) {
+        if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED)) {
             if (typeof Config.getOption(ConfigOptions.GRID_AUTH) !== 'string')
                 throw new Error('InvalidAuthException The grid authToken must be type string on distributed: true');
         }
