@@ -6,10 +6,6 @@ import Utils from "../../../components/utils";
 import randomId from "../../../middleware/randomId";
 
 export class DynamicParser extends ParserClass {
-    private static splice(base: string, idx: number, rem: number, str: string): string {
-        return base.slice(0, idx) + str + base.slice(Math.abs(rem));
-    }
-
     validateScrape(scrape: any): void {
         if (typeof scrape !== 'function') throw new Error("DynamicParser: scrape is not a function");
     }
@@ -18,10 +14,7 @@ export class DynamicParser extends ParserClass {
         let scrapeStr = sourceJson.scrape.toString()
 
         instructions.endPoint = sourceJson.url
-        instructions.scrapeFunction = DynamicParser.splice(scrapeStr
-            , scrapeStr.indexOf('(')
-            , scrapeStr.indexOf(')') + 1
-            , "(Article, utils)")
+        instructions.scrapeFunction = scrapeStr;
     }
 
     async parse(job: Job, aliases: string[], url: string, amount: number): Promise<Article[]> {
