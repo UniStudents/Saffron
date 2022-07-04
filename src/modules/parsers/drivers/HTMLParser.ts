@@ -16,31 +16,31 @@ interface ArticleImage {
 
 export class HTMLParser extends ParserClass {
 
-    static async parse2(aliases: string[], url: string, instructions: Instructions, amount: Number = 10): Promise<Article[]> {
-        let parsedArticles: Article[] = []
+    static async parse2(instructions: Instructions, utils: Utils): Promise<Article[]> {
+        let parsedArticles: Article[] = [];
 
-        await HTMLParser.request(url, instructions.getSource().timeout, instructions)
+        await HTMLParser.request(utils.url, instructions.getSource().timeout, instructions)
             .then((response: AxiosResponse) => {
-                const cheerioLoad: cheerio.Root = cheerio.load(instructions.textDecoder.decode(response.data))
+                const cheerioLoad: cheerio.Root = cheerio.load(instructions.textDecoder.decode(response.data));
 
                 // for each article.
                 cheerioLoad(`${instructions.elementSelector}`).each((index, element) => {
-                    if (index >= amount) return
+                    if (index >= utils.amount) return;
 
-                    let articleData: ArticleImage = {}
-                    let tmpArticle: Article
-                    let basicData = ["title", "pubDate", "content", "attachments", "link"] // Exp. If you remove the title, then the title is going to be on the extra information of each article.
-                    let options: any = instructions.scrapeOptions
+                    let articleData: ArticleImage = {};
+                    let tmpArticle: Article;
+                    let basicData = ["title", "pubDate", "content", "attachments", "link"]; // Exp. If you remove the title, then the title is going to be on the extra information of each article.
+                    let options: any = instructions.scrapeOptions;
 
                     // for each option. The options provided by instructions.
                     for (let item in options) {
                         if (options.hasOwnProperty(item) && !options[item].find && !options[item].multiple && !options[item].attributes) {
-                            articleData[item] = cheerioLoad(element).find(options[item].class).text()
+                            articleData[item] = cheerioLoad(element).find(options[item].class).text();
                         } else if (options.hasOwnProperty(item)) {
                             if (!options[item].attributes)
-                                articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, false, [], "")
+                                articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, false, [], "");
                             else
-                                articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, true, options[item].attributes, instructions.endPoint)
+                                articleData[item] = HTMLParser.getData(options[item].find, cheerioLoad, element, options[item].class, options[item].multiple, true, options[item].attributes, instructions.endPoint);
                         }
                     }
 
@@ -60,33 +60,33 @@ export class HTMLParser extends ParserClass {
                         : (articleData.link ? articleData.link : ''));
 
                     tmpArticle.setTitle((Array.isArray(articleData.title) && articleData.title[0]?.value)
-                        ? Utils.htmlStrip(articleData.title[0].value)
+                        ? utils.htmlStrip(articleData.title[0].value)
                         : (articleData.title ? articleData.title : ''));
 
                     tmpArticle.setPubDate((Array.isArray(articleData.pubDate) && articleData.pubDate[0]?.value)
-                        ? Utils.htmlStrip(articleData.pubDate[0].value)
+                        ? utils.htmlStrip(articleData.pubDate[0].value)
                         : (articleData.pubDate ? articleData.pubDate : ''))
 
                     tmpArticle.setContent((Array.isArray(articleData.content) && articleData.content[0]?.value)
-                        ? Utils.htmlStrip(articleData.content[0].value)
+                        ? utils.htmlStrip(articleData.content[0].value)
                         : (articleData.content ? articleData.content : ''));
 
                     if (articleData.hasOwnProperty("category")) {
                         if (Array.isArray(articleData["category"])) {
                             articleData["category"].forEach(category =>
-                                tmpArticle.pushCategory(category, [url]));
+                                tmpArticle.pushCategory(category, [utils.url]));
                         }
                         else
-                            tmpArticle.pushCategory(articleData["category"], [url]);
+                            tmpArticle.pushCategory(articleData["category"], [utils.url]);
                     }
 
                     tmpArticle.pushAttachments(articleData.attachments ? articleData.attachments : []);
-                    tmpArticle.pushAttachments(Utils.extractLinks(tmpArticle.content))
+                    tmpArticle.pushAttachments(utils.extractLinks(tmpArticle.content))
 
-                    tmpArticle.pushCategories(aliases.map(alias => {
+                    tmpArticle.pushCategories(utils.aliases.map(alias => {
                         return {
                             name: alias,
-                            links: [url]
+                            links: [utils.url]
                         };
                     }));
 
@@ -266,8 +266,8 @@ export class HTMLParser extends ParserClass {
         instructions.endPoint = sourceJson.scrape.endPoint;
     }
 
-    async parse(job: Job, aliases: string[], url: string, amount: number): Promise<Article[]> {
+    async parse(job: Job, utils: Utils): Promise<Article[]> {
         let instructions = job.getInstructions();
-        return await HTMLParser.parse2(aliases, url, instructions, amount)
+        return await HTMLParser.parse2(instructions, utils)
     }
 }

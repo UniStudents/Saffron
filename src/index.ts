@@ -4,12 +4,13 @@ import Grid from "./modules/grid";
 import Events from "./modules/events";
 import Worker from "./modules/workers";
 import Article from "./components/articles";
-import Utils from "./components/utils";
+import Utils from "./modules/parsers/Utils";
 import Job from "./components/job"
 import Source from "./components/source"
 import Instructions from "./components/instructions";
 import {ConfigOptions} from "./middleware/ConfigOptions";
 import Extensions from "./modules/extensions";
+import {ParserResult} from "./components/types";
 
 
 export default class Saffron {
@@ -108,7 +109,7 @@ export default class Saffron {
      * @param sourceJson The json object of the source file.
      * @throws SourceException if there is a problem parsing the source file.
      */
-    static async parse(sourceJson: object): Promise<Article[]> {
+    static async parse(sourceJson: object): Promise<ParserResult[]> {
         let source: Source = await Source.fileToSource(sourceJson);
         source.instructions.getSource = (): Source => source;
 

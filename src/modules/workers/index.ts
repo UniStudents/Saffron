@@ -5,6 +5,8 @@ import Grid from "../grid";
 import Article from "../../components/articles";
 import ParserLoader from "../parsers/ParserLoader";
 import hashCode from "../../middleware/hashCode";
+import {ParserResult} from "../../components/types";
+import Utils from "../parsers/Utils";
 
 
 export default class Worker {
@@ -17,18 +19,28 @@ export default class Worker {
         this.id = randomId("wkr");
     }
 
-    static async parse(job: Job): Promise<Article[]> {
+    static async parse(job: Job): Promise<ParserResult[]> {
         let instructions = job.getInstructions();
 
-        let articles: Article[] = []; // TODO - do not merge url per article
+        let results: ParserResult[] = []; // TODO - do not merge url per article
         for (const pair of instructions.url) {
             const parser = ParserLoader.getParser(instructions.parserType)!!;
             // Will throw error in case of fail (catch in call function).
-            const newArticles = await parser.parse(job, pair.aliases, pair.url, job.getInstructions().amount);
-            articles.push(...newArticles);
+            const utils = new Utils();
+            utils.url = pair.url;
+            utils.aliases = pair.aliases;
+            utils.isScrapeAfterError = job.attempts !== 0;
+            utils.amount = job.getInstructions().amount;
+
+            const newArticles = await parser.parse(job, utils);
+            results.push({
+                aliases: pair.aliases,
+                url: pair.url,
+                articles: newArticles
+            });
         }
 
-        return articles;
+        return results;
     }
 
     /**
@@ -66,9 +78,9 @@ export default class Worker {
             if (!this.isRunning) return;
             if (this.id !== job.worker.id) return;
 
-            let articles: Article[];
+            let result: ParserResult[];
             try {
-                articles = await Worker.parse(job);
+                result = await Worker.parse(job);
             } catch (e: any) {
                 Events.emit("workers.parsers.error", e);
                 await Grid.getInstance().failedJob(job);
@@ -78,16 +90,18 @@ export default class Worker {
             if (this.isForcedStopped) return;
 
             const source = job.getSource();
-            articles.forEach((article: Article) => {
-                article.source = {
-                    id: source.getId(),
-                    name: source.name
-                }
+            result.forEach(r => {
+                r.articles.forEach((article: Article) => {
+                    article.source = {
+                        id: source.getId(),
+                        name: source.name
+                    }
+                });
             });
 
             const tableName = source.tableName || source.name;
 
-            await Grid.getInstance().mergeArticles(source, tableName, articles);
+            await Grid.getInstance().mergeArticles(source, tableName, result);
             await Grid.getInstance().finishedJob(job);
         })
     }

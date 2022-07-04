@@ -66,11 +66,11 @@ export class WordpressV2Parser extends ParserClass {
         };
     }
 
-    async parse(job: Job, aliases: string[], url: string, amount: number): Promise<Article[]> {
+    async parse(job: Job, utils: Utils): Promise<Article[]> {
         let instructions = job.getInstructions();
 
-        let categoriesUrl = `${url}wp-json/wp/v2/categories/`;
-        let postsUrl = `${url}wp-json/wp/v2/posts?_embed&per_page=${amount}`;
+        let categoriesUrl = `${utils.url}wp-json/wp/v2/categories/`;
+        let postsUrl = `${utils.url}wp-json/wp/v2/posts?_embed&per_page=${utils.amount}`;
 
         const filters = instructions.scrapeOptions.articles.filter;
         if (filters.search) postsUrl += `&search=${encodeURIComponent(filters.search)}`;
@@ -119,8 +119,8 @@ export class WordpressV2Parser extends ParserClass {
 
                 return {
                     id: category.id,
-                    description: Utils.htmlStrip(category.description, false),
-                    name: Utils.htmlStrip(category.name, false),
+                    description: utils.htmlStrip(category.description, false),
+                    name: utils.htmlStrip(category.name, false),
                     links
                 }
             }) : [];
@@ -132,13 +132,13 @@ export class WordpressV2Parser extends ParserClass {
 
             const article = new Article()
             article.setSource(instructions.getSource().getId(), instructions.getSource().name);
-            article.setTitle(Utils.htmlStrip(p.title.rendered, false));
+            article.setTitle(utils.htmlStrip(p.title.rendered, false));
             article.setContent(p.content.rendered);
             article.setLink(p.link);
-            article.pushCategories(aliases.map(alias => {
+            article.pushCategories(utils.aliases.map(alias => {
                 return {
                     name: alias,
-                    links: [url]
+                    links: [utils.url]
                 };
             }));
 
@@ -149,7 +149,7 @@ export class WordpressV2Parser extends ParserClass {
                     article.setPubDate(p.date);
             } else article.setPubDate(p.date);
 
-            article.pushAttachments(Utils.extractLinks(article.content));
+            article.pushAttachments(utils.extractLinks(article.content));
 
             for (let cId of p.categories) {
                 let cat = parsedCategories.find((c: any) => c.id == cId)

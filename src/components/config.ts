@@ -6,7 +6,10 @@ export type ConfigType = {
     mode: 'main' | 'worker';
     database: {
         pushArticles: (articles: Article[]) => Promise<void>;
-        getArticles: (opts: { tableName: string; }) => Promise<Article[]>;
+        getArticles: (opts: {
+            tableName: string;
+            count: number;
+        }) => Promise<Article[]>;
     };
     sources: {
         path: string;

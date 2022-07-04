@@ -36,6 +36,10 @@ export default class Events {
             Logger(LoggerTypes.TITLE, "Simple Abstract Framework For the Retrieval Of News"));
 
         if (logLevel === 'all' || logLevel === 'info') {
+            this.getAntennae().on("database.set.okay", (source: Source, articles: any) => {
+                Logger(LoggerTypes.DEBUG, `${chalk.red('Database')} - Upload ${articles.length} articles to db for ${source.name}.`);
+            });
+
             this.getAntennae().on("scheduler.sources.new", (names: string[]) =>
                 Logger(LoggerTypes.INFO, `Loaded ${names.length} sources`))
 
@@ -78,7 +82,12 @@ export default class Events {
 
         if (logLevel === 'all' || logLevel === 'info' || logLevel === 'errors') {
             this.getAntennae().on("database.get.error", (source: Source, error: any) => {
-                Logger(LoggerTypes.DEBUG, `${chalk.red('Scheduler')} - Cannot get articles from ${source.name}.`);
+                Logger(LoggerTypes.DEBUG, `${chalk.red('Database')} - Cannot get articles from db for ${source.name}.`);
+                console.log(error);
+            });
+
+            this.getAntennae().on("database.set.error", (source: Source, error: any) => {
+                Logger(LoggerTypes.DEBUG, `${chalk.red('Database')} - Cannot upload articles to db for ${source.name}.`);
                 console.log(error);
             });
 

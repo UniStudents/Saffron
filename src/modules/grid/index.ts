@@ -13,6 +13,7 @@ import * as ClientIO from "socket.io-client";
 import * as http from "http";
 import * as https from "https";
 import Instructions from "../../components/instructions";
+import {ParserResult} from "../../components/types";
 
 
 export default class Grid {
@@ -230,9 +231,12 @@ export default class Grid {
      * Will be called from both the main and sub programs
      * @param source
      * @param tableName
-     * @param articles
+     * @param result
      */
-    async mergeArticles(source: Source, tableName: string, articles: Article[]): Promise<void> {
+    async mergeArticles(source: Source, tableName: string, result: ParserResult[]): Promise<void> {
+        let articles: Article[] = [];
+        result.forEach(res => articles.push(...res.articles));
+
         Events.emit("workers.articles.found", articles, tableName); // Can be empty array
         if (articles.length == 0) return;
 
@@ -253,34 +257,31 @@ export default class Grid {
 
         Events.emit("middleware.after", articles);
 
+        // TODO - use result and request each category for separate checks
+
         let dbArticles: Article[];
         try {
-            dbArticles = await Config.getOption(ConfigOptions.DB_GET_ARTICLES)({tableName});
+            dbArticles = await Config.getOption(ConfigOptions.DB_GET_ARTICLES)({
+                tableName,
+                count: articles.length >= 5 ? articles.length * 2 : 10
+            });
         } catch (e) {
-            Events.emit("middleware.after", source, e);
+            Events.emit("database.get.error", source, e);
             return;
         }
-
-        // let urls: string[] = articles[0].getSource().instructions.url.map((url: string[]) => url[0]); // TODO
-        // if(urls.length > 1) {
-        //     for(const url of urls) {
-        //         let dbArticles = await this.getArticles(src, {
-        //             pageNo: 1,
-        //             articlesPerPage: articles.length >= 5 ? articles.length * 2 : 10,
-        //             filter: {}
-        //         })
-        //
-        //
-        //     }
-        //
-        //     return;
-        // }
 
         // And then check if they already exist.
         let hashes = dbArticles.map((article: Article) => article.getHash());
         articles = articles.filter((article: Article) => !hashes.includes(article.getHash()));
         Events.emit("workers.articles.new", articles, tableName); // Can be empty array
 
-        await Config.getOption(ConfigOptions.DB_PUSH_ARTICLES)(articles);
+        try {
+            await Config.getOption(ConfigOptions.DB_PUSH_ARTICLES)(articles);
+        }  catch (e) {
+            Events.emit("database.set.error", source, e);
+            return;
+        }
+
+        Events.emit("database.set.okay", source, articles);
     }
 }

@@ -20,21 +20,20 @@ export class RSSParser extends ParserClass {
      will use.
      *
      * @param instructions
-     * @param url
-     * @param amount
+     * @param utils
      * @param renameFields
      */
-    public static async rssParser(instructions: Instructions, url: string, amount: number = 10, renameFields: Map<string, string> = new Map<string, string>()) {
+    public static async rssParser(instructions: Instructions, utils: Utils, renameFields: Map<string, string> = new Map<string, string>()) {
         let dataJson: any = {}; // there is where the returned data are stored.
         let customFieldsKeys = Array.from(renameFields.keys());
         let parser: Parser = await RSSParser.generateParser(instructions, renameFields)
         if (instructions.extraFields && instructions.extraFields.length >= 1)
             await instructions.extraFields.forEach(extraField => this.requested_fields.push(extraField))
-        return await parser.parseURL(url).then(feed => {
+        return await parser.parseURL(utils.url).then(feed => {
             let count = 0
             feed.items.forEach(item => {
 
-                if (count >= amount) return
+                if (count >= utils.amount) return
 
                 // console.log(item)
                 //Initializing json object
@@ -114,15 +113,14 @@ export class RSSParser extends ParserClass {
         return target
     };
 
-    private static async mapArticles(articles: any, aliases: string[], url: string,
-                                     renameFields: Map<string, string>, instructions: Instructions): Promise<Array<Article>> {
+    private static async mapArticles(articles: any, utils: Utils, renameFields: Map<string, string>, instructions: Instructions): Promise<Array<Article>> {
         let parsedArticles: Array<Article> = [];
 
         Array.from(new Map(Object.entries(articles)).values()).forEach((article: any) => {
             let tmpArticle = new Article()
 
             tmpArticle.setSource(instructions.getSource().getId(), instructions.getSource().name);
-            tmpArticle.setTitle(Utils.htmlStrip(article.hasOwnProperty("title")
+            tmpArticle.setTitle(utils.htmlStrip(article.hasOwnProperty("title")
                 ? article["title"]
                 : renameFields.get("title") && article.hasOwnProperty(renameFields.get("title")!) ? article[renameFields.get("title")!] : ""
             ));
@@ -141,15 +139,15 @@ export class RSSParser extends ParserClass {
                 ? article["link"]
                 : renameFields.get("link") && article.hasOwnProperty(renameFields.get("link")!) ? article[renameFields.get("link")!] : "");
 
-            tmpArticle.pushAttachments(Utils.extractLinks(tmpArticle.content))
+            tmpArticle.pushAttachments(utils.extractLinks(tmpArticle.content))
 
             if (article.categories)
                 article.categories.forEach((c: any) => tmpArticle.pushCategory(c, []));
 
-            tmpArticle.pushCategories(aliases.map(alias => {
+            tmpArticle.pushCategories(utils.aliases.map(alias => {
                 return {
                     name: alias,
-                    links: [url]
+                    links: [utils.url]
                 };
             }));
 
@@ -191,7 +189,7 @@ export class RSSParser extends ParserClass {
         instructions.extraFields = sourceJson.scrape.extraFields ? sourceJson.scrape.extraFields : [];
     }
 
-    async parse(job: Job, aliases: string[], url: string, amount: number): Promise<Article[]> {
+    async parse(job: Job, utils: Utils): Promise<Article[]> {
         let instructions = job.getInstructions();
 
         // Rename fields
@@ -199,8 +197,8 @@ export class RSSParser extends ParserClass {
         if (instructions.scrapeOptions.hasOwnProperty("renameFields"))
             renameFields = instructions.scrapeOptions.renameFields
 
-        let articles = await RSSParser.rssParser(instructions, url, amount, renameFields);
-        return await RSSParser.mapArticles(articles, aliases, url, renameFields, instructions);
+        let articles = await RSSParser.rssParser(instructions, utils, renameFields);
+        return await RSSParser.mapArticles(articles, utils, renameFields, instructions);
     }
 
 }
