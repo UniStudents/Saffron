@@ -46,33 +46,28 @@ try {
     let errors = []
     const saffron = new Saffron();
 
+    saffron.on("workers.articles.found", (articles, src) => {
+        console.log('articles.found', src, articles.length)
+        // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
+    });
+
+    saffron.on('workers.parsers.error', (e) => errors.push(e));
+
+    saffron.on("middleware.before", (articles) => {
+        // console.log('middleware.before')
+        // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
+    });
+
+    saffron.on("middleware.after", (articles) => {
+        // console.log('middleware.after')
+        // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
+    });
+
     try {
-        await saffron.initialize(config)
-        await saffron.start()
-
-        saffron.on("workers.articles.found", (articles, src) => {
-            console.log('articles.found')
-            console.log(src, articles.length)
-            console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
-        });
-
-        // saffron.on("workers.articles.new", (articles, src) => {
-        //     console.log('articles.new')
-        //     console.log(src, articles.length);
-        //     console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
-        // });
-
-        saffron.on("middleware.before", (articles) => {
-            // console.log('middleware.before')
-            // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
-        });
-
-        saffron.on("middleware.after", (articles) => {
-            // console.log('middleware.after')
-            // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
-        });
+        await saffron.initialize(config);
+        await saffron.start();
     } catch (error) {
-        errors.push(error)
+        errors.push(error);
     }
 
     if (process.env.NODE_ENV === "testing") setTimeout(() => {

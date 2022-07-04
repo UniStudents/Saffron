@@ -2,13 +2,9 @@ import {ParserClass} from "../ParserClass";
 import Instructions from "../../../components/instructions";
 import Job from "../../../components/job";
 import Article from "../../../components/articles";
-import https from "https";
-import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
+import {AxiosResponse} from "axios";
 import cheerio from "cheerio";
 import Utils from "../Utils";
-import {AxiosConfig} from "../../../components/AxiosConfig";
-
-const httpsAgent = new https.Agent({rejectUnauthorized: false})
 
 interface ArticleImage {
     [key: string]: any
@@ -19,7 +15,7 @@ export class HTMLParser extends ParserClass {
     static async parse2(instructions: Instructions, utils: Utils): Promise<Article[]> {
         let parsedArticles: Article[] = [];
 
-        await HTMLParser.request(utils.url, instructions.getSource().timeout, instructions)
+        await HTMLParser.request(utils)
             .then((response: AxiosResponse) => {
                 const cheerioLoad: cheerio.Root = cheerio.load(instructions.textDecoder.decode(response.data));
 
@@ -109,26 +105,20 @@ export class HTMLParser extends ParserClass {
         return parsedArticles
     }
 
-    private static async request(url: string, timeout: number, instructions: Instructions): Promise<AxiosResponse> {
+    private static async request(utils: Utils): Promise<AxiosResponse> {
         return new Promise((resolve, reject) => {
-
-            let config: AxiosConfig = {
-                method: 'get',
-                url,
-                timeout,
+            utils.get(utils.url, {
+                timeout: utils.instructions.getSource().timeout,
                 responseType: 'arraybuffer',
+                // @ts-ignore
                 responseEncoding: 'binary'
-            }
-
-            if (instructions["ignoreCertificates"]) config.httpsAgent = httpsAgent
-            axios((config as AxiosRequestConfig)).then((result: AxiosResponse) => {
-                resolve(result)
+            }).then((result: AxiosResponse) => {
+                resolve(result);
             }).catch((e: any) => {
                 let message = `HTMLParserException error during request, original error ${e.message}`
-                reject(new Error(message))
-            })
-
-        })
+                reject(new Error(message));
+            });
+        });
     }
 
     /**

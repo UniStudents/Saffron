@@ -5,7 +5,6 @@ import Article from "../../../../components/articles";
 import axios, {AxiosRequestConfig} from "axios";
 import Utils from "../../Utils";
 import https from "https";
-import {AxiosConfig} from "../../../../components/AxiosConfig";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})
 
@@ -90,16 +89,16 @@ export class WordpressV2Parser extends ParserClass {
         let categories: any
             , posts: any[];
 
-        let config: AxiosConfig & AxiosRequestConfig = {
-            timeout: instructions.getSource().timeout,
+        let config = {
+            timeout: utils.instructions.getSource().timeout,
             responseType: 'arraybuffer',
+            // @ts-ignore
             responseEncoding: 'binary'
         };
-        if (instructions["ignoreCertificates"]) config.httpsAgent = httpsAgent;
 
         try {
-            categories = JSON.parse(instructions.textDecoder.decode((await axios.get(categoriesUrl, config))?.data))
-            posts = JSON.parse(instructions.textDecoder.decode((await axios.get(postsUrl, config))?.data))
+            categories = JSON.parse(instructions.textDecoder.decode((await utils.get(categoriesUrl, config as any))?.data))
+            posts = JSON.parse(instructions.textDecoder.decode((await utils.get(postsUrl, config as any))?.data))
         } catch (e: any) {
             throw new Error(`WordpressParserException job failed for ${instructions.getSource().name}, original error: ${e.message}`);
         }

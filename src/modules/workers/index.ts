@@ -31,6 +31,7 @@ export default class Worker {
             utils.aliases = pair.aliases;
             utils.isScrapeAfterError = job.attempts !== 0;
             utils.amount = job.getInstructions().amount;
+            utils.instructions = job.getInstructions();
 
             const newArticles = await parser.parse(job, utils);
             results.push({
