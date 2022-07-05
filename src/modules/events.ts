@@ -7,6 +7,7 @@ import Grid from "./grid/index";
 import Config from "../components/config";
 import {ConfigOptions} from "../middleware/ConfigOptions";
 import Source from "../components/source";
+import {CallbackVoid} from "../components/types";
 
 export default class Events {
 
@@ -108,19 +109,32 @@ export default class Events {
                 Logger(LoggerTypes.INFO, `${chalk.red('Parsers')} - failed to scrape the articles.`);
                 console.log(e);
             });
+
+            this.getAntennae().on("middleware.error", (mid: string, e: any) => {
+                Logger(LoggerTypes.INFO, `${chalk.red('Middleware')} - an error was caught at ${mid}.`);
+                console.log(e);
+            });
         }
 
     }
 }
 
 class Antennae {
-    private _callbacks: any = {};
+    private _callbacks: { [event: string]: CallbackVoid[] } = {};
+    private _allCallbacks: CallbackVoid[] = [];
 
-    public on(eventName: string, callback: (...args: any[]) => void): void {
-        if (eventName.length === 0) throw Error("You cannot create an event for nothing!")
+    public on(eventName: string, callback: CallbackVoid): void {
+        if (eventName.length === 0) throw Error("You cannot create an event for nothing!");
 
-        if (!this._callbacks[eventName]) this._callbacks[eventName] = [];
-        this._callbacks[eventName].push(callback)
+        if(eventName === "*") {
+            this._allCallbacks.push(callback);
+            return;
+        }
+
+        if (!this._callbacks[eventName])
+            this._callbacks[eventName] = [];
+
+        this._callbacks[eventName].push(callback);
     }
 
     public emit(eventName: string, ...args: any[]): void {
@@ -128,9 +142,10 @@ class Antennae {
 
         Grid.getInstance().emit(eventName, ...args);
 
-        this._callbacks[eventName].forEach((callback: any) => callback(...args));
+        // Call all callbacks
+        this._allCallbacks.forEach(callback => callback(eventName, ...args));
 
-        if (this._callbacks['*'])
-            this._callbacks["*"].forEach((callback: any) => callback(...args));
+        // Call specified callback
+        this._callbacks[eventName].forEach(callback => callback(...args));
     }
 }

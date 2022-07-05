@@ -5,3 +5,5 @@ export type ParserResult = {
     url: string;
     articles: Article[];
 };
+
+export type CallbackVoid = (...args: any[]) => void;

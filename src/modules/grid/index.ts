@@ -247,14 +247,19 @@ export default class Grid {
         Events.emit("middleware.before", articles);
 
         let getExtPair = Extensions.getInstance().startCount();
-        let pair: any;
-        while ((pair = getExtPair()) != null) {
-            if (pair.event === 'article.format') {
-                for (const i in articles)
-                    articles[i] = await pair.callback(articles[i]);
-            } else if (pair.event === 'articles') {
-                articles = await pair.callback(articles);
+        let pair: any = {};
+        try {
+            while ((pair = getExtPair()) != null) {
+                if (pair.event === 'article.format') {
+                    for (const i in articles)
+                        articles[i] = await pair.callback(articles[i]);
+                } else if (pair.event === 'articles') {
+                    articles = await pair.callback(articles);
+                }
             }
+        } catch (e) {
+            Events.emit("middleware.error", pair.event, e);
+            return;
         }
 
         Events.emit("middleware.after", articles);
