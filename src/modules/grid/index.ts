@@ -17,11 +17,10 @@ import {pack, unpack} from "../../middleware/serializer";
 
 export default class Grid {
 
-    private static instance: Grid
+    private static instance: Grid;
 
-    private declare readonly isMain: boolean
+    private declare readonly isMain: boolean;
     private declare readonly workersIds: string[];
-    private declare readonly workersClients: { workersIds: string[], socketId: string }[];
 
     private declare readonly http_s_server: any;
     private declare readonly server: ServerIO.Server;
@@ -30,7 +29,6 @@ export default class Grid {
     private constructor() {
         this.isMain = Config.getOption(ConfigOptions.SAFFRON_MODE) === 'main';
         this.workersIds = [];
-        this.workersClients = [];
 
         if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED)) {
             if (typeof Config.getOption(ConfigOptions.GRID_AUTH) !== 'string')
@@ -173,7 +171,7 @@ export default class Grid {
      * @param worker
      */
     destroyWorker(worker: Worker): void {
-        let index = this.workersIds.findIndex(id => id == worker.id)
+        let index = this.workersIds.findIndex(id => id == worker.id);
         this.workersIds.splice(index, 1);
         Events.emit("grid.worker.destroyed", worker.id);
     }
@@ -185,19 +183,6 @@ export default class Grid {
      */
     fireWorker(sourceId: string, workerId: string): void {
         if (!this.isMain) return;
-
-        let index = this.workersClients.findIndex(js => {
-            let index = js.workersIds.findIndex(id => id == workerId);
-            return index !== -1;
-        })
-
-        if (index != -1) {
-            let j = this.workersIds.findIndex((obj: string) => obj === workerId);
-            if (j != -1) this.workersIds.splice(j, 1);
-
-            let k = this.workersClients[index].workersIds.findIndex(id => workerId == id);
-            if (k != -1) this.workersClients[index].workersIds.splice(k, 1);
-        }
 
         let k = this.workersIds.findIndex(id => workerId == id);
         if (k != -1) this.workersIds.splice(k, 1);
@@ -239,10 +224,10 @@ export default class Grid {
         let articles: Article[] = [];
         result.forEach(res => articles.push(...res.articles));
 
+        articles.forEach(article => article.timestamp = Date.now());
+
         Events.emit("workers.articles.found", articles, tableName); // Can be empty array
         if (articles.length == 0) return;
-
-        articles.forEach(article => article.timestamp = Date.now());
 
         Events.emit("middleware.before", articles);
 

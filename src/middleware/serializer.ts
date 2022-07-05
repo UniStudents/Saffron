@@ -38,7 +38,7 @@ export class Serializer {
         if(data !== Object(data)) return data;
 
         const obj = new this.types[data.index]();
-        data.entries.map((entry: any) => obj[entry[0]] = this._deserialize(entry[1]))
+        data.entries.map((entry: any) => obj[entry[0]] = this._deserialize(entry[1]));
         return obj;
     }
 }
