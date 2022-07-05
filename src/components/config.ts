@@ -1,14 +1,88 @@
 import _ from "lodash"
-import path from "path"
-import {ConfigOptions} from "../middleware/ConfigOptions";
+import Article from "./article";
 
+export type ConfigType = {
+    mode: 'main' | 'worker';
+    database: {
+        pushArticles: (articles: Article[]) => Promise<void>;
+        getArticles: (opts: {
+            tableName: string;
+            count: number;
+        }) => Promise<Article[]>;
+    };
+    sources: {
+        path: string;
+        includeOnly?: string[];
+        exclude?: string[];
+    };
+    workers: {
+        nodes?: number;
+        jobs?: {
+            timeout?: number;
+        };
+        articles: {
+            amount?: number;
+        };
+    };
+    scheduler: {
+        jobsInterval?: number,
+        heavyJobFailureInterval?: number,
+        checksInterval?: number;
+    };
+    grid: {
+        distributed: false;
+    } | {
+        distributed: true;
+        useHTTP: false;
+
+        serverAddress: string;
+        serverPort?: number;
+        authToken: string;
+    } | {
+        distributed: true;
+        useHTTP: true;
+
+        serverAddress: string;
+        serverPort?: number;
+        authToken: string;
+        key: any;
+        cert: any;
+    };
+    misc: {
+        log?: 'all' | 'info' | 'errors' | 'none';
+    };
+}
+
+export enum ConfigOptions {
+    SOURCES_PATH = 'sources.path',
+    SOURCES_INCLUDE_ONLY = 'sources.includeOnly',
+    SOURCES_EXCLUDE = 'sources.exlude',
+    SAFFRON_MODE = 'mode',
+    WORKER_NODES = 'worker.nodes',
+    REQUEST_TIMEOUT = 'worker.request.timeout',
+    ARTICLE_AMOUNT = 'worker.article.amount',
+    SCHEDULER_JOB_INT = 'scheduler.job.interval',
+    SCHEDULER_JOB_HEAVY_INT = 'scheduler.job.heavyInterval',
+    SCHEDULER_CHECKS_INT = 'scheduler.job.checkInterval',
+    GRID_DISTRIBUTED = 'grid.distributed',
+    GRID_SERVER_ADDRESS = 'grid.server.address',
+    GRID_SERVER_PORT = 'grid.server.port',
+    GRID_AUTH = 'grid.auth',
+    GRID_USE_HTTP = 'grid.use_http',
+    GRID_HTTPS_KEY = 'grid.https.key',
+    GRID_HTTPS_CERT = 'grid.https.cert',
+    MISC_LOG_LEVEL = 'misc.log',
+    DB_PUSH_ARTICLES = 'db.articles.push',
+    DB_GET_ARTICLES = 'db.articles.get'
+}
 
 export default class Config {
-    _config: { [key: string]: any } = {
+    private static instance: Config
+    _config: ConfigType = {
         mode: "main",
         database: {
-            driver: "none",
-            config: {}
+            pushArticles: async (articles: Article[]): Promise<void> => undefined,
+            getArticles: async (opts: any): Promise<Article[]> => [],
         },
         sources: {
             path: "../../../sources",
@@ -30,82 +104,52 @@ export default class Config {
             checksInterval: 120000
         },
         grid: {
-            distributed: false
+            distributed: false,
+            useHTTP: false,
+            serverPort: 3000
         },
         misc: {
             log: "all"
         }
     }
 
-    public static isHydrated: boolean = false
-    private static instance: Config
+    private constructor(config?: Partial<ConfigType> | {
+        production: Partial<ConfigType>;
+    } | {
+        development: Partial<ConfigType>;
+    } | {
+        testing: Partial<ConfigType>;
+    }) {
+        this._config = this.mergeObject(config, this._config);
 
-    private mergeObject(src: any, original: object): object {
-        return _.mergeWith({}, original, src, (o, s) => {
-            if (Array.isArray(o))
-                return s ? s : o
-            else if (typeof o == 'object')
-                return this.mergeObject(s, o)
-            return s ? s : o
-        })
+        switch (process.env.NODE_ENV) {
+            case "production":
+                if ((config as any).production)
+                    this._config = this.mergeObject((config as any).production, this._config);
+                break;
+            case "development":
+                if ((config as any).development)
+                    this._config = this.mergeObject((config as any).development, this._config);
+                break;
+            case "testing":
+                if ((config as any).testing)
+                    this._config = this.mergeObject((config as any).testing, this._config);
+                break;
+            default:
+        }
+
+        if (process.env.SAFFRON_MODE && ["main", "worker"].includes(process.env.SAFFRON_MODE))
+            this._config.mode = process.env.SAFFRON_MODE as any;
     }
 
     /**
      * Loads an external configuration object and merges the parameters with the default ones.
      */
-    static load(config?: object | string): any {
+    static load(config?: Partial<ConfigType>): any {
         if (!this.instance)
             this.instance = new Config(config)
 
         return this.instance._config
-    }
-
-    private constructor(config: any) {
-        if (typeof config === "string") {
-            try {
-                if (path.isAbsolute(config))
-                    config = require(config);
-                else
-                    config = require((config.startsWith('./') ? '.' : '../') + config)
-            } catch (error: any) {
-                throw new Error(error)
-            }
-        } else if (!config) {
-            try {
-                config = require("../../saffron.json")
-            } catch (error: any) {
-                throw new Error(error)
-            }
-        }
-
-        this._config = this.mergeObject(config, this._config)
-
-        switch (process.env.NODE_ENV) {
-            case "production":
-                if (config.production)
-                    this._config = this.mergeObject(config.production, this._config)
-                break
-            case "development":
-                if (config.development)
-                    this._config = this.mergeObject(config.development, this._config)
-                break
-            case "testing":
-                if (config.testing)
-                    this._config = this.mergeObject(config.testing, this._config)
-                break
-            default:
-
-        }
-
-        if (process.env.SAFFRON_MODE && ["main", "worker"].includes(process.env.SAFFRON_MODE)) {
-            this._config.mode = process.env.SAFFRON_MODE
-        }
-
-        delete this._config.development
-        delete this._config.production
-        delete this._config.testing
-
-        Config.isHydrated = true
     }
 
     static getOption(option: ConfigOptions): any {
@@ -115,12 +159,7 @@ export default class Config {
             case ConfigOptions.SAFFRON_MODE:
                 return !isStatic ? Config.load().mode : "main";
 
-            case ConfigOptions.DB_DRIVER:
-                return !isStatic ? Config.load().database.driver : "memory";
-            case ConfigOptions.DB_CONFIG:
-                return !isStatic ? Config.load().database.config : {};
-
-                case ConfigOptions.SOURCES_PATH:
+            case ConfigOptions.SOURCES_PATH:
                 return !isStatic ? Config.load().sources.path : '../../../sources';
             case ConfigOptions.SOURCES_INCLUDE_ONLY:
                 return !isStatic ? Config.load().sources.includeOnly : [];
@@ -144,11 +183,36 @@ export default class Config {
 
             case ConfigOptions.GRID_DISTRIBUTED:
                 return !isStatic ? Config.load().grid.distributed : false;
-            case ConfigOptions.GRID_PORT:
-                return !isStatic ? Config.load().grid.port : 3000;
+            case ConfigOptions.GRID_SERVER_ADDRESS:
+                return !isStatic ? Config.load().grid.serverAddress : 'localhost';
+            case ConfigOptions.GRID_SERVER_PORT:
+                return !isStatic ? Config.load().grid.serverPort : 3000;
+            case ConfigOptions.GRID_AUTH:
+                return !isStatic ? Config.load().grid.authToken : undefined;
+            case ConfigOptions.GRID_USE_HTTP:
+                return !isStatic ? Config.load().grid.useHTTP : false;
+            case ConfigOptions.GRID_HTTPS_KEY:
+                return !isStatic ? Config.load().grid.key : undefined;
+            case ConfigOptions.GRID_HTTPS_CERT:
+                return !isStatic ? Config.load().grid.cert : undefined;
 
             case ConfigOptions.MISC_LOG_LEVEL:
                 return !isStatic ? Config.load().misc.log : "all";
+
+            case ConfigOptions.DB_PUSH_ARTICLES:
+                return !isStatic ? Config.load().database.pushArticles : (articles: Article[]) => undefined;
+            case ConfigOptions.DB_GET_ARTICLES:
+                return !isStatic ? Config.load().database?.getArticles : (opts: any) => [];
         }
+    }
+
+    private mergeObject(src: any, original: object): any {
+        return _.mergeWith({}, original, src, (o, s) => {
+            if (Array.isArray(o))
+                return s ? s : o
+            else if (typeof o == 'object')
+                return this.mergeObject(s, o)
+            return s ? s : o
+        })
     }
 }

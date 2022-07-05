@@ -1,7 +1,17 @@
 import cheerio from "cheerio";
-import {Attachment} from "../../../components/articles";
+import {Attachment} from "../../components/article";
+import Instructions from "../../components/instructions";
+import https from "https";
+import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
+import {ParserResult} from "../../components/types";
+import Source from "../../components/source";
+import Job from "../../components/job";
+import Worker from "../workers";
 
 const striptags = require('striptags');
+
+const httpsAgent = new https.Agent({rejectUnauthorized: false})
+
 export default class Utils {
 
     private static htmlEntries: any = {
@@ -261,9 +271,20 @@ export default class Utils {
         '&#34;': '"',
         '&#034;': '"'
     }
+    /**
+     * True if the previous scrape returned exception.
+     */
+    public isScrapeAfterError = false;
+    /**
+     * The specified URL.
+     */
+    public declare url: string;
+    public declare aliases: string[];
+    public declare instructions: Instructions;
+    public declare amount: number;
 
     private static decode(str: String = "") {
-        if(!str) str = ""
+        if (!str) str = ""
         for (let key in this.htmlEntries) {
             let entity = key
             let regex = new RegExp(entity, 'g')
@@ -272,17 +293,53 @@ export default class Utils {
         return str
     }
 
+    request(options: AxiosRequestConfig): Promise<AxiosResponse> {
+        if (this.instructions["ignoreCertificates"])
+            options.httpsAgent = httpsAgent;
+        return axios.request(options);
+    }
 
-    public static htmlStrip(text: any = "", stripTags: boolean = true): string {
+    get(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse> {
+        if (!options) options = {};
+        options.url = url;
+        options.method = "GET";
+        return this.request(options);
+    }
+
+    post(url: string, data: any, options?: AxiosRequestConfig): Promise<AxiosResponse> {
+        if (!options) options = {};
+        options.url = url;
+        options.method = "POST";
+        options.data = data;
+        return this.request(options);
+    }
+
+    /**
+     * Get a source file and return an array of the parsed articles
+     * @param sourceJson The json object of the source file.
+     * @throws SourceException if there is a problem parsing the source file.
+     */
+    async parse(sourceJson: object): Promise<ParserResult[]> {
+        let source: Source = await Source.fileToSource(sourceJson);
+        source.instructions.getSource = (): Source => source;
+
+        let job = Job.createJob(source.getId(), '', 0);
+        job.getSource = (): Source => source;
+        job.getInstructions = (): Instructions => source.instructions;
+
+        return await Worker.parse(job);
+    }
+
+    public htmlStrip(text: any = "", stripTags: boolean = true): string {
         if (stripTags) {
-            text = this.decode(text)
+            text = Utils.decode(text)
             text = text.replace(/\n/g, '')
                 .replace(/\t/g, '')
                 .replace(/(<([^>]+)>)/gi, '')
                 .trim()
             text = striptags(text)
         } else {
-            text = this.decode(text)
+            text = Utils.decode(text)
             text = text.replace(/\n/g, '')
                 .replace(/\t/g, '')
                 .trim()
@@ -291,8 +348,8 @@ export default class Utils {
         return text.toString()
     }
 
-    public static extractLinks(html: string): Attachment[] {
-        if(!html || html == '') return [];
+    public extractLinks(html: string): Attachment[] {
+        if (!html || html == '') return [];
 
         const $ = cheerio.load(html);
         const links: Attachment[] = [];

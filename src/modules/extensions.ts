@@ -1,39 +1,37 @@
-interface pair {
-    event: string,
-    callback: (...args: any[]) => any
-}
+type Pair = {
+    event: string;
+    callback: (...args: any[]) => any;
+};
 
 export default class Extensions {
 
-    private static instance: Extensions
+    private static instance: Extensions;
+    private declare readonly pairs: Pair[];
+
+    private constructor() {
+        this.pairs = [];
+    }
 
     static getInstance(): Extensions {
         if (Extensions.instance == null)
-            this.instance = new Extensions()
+            this.instance = new Extensions();
 
-        return Extensions.instance
+        return Extensions.instance;
     }
 
-    private declare pairs: pair[]
-
-    private constructor() {
-        this.pairs = []
+    push(p: Pair): void {
+        if (!['articles', 'article.format'].includes(p.event))
+            throw new Error(`Event ${p.event} is not valid.`);
+        this.pairs.push(p);
     }
 
-    push(p: pair): void {
-        if (this.pairs.filter(pr => pr.event == p.event).length > 0)
-            throw new Error(`Cannot register an extension event twice. Event '${p.event}' already exists.`)
-
-        this.pairs.push(p)
-    }
-
-    startCount(): (() => pair | null) {
+    startPairCount(): (() => Pair | null) {
         let i = 0;
-        return (): pair | null => {
-            if (i >= this.pairs.length) return null;
-            let pair = this.pairs[i];
-            i++;
-            return pair;
+        const self = this;
+        return function getNextPair(): Pair | null {
+            if (i >= self.pairs.length)
+                return null;
+            return self.pairs[i++];
         };
     }
 }

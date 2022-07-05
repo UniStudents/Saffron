@@ -1,6 +1,11 @@
 import Source from "./source";
-import {ParserType} from "../modules/workers/parsers/ParserType";
-import randomId from "../middleware/randomId"
+import {ParserType} from "./ParserType";
+
+export type InstructionUrl = {
+    url: string;
+    aliases: string[];
+};
+
 /**
  * The instructions class is used mainly by parsers.
  * Its general use is to provide instructions on how
@@ -8,10 +13,8 @@ import randomId from "../middleware/randomId"
  * a web page content.
  */
 export default class Instructions {
-    declare id: string;
-
-    declare source : { id: string; };
-    declare url: (string[])[];
+    declare source: { id: string; };
+    declare url: InstructionUrl[];
     declare parserType: ParserType;
     declare endPoint: string;
     declare amount: number;
@@ -22,65 +25,11 @@ export default class Instructions {
     declare ignoreCertificates: boolean;
     declare extraFields: string[];
 
-
-    /**
-     * @param id instruction id.
-     */
-    constructor() {
-        this.id = randomId("ins")
-    }
-
-    /**
-     * We return a Map which contains all the options
-     * that a parser needs.
-     *
-     * @return Map<String, Object>
-     */
-    getOptions(): Map<string, object> | null {
-        if (!this.scrapeOptions) return null;
-
-        return new Map<string, object>(Object.entries(this.scrapeOptions));
-    }
-
     /**
      * Return the source that variable source refers to.
      * @return Source
      */
     getSource(): Source {
-        return Source.getSourceFrom(this.source.id);
+        return Source.getSourceFrom(this);
     }
-
-    toJSON(): any {
-        return {
-            id: this.id,
-            source: this.source,
-            url: this.url,
-            parserType: ParserType.toString(this.parserType),
-            endPoint: this.endPoint,
-            scrapeOptions: this.scrapeOptions,
-            elementSelector: this.elementSelector,
-            scrapeFunction: this.scrapeFunction,
-            ignoreCertificates: this.ignoreCertificates,
-            textDecoder: this.textDecoder,
-            extraFields: this.extraFields
-        }
-    }
-
-    static fromJSON(json: any): Instructions {
-        let inst = new Instructions()
-        inst.id = json.id
-        inst.source = json.source
-        inst.url = json.url
-        inst.parserType = ParserType.getFromString(json.parserType)
-        inst.endPoint = json.endPoint
-        inst.scrapeOptions = json.scrapeOptions
-        inst.elementSelector = json.elementSelector
-        inst.scrapeFunction = json.scrapeFunction
-        inst.ignoreCertificates = json.ignoreCertificates
-        inst.textDecoder = json.textDecoder
-        inst.extraFields = json.extraFields
-
-        return inst
-    }
-
 }

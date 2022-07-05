@@ -1,13 +1,8 @@
-import {ParserClass} from "../../ParserClass";
-import Instructions from "../../../../../components/instructions";
-import Job from "../../../../../components/job";
-import Article from "../../../../../components/articles";
-import axios, {AxiosRequestConfig} from "axios";
-import Utils from "../../Utils";
-import https from "https";
-import {AxiosConfig} from "../../../../../components/AxiosConfig";
-
-const httpsAgent = new https.Agent({rejectUnauthorized: false})
+import {ParserClass} from "../ParserClass";
+import Instructions from "../../../components/instructions";
+import Job from "../../../components/job";
+import Article from "../../../components/article";
+import Utils from "../Utils";
 
 export class WordpressV2Parser extends ParserClass {
     validateScrape(scrape: object): void {
@@ -15,10 +10,7 @@ export class WordpressV2Parser extends ParserClass {
 
     assignInstructions(instructions: Instructions, sourceJson: any): void {
         for (let pair of instructions.url) {
-            if (pair.length == 1)
-                pair[0] = `${pair[0]}${pair[0].endsWith('/') ? '' : '/'}`;
-            else if (pair.length == 2)
-                pair[1] = `${pair[1]}${pair[1].endsWith('/') ? '' : '/'}`;
+            pair.url = `${pair.url}${pair.url.endsWith('/') ? '' : '/'}`
         }
 
         let artScrapeOpts = sourceJson.scrape?.articles;
@@ -29,20 +21,20 @@ export class WordpressV2Parser extends ParserClass {
             thumbnail: "thumbnail"
         };
 
-        if(artScrapeOpts != null) {
-            if(Array.isArray(sourceJson.scrape?.articles?.include)) {
-                for(const item of sourceJson.scrape.articles.include) {
-                    if(typeof item === 'string')
+        if (artScrapeOpts != null) {
+            if (Array.isArray(sourceJson.scrape?.articles?.include)) {
+                for (const item of sourceJson.scrape.articles.include) {
+                    if (typeof item === 'string')
                         articlesOpts.include.push(item)
                 }
             }
 
-            if(artScrapeOpts.dates) {
+            if (artScrapeOpts.dates) {
                 articlesOpts.dates.gmt = typeof artScrapeOpts.dates.gmt === 'boolean' ? artScrapeOpts.dates.gmt : false;
                 articlesOpts.dates.fallback = typeof artScrapeOpts.dates.fallback === 'boolean' ? artScrapeOpts.dates.fallback : false;
             }
 
-            if(artScrapeOpts.filter) {
+            if (artScrapeOpts.filter) {
                 articlesOpts.filter.search = typeof artScrapeOpts.filter?.search === 'string' ? artScrapeOpts.filter.search : null;
                 articlesOpts.filter.author = typeof artScrapeOpts.filter?.author === 'string' ? artScrapeOpts.filter.author : null;
                 articlesOpts.filter.authorExclude = typeof artScrapeOpts.filter?.authorExclude === 'string' ? artScrapeOpts.filter.authorExclude : null;
@@ -69,40 +61,40 @@ export class WordpressV2Parser extends ParserClass {
         };
     }
 
-    async parse(job: Job, alias: string, url: string, amount: number): Promise<Article[]> {
+    async parse(job: Job, utils: Utils): Promise<Article[]> {
         let instructions = job.getInstructions();
 
-        let categoriesUrl = `${url}wp-json/wp/v2/categories/`;
-        let postsUrl = `${url}wp-json/wp/v2/posts?_embed&per_page=${amount}`;
+        let categoriesUrl = `${utils.url}wp-json/wp/v2/categories/`;
+        let postsUrl = `${utils.url}wp-json/wp/v2/posts?_embed&per_page=${utils.amount}`;
 
         const filters = instructions.scrapeOptions.articles.filter;
-        if(filters.search) postsUrl +=`&search=${encodeURIComponent(filters.search)}`;
-        if(filters.author) postsUrl +=`&author=${filters.author}`;
-        if(filters.authorExclude) postsUrl +=`&author_exclude=${filters.authorExclude}`;
-        if(filters.after) postsUrl +=`&after=${filters.after}`;
-        if(filters.before) postsUrl +=`&before=${filters.before}`;
+        if (filters.search) postsUrl += `&search=${encodeURIComponent(filters.search)}`;
+        if (filters.author) postsUrl += `&author=${filters.author}`;
+        if (filters.authorExclude) postsUrl += `&author_exclude=${filters.authorExclude}`;
+        if (filters.after) postsUrl += `&after=${filters.after}`;
+        if (filters.before) postsUrl += `&before=${filters.before}`;
         // if(filters.offset != null && filters.offset > 0) postsUrl +=`&offset=${filters.offset}`;
-        if(filters.slug) postsUrl +=`&slug=${filters.slug}`;
-        if(filters.status) postsUrl +=`&status=${filters.status}`;
-        if(filters.categories) postsUrl +=`&categories=${filters.categories}`;
-        if(filters.categoriesExclude) postsUrl +=`&categories_exclude=${filters.categoriesExclude}`;
-        if(filters.tags) postsUrl +=`&tags=${filters.tags}`;
-        if(filters.tagsExclude) postsUrl +=`&tags_exclude=${filters.tagsExclude}`;
-        if(filters.sticky) postsUrl +=`&_sticky`;
+        if (filters.slug) postsUrl += `&slug=${filters.slug}`;
+        if (filters.status) postsUrl += `&status=${filters.status}`;
+        if (filters.categories) postsUrl += `&categories=${filters.categories}`;
+        if (filters.categoriesExclude) postsUrl += `&categories_exclude=${filters.categoriesExclude}`;
+        if (filters.tags) postsUrl += `&tags=${filters.tags}`;
+        if (filters.tagsExclude) postsUrl += `&tags_exclude=${filters.tagsExclude}`;
+        if (filters.sticky) postsUrl += `&_sticky`;
 
         let categories: any
             , posts: any[];
 
-        let config: AxiosConfig & AxiosRequestConfig = {
-            timeout: instructions.getSource().timeout,
+        let config = {
+            timeout: utils.instructions.getSource().timeout,
             responseType: 'arraybuffer',
+            // @ts-ignore
             responseEncoding: 'binary'
         };
-        if (instructions["ignoreCertificates"]) config.httpsAgent = httpsAgent;
 
         try {
-            categories = JSON.parse(instructions.textDecoder.decode((await axios.get(categoriesUrl, config))?.data))
-            posts = JSON.parse(instructions.textDecoder.decode((await axios.get(postsUrl, config))?.data))
+            categories = JSON.parse(instructions.textDecoder.decode((await utils.get(categoriesUrl, config as any))?.data))
+            posts = JSON.parse(instructions.textDecoder.decode((await utils.get(postsUrl, config as any))?.data))
         } catch (e: any) {
             throw new Error(`WordpressParserException job failed for ${instructions.getSource().name}, original error: ${e.message}`);
         }
@@ -122,8 +114,8 @@ export class WordpressV2Parser extends ParserClass {
 
                 return {
                     id: category.id,
-                    description: Utils.htmlStrip(category.description, false),
-                    name: Utils.htmlStrip(category.name, false),
+                    description: utils.htmlStrip(category.description, false),
+                    name: utils.htmlStrip(category.name, false),
                     links
                 }
             }) : [];
@@ -135,19 +127,24 @@ export class WordpressV2Parser extends ParserClass {
 
             const article = new Article()
             article.setSource(instructions.getSource().getId(), instructions.getSource().name);
-            article.setTitle(Utils.htmlStrip(p.title.rendered, false));
+            article.setTitle(utils.htmlStrip(p.title.rendered, false));
             article.setContent(p.content.rendered);
             article.setLink(p.link);
-            article.pushCategory(alias, [url]);
+            article.pushCategories(utils.aliases.map(alias => {
+                return {
+                    name: alias,
+                    links: [utils.url]
+                };
+            }));
 
             if (instructions.scrapeOptions.articles.dates.gmt) {
-                if(p.date_gmt != null)
+                if (p.date_gmt != null)
                     article.setPubDate(p.date_gmt);
-                else if(instructions.scrapeOptions.articles.dates.fallback)
+                else if (instructions.scrapeOptions.articles.dates.fallback)
                     article.setPubDate(p.date);
             } else article.setPubDate(p.date);
 
-            article.pushAttachments(Utils.extractLinks(article.content));
+            article.pushAttachments(utils.extractLinks(article.content));
 
             for (let cId of p.categories) {
                 let cat = parsedCategories.find((c: any) => c.id == cId)
@@ -162,11 +159,11 @@ export class WordpressV2Parser extends ParserClass {
 
             let include: string[] = instructions.scrapeOptions.articles.include;
             // The date the object was last modified.
-            if(include.includes('modified')) {
+            if (include.includes('modified')) {
                 if (instructions.scrapeOptions.articles.dates.gmt) {
-                    if(p.modified_gmt != null)
+                    if (p.modified_gmt != null)
                         article.addExtra('modified', p.modified_gmt);
-                    else if(instructions.scrapeOptions.articles.dates.fallback)
+                    else if (instructions.scrapeOptions.articles.dates.fallback)
                         article.addExtra('modified', p.modified);
                 } else article.addExtra('modified', p.modified);
 
@@ -175,8 +172,8 @@ export class WordpressV2Parser extends ParserClass {
             }
 
             // Can get anything from guid, type, slug to title content etc...
-            for(const elem of include) {
-                if(p[elem]?.rendered != null)
+            for (const elem of include) {
+                if (p[elem]?.rendered != null)
                     article.addExtra(elem, p[elem].rendered);
                 else article.addExtra(elem, p[elem]);
             }

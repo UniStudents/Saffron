@@ -1,5 +1,5 @@
 {
-  "url": "https://www.geo.hua.gr/",
+  "url": [["Category 1", "Category2", "https://www.geo.hua.gr/"]],
   "name": "geo.hua.gr",
   "type": "wordpress-v2",
   "ignoreCertificates": true,

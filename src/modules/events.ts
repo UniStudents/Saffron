@@ -1,11 +1,12 @@
 import Logger from "../middleware/logger";
-import {LoggerTypes} from "../middleware/LoggerTypes";
+import {LoggerTypes} from "../components/LoggerTypes";
 import Job from "../components/job";
-import Article from "../components/articles";
+import Article from "../components/article";
 import chalk from "chalk";
 import Grid from "./grid/index";
-import Config from "../components/config";
-import {ConfigOptions} from "../middleware/ConfigOptions";
+import Config, {ConfigOptions} from "../components/config";
+import Source from "../components/source";
+import {CallbackVoid} from "../components/types";
 
 export default class Events {
 
@@ -29,22 +30,21 @@ export default class Events {
 
     static registerLogListeners(): void {
         let logLevel = Config.getOption(ConfigOptions.MISC_LOG_LEVEL);
-        if(logLevel === 'none') return;
+        if (logLevel === 'none') return;
 
         this.getAntennae().on('title', () =>
             Logger(LoggerTypes.TITLE, "Simple Abstract Framework For the Retrieval Of News"));
 
-        if(logLevel === 'all' || logLevel === 'info') {
-            this.getAntennae().on('database.connection.okay', () =>
-                Logger(LoggerTypes.STEP, 'Successfully connected to the offload database.'));
-            this.getAntennae().on('database.connection.failed', () =>
-                Logger(LoggerTypes.INSTALL_ERROR, 'Failed to connect to the offload database.'));
+        if (logLevel === 'all' || logLevel === 'info') {
+            this.getAntennae().on("database.set.okay", (source: Source, articles: any) => {
+                Logger(LoggerTypes.DEBUG, `${chalk.red('Database')} - Upload ${articles.length} articles to db for ${source.name}.`);
+            });
 
             this.getAntennae().on("scheduler.sources.new", (names: string[]) =>
                 Logger(LoggerTypes.INFO, `Loaded ${names.length} sources`))
 
             this.getAntennae().on("scheduler.job.new", (job: Job) =>
-                Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - add new job(${job.id}) to stack for ${job.getSource().name}.`));
+                Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - add new job(${job.id}) to queue for ${job.getSource().name}.`));
             this.getAntennae().on("scheduler.job.finished", (job: Job) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - found finished job(${job.id}).`));
             this.getAntennae().on("scheduler.job.failed", (job: Job) =>
@@ -69,23 +69,26 @@ export default class Events {
             this.getAntennae().on("grid.worker.destroyed", (worker_id: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - worker destroyed (${worker_id}).`));
 
-            this.getAntennae().on("workers.job.finished", (job: Job) =>
-                Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - finished job(${job.id}).`));
-            this.getAntennae().on("workers.job.failed", (job: Job) =>
-                Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - failed job(${job.id}).`));
+            this.getAntennae().on("workers.job.finished", (jobId: string) =>
+                Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - finished job(${jobId}).`));
+            this.getAntennae().on("workers.job.failed", (jobId: string) =>
+                Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - failed job(${jobId}).`));
 
             this.getAntennae().on("workers.articles.found", (articles: Article[], src: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.cyan('Articles')} - Finished job returned ${articles.length} articles for ${src}.`));
-            this.getAntennae().on("workers.articles.new", (articles: Article[],src: string) =>
+            this.getAntennae().on("workers.articles.new", (articles: Article[], src: string) =>
                 Logger(LoggerTypes.INFO, `${chalk.cyan('Articles')} - ${articles.length} articles will be added to to the db for ${src}.`));
         }
 
-        if(logLevel === 'all' || logLevel === 'info' || logLevel === 'errors') {
-            this.getAntennae().on('database.driver.error', () =>
-                Logger(LoggerTypes.INSTALL_ERROR, 'Database driver is not valid.'));
-            this.getAntennae().on('database.operation.error', (funcName: string, e: any) => {
-                Logger(LoggerTypes.ERROR, `Database encountered an operation error at ${funcName}.`);
-                console.log(e);
+        if (logLevel === 'all' || logLevel === 'info' || logLevel === 'errors') {
+            this.getAntennae().on("database.get.error", (source: Source, error: any) => {
+                Logger(LoggerTypes.DEBUG, `${chalk.red('Database')} - Cannot get articles from db for ${source.name}.`);
+                console.log(error);
+            });
+
+            this.getAntennae().on("database.set.error", (source: Source, error: any) => {
+                Logger(LoggerTypes.DEBUG, `${chalk.red('Database')} - Cannot upload articles to db for ${source.name}.`);
+                console.log(error);
             });
 
             this.getAntennae().on("scheduler.path.error", (error: any) => {
@@ -101,11 +104,13 @@ export default class Events {
                 console.log(error)
             });
 
-            this.getAntennae().on("workers.articles.errorOffloading", (article: Article) =>
-                Logger(LoggerTypes.ERROR, `${chalk.green('Worker')} - failed to upload articles to the database for ${article.getSource().name}.`));
-
             this.getAntennae().on("workers.parsers.error", (e: any) => {
                 Logger(LoggerTypes.INFO, `${chalk.red('Parsers')} - failed to scrape the articles.`);
+                console.log(e);
+            });
+
+            this.getAntennae().on("middleware.error", (mid: string, e: any) => {
+                Logger(LoggerTypes.INFO, `${chalk.red('Middleware')} - an error was caught at ${mid}.`);
                 console.log(e);
             });
         }
@@ -114,21 +119,32 @@ export default class Events {
 }
 
 class Antennae {
-    private _callbacks: any = {};
+    private _callbacks: { [event: string]: CallbackVoid[] } = {};
+    private _allCallbacks: CallbackVoid[] = [];
 
-    public on(eventName: string, callback: (...args: any[]) => void): void {
-        if(eventName.length === 0) throw Error("You cannot create an event for nothing!")
+    public on(eventName: string, callback: CallbackVoid): void {
+        if (eventName.length === 0) throw Error("You cannot create an event for nothing!");
 
-        if(!this._callbacks[eventName]) this._callbacks[eventName] = [];
-        this._callbacks[eventName].push(callback)
+        if(eventName === "*") {
+            this._allCallbacks.push(callback);
+            return;
+        }
+
+        if (!this._callbacks[eventName])
+            this._callbacks[eventName] = [];
+
+        this._callbacks[eventName].push(callback);
     }
 
     public emit(eventName: string, ...args: any[]): void {
-        if(!this._callbacks[eventName]) return;
+        if (!this._callbacks[eventName]) return;
 
-        Grid.getInstance().emit(eventName, ...args)
+        Grid.getInstance().emit(eventName, ...args);
 
-        this._callbacks[eventName].forEach((callback: any)=>callback(...args))
-        if(this._callbacks['*']) this._callbacks["*"].forEach((callback: any)=>callback(...args))
+        // Call all callbacks
+        this._allCallbacks.forEach(callback => callback(eventName, ...args));
+
+        // Call specified callback
+        this._callbacks[eventName].forEach(callback => callback(...args));
     }
 }
