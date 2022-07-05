@@ -1,12 +1,8 @@
-import {ParserClass} from "../../ParserClass";
-import Instructions from "../../../../components/instructions";
-import Job from "../../../../components/job";
-import Article from "../../../../components/article";
-import axios, {AxiosRequestConfig} from "axios";
-import Utils from "../../Utils";
-import https from "https";
-
-const httpsAgent = new https.Agent({rejectUnauthorized: false})
+import {ParserClass} from "../ParserClass";
+import Instructions from "../../../components/instructions";
+import Job from "../../../components/job";
+import Article from "../../../components/article";
+import Utils from "../Utils";
 
 export class WordpressV2Parser extends ParserClass {
     validateScrape(scrape: object): void {

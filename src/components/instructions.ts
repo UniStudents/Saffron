@@ -1,5 +1,5 @@
 import Source from "./source";
-import {ParserType} from "../middleware/ParserType";
+import {ParserType} from "./ParserType";
 
 export type InstructionUrl = {
     url: string;

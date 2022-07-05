@@ -12,7 +12,6 @@ import Utils from "../parsers/Utils";
 export default class Worker {
 
     declare readonly id: string;
-    private declare isForcedStopped: boolean;
     private declare isRunning: boolean;
 
     constructor() {
@@ -49,21 +48,21 @@ export default class Worker {
      * @param lastWorkerId The job's previous worker id. It will be excluded from the election only if the workers are greater that one
      */
     static electWorker(lastWorkerId: string): string {
+        // Make a copy of the array
         let workers = Grid.getInstance().getWorkers().slice();
 
-        // If only one worker, return the same
-        if (workers.length === 1 && workers[0] === lastWorkerId)
-            return lastWorkerId;
+        // This is not supposed to be true
+        if(workers.length === 0) return lastWorkerId;
 
-        // If more than one worker, delete the last one
-        if (workers.length > 1) {
-            let index = workers.findIndex((id: string) => id === lastWorkerId)
-            if (index != -1)
-                workers.splice(index, 1)
-        }
+        // If only one worker return that worker
+        if (workers.length === 1) return workers[0];
+
+        // If more than one worker, delete the last used worker (if in array)
+        let index = workers.findIndex((id: string) => id === lastWorkerId);
+        if (index != -1) workers.splice(index, 1);
 
         // From the remaining workers select one
-        return workers[Math.abs(hashCode(lastWorkerId)) % workers.length]
+        return workers[Math.abs(hashCode(lastWorkerId)) % workers.length];
     }
 
     /**
@@ -71,7 +70,6 @@ export default class Worker {
      */
     async start(): Promise<void> {
         Grid.getInstance().announceWorker(this);
-        this.isForcedStopped = false;
         this.isRunning = true;
 
         // start listening for new jobs
@@ -88,8 +86,6 @@ export default class Worker {
                 return;
             }
 
-            if (this.isForcedStopped) return;
-
             const source = job.getSource();
             result.forEach(r => {
                 r.articles.forEach((article: Article) => {
@@ -102,18 +98,18 @@ export default class Worker {
 
             const tableName = source.tableName || source.name;
 
+            if (!this.isRunning) return;
+
             await Grid.getInstance().mergeArticles(source, tableName, result);
             await Grid.getInstance().finishedJob(job);
         })
     }
 
     /**
-     * Worker will stop accepting jobs
-     * @param force if true the it will abandon the current job
+     * Worker will stop accepting jobs and abort existing ones.
      */
-    stop(force: boolean): void {
-        this.isForcedStopped = force
-        this.isRunning = false
-        Grid.getInstance().destroyWorker(this)
+    stop(): void {
+        this.isRunning = false;
+        Grid.getInstance().destroyWorker(this);
     }
 }

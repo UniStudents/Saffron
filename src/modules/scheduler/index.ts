@@ -1,32 +1,29 @@
-import Config from "../../components/config";
+import Config, {ConfigOptions} from "../../components/config";
 import Events from "../events";
 import Job from "../../components/job";
 import Source from "../../components/source";
 import Grid from "../grid/index";
 import {JobStatus} from "../../components/JobStatus";
 import Worker from "../workers";
-import {ConfigOptions} from "../../middleware/ConfigOptions";
 import glob from "glob";
 import * as path from "path";
-
-const pathCwd = process.cwd();
 
 export default class Scheduler {
 
     private static instance: Scheduler | null = null;
-    static getInstance(): Scheduler {
-        if(this.instance === null)
-            this.instance = new Scheduler();
-        return this.instance!!;
-    }
-
     private declare isRunning: boolean;
     private declare jobsStorage: Job[];
 
-    constructor() {
+    private constructor() {
         Events.on("start", (keepPreviousSession) => this.start(keepPreviousSession));
         Events.on("stop", () => this.stop());
         this.jobsStorage = [];
+    }
+
+    static getInstance(): Scheduler {
+        if (this.instance === null)
+            this.instance = new Scheduler();
+        return this.instance!!;
     }
 
     /**
@@ -51,7 +48,7 @@ export default class Scheduler {
         const checkInterval = Config.getOption(ConfigOptions.SCHEDULER_CHECKS_INT);
 
         this.isRunning = true;
-        if(!keepPreviousSession) {
+        if (!keepPreviousSession) {
             const sources = await this.resetSources();
             this.resetJobs(sources);
         }
@@ -96,10 +93,11 @@ export default class Scheduler {
                     // Pending jobs
                     case JobStatus.PENDING:
                         if (job.untilRetry <= 0) {
-                            // If the worker did not complete the job after 5 times elect new worker
+                            // If the worker did not change the job status after 5 times (totally: 5 * checkInterval ms),
+                            // expect it to have crashed, so we elect a new worker to take its place.
                             if (job.emitAttempts > 5) {
                                 let oldWorker = job.worker.id;
-                                Grid.getInstance().fireWorker(job.worker.id);
+                                Grid.getInstance().fireWorker(job.source.id, oldWorker);
 
                                 job.worker.id = Worker.electWorker(job.worker.id);
                                 Events.emit("scheduler.job.worker.replace", oldWorker, job);
@@ -175,7 +173,7 @@ export default class Scheduler {
 
     changeJobStatus(id: string, status: JobStatus) {
         let job = this.jobsStorage.find((obj: Job) => obj.id === id);
-        if(job) job.status = status;
+        if (job) job.status = status;
     }
 
     /**
@@ -184,7 +182,7 @@ export default class Scheduler {
     private scanSourceFiles(): Promise<void> {
         return new Promise((resolve, reject) => {
             let sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH);
-            glob(`${path.join(pathCwd, sourcesPath)}/**`, {}, (error: any, files: string[]) => {
+            glob(`${path.join(process.cwd(), sourcesPath)}/**`, {}, (error: any, files: string[]) => {
                 if (error) {
                     Events.emit('scheduler.path.error', error);
                     return reject(error);

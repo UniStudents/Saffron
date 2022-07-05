@@ -1,10 +1,9 @@
 import Job from "../components/job";
 import Instructions from "./instructions";
-import {ParserType} from "../middleware/ParserType";
+import {ParserType} from "./ParserType";
 import Article from "./article";
-import Config from "./config";
+import Config, {ConfigOptions} from "./config";
 import ParserLoader from "../modules/parsers/ParserLoader";
-import {ConfigOptions} from "../middleware/ConfigOptions";
 
 
 export default class Source {

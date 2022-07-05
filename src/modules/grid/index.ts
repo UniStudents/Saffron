@@ -2,9 +2,8 @@ import Job from "../../components/job";
 import Events from "../events";
 import {JobStatus} from "../../components/JobStatus";
 import Worker from "../workers";
-import Config from "../../components/config";
+import Config, {ConfigOptions} from "../../components/config";
 import Article from "../../components/article";
-import {ConfigOptions} from "../../middleware/ConfigOptions";
 import Extensions from "../extensions";
 import Source from "../../components/source";
 import Scheduler from "../scheduler";
@@ -175,32 +174,33 @@ export default class Grid {
      */
     destroyWorker(worker: Worker): void {
         let index = this.workersIds.findIndex(id => id == worker.id)
-        this.workersIds.splice(index, 1)
-        Events.emit("grid.worker.destroyed", worker.id)
+        this.workersIds.splice(index, 1);
+        Events.emit("grid.worker.destroyed", worker.id);
     }
 
     /**
      * Forcefully remove a worker from the grid
+     * @param sourceId
      * @param workerId
      */
-    fireWorker(workerId: string): void {
-        if (!this.isMain) return
+    fireWorker(sourceId: string, workerId: string): void {
+        if (!this.isMain) return;
 
         let index = this.workersClients.findIndex(js => {
-            let index = js.workersIds.findIndex(id => id == workerId)
+            let index = js.workersIds.findIndex(id => id == workerId);
             return index !== -1;
         })
 
         if (index != -1) {
-            let j = this.workersIds.findIndex((obj: string) => obj === workerId)
-            if (j != -1) this.workersIds.splice(j, 1)
+            let j = this.workersIds.findIndex((obj: string) => obj === workerId);
+            if (j != -1) this.workersIds.splice(j, 1);
 
-            let k = this.workersClients[index].workersIds.findIndex(id => workerId == id)
-            if (k != -1) this.workersClients[index].workersIds.splice(k, 1)
+            let k = this.workersClients[index].workersIds.findIndex(id => workerId == id);
+            if (k != -1) this.workersClients[index].workersIds.splice(k, 1);
         }
 
-        let k = this.workersIds.findIndex(id => workerId == id)
-        if (k != -1) this.workersIds.splice(k, 1)
+        let k = this.workersIds.findIndex(id => workerId == id);
+        if (k != -1) this.workersIds.splice(k, 1);
     }
 
     /**
@@ -246,7 +246,7 @@ export default class Grid {
 
         Events.emit("middleware.before", articles);
 
-        let getExtPair = Extensions.getInstance().startCount();
+        let getExtPair = Extensions.getInstance().startPairCount();
         let pair: any = {};
 
         while ((pair = getExtPair()) != null) {

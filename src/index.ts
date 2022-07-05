@@ -1,4 +1,4 @@
-import Config, {ConfigType} from "./components/config"
+import Config, {ConfigType, ConfigOptions} from "./components/config"
 import Scheduler from "./modules/scheduler";
 import Grid from "./modules/grid";
 import Events from "./modules/events";
@@ -8,7 +8,6 @@ import Utils from "./modules/parsers/Utils";
 import Job from "./components/job"
 import Source from "./components/source"
 import Instructions from "./components/instructions";
-import {ConfigOptions} from "./middleware/ConfigOptions";
 import Extensions from "./modules/extensions";
 import {ParserResult} from "./components/types";
 
@@ -62,9 +61,10 @@ export default class Saffron {
             }
         })
 
-        Events.on("stop", (force: boolean) => {
+        Events.on("stop", () => {
+            this.scheduler.stop();
             for (let worker of this.workers)
-                worker.stop(force);
+                worker.stop();
         })
     }
 
@@ -83,7 +83,7 @@ export default class Saffron {
      * else if mode equals 'worker' then the worker will stop getting future jobs and disconnect from the main saffron instance.
      */
     async stop() {
-        Events.emit("stop")
+        Events.emit("stop");
     }
 
     /**
@@ -92,7 +92,7 @@ export default class Saffron {
      * @param cb The callback that will send the data
      */
     async on(event: string, cb: (...args: any[]) => void) {
-        Events.on(event, cb)
+        Events.on(event, cb);
     }
 
     /**
@@ -101,7 +101,7 @@ export default class Saffron {
      * @param callback The callback function that will be called.
      */
     use(event: string, callback: (...args: any[]) => any): void {
-        Extensions.getInstance().push({event, callback})
+        Extensions.getInstance().push({event, callback});
     }
 
     /**

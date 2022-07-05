@@ -1,6 +1,6 @@
 import {DateTime} from "luxon";
 import Events from "../modules/events";
-import {LoggerTypes} from "./LoggerTypes"
+import {LoggerTypes} from "../components/LoggerTypes"
 import chalk from 'chalk'
 
 /**
@@ -8,7 +8,7 @@ import chalk from 'chalk'
  * @param type The type of log based on LoggerTypes
  * @param data The message that will be logged
  */
-export default (type: LoggerTypes, data: any) => {
+export default function logger(type: LoggerTypes, data: any): void {
     Events.getAntennae().emit("log", {type, log: data})
     let time = chalk.bold(`${DateTime.now().toLocaleString({
         day: '2-digit',
