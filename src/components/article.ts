@@ -7,6 +7,11 @@ export type Attachment = {
     text?: string;
 };
 
+export type Category = {
+    name: string;
+    links: string[];
+};
+
 export default class Article {
     declare id: string;
     declare title: string;
@@ -19,8 +24,8 @@ export default class Article {
         id: string;
         name: string;
     };
-    declare attachments: object[];
-    declare categories: object[];
+    declare attachments: Attachment[];
+    declare categories: Category[];
     declare thumbnail: string;
 
     constructor() {
@@ -93,7 +98,7 @@ export default class Article {
         this.categories.push({name, links});
     }
 
-    public pushCategories(categories: { name: string, links: string[] }[]) {
+    public pushCategories(categories: Category[]) {
         if (typeof this.categories === 'undefined')
             this.categories = [];
 

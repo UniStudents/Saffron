@@ -17,7 +17,7 @@ export default class Job {
         id: string;
     };
 
-    constructor() {
+    private constructor() {
         this.id = randomId("job");
 
         this.attempts = 0;
@@ -33,12 +33,9 @@ export default class Job {
     static createJob(sourceId: string, workerId: string, interval: number): Job {
         let job = new Job();
         job.source = {id: sourceId};
-        // nextRetry = The time the job finished (just now) + interval + randomTIme
         job.untilRetry = interval + this.getRandomTime(sourceId);
         job.worker = {id: workerId};
         job.status = JobStatus.PENDING;
-        job.attempts = 0;
-        job.emitAttempts = 0;
         return job;
     }
 
@@ -54,10 +51,7 @@ export default class Job {
         const low = 0;
 
         const random = Math.floor(Math.random() * (high - low) + low) * 1000;
-        if (Math.random() >= 0.5)
-            return random;
-        else
-            return -random;
+        return Math.random() >= 0.5 ? random : -random;
     }
 
     /**

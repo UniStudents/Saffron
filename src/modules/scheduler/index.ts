@@ -37,11 +37,8 @@ export default class Scheduler {
      * @return Return the issued job id
      */
     issueJobForSource(source: Source, lasWorkerId: string = "", interval: number = -1): void {
-        if (interval == -1)
-            interval = source.interval ? source.interval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT);
-
         let worker = Worker.electWorker(lasWorkerId);
-        let nJob = Job.createJob(source.getId(), worker, interval);
+        let nJob = Job.createJob(source.getId(), worker, interval !== -1 ? interval : source.interval);
 
         this.jobsStorage.push(nJob);
         Events.emit("scheduler.job.new", nJob);

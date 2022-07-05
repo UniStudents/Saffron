@@ -323,8 +323,7 @@ export default class Utils {
         let source: Source = await Source.fileToSource(sourceJson);
         source.instructions.getSource = (): Source => source;
 
-        let job = new Job();
-        job.source = {id: source.getId()};
+        let job = Job.createJob(source.getId(), '', 0);
         job.getSource = (): Source => source;
         job.getInstructions = (): Instructions => source.instructions;
 

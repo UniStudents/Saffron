@@ -20,65 +20,61 @@ export default class Source {
     declare extra: any;
     private declare id: string;
 
-    constructor() {
-    }
-
     /**
      * Parse and store a source file contents to an array in memory
      * @param source the source file
      */
     static fileToSource(source: any): Source {
-        source.filename = source.filename ? source.filename : source.name ? source.name : '[unknown filename]';
+        source.filename = source.filename ? source.filename : source.name ? source.name : 'unknown filename';
 
         let ret = new Source();
 
         // Source name
-        if (!source.name || source.name.length < 3)
-            throw new Error(`SourceException: ${source.filename}: name: is not valid, must be type string with a least 3 characters.`);
+        if (source.name == null || source.name.length < 3)
+            throw new Error(`SourceException: [${source.filename}] Field name is not valid, requirements(type = string, length >= 3).`);
         ret.name = source.name;
 
         // Source tableName
-        if (source.tableName && (typeof source.tableName !== 'string' || source.tableName.length < 3))
-            throw new Error(`SourceException: ${source.filename}: tableName: is not valid, must be type string with a least 3 characters.`);
-        if (["saffron", "config", "workers"].includes(source.tableName))
-            throw new Error(`SourceException: ${source.filename}: tableName: is blacklisted.`);
+        if (source.tableName != null && (typeof source.tableName !== 'string' || source.tableName.length < 3 || ["saffron", "config", "workers"].includes(source.tableName)))
+            throw new Error(`SourceException: [${source.filename}] Field tableName  is not valid, requirements(type = string, length >= 3, != saffron, != workers, != config).`);
         ret.tableName = source.tableName;
 
-        if (source.interval && (typeof source.interval != 'number' || source.interval < 0))
-            throw new Error(`SourceException: ${source.filename}: interval: is not valid, must be a positive number.`);
-        ret.interval = source.interval;
+        if (source.interval != null && (typeof source.interval != 'number' || source.interval < 0))
+            throw new Error(`SourceException: [${source.filename}] Field interval is not valid, requirements(type = number, positive or zero).`);
+        ret.interval = source.interval ? source.interval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT);
 
-        if (source.retryInterval && (typeof source.retryInterval != 'number' || source.retryInterval < 0))
-            throw new Error(`SourceException: ${source.filename}: retryInterval: is not valid, must be a positive number.`);
-        ret.retryInterval = source.retryInterval;
+        if (source.retryInterval != null && (typeof source.retryInterval != 'number' || source.retryInterval < 0))
+            throw new Error(`SourceException: [${source.filename}] Field retryInterval is not valid, requirements(type = number, positive or zero).`);
+        ret.retryInterval = source.retryInterval ? source.retryInterval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT) / 2;
 
-        if (source.timeout && (typeof source.timeout != 'number' || source.timeout < 0))
-            throw new Error(`SourceException: ${source.filename}: timeout: is not valid, must be a positive number.`);
-        ret.timeout = source.timeout ? source.timeout : Config.getOption(ConfigOptions.REQUEST_TIMEOUT)
-
-        // If it is not one time scrape:
-        ret.instructions = new Instructions()
-        ret.instructions.source = {id: ret.getId()}
-
-        if (source.amount && (typeof source.amount != 'number' || source.amount <= 0))
-            throw new Error(`SourceException: ${source.filename}: amount: is not valid, must be a positive number.`);
-        ret.instructions.amount = source.amount ? source.amount : Config.getOption(ConfigOptions.ARTICLE_AMOUNT)
-
-        if (typeof source.ignoreCertificates !== 'undefined' && typeof source.ignoreCertificates !== 'boolean')
-            throw new Error(`SourceException: ${source.filename}: ignoreCertificates: is not valid, must be boolean.`);
-        ret.instructions.ignoreCertificates = source.ignoreCertificates ? source.ignoreCertificates : false;
-
-        if (typeof source.encoding !== 'undefined' && typeof source.encoding !== 'string')
-            throw new Error(`SourceException: ${source.filename}: encoding: is not valid, must be string value.`);
-        ret.instructions.textDecoder = source.encoding ? new TextDecoder(`${source.encoding}`) : new TextDecoder();
+        if (source.timeout != null && (typeof source.timeout != 'number' || source.timeout < 0))
+            throw new Error(`SourceException: [${source.filename}] Field timeout  is not valid, requirements(type = number, positive or zero).`);
+        ret.timeout = source.timeout ? source.timeout : Config.getOption(ConfigOptions.REQUEST_TIMEOUT);
 
         ret.extra = source.extra;
 
-        ret.instructions.url = [];
+        const instructions = new Instructions();
+        ret.instructions = instructions;
+        instructions.source = {id: ret.getId()}
+
+        if (source.amount != null && (typeof source.amount != 'number' || source.amount <= 0))
+            throw new Error(`SourceException: [${source.filename}] Field amount is not valid, requirements(type = number, positive).`);
+        instructions.amount = source.amount ? source.amount : Config.getOption(ConfigOptions.ARTICLE_AMOUNT);
+
+        if (source.ignoreCertificates != null && typeof source.ignoreCertificates !== 'boolean')
+            throw new Error(`SourceException: [${source.filename}] Field ignoreCertificates is not valid, requirements(type = boolean).`);
+        instructions.ignoreCertificates = source.ignoreCertificates ? source.ignoreCertificates : false;
+
+        if (source.encoding != null && typeof source.encoding !== 'string')
+            throw new Error(`SourceException: [${source.filename}] Field encoding is not valid requirements(type = string).`);
+        instructions.textDecoder = source.encoding ? new TextDecoder(`${source.encoding}`) : new TextDecoder();
+
+
+        instructions.url = [];
         if (typeof source.url === 'string') {
             if (source.url.length == 0)
-                throw new Error(`SourceException: ${source.filename}: url: is not valid, url cannot be empty.`);
-            ret.instructions.url.push({url: source.url, aliases: []});
+                throw new Error(`SourceException: [${source.filename}] Field url is not valid, requirements(type = string, not empty).`);
+            instructions.url.push({url: source.url, aliases: []});
         } else if (Array.isArray(source.url)) {
             for (const pair of source.url) {
                 if (Array.isArray(pair) && pair.length >= 2) {
@@ -87,37 +83,38 @@ export default class Source {
 
                     aliases.forEach(alias => {
                         if (typeof alias !== 'string' || alias.trim() === '')
-                            throw new Error(`SourceException: ${source.filename}: url: is not valid, invalid alias '${alias}'.`);
+                            throw new Error(`SourceException: [${source.filename}] At field url, field alias is not valid, requirements(type = string, not empty, not whitespace).`);
                     });
 
                     if (typeof url !== 'string' || url.trim() === '')
-                        throw new Error(`SourceException: ${source.filename}: url: is not valid, invalid url '${url}'.`);
+                        throw new Error(`SourceException: [${source.filename}] At field url, field url is not valid, requirements(type = string, not empty not whitespace).`);
 
-                    ret.instructions.url.push({url, aliases});
+                    instructions.url.push({url, aliases});
                 } else if (typeof pair === 'string' || ((Array.isArray(pair) && pair.length == 1))) {
                     let url: any = pair;
                     if (Array.isArray(pair)) url = pair[0];
 
-                    ret.instructions.url.push({url, aliases: []});
-                } else throw new Error(`SourceException: ${source.filename}: url: is not valid, error during parsing pair: ${pair}.`);
+                    instructions.url.push({url, aliases: []});
+                } else
+                    throw new Error(`SourceException: [${source.filename}] Field url is not valid, requirements(type = string[] | string[][]).`);
             }
         } else
-            throw new Error(`SourceException: ${source.filename}: url: is not valid, must be a string type or an array.`)
+            throw new Error(`SourceException: [${source.filename}] Field url is not valid, requirements(type = string | string[] | string[][]).`);
 
-        let parserType = ParserType.getFromString(source.type)
+        let parserType = ParserType.getFromString(source.type);
         if (parserType === ParserType.UNKNOWN)
-            throw new Error(`SourceException: ${source.filename}: type: is not valid.`);
-        ret.instructions.parserType = parserType;
+            throw new Error(`SourceException: [${source.filename}] Field type is not valid, requirements(equals html, rss, dynamic, wordpress-v1, wordpress-v2).`);
+        instructions.parserType = parserType;
 
         try {
             ParserLoader.validateScrapeOptions(parserType, source.scrape);
         } catch (e: any) {
-            throw new Error(`SourceException: ${source.filename}: invalid scrape method, parser error: ${e.message}`);
+            throw new Error(`SourceException: [${source.filename}] Field scrape is not valid, parser error: ${e.message}`);
         }
 
         ParserLoader.assignScrapeInstructions(parserType, ret.instructions, source);
 
-        return ret
+        return ret;
     }
 
     static pushSource(source: Source) {
@@ -125,27 +122,23 @@ export default class Source {
     }
 
     /**
-     * Return a copy array of the sources
+     * Return an array of the parsed sources.
      */
     static getSources(): Source[] {
-        return this._sources
+        return this._sources;
     }
 
     /**
      * Return the source class based on job, article or source id
      * @param from
      */
-    static getSourceFrom(from: Job | Article | string): Source {
-        if (from instanceof Job)
-            return this._sources.find((source: Source) => {
-                return source.getId() === from.source?.id
-            })!!
-        else if (from instanceof Article)
-            return this._sources.find((source: Source) => {
-                return source.getId() === from.source?.id
-            })!!
+    static getSourceFrom(from: Job | Article | Instructions | string): Source {
+        let id = '';
+        if (from instanceof Job || from instanceof Article || from instanceof Instructions)
+            id = from.source?.id;
+        else id = from;
 
-        return this._sources.find((source: Source) => source.getId() === from)!!
+        return this._sources.find(source => source.getId() === id)!;
     }
 
     /**

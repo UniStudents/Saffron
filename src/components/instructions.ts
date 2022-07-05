@@ -1,6 +1,10 @@
 import Source from "./source";
 import {ParserType} from "../middleware/ParserType";
-import randomId from "../middleware/randomId"
+
+export type InstructionUrl = {
+    url: string;
+    aliases: string[];
+};
 
 /**
  * The instructions class is used mainly by parsers.
@@ -9,13 +13,8 @@ import randomId from "../middleware/randomId"
  * a web page content.
  */
 export default class Instructions {
-    declare id: string;
-
     declare source: { id: string; };
-    declare url: {
-        url: string;
-        aliases: string[];
-    }[];
+    declare url: InstructionUrl[];
     declare parserType: ParserType;
     declare endPoint: string;
     declare amount: number;
@@ -26,15 +25,11 @@ export default class Instructions {
     declare ignoreCertificates: boolean;
     declare extraFields: string[];
 
-    constructor() {
-        this.id = randomId("ins");
-    }
-
     /**
      * Return the source that variable source refers to.
      * @return Source
      */
     getSource(): Source {
-        return Source.getSourceFrom(this.source.id);
+        return Source.getSourceFrom(this);
     }
 }

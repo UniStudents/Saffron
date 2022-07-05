@@ -34,16 +34,18 @@ export type ConfigType = {
         distributed: false;
     } | {
         distributed: true;
+        useHTTP: false;
+
         serverAddress: string;
         serverPort?: number;
         authToken: string;
-        useHTTP: false;
     } | {
         distributed: true;
+        useHTTP: true;
+
         serverAddress: string;
         serverPort?: number;
         authToken: string;
-        useHTTP: true;
         key: any;
         cert: any;
     };
@@ -81,10 +83,8 @@ export default class Config {
         },
         grid: {
             distributed: false,
-            // For default values on false
-            // @ts-ignore
-            serverPort: 3000,
-            useHTTP: false
+            useHTTP: false,
+            serverPort: 3000
         },
         misc: {
             log: "all"
