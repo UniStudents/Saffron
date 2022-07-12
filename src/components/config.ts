@@ -4,7 +4,7 @@ import Article from "./article";
 export type ConfigType = {
     mode: 'main' | 'worker';
     database: {
-        pushArticles: (articles: Article[]) => Promise<void>;
+            pushArticles: (articles: Article[]) => Promise<void>;
         getArticles: (opts: {
             tableName: string;
             count: number;

@@ -95,7 +95,7 @@ export default class Scheduler {
                         if (job.untilRetry <= 0) {
                             // If the worker did not change the job status after 5 times (totally: 5 * checkInterval ms),
                             // expect it to have crashed, so we elect a new worker to take its place.
-                            if (job.emitAttempts > 5) {
+                            if (job.emitAttempts > 5 || job.worker.id.trim().length === 0) {
                                 let oldWorker = job.worker.id;
                                 Grid.getInstance().fireWorker(job.source.id, oldWorker);
 
@@ -124,6 +124,7 @@ export default class Scheduler {
     }
 
     replaceCurrentJobs(jobs: Job[]) {
+        jobs.forEach(job => job.worker.id = Worker.electWorker(job.worker.id))
         this.jobsStorage = jobs;
     }
 
