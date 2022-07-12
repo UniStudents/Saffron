@@ -120,7 +120,8 @@ export default class Grid {
                     });
 
                     socket.on("grid.worker.announced", id => {
-                        this.workersIds.push(id);
+                        if(!this.workersIds.find(wId => wId === id))
+                            this.workersIds.push(id);
                     });
 
                     socket.on("grid.worker.destroyed", workerId => {

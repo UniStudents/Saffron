@@ -36,7 +36,7 @@ export default class Events {
             Logger(LoggerTypes.TITLE, "Simple Abstract Framework For the Retrieval Of News"));
 
         if (logLevel === 'all' || logLevel === 'info') {
-            this.getAntennae().on("database.set.okay", (source: Source, articles: any) => {
+            this.getAntennae().on("database.set.okay", (source: Source, articles: Article[]) => {
                 Logger(LoggerTypes.DEBUG, `${chalk.red('Database')} - Upload ${articles.length} articles to db for ${source.name}.`);
             });
 
@@ -56,9 +56,6 @@ export default class Events {
                 Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - replacing worker for job(${job.id}).`));
             this.getAntennae().on("scheduler.job.push", (job: Job) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - pushing job(${job.id}) to workers.`));
-
-            this.getAntennae().on('grid.connection.okay', () =>
-                Logger(LoggerTypes.STEP, 'The grid module has been initialized. Saffron will now search and connect to other counterpart nodes."'));
 
             this.getAntennae().on("grid.node.connected", () =>
                 Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - node connected.`));
