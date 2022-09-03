@@ -142,7 +142,7 @@ class Antennae {
         this._allCallbacks.forEach(callback => {
             // Catch callbacks errors that the saffron cannot handle
             try {
-                callback(...args);
+                callback(eventName, ...args);
             } catch (e) {
                 console.log(e);
             }
