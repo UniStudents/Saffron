@@ -117,15 +117,9 @@ export default class Events {
 
 class Antennae {
     private _callbacks: { [event: string]: CallbackVoid[] } = {};
-    private _allCallbacks: CallbackVoid[] = [];
 
     public on(eventName: string, callback: CallbackVoid): void {
         if (eventName.length === 0) throw Error("You cannot create an event for nothing!");
-
-        if(eventName === "*") {
-            this._allCallbacks.push(callback);
-            return;
-        }
 
         if (!this._callbacks[eventName])
             this._callbacks[eventName] = [];
@@ -138,16 +132,6 @@ class Antennae {
 
         Grid.getInstance().emit(eventName, ...args);
 
-        // Call all callbacks
-        this._allCallbacks.forEach(callback => {
-            // Catch callbacks errors that the saffron cannot handle
-            try {
-                callback(eventName, ...args);
-            } catch (e) {
-                console.log(e);
-            }
-        });
-
         // Call specified callback
         this._callbacks[eventName].forEach(callback => {
             // Catch callbacks errors that the saffron cannot handle
@@ -157,5 +141,15 @@ class Antennae {
                 console.log(e);
             }
         });
+
+        if(this._callbacks['*'])
+            this._callbacks['*'].forEach(callback => {
+                // Catch callbacks errors that the saffron cannot handle
+                try {
+                    callback(eventName, ...args);
+                } catch (e) {
+                    console.log(e);
+                }
+            });
     }
 }
