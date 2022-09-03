@@ -320,7 +320,7 @@ export default class Utils {
      * @throws SourceException if there is a problem parsing the source file.
      */
     async parse(sourceJson: object): Promise<ParserResult[]> {
-        let source: Source = await Source.fileToSource(sourceJson);
+        let source: Source = Source.fileToSource(sourceJson);
         source.instructions.getSource = (): Source => source;
 
         let job = Job.createJob(source.getId(), '', 0);
