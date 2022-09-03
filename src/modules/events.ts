@@ -139,9 +139,23 @@ class Antennae {
         Grid.getInstance().emit(eventName, ...args);
 
         // Call all callbacks
-        this._allCallbacks.forEach(callback => callback(eventName, ...args));
+        this._allCallbacks.forEach(callback => {
+            // Catch callbacks errors that the saffron cannot handle
+            try {
+                callback(...args);
+            } catch (e) {
+                console.log(e);
+            }
+        });
 
         // Call specified callback
-        this._callbacks[eventName].forEach(callback => callback(...args));
+        this._callbacks[eventName].forEach(callback => {
+            // Catch callbacks errors that the saffron cannot handle
+            try {
+                callback(...args);
+            } catch (e) {
+                console.log(e);
+            }
+        });
     }
 }
