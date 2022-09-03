@@ -100,6 +100,7 @@ export default class Scheduler {
                                 Grid.getInstance().fireWorker(job.source.id, oldWorker);
 
                                 job.worker.id = Worker.electWorker(job.worker.id);
+                                job.emitAttempts = 0;
                                 Events.emit("scheduler.job.worker.replace", oldWorker, job);
                             }
 
