@@ -3,13 +3,13 @@ import Article from "./article";
 
 export type ConfigType = {
     mode: 'main' | 'worker';
-    database: {
-            pushArticles: (articles: Article[]) => Promise<void>;
+    database?: {
+        pushArticles: (articles: Article[]) => Promise<void>;
         getArticles: (opts: {
             tableName: string;
             count: number;
         }) => Promise<Article[]>;
-    };
+    } | 'none';
     sources: {
         path: string;
         includeOnly?: string[];
@@ -74,6 +74,7 @@ export enum ConfigOptions {
     GRID_HTTPS_KEY = 'grid.https.key',
     GRID_HTTPS_CERT = 'grid.https.cert',
     MISC_LOG_LEVEL = 'misc.log',
+    DB_IS_INITIALIZED = 'db.initialized',
     DB_PUSH_ARTICLES = 'db.articles.push',
     DB_GET_ARTICLES = 'db.articles.get'
 }
@@ -82,10 +83,7 @@ export default class Config {
     private static instance: Config
     _config: ConfigType = {
         mode: "main",
-        database: {
-            pushArticles: async (articles: Article[]): Promise<void> => undefined,
-            getArticles: async (opts: any): Promise<Article[]> => [],
-        },
+        database: 'none',
         sources: {
             path: "../../../sources",
             includeOnly: [],
@@ -213,6 +211,8 @@ export default class Config {
             case ConfigOptions.MISC_LOG_LEVEL:
                 return !isStatic ? Config.load().misc.log : "all";
 
+            case ConfigOptions.DB_IS_INITIALIZED:
+                return !isStatic ? Config.load().database != undefined && Config.load().database !== 'none' : false;
             case ConfigOptions.DB_PUSH_ARTICLES:
                 return !isStatic ? Config.load().database.pushArticles : (articles: Article[]) => undefined;
             case ConfigOptions.DB_GET_ARTICLES:

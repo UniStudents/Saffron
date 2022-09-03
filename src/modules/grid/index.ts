@@ -251,6 +251,9 @@ export default class Grid {
 
         Events.emit("middleware.after", articles);
 
+        // Do not do database checks if there is no database
+        if(!Config.getOption(ConfigOptions.DB_IS_INITIALIZED)) return;
+
         // TODO - use result and request each category for separate checks
 
         let dbArticles: Article[];
