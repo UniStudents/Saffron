@@ -28,6 +28,7 @@ export type ConfigType = {
         jobsInterval?: number,
         heavyJobFailureInterval?: number,
         checksInterval?: number;
+        randomizeInterval?: () => number;
     };
     grid: {
         distributed: false;
@@ -64,6 +65,7 @@ export enum ConfigOptions {
     SCHEDULER_JOB_INT = 'scheduler.job.interval',
     SCHEDULER_JOB_HEAVY_INT = 'scheduler.job.heavyInterval',
     SCHEDULER_CHECKS_INT = 'scheduler.job.checkInterval',
+    SCHEDULER_RANDOMIZER = 'scheduler.job.randomizer',
     GRID_DISTRIBUTED = 'grid.distributed',
     GRID_SERVER_ADDRESS = 'grid.server.address',
     GRID_SERVER_PORT = 'grid.server.port',
@@ -101,7 +103,17 @@ export default class Config {
         scheduler: {
             jobsInterval: 3600000,
             heavyJobFailureInterval: 86400000,
-            checksInterval: 120000
+            checksInterval: 120000,
+            randomizeInterval: () => {
+                if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
+                    return 0;
+
+                const high = 300;
+                const low = 0;
+
+                const random = Math.floor(Math.random() * (high - low) + low) * 1000;
+                return Math.random() >= 0.5 ? random : -random;
+            }
         },
         grid: {
             distributed: false,
@@ -180,6 +192,8 @@ export default class Config {
                 return !isStatic ? Config.load().scheduler.heavyJobFailureInterval : 86400000;
             case ConfigOptions.SCHEDULER_CHECKS_INT:
                 return !isStatic ? Config.load().scheduler.checksInterval : 120000;
+            case ConfigOptions.SCHEDULER_RANDOMIZER:
+                return !isStatic ? Config.load().scheduler.randomizeInterval : () => 0;
 
             case ConfigOptions.GRID_DISTRIBUTED:
                 return !isStatic ? Config.load().grid.distributed : false;

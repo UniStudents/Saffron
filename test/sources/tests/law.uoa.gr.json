@@ -7,6 +7,7 @@
   "extra": {
     "dateParserType": 2
   },
+  "ignoreCertificates": true,
   "scrape": {
     "endPoint": "law.uoa.gr",
     "container": "body > section > div > div.col-md-9.col-sm-8.single_page.col-md-push-3.col-sm-push-4 > div.single_page--content > div.article.clearfix.articletype-0 > div.article__content.matchHeight",

@@ -43,7 +43,10 @@ saffron.on("workers.articles.found", (articles, src) => {
     // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
 });
 
-saffron.on('workers.parsers.error', errors.push);
+saffron.on('workers.parsers.error', errors.push.bind(errors));
+saffron.on('workers.job.failed', job => {
+    console.log(job)
+})
 
 ;(async () => {
     try {

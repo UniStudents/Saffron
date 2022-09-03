@@ -2,6 +2,7 @@ import Source from "./source";
 import {JobStatus} from "./JobStatus";
 import randomId from "../middleware/randomId"
 import Instructions from "../components/instructions"
+import Config, {ConfigOptions} from "./config.js";
 
 export default class Job {
     declare id: string;
@@ -33,25 +34,10 @@ export default class Job {
     static createJob(sourceId: string, workerId: string, interval: number): Job {
         let job = new Job();
         job.source = {id: sourceId};
-        job.untilRetry = interval + this.getRandomTime(sourceId);
+        job.untilRetry = interval + Config.getOption(ConfigOptions.SCHEDULER_RANDOMIZER)();
         job.worker = {id: workerId};
         job.status = JobStatus.PENDING;
         return job;
-    }
-
-    /**
-     * Return a random time in milliseconds
-     * @param source_id Helps to get a more random time
-     */
-    private static getRandomTime(source_id: string): number {
-        if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
-            return 0;
-
-        const high = 500;
-        const low = 0;
-
-        const random = Math.floor(Math.random() * (high - low) + low) * 1000;
-        return Math.random() >= 0.5 ? random : -random;
     }
 
     /**
