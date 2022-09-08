@@ -15,7 +15,7 @@ export default class Scheduler {
     private declare jobsStorage: Job[];
 
     private constructor() {
-        Events.on("start", (keepPreviousSession) => this.start(keepPreviousSession));
+        Events.on("start", (keepPreviousSession, a) => this.start(keepPreviousSession));
         Events.on("stop", () => this.stop());
         this.jobsStorage = [];
     }
@@ -100,11 +100,12 @@ export default class Scheduler {
                                 Grid.getInstance().fireWorker(job.source.id, oldWorker);
 
                                 job.worker.id = Worker.electWorker(job.worker.id);
+                                job.emitAttempts = 0;
                                 Events.emit("scheduler.job.worker.replace", oldWorker, job);
                             }
 
+                            if(job.emitAttempts === 0) Events.emit("scheduler.job.push", job);
                             job.emitAttempts++;
-                            Events.emit("scheduler.job.push", job);
                         }
                         break;
                 }
@@ -129,6 +130,8 @@ export default class Scheduler {
     }
 
     resetJobs(sources: Source[]) {
+        this.jobsStorage = [];
+
         // Create separation interval
         let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT) / sources.length
 
@@ -202,6 +205,7 @@ export default class Scheduler {
                     };
                 });
 
+                Source._sources = [];
                 sources.forEach((sourceFile: any) => {
                     try {
                         sourceFile = {

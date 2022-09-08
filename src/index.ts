@@ -73,7 +73,7 @@ export default class Saffron {
      * @param keepPreviousSession If you want to start and stop the saffron without interrupting the schedule
      * you can set keepPreviousSession to true.
      */
-    async start(keepPreviousSession: boolean = false) {
+    start(keepPreviousSession: boolean = false) {
         Events.emit("start", keepPreviousSession);
     }
 
@@ -82,7 +82,7 @@ export default class Saffron {
      * If mode equals 'main' then the scheduler will stop giving jobs to the workers.
      * else if mode equals 'worker' then the worker will stop getting future jobs and disconnect from the main saffron instance.
      */
-    async stop() {
+    stop() {
         Events.emit("stop");
     }
 
@@ -91,7 +91,7 @@ export default class Saffron {
      * @param event The name of the event
      * @param cb The callback that will send the data
      */
-    async on(event: string, cb: (...args: any[]) => void) {
+    on(event: string, cb: (...args: any[]) => void) {
         Events.on(event, cb);
     }
 
@@ -147,4 +147,4 @@ export default class Saffron {
     }
 };
 
-export {Article, Utils};
+export {Article, Utils, ConfigType, Job, Source, Instructions};
