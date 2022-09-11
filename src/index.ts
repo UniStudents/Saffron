@@ -128,6 +128,12 @@ export default class Saffron {
         return Source.getSources();
     }
 
+    async resetSources() {
+        if(this.scheduler != null)
+            await this.scheduler.resetSources();
+        throw new Error('Scheduler is not initialized. Set mode main to get active jobs');
+    }
+
     /**
      * Get current jobs.
      * By editing the result of this function the jobs will be edited as well.
@@ -143,7 +149,9 @@ export default class Saffron {
      * @param jobs
      */
     replaceCurrentJobs(jobs: Job[]) {
-        this.scheduler.replaceCurrentJobs(jobs);
+        if(this.scheduler != null)
+            this.scheduler.replaceCurrentJobs(jobs);
+        throw new Error('Scheduler is not initialized. Set mode main to get active jobs');
     }
 };
 

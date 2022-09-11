@@ -145,6 +145,7 @@ export default class Scheduler {
 
     async resetSources(): Promise<Source[]> {
         // Read all source files
+        Source._sources = [];
         await this.scanSourceFiles();
         let sources = Source.getSources();
 
