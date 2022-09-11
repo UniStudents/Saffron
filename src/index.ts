@@ -141,7 +141,7 @@ export default class Saffron {
     getJobs(): Job[] {
         if(this.scheduler != null)
             return this.scheduler.getJobs();
-        throw new Error('Scheduler is not initialized. Set mode main to get active jobs');
+        else throw new Error('Scheduler is not initialized. Set mode main to get active jobs');
     }
 
     /**
@@ -151,7 +151,7 @@ export default class Saffron {
     replaceCurrentJobs(jobs: Job[]) {
         if(this.scheduler != null)
             this.scheduler.replaceCurrentJobs(jobs);
-        throw new Error('Scheduler is not initialized. Set mode main to get active jobs');
+        else throw new Error('Scheduler is not initialized. Set mode main to get active jobs');
     }
 };
 
