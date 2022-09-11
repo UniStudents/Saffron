@@ -131,7 +131,7 @@ export default class Saffron {
     async resetSources() {
         if(this.scheduler != null)
             await this.scheduler.resetSources();
-        throw new Error('Scheduler is not initialized. Set mode main to get active jobs');
+        else throw new Error('Scheduler is not initialized. Set mode main to get active jobs');
     }
 
     /**
