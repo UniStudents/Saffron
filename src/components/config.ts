@@ -11,7 +11,7 @@ export type ConfigType = {
         }) => Promise<Article[]>;
     } | 'none';
     sources: {
-        path: string;
+        path?: string;
         includeOnly?: string[];
         exclude?: string[];
     };
@@ -21,7 +21,7 @@ export type ConfigType = {
         jobs?: {
             timeout?: number;
         };
-        articles: {
+        articles?: {
             amount?: number;
         };
     };
@@ -32,23 +32,14 @@ export type ConfigType = {
         randomizeInterval?: () => number;
     };
     grid: {
-        distributed: false;
-    } | {
-        distributed: true;
-        useHTTP: false;
+        distributed: boolean;
+        useHTTP?: boolean;
 
-        serverAddress: string;
+        serverAddress?: string;
         serverPort?: number;
-        authToken: string;
-    } | {
-        distributed: true;
-        useHTTP: true;
-
-        serverAddress: string;
-        serverPort?: number;
-        authToken: string;
-        key: any;
-        cert: any;
+        authToken?: string;
+        key?: any;
+        cert?: any;
     };
     misc: {
         log?: 'all' | 'info' | 'errors' | 'none';
@@ -118,6 +109,7 @@ export default class Config {
         grid: {
             distributed: false,
             useHTTP: false,
+            serverAddress: 'localhost',
             serverPort: 3000
         },
         misc: {
@@ -157,8 +149,8 @@ export default class Config {
     /**
      * Loads an external configuration object and merges the parameters with the default ones.
      */
-    static load(config?: Partial<ConfigType>): any {
-        if (!this.instance)
+    static load(config?: Partial<ConfigType>): ConfigType {
+        if (!this.instance || config)
             this.instance = new Config(config)
 
         return this.instance._config
@@ -183,9 +175,10 @@ export default class Config {
             case ConfigOptions.WORKER_USERAGENT:
                 return !isStatic ? Config.load().workers.userAgent : undefined;
             case ConfigOptions.REQUEST_TIMEOUT:
-                return !isStatic ? Config.load().workers.jobs.timeout : 10000;
+                return !isStatic ? Config.load().workers.jobs?.timeout : 10000;
+
             case ConfigOptions.ARTICLE_AMOUNT:
-                return !isStatic ? Config.load().workers.articles.amount : 10;
+                return !isStatic ? Config.load().workers.articles?.amount : 10;
 
             case ConfigOptions.SCHEDULER_JOB_INT:
                 return !isStatic ? Config.load().scheduler.jobsInterval : 3600000;
@@ -199,16 +192,22 @@ export default class Config {
             case ConfigOptions.GRID_DISTRIBUTED:
                 return !isStatic ? Config.load().grid.distributed : false;
             case ConfigOptions.GRID_SERVER_ADDRESS:
-                return !isStatic ? Config.load().grid.serverAddress : 'localhost';
+                // @ts-ignore
+                return !isStatic ? Config.load().grid?.serverAddress : 'localhost';
             case ConfigOptions.GRID_SERVER_PORT:
+                // @ts-ignore
                 return !isStatic ? Config.load().grid.serverPort : 3000;
             case ConfigOptions.GRID_AUTH:
+                // @ts-ignore
                 return !isStatic ? Config.load().grid.authToken : undefined;
             case ConfigOptions.GRID_USE_HTTP:
+                // @ts-ignore
                 return !isStatic ? Config.load().grid.useHTTP : false;
             case ConfigOptions.GRID_HTTPS_KEY:
+                // @ts-ignore
                 return !isStatic ? Config.load().grid.key : undefined;
             case ConfigOptions.GRID_HTTPS_CERT:
+                // @ts-ignore
                 return !isStatic ? Config.load().grid.cert : undefined;
 
             case ConfigOptions.MISC_LOG_LEVEL:
@@ -217,8 +216,10 @@ export default class Config {
             case ConfigOptions.DB_IS_INITIALIZED:
                 return !isStatic ? Config.load().database != undefined && Config.load().database !== 'none' : false;
             case ConfigOptions.DB_PUSH_ARTICLES:
-                return !isStatic ? Config.load().database.pushArticles : (articles: Article[]) => undefined;
+                // @ts-ignore
+                return !isStatic ? Config.load().database?.pushArticles : (articles: Article[]) => undefined;
             case ConfigOptions.DB_GET_ARTICLES:
+                // @ts-ignore
                 return !isStatic ? Config.load().database?.getArticles : (opts: any) => [];
         }
     }

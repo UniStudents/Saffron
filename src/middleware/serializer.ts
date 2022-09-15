@@ -3,7 +3,7 @@ import Source from "../components/source";
 import Job from "../components/job";
 import Instructions from "../components/instructions";
 
-const types = [Article, Source, Job, Instructions, TextDecoder];
+const types = [Article, Source, Job, Instructions, TextDecoder, Object, Array, Function];
 
 export class Serializer {
     declare types: any[];
@@ -24,7 +24,7 @@ export class Serializer {
         if(!(object instanceof Object)) return object;
 
         let i = this.types.findIndex(e => e.name == object.constructor.name);
-        if (i == -1) throw "type  '" + object.constructor.name + "' not initialized";
+        if (i == -1) throw "Type '" + object.constructor.name + "' is not supported for serialization";
 
         return {
             index: i,

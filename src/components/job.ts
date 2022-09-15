@@ -2,7 +2,7 @@ import Source from "./source";
 import {JobStatus} from "./JobStatus";
 import randomId from "../middleware/randomId"
 import Instructions from "../components/instructions"
-import Config, {ConfigOptions} from "./config.js";
+import Config, {ConfigOptions} from "./config";
 
 export default class Job {
     declare id: string;
@@ -34,8 +34,13 @@ export default class Job {
     static createJob(sourceId: string, workerId: string, interval: number): Job {
         let job = new Job();
         job.source = {id: sourceId};
-        job.untilRetry = interval + Config.getOption(ConfigOptions.SCHEDULER_RANDOMIZER)();
         job.worker = {id: workerId};
+
+        let untilRetry = interval + Config.getOption(ConfigOptions.SCHEDULER_RANDOMIZER)()
+        if(untilRetry < 0)
+            untilRetry = interval
+
+        job.untilRetry = untilRetry;
         job.status = JobStatus.PENDING;
         return job;
     }

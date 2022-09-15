@@ -12,7 +12,7 @@ import Extensions from "./modules/extensions";
 import {ParserResult} from "./components/types";
 
 
-export default class Saffron {
+class Saffron {
 
     private declare scheduler: Scheduler;
     private declare workers: Worker[];
@@ -72,6 +72,8 @@ export default class Saffron {
      * Starts a Saffron instance.
      * @param keepPreviousSession If you want to start and stop the saffron without interrupting the schedule
      * you can set keepPreviousSession to true.
+     *
+     * If keepPreviousSession is set to true, it will not read sources' folder and no new jobs will not be generated.
      */
     start(keepPreviousSession: boolean = false) {
         Events.emit("start", keepPreviousSession);
@@ -110,7 +112,7 @@ export default class Saffron {
      * @throws SourceException if there is a problem parsing the source file.
      */
     static async parse(sourceJson: object): Promise<ParserResult[]> {
-        let source: Source = await Source.fileToSource(sourceJson);
+        let source: Source = Source.fileToSource(sourceJson);
         source.instructions.getSource = (): Source => source;
 
         let job = Job.createJob(source.getId(), '', 0);
@@ -153,6 +155,7 @@ export default class Saffron {
             this.scheduler.replaceCurrentJobs(jobs);
         else throw new Error('Scheduler is not initialized. Set mode main to get active jobs');
     }
-};
+}
 
-export {Article, Utils, ConfigType, Job, Source, Instructions};
+export default Saffron;
+export {Article, Utils, ConfigType, Job, Source, Instructions, Saffron};
