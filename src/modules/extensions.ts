@@ -1,5 +1,7 @@
+export type PairEvent = 'articles' | 'article.format'
+
 type Pair = {
-    event: string;
+    event: PairEvent;
     callback: (...args: any[]) => any;
 };
 

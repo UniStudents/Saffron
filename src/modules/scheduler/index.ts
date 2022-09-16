@@ -4,20 +4,21 @@ import Job from "../../components/job";
 import Source from "../../components/source";
 import Grid from "../grid/index";
 import {JobStatus} from "../../components/JobStatus";
-import Worker from "../workers";
+import Worker from "../worker";
 import glob from "glob";
 import * as path from "path";
 
 export default class Scheduler {
 
     private static instance: Scheduler | null = null;
-    private declare isRunning: boolean;
+    private declare running: boolean;
     private declare jobsStorage: Job[];
 
     private constructor() {
         Events.on("start", (keepPreviousSession, a) => this.start(keepPreviousSession));
         Events.on("stop", () => this.stop());
         this.jobsStorage = [];
+        this.running = false;
     }
 
     static getInstance(): Scheduler {
@@ -47,7 +48,7 @@ export default class Scheduler {
     async start(keepPreviousSession: boolean): Promise<void> {
         const checkInterval = Config.getOption(ConfigOptions.SCHEDULER_CHECKS_INT);
 
-        this.isRunning = true;
+        this.running = true;
         if (!keepPreviousSession) {
             const sources = await this.resetSources();
             this.resetJobs(sources);
@@ -55,7 +56,7 @@ export default class Scheduler {
 
         // Check grid for job status
         const mInterval = setInterval(async () => {
-            if (!this.isRunning) {
+            if (!this.running) {
                 clearInterval(mInterval);
                 return;
             }
@@ -118,8 +119,8 @@ export default class Scheduler {
     /**
      * Stops the scheduler from issuing new jobs
      */
-    async stop(): Promise<void> {
-        this.isRunning = false;
+    stop() {
+        this.running = false;
     }
 
     getJobs(): Job[] {
@@ -181,6 +182,10 @@ export default class Scheduler {
     changeJobStatus(id: string, status: JobStatus) {
         let job = this.jobsStorage.find((obj: Job) => obj.id === id);
         if (job) job.status = status;
+    }
+
+    get isRunning() {
+        return this.running;
     }
 
     /**

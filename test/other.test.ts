@@ -6,6 +6,7 @@ import Source from "../src/components/source";
 import {ParserType} from "../src/components/ParserType";
 import {JobStatus} from "../src/components/JobStatus";
 import Utils from "../src/modules/parsers/Utils";
+import Extensions from "../src/modules/extensions";
 
 const randStr = (myLength: number) => {
     const chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
@@ -91,5 +92,20 @@ describe('Other', function () {
         const utils = new Utils();
         utils.cleanupHTMLText('');
         // TODO: Add more normalize html text cases
+    });
+
+    it('Extensions', function () {
+        const ext = Extensions.getInstance();
+        ext.push({event: 'articles', callback: (...args: any[]) => 0});
+        ext.push({event: 'article.format', callback: (...args: any[]) => 1});
+        ext.push({event: 'article.format', callback: (...args: any[]) => 2});
+        ext.push({event: 'articles', callback: (...args: any[]) => 3});
+        ext.push({event: 'article.format', callback: (...args: any[]) => 4});
+
+        let getExtPair = ext.startPairCount();
+        let pair: any;
+        let expectedValue = 0;
+        while ((pair = getExtPair()) != null)
+            expect(pair.callback()).to.equal(expectedValue++)
     });
 });

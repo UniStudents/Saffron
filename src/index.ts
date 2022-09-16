@@ -2,13 +2,13 @@ import Config, {ConfigType, ConfigOptions} from "./components/config"
 import Scheduler from "./modules/scheduler";
 import Grid from "./modules/grid";
 import Events from "./modules/events";
-import Worker from "./modules/workers";
+import Worker from "./modules/worker";
 import Article from "./components/article";
 import Utils from "./modules/parsers/Utils";
 import Job from "./components/job"
 import Source from "./components/source"
 import Instructions from "./components/instructions";
-import Extensions from "./modules/extensions";
+import Extensions, {PairEvent} from "./modules/extensions";
 import {ParserResult} from "./components/types";
 
 
@@ -43,7 +43,7 @@ class Saffron {
             }
         }
 
-        // Initialize workers
+        // Initialize worker
         this.workers = [];
         let nodes = Config.getOption(ConfigOptions.WORKER_NODES);
         for (let i = 0; i < nodes; i++)
@@ -53,7 +53,7 @@ class Saffron {
         if (Config.getOption(ConfigOptions.SAFFRON_MODE) === 'main')
             this.scheduler = Scheduler.getInstance();
 
-        // Event for workers
+        // Event for worker
         Events.on("start", () => {
             for (let worker of this.workers) {
                 // TODO - Start worker on new node thread - https://nodejs.org/api/worker_threads.html
@@ -81,7 +81,7 @@ class Saffron {
 
     /**
      * Stops the saffron instance
-     * If mode equals 'main' then the scheduler will stop giving jobs to the workers.
+     * If mode equals 'main' then the scheduler will stop giving jobs to the worker.
      * else if mode equals 'worker' then the worker will stop getting future jobs and disconnect from the main saffron instance.
      */
     stop() {
@@ -102,7 +102,7 @@ class Saffron {
      * @param event The event of the function.
      * @param callback The callback function that will be called.
      */
-    use(event: string, callback: (...args: any[]) => any): void {
+    use(event: PairEvent, callback: (...args: any[]) => any): void {
         Extensions.getInstance().push({event, callback});
     }
 

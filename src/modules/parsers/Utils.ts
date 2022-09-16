@@ -6,7 +6,7 @@ import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
 import {ParserResult} from "../../components/types";
 import Source from "../../components/source";
 import Job from "../../components/job";
-import Worker from "../workers";
+import Worker from "../worker";
 import striptags from "striptags";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})

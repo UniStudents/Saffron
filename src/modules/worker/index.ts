@@ -45,7 +45,7 @@ export default class Worker {
 
     /**
      * Return the id of a worker that will be used for the next job
-     * @param lastWorkerId The job's previous worker id. It will be excluded from the election only if the workers are greater that one
+     * @param lastWorkerId The job's previous worker id. It will be excluded from the election only if the worker are greater that one
      */
     static electWorker(lastWorkerId: string): string {
         // Make a copy of the array
@@ -61,7 +61,7 @@ export default class Worker {
         let index = workers.findIndex((id: string) => id === lastWorkerId);
         if (index != -1) workers.splice(index, 1);
 
-        // From the remaining workers select one
+        // From the remaining worker select one
         return workers[Math.abs(hashCode(lastWorkerId)) % workers.length];
     }
 
@@ -81,7 +81,7 @@ export default class Worker {
             try {
                 result = await Worker.parse(job);
             } catch (e: any) {
-                Events.emit("workers.parsers.error", e);
+                Events.emit("worker.parsers.error", e);
                 await Grid.getInstance().failedJob(job);
                 return;
             }

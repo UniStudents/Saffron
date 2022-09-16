@@ -1,7 +1,7 @@
 import Job from "../../components/job";
 import Events from "../events";
 import {JobStatus} from "../../components/JobStatus";
-import Worker from "../workers";
+import Worker from "../worker";
 import Config, {ConfigOptions} from "../../components/config";
 import Article from "../../components/article";
 import Extensions from "../extensions";
@@ -87,7 +87,7 @@ export default class Grid {
                 this.server.emit(eventName, pack(job));
             }
         } else {
-            if (['workers.job.finished', 'workers.job.failed', 'grid.worker.announced', 'grid.worker.destroyed'].includes(eventName))
+            if (['worker.job.finished', 'worker.job.failed', 'grid.worker.announced', 'grid.worker.destroyed'].includes(eventName))
                 this.client.emit(eventName, ...args);
         }
     }
@@ -111,11 +111,11 @@ export default class Grid {
                         Events.emit('grid.node.disconnected', socket);
                     });
 
-                    socket.on("workers.job.finished", jobId => {
+                    socket.on("worker.job.finished", jobId => {
                         Scheduler.getInstance().changeJobStatus(jobId, JobStatus.FINISHED);
                     });
 
-                    socket.on("workers.job.failed", jobId => {
+                    socket.on("worker.job.failed", jobId => {
                         Scheduler.getInstance().changeJobStatus(jobId, JobStatus.FAILED);
                     });
 
@@ -150,8 +150,8 @@ export default class Grid {
     }
 
     /**
-     * Return all connected workers' ids.
-     * This function is used by the scheduler to access all the connected workers.
+     * Return all connected worker' ids.
+     * This function is used by the scheduler to access all the connected worker.
      */
     getWorkers(): string[] {
         return this.workersIds;
@@ -197,9 +197,9 @@ export default class Grid {
     async finishedJob(job: Job): Promise<void> {
         job.status = JobStatus.FINISHED;
         if (this.isMain)
-            Events.emit('workers.job.finished', job.id);
+            Events.emit('worker.job.finished', job.id);
         else
-            await this.client.emit('workers.job.finished', job.id);
+            await this.client.emit('worker.job.finished', job.id);
     }
 
     /**
@@ -210,9 +210,9 @@ export default class Grid {
     async failedJob(job: Job): Promise<void> {
         job.status = JobStatus.FAILED;
         if (this.isMain)
-            Events.emit("workers.job.failed", job.id);
+            Events.emit("worker.job.failed", job.id);
         else
-            await this.client.emit('workers.job.failed', job.id);
+            await this.client.emit('worker.job.failed', job.id);
     }
 
     /**
@@ -227,7 +227,7 @@ export default class Grid {
 
         articles.forEach(article => article.timestamp = Date.now());
 
-        Events.emit("workers.articles.found", articles, tableName); // Can be empty array
+        Events.emit("worker.articles.found", articles, tableName); // Can be empty array
         if (articles.length == 0) return;
 
         Events.emit("middleware.before", articles);
@@ -270,7 +270,7 @@ export default class Grid {
         // And then check if they already exist.
         let hashes = dbArticles.map((article: Article) => article.getHash());
         articles = articles.filter((article: Article) => !hashes.includes(article.getHash()));
-        Events.emit("workers.articles.new", articles, tableName); // Can be empty array
+        Events.emit("worker.articles.new", articles, tableName); // Can be empty array
 
         try {
             await Config.getOption(ConfigOptions.DB_PUSH_ARTICLES)(articles);

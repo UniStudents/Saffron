@@ -36,9 +36,8 @@ export default class Events {
             Logger(LoggerTypes.TITLE, "Simple Abstract Framework For the Retrieval Of News"));
 
         if (logLevel === 'all' || logLevel === 'info') {
-            this.getAntennae().on("database.set.okay", (source: Source, articles: Article[]) => {
-                Logger(LoggerTypes.DEBUG, `${chalk.red('Database')} - Upload ${articles.length} articles to db for ${source.name}.`);
-            });
+            this.getAntennae().on("database.set.okay", (source: Source, articles: Article[]) =>
+                Logger(LoggerTypes.DEBUG, `${chalk.red('Database')} - Upload ${articles.length} articles to db for ${source.name}.`));
 
             this.getAntennae().on("scheduler.sources.new", (names: string[]) =>
                 Logger(LoggerTypes.INFO, `Loaded ${names.length} sources`))
@@ -66,14 +65,14 @@ export default class Events {
             this.getAntennae().on("grid.worker.destroyed", (worker_id: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - worker destroyed (${worker_id}).`));
 
-            this.getAntennae().on("workers.job.finished", (jobId: string) =>
+            this.getAntennae().on("worker.job.finished", (jobId: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - finished job(${jobId}).`));
-            this.getAntennae().on("workers.job.failed", (jobId: string) =>
+            this.getAntennae().on("worker.job.failed", (jobId: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - failed job(${jobId}).`));
 
-            this.getAntennae().on("workers.articles.found", (articles: Article[], src: string) =>
+            this.getAntennae().on("worker.articles.found", (articles: Article[], src: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.cyan('Articles')} - Finished job returned ${articles.length} articles for ${src}.`));
-            this.getAntennae().on("workers.articles.new", (articles: Article[], src: string) =>
+            this.getAntennae().on("worker.articles.new", (articles: Article[], src: string) =>
                 Logger(LoggerTypes.INFO, `${chalk.cyan('Articles')} - ${articles.length} articles will be added to to the db for ${src}.`));
         }
 
@@ -101,7 +100,7 @@ export default class Events {
                 console.log(error)
             });
 
-            this.getAntennae().on("workers.parsers.error", (e: any) => {
+            this.getAntennae().on("worker.parsers.error", (e: any) => {
                 Logger(LoggerTypes.INFO, `${chalk.red('Parsers')} - failed to scrape the articles.`);
                 console.log(e);
             });

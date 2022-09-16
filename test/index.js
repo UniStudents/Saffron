@@ -39,13 +39,13 @@ const config = {
 let errors = [];
 const saffron = new Saffron();
 
-saffron.on("workers.articles.found", (articles, src) => {
+saffron.on("worker.articles.found", (articles, src) => {
     // console.log('articles.found', src, articles.length);
     // console.log(util.inspect(articles, {showHidden: false, depth: null, colors: true}));
 });
 
-saffron.on('workers.parsers.error', errors.push.bind(errors));
-saffron.on('workers.job.failed', job => {
+saffron.on('worker.parsers.error', errors.push.bind(errors));
+saffron.on('worker.job.failed', job => {
     console.log(job)
 })
 
