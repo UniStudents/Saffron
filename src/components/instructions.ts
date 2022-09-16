@@ -20,7 +20,8 @@ export default class Instructions {
     declare amount: number;
     declare scrapeOptions: any;
     declare elementSelector: string;
-    declare scrapeFunction: string;
+    declare scrapeFunction: any;
+    declare scrapeFunctionStr: string;
     declare textDecoder: TextDecoder;
     declare ignoreCertificates: boolean;
     declare extraFields: string[];

@@ -56,15 +56,15 @@ export class HTMLParser extends ParserClass {
                         : (articleData.link ? articleData.link : ''));
 
                     tmpArticle.setTitle((Array.isArray(articleData.title) && articleData.title[0]?.value)
-                        ? utils.htmlStrip(articleData.title[0].value)
+                        ? utils.cleanupHTMLText(articleData.title[0].value)
                         : (articleData.title ? articleData.title : ''));
 
                     tmpArticle.setPubDate((Array.isArray(articleData.pubDate) && articleData.pubDate[0]?.value)
-                        ? utils.htmlStrip(articleData.pubDate[0].value)
+                        ? utils.cleanupHTMLText(articleData.pubDate[0].value)
                         : (articleData.pubDate ? articleData.pubDate : ''))
 
                     tmpArticle.setContent((Array.isArray(articleData.content) && articleData.content[0]?.value)
-                        ? utils.htmlStrip(articleData.content[0].value)
+                        ? utils.cleanupHTMLText(articleData.content[0].value)
                         : (articleData.content ? articleData.content : ''));
 
                     if (articleData.hasOwnProperty("category")) {

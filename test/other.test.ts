@@ -5,6 +5,7 @@ import {expect} from "chai";
 import Source from "../src/components/source";
 import {ParserType} from "../src/components/ParserType";
 import {JobStatus} from "../src/components/JobStatus";
+import Utils from "../src/modules/parsers/Utils";
 
 const randStr = (myLength: number) => {
     const chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
@@ -76,5 +77,19 @@ describe('Other', function () {
         }
 
         expect(source.instructions.parserType).to.equal(ParserType.HTML);
+    });
+
+    it('Utils -> Extract links', function () {
+        const utils = new Utils();
+
+        expect(utils.extractLinks()).to.deep.equal([]);
+        expect(utils.extractLinks('')).to.deep.equal([]);
+        // TODO: Add more extract links cases (with html code)
+    });
+
+    it('Utils -> HTML cleanup text', function () {
+        const utils = new Utils();
+        utils.cleanupHTMLText('');
+        // TODO: Add more normalize html text cases
     });
 });

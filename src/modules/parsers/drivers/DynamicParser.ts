@@ -11,15 +11,18 @@ export class DynamicParser extends ParserClass {
     }
 
     assignInstructions(instructions: Instructions, sourceJson: any): void {
-        let scrapeStr = sourceJson.scrape.toString()
+        let scrapeStr = sourceJson.scrape.toString();
 
         instructions.endPoint = sourceJson.url
-        instructions.scrapeFunction = scrapeStr;
+        instructions.scrapeFunction = sourceJson.scrape;
+        instructions.scrapeFunctionStr = scrapeStr;
     }
 
     async parse(job: Job, utils: Utils): Promise<Article[]> {
         let instructions = job.getInstructions();
-        let scrapeFunc = eval(instructions.scrapeFunction);
+        let scrapeFunc = typeof instructions.scrapeFunction === 'function'
+            ? instructions.scrapeFunction
+            : eval(instructions.scrapeFunctionStr);
 
         let articles: Article[];
         try {

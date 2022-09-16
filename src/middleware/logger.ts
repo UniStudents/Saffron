@@ -1,5 +1,4 @@
 import {DateTime} from "luxon";
-import Events from "../modules/events";
 import {LoggerTypes} from "../components/LoggerTypes"
 import chalk from 'chalk'
 
@@ -9,7 +8,6 @@ import chalk from 'chalk'
  * @param data The message that will be logged
  */
 export default function logger(type: LoggerTypes, data: any): void {
-    Events.getAntennae().emit("log", {type, log: data})
     let time = chalk.bold(`${DateTime.now().toLocaleString({
         day: '2-digit',
         month: '2-digit',

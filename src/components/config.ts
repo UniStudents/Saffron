@@ -73,7 +73,7 @@ export enum ConfigOptions {
 }
 
 export default class Config {
-    private static instance: Config
+    private static instance: Config;
     _config: ConfigType = {
         mode: "main",
         database: 'none',

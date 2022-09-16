@@ -45,8 +45,8 @@ class Saffron {
 
         // Initialize workers
         this.workers = [];
-        let workersSize = Config.getOption(ConfigOptions.WORKER_NODES);
-        for (let i = 0; i < workersSize; i++)
+        let nodes = Config.getOption(ConfigOptions.WORKER_NODES);
+        for (let i = 0; i < nodes; i++)
             this.workers.push(new Worker());
 
         // Initialize scheduler
@@ -59,13 +59,13 @@ class Saffron {
                 // TODO - Start worker on new node thread - https://nodejs.org/api/worker_threads.html
                 worker.start();
             }
-        })
+        });
 
         Events.on("stop", () => {
             this.scheduler.stop();
             for (let worker of this.workers)
                 worker.stop();
-        })
+        });
     }
 
     /**

@@ -70,6 +70,8 @@ export default class Scheduler {
                         Events.emit("scheduler.job.finished", job);
                         this.deleteJob(job);
 
+                        // TODO: Maybe do not delete jobs. Keep same instances with updated data.
+
                         await this.issueJobForSource(job.getSource(), job.worker.id);
                         break;
                     // A job failed so increment the attempts and try again

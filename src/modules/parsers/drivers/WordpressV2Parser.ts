@@ -114,8 +114,8 @@ export class WordpressV2Parser extends ParserClass {
 
                 return {
                     id: category.id,
-                    description: utils.htmlStrip(category.description, false),
-                    name: utils.htmlStrip(category.name, false),
+                    description: utils.cleanupHTMLText(category.description, false),
+                    name: utils.cleanupHTMLText(category.name, false),
                     links
                 }
             }) : [];
@@ -127,7 +127,7 @@ export class WordpressV2Parser extends ParserClass {
 
             const article = new Article()
             article.setSource(instructions.getSource().getId(), instructions.getSource().name);
-            article.setTitle(utils.htmlStrip(p.title.rendered, false));
+            article.setTitle(utils.cleanupHTMLText(p.title.rendered, false));
             article.setContent(p.content.rendered);
             article.setLink(p.link);
             article.pushCategories(utils.aliases.map(alias => {

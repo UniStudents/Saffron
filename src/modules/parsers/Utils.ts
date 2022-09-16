@@ -7,9 +7,7 @@ import {ParserResult} from "../../components/types";
 import Source from "../../components/source";
 import Job from "../../components/job";
 import Worker from "../workers";
-import Config from "../../components/config.js";
-
-const striptags = require('striptags');
+import striptags from "striptags";
 
 const httpsAgent = new https.Agent({rejectUnauthorized: false})
 
@@ -284,13 +282,11 @@ export default class Utils {
     public declare instructions: Instructions;
     public declare amount: number;
 
-    private static decode(str: String = "") {
+    private static decode(str: string = ""): string {
         if (!str) str = ""
-        for (let key in this.htmlEntries) {
-            let entity = key
-            let regex = new RegExp(entity, 'g')
-            str = str.replace(regex, this.htmlEntries[entity])
-        }
+        for (let entity in this.htmlEntries)
+            str = str.replace(new RegExp(entity, 'g'), this.htmlEntries[entity])
+
         return str
     }
 
@@ -336,26 +332,24 @@ export default class Utils {
         return await Worker.parse(job);
     }
 
-    public htmlStrip(text: any = "", stripTags: boolean = true): string {
+    public cleanupHTMLText(text: string, stripTags: boolean = true): string {
+        text = Utils.decode(text)
         if (stripTags) {
-            text = Utils.decode(text)
             text = text.replace(/\n/g, '')
                 .replace(/\t/g, '')
                 .replace(/(<([^>]+)>)/gi, '')
                 .trim()
             text = striptags(text)
-        } else {
-            text = Utils.decode(text)
+        } else
             text = text.replace(/\n/g, '')
                 .replace(/\t/g, '')
                 .trim()
-        }
 
         return text.toString()
     }
 
-    public extractLinks(html: string): Attachment[] {
-        if (!html || html == '') return [];
+    public extractLinks(html?: string): Attachment[] {
+        if (!html) return [];
 
         const $ = cheerio.load(html);
         const links: Attachment[] = [];
@@ -384,6 +378,6 @@ export default class Utils {
             });
         });
 
-        return links
+        return links;
     }
 }

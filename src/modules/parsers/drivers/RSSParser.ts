@@ -123,7 +123,7 @@ export class RSSParser extends ParserClass {
             let tmpArticle = new Article()
 
             tmpArticle.setSource(instructions.getSource().getId(), instructions.getSource().name);
-            tmpArticle.setTitle(utils.htmlStrip(article.hasOwnProperty("title")
+            tmpArticle.setTitle(utils.cleanupHTMLText(article.hasOwnProperty("title")
                 ? article["title"]
                 : renameFields.get("title") && article.hasOwnProperty(renameFields.get("title")!) ? article[renameFields.get("title")!] : ""
             ));
