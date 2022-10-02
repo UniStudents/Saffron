@@ -90,7 +90,7 @@ export class RSSParser extends ParserClass {
             // define the request headers.
             timeout: instructions.getSource().timeout,
             headers: {
-                'User-Agent': Config.load().workers.useragent || 'rss-parser'
+                'User-Agent': instructions.getSource().useragent || 'rss-parser'
             },
             // define requests options.
             requestOptions: {

@@ -15,6 +15,7 @@ export default class Source {
     declare interval: number;
     declare retryInterval: number;
     declare timeout: number;
+    declare useragent?: string;
     declare instructions: Instructions;
     declare extra: any;
     private declare id: string;
@@ -47,8 +48,12 @@ export default class Source {
         ret.retryInterval = source.retryInterval ? source.retryInterval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT) / 2;
 
         if (source.timeout != null && (typeof source.timeout != 'number' || source.timeout < 0))
-            throw new Error(`SourceException: [${source.filename}] Field timeout  is not valid, requirements(type = number, positive or zero).`);
+            throw new Error(`SourceException: [${source.filename}] Field timeout is not valid, requirements(type = number, positive or zero).`);
         ret.timeout = source.timeout ? source.timeout : Config.getOption(ConfigOptions.REQUEST_TIMEOUT);
+
+        if (source.useragent != null && (typeof source.useragent != 'string'))
+            throw new Error(`SourceException: [${source.filename}] Field useragent is not valid, requirements(type = string).`);
+        ret.useragent = source.useragent ? source.useragent : Config.getOption(ConfigOptions.WORKER_USERAGENT);
 
         ret.extra = source.extra;
 
