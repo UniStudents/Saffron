@@ -7,6 +7,7 @@ import {ParserResult} from "../../components/types";
 import Source from "../../components/source";
 import Job from "../../components/job";
 import Worker from "../workers";
+import Config from "../../components/config.js";
 
 const striptags = require('striptags');
 
@@ -296,6 +297,11 @@ export default class Utils {
     request(options: AxiosRequestConfig): Promise<AxiosResponse> {
         if (this.instructions["ignoreCertificates"])
             options.httpsAgent = httpsAgent;
+
+        if(!options.headers)
+            options.headers = {};
+        options.headers['User-Agent'] = Config.load().workers.useragent
+
         return axios.request(options);
     }
 

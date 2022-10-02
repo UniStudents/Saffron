@@ -4,6 +4,7 @@ import Job from "../../../components/job";
 import Article from "../../../components/article";
 import Parser from "rss-parser";
 import Utils from "../Utils";
+import Config from "../../../components/config.js";
 
 
 export class RSSParser extends ParserClass {
@@ -88,7 +89,9 @@ export class RSSParser extends ParserClass {
         return new Parser({
             // define the request headers.
             timeout: instructions.getSource().timeout,
-            headers: {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101 Firefox/84.0'},
+            headers: {
+                'User-Agent': Config.load().workers.useragent || 'rss-parser'
+            },
             // define requests options.
             requestOptions: {
                 rejectUnauthorized: instructions["ignoreCertificates"]

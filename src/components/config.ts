@@ -17,6 +17,7 @@ export type ConfigType = {
     };
     workers: {
         nodes?: number;
+        useragent?: string;
         jobs?: {
             timeout?: number;
         };
@@ -60,6 +61,7 @@ export enum ConfigOptions {
     SOURCES_EXCLUDE = 'sources.exlude',
     SAFFRON_MODE = 'mode',
     WORKER_NODES = 'worker.nodes',
+    WORKER_USERAGENT = 'worker.useragent',
     REQUEST_TIMEOUT = 'worker.request.timeout',
     ARTICLE_AMOUNT = 'worker.article.amount',
     SCHEDULER_JOB_INT = 'scheduler.job.interval',
@@ -178,9 +180,10 @@ export default class Config {
 
             case ConfigOptions.WORKER_NODES:
                 return !isStatic ? Config.load().workers.nodes : 1;
+            case ConfigOptions.WORKER_USERAGENT:
+                return !isStatic ? Config.load().workers.useragent : undefined;
             case ConfigOptions.REQUEST_TIMEOUT:
                 return !isStatic ? Config.load().workers.jobs.timeout : 10000;
-
             case ConfigOptions.ARTICLE_AMOUNT:
                 return !isStatic ? Config.load().workers.articles.amount : 10;
 
