@@ -300,7 +300,7 @@ export default class Utils {
 
         if(!options.headers)
             options.headers = {};
-        options.headers['User-Agent'] = <any>this.instructions.getSource().useragent
+        options.headers['User-Agent'] = <any>this.instructions.getSource().userAgent
 
         return axios.request(options);
     }

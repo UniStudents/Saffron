@@ -17,7 +17,7 @@ export type ConfigType = {
     };
     workers: {
         nodes?: number;
-        useragent?: string;
+        userAgent?: string;
         jobs?: {
             timeout?: number;
         };
@@ -181,7 +181,7 @@ export default class Config {
             case ConfigOptions.WORKER_NODES:
                 return !isStatic ? Config.load().workers.nodes : 1;
             case ConfigOptions.WORKER_USERAGENT:
-                return !isStatic ? Config.load().workers.useragent : undefined;
+                return !isStatic ? Config.load().workers.userAgent : undefined;
             case ConfigOptions.REQUEST_TIMEOUT:
                 return !isStatic ? Config.load().workers.jobs.timeout : 10000;
             case ConfigOptions.ARTICLE_AMOUNT:
