@@ -13,11 +13,16 @@ import {ParserResult} from "./components/types";
 
 
 class Saffron {
-
-    private declare scheduler: Scheduler;
-    private declare workers: Worker[];
+    declare config: Config;
+    declare scheduler: Scheduler;
+    declare grid: Grid;
+    declare events: Events;
+    declare extensions: Extensions;
+    declare workers: Worker[];
 
     constructor() {
+        this.events = new Events(this);
+        this.extensions = new Extensions();
     }
 
     /**
@@ -26,46 +31,37 @@ class Saffron {
      * @param config The config file path or object
      * @see https://saffron.poiw.org
      */
-    async initialize(config?: Partial<ConfigType>) {
+    async initialize(config?: Partial<ConfigType>
+        | { production: Partial<ConfigType> }
+        | { development: Partial<ConfigType> }
+        | { testing: Partial<ConfigType> }) {
         // Load config file
-        Config.load(config);
+        this.config = new Config(config);
 
-        Events.registerLogListeners();
-        Events.emit('title');
+        this.events.registerLogListeners(this.config);
+        this.events.emit('title');
 
         // Initialize and start grid
-        if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED)) {
+        if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED, this.config)) {
+            this.grid = new Grid(this);
             try {
-                await Grid.getInstance().connect();
-                Events.emit('grid.connection.okay');
+                await this.grid.connect();
+                this.events.emit('grid.connection.okay');
             } catch (e) {
-                return Events.emit('grid.connection.failed', e);
+                this.events.emit('grid.connection.failed', e);
+                return;
             }
         }
 
         // Initialize worker
         this.workers = [];
-        let nodes = Config.getOption(ConfigOptions.WORKER_NODES);
+        let nodes = Config.getOption(ConfigOptions.WORKER_NODES, this.config);
         for (let i = 0; i < nodes; i++)
-            this.workers.push(new Worker());
+            this.workers.push(new Worker(this));
 
         // Initialize scheduler
-        if (Config.getOption(ConfigOptions.SAFFRON_MODE) === 'main')
-            this.scheduler = Scheduler.getInstance();
-
-        // Event for worker
-        Events.on("start", () => {
-            for (let worker of this.workers) {
-                // TODO - Start worker on new node thread - https://nodejs.org/api/worker_threads.html
-                worker.start();
-            }
-        });
-
-        Events.on("stop", () => {
-            this.scheduler.stop();
-            for (let worker of this.workers)
-                worker.stop();
-        });
+        if (Config.getOption(ConfigOptions.SAFFRON_MODE, this.config) === 'main')
+            this.scheduler = new Scheduler(this);
     }
 
     /**
@@ -75,8 +71,16 @@ class Saffron {
      *
      * If keepPreviousSession is set to true, it will not read sources' folder and no new jobs will not be generated.
      */
-    start(keepPreviousSession: boolean = false) {
-        Events.emit("start", keepPreviousSession);
+    async start(keepPreviousSession: boolean = false) {
+        for (let worker of this.workers) {
+            // TODO - Start worker on new node thread - https://nodejs.org/api/worker_threads.html
+            await worker.start();
+        }
+
+        if (Config.getOption(ConfigOptions.SAFFRON_MODE, this.config) === 'main')
+            await this.scheduler.start(keepPreviousSession);
+
+        this.events.emit("start");
     }
 
     /**
@@ -85,7 +89,13 @@ class Saffron {
      * else if mode equals 'worker' then the worker will stop getting future jobs and disconnect from the main saffron instance.
      */
     stop() {
-        Events.emit("stop");
+        if (Config.getOption(ConfigOptions.SAFFRON_MODE, this.config) === 'main')
+            this.scheduler.stop();
+
+        for (let worker of this.workers)
+            worker.stop();
+
+        this.events.emit("stop");
     }
 
     /**
@@ -94,7 +104,7 @@ class Saffron {
      * @param cb The callback that will send the data
      */
     on(event: string, cb: (...args: any[]) => void) {
-        Events.on(event, cb);
+        this.events.on(event, cb);
     }
 
     /**
@@ -103,7 +113,7 @@ class Saffron {
      * @param callback The callback function that will be called.
      */
     use(event: PairEvent, callback: (...args: any[]) => any): void {
-        Extensions.getInstance().push({event, callback});
+        this.extensions.push({event, callback});
     }
 
     /**
@@ -112,13 +122,8 @@ class Saffron {
      * @throws SourceException if there is a problem parsing the source file.
      */
     static async parse(sourceJson: object): Promise<ParserResult[]> {
-        let source: Source = Source.fileToSource(sourceJson);
-        source.instructions.getSource = (): Source => source;
-
-        let job = Job.createJob(source.getId(), '', 0);
-        job.getSource = (): Source => source;
-        job.getInstructions = (): Instructions => source.instructions;
-
+        let source: Source = Source.parseSourceFile(sourceJson, null);
+        let job = new Job(source, '', 0, null);
         return await Worker.parse(job);
     }
 
@@ -127,7 +132,7 @@ class Saffron {
      * By editing the result of this function the main sources will be edited as well.
      */
     getSources(): Source[] {
-        return Source.getSources();
+        return this.scheduler.sources;
     }
 
     async resetSources() {

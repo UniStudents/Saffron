@@ -73,8 +73,7 @@ export enum ConfigOptions {
 }
 
 export default class Config {
-    private static instance: Config;
-    _config: ConfigType = {
+    readonly config: ConfigType = {
         mode: "main",
         database: 'none',
         sources: {
@@ -88,7 +87,7 @@ export default class Config {
                 timeout: 10000
             },
             articles: {
-                amount: 10
+                amount: 30
             }
         },
         scheduler: {
@@ -115,122 +114,102 @@ export default class Config {
         misc: {
             log: "all"
         }
-    }
+    };
 
-    private constructor(config?: Partial<ConfigType> | {
+    constructor(config?: Partial<ConfigType> | {
         production: Partial<ConfigType>;
     } | {
         development: Partial<ConfigType>;
     } | {
         testing: Partial<ConfigType>;
     }) {
-        this._config = this.mergeObject(config, this._config);
+        this.config = this.mergeObject(config, this.config);
 
         switch (process.env.NODE_ENV) {
             case "production":
                 if ((config as any).production)
-                    this._config = this.mergeObject((config as any).production, this._config);
+                    this.config = this.mergeObject((config as any).production, this.config);
                 break;
             case "development":
                 if ((config as any).development)
-                    this._config = this.mergeObject((config as any).development, this._config);
+                    this.config = this.mergeObject((config as any).development, this.config);
                 break;
             case "testing":
                 if ((config as any).testing)
-                    this._config = this.mergeObject((config as any).testing, this._config);
+                    this.config = this.mergeObject((config as any).testing, this.config);
                 break;
             default:
         }
 
         if (process.env.SAFFRON_MODE && ["main", "worker"].includes(process.env.SAFFRON_MODE))
-            this._config.mode = process.env.SAFFRON_MODE as any;
+            this.config.mode = process.env.SAFFRON_MODE as any;
     }
 
-    /**
-     * Loads an external configuration object and merges the parameters with the default ones.
-     */
-    static load(config?: Partial<ConfigType>): ConfigType {
-        if (!this.instance || config)
-            this.instance = new Config(config)
-
-        return this.instance._config
-    }
-
-    static getOption(option: ConfigOptions): any {
-        let isStatic: boolean = this.instance == null;
-
+    static getOption(option: ConfigOptions, config: Config | null): any {
         switch (option) {
             case ConfigOptions.SAFFRON_MODE:
-                return !isStatic ? Config.load().mode : "main";
+                return config ? config.config.mode : "main";
 
             case ConfigOptions.SOURCES_PATH:
-                return !isStatic ? Config.load().sources.path : '../../../sources';
+                return config ? config.config.sources.path : '../../../sources';
             case ConfigOptions.SOURCES_INCLUDE_ONLY:
-                return !isStatic ? Config.load().sources.includeOnly : [];
+                return config ? config.config.sources.includeOnly : [];
             case ConfigOptions.SOURCES_EXCLUDE:
-                return !isStatic ? Config.load().sources.exclude : [];
+                return config ? config.config.sources.exclude : [];
 
             case ConfigOptions.WORKER_NODES:
-                return !isStatic ? Config.load().workers.nodes : 1;
+                return config ? config.config.workers.nodes : 1;
             case ConfigOptions.WORKER_USERAGENT:
-                return !isStatic ? Config.load().workers.userAgent : undefined;
+                return config ? config.config.workers.userAgent : undefined;
             case ConfigOptions.REQUEST_TIMEOUT:
-                return !isStatic ? Config.load().workers.jobs?.timeout : 10000;
+                return config ? config.config.workers.jobs?.timeout : 10000;
 
             case ConfigOptions.ARTICLE_AMOUNT:
-                return !isStatic ? Config.load().workers.articles?.amount : 10;
+                return config ? config.config.workers.articles?.amount : 30;
 
             case ConfigOptions.SCHEDULER_JOB_INT:
-                return !isStatic ? Config.load().scheduler.jobsInterval : 3600000;
+                return config ? config.config.scheduler.jobsInterval : 3600000;
             case ConfigOptions.SCHEDULER_JOB_HEAVY_INT:
-                return !isStatic ? Config.load().scheduler.heavyJobFailureInterval : 86400000;
+                return config ? config.config.scheduler.heavyJobFailureInterval : 86400000;
             case ConfigOptions.SCHEDULER_CHECKS_INT:
-                return !isStatic ? Config.load().scheduler.checksInterval : 120000;
+                return config ? config.config.scheduler.checksInterval : 120000;
             case ConfigOptions.SCHEDULER_RANDOMIZER:
-                return !isStatic ? Config.load().scheduler.randomizeInterval : () => 0;
+                return config ? config.config.scheduler.randomizeInterval : () => 0;
 
             case ConfigOptions.GRID_DISTRIBUTED:
-                return !isStatic ? Config.load().grid.distributed : false;
+                return config ? config.config.grid.distributed : false;
             case ConfigOptions.GRID_SERVER_ADDRESS:
-                // @ts-ignore
-                return !isStatic ? Config.load().grid?.serverAddress : 'localhost';
+                return config ? config.config.grid?.serverAddress : 'localhost';
             case ConfigOptions.GRID_SERVER_PORT:
-                // @ts-ignore
-                return !isStatic ? Config.load().grid.serverPort : 3000;
+                return config ? config.config.grid.serverPort : 3000;
             case ConfigOptions.GRID_AUTH:
-                // @ts-ignore
-                return !isStatic ? Config.load().grid.authToken : undefined;
+                return config ? config.config.grid.authToken : undefined;
             case ConfigOptions.GRID_USE_HTTP:
-                // @ts-ignore
-                return !isStatic ? Config.load().grid.useHTTP : false;
+                return config ? config.config.grid.useHTTP : false;
             case ConfigOptions.GRID_HTTPS_KEY:
-                // @ts-ignore
-                return !isStatic ? Config.load().grid.key : undefined;
+                return config ? config.config.grid.key : undefined;
             case ConfigOptions.GRID_HTTPS_CERT:
-                // @ts-ignore
-                return !isStatic ? Config.load().grid.cert : undefined;
+                return config ? config.config.grid.cert : undefined;
 
             case ConfigOptions.MISC_LOG_LEVEL:
-                return !isStatic ? Config.load().misc.log : "all";
+                return config ? config.config.misc.log : "all";
 
             case ConfigOptions.DB_IS_INITIALIZED:
-                return !isStatic ? Config.load().database != undefined && Config.load().database !== 'none' : false;
+                return config ? config.config.database != undefined && config.config.database !== 'none' : false;
             case ConfigOptions.DB_PUSH_ARTICLES:
                 // @ts-ignore
-                return !isStatic ? Config.load().database?.pushArticles : (articles: Article[]) => undefined;
+                return config ? config.config.database?.pushArticles : (articles: Article[]) => undefined;
             case ConfigOptions.DB_GET_ARTICLES:
                 // @ts-ignore
-                return !isStatic ? Config.load().database?.getArticles : (opts: any) => [];
+                return config ? config.config.database?.getArticles : (opts: any) => [];
         }
     }
 
     private mergeObject(src: any, original: object): any {
         return _.mergeWith({}, original, src, (o, s) => {
-            if (Array.isArray(o))
-                return s ? s : o
-            else if (typeof o == 'object')
-                return this.mergeObject(s, o)
-            return s ? s : o
-        })
+            if (typeof o == 'object' && !Array.isArray(o))
+                return this.mergeObject(s, o);
+            return s != null ? s : o;
+        });
     }
 }

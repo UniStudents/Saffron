@@ -61,8 +61,8 @@ export class WordpressV2Parser extends ParserClass {
         };
     }
 
-    async parse(job: Job, utils: Utils): Promise<Article[]> {
-        let instructions = job.getInstructions();
+    async parse(utils: Utils): Promise<Article[]> {
+        let instructions = utils.source.instructions;
 
         let categoriesUrl = `${utils.url}wp-json/wp/v2/categories/`;
         let postsUrl = `${utils.url}wp-json/wp/v2/posts?_embed&per_page=${utils.amount}`;
@@ -86,17 +86,19 @@ export class WordpressV2Parser extends ParserClass {
             , posts: any[];
 
         let config = {
-            timeout: utils.instructions.getSource().timeout,
+            timeout: utils.source.timeout,
             responseType: 'arraybuffer',
-            // @ts-ignore
             responseEncoding: 'binary'
         };
 
         try {
-            categories = JSON.parse(instructions.textDecoder.decode((await utils.get(categoriesUrl, config as any))?.data))
-            posts = JSON.parse(instructions.textDecoder.decode((await utils.get(postsUrl, config as any))?.data))
+            const catReq = await utils.get(categoriesUrl, config as any);
+            const postsReq = await utils.get(postsUrl, config as any);
+
+            categories = JSON.parse(instructions.textDecoder.decode(catReq.data));
+            posts = JSON.parse(instructions.textDecoder.decode(postsReq.data));
         } catch (e: any) {
-            throw new Error(`WordpressParserException job failed for ${instructions.getSource().name}, original error: ${e.message}`);
+            throw new Error(`WordpressParserException job failed for ${utils.source.name}, original error: ${e.message}`);
         }
 
         let articles: Article[] = [];
@@ -126,7 +128,6 @@ export class WordpressV2Parser extends ParserClass {
             count++;
 
             const article = new Article()
-            article.setSource(instructions.getSource().getId(), instructions.getSource().name);
             article.setTitle(utils.cleanupHTMLText(p.title.rendered, false));
             article.setContent(p.content.rendered);
             article.setLink(p.link);

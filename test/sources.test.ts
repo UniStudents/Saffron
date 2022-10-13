@@ -4,7 +4,7 @@ import {expect} from "chai";
 
 describe('Sources', function () {
     it('Parsing', function () {
-        const source = Source.fileToSource({
+        const source = Source.parseSourceFile({
             name: 'source-name',
             tableName: 'table-name',
             interval: 10000,
@@ -20,7 +20,7 @@ describe('Sources', function () {
             ],
             type: 'html',
             scrape: {article: {}}
-        });
+        }, null);
 
         expect(source.name).to.equal('source-name');
         expect(source.tableName).to.equal('table-name');

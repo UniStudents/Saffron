@@ -20,23 +20,13 @@ export default class Article {
     declare pubDate: string;
     declare timestamp: number;
     declare extras: { [key: string]: any };
-    declare source: {
-        id: string;
-        name: string;
-    };
+    declare source: Source;
     declare attachments: Attachment[];
     declare categories: Category[];
     declare thumbnail: string;
 
     constructor() {
         this.id = randomId("art")
-    }
-
-    /**
-     * Return the source class where this article belongs
-     */
-    getSource(): Source {
-        return Source.getSourceFrom(this)
     }
 
     /**
@@ -71,10 +61,6 @@ export default class Article {
             this.extras = {};
 
         this.extras[key] = value;
-    }
-
-    public setSource(id: string, name: string) {
-        this.source = {id, name};
     }
 
     public pushAttachment(attachment: Attachment) {

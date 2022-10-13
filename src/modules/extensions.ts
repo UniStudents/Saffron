@@ -7,18 +7,10 @@ type Pair = {
 
 export default class Extensions {
 
-    private static instance: Extensions;
     private declare readonly pairs: Pair[];
 
-    private constructor() {
+    constructor() {
         this.pairs = [];
-    }
-
-    static getInstance(): Extensions {
-        if (Extensions.instance == null)
-            this.instance = new Extensions();
-
-        return Extensions.instance;
     }
 
     push(p: Pair): void {

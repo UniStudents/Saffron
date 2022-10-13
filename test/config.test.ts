@@ -4,7 +4,7 @@ import {expect} from "chai";
 describe('Configuration', function () {
     it('Default configuration', function () {
         // Config
-        const c = Config.load();
+        const c = new Config().config;
         // Expected config
         const ec: Required<ConfigType> = {
             mode: "main",
@@ -20,7 +20,7 @@ describe('Configuration', function () {
                     timeout: 10000
                 },
                 articles: {
-                    amount: 10
+                    amount: 30
                 }
             },
             scheduler: {
@@ -110,7 +110,7 @@ describe('Configuration', function () {
             }
         }
         // Config
-        const c = Config.load(ec);
+        const c = new Config(ec).config;
 
         expect(c.mode).to.equal(ec.mode);
         expect(c.database).to.equal(ec.database);

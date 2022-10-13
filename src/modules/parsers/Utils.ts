@@ -1,6 +1,5 @@
 import cheerio from "cheerio";
 import {Attachment} from "../../components/article";
-import Instructions from "../../components/instructions";
 import https from "https";
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
 import {ParserResult} from "../../components/types";
@@ -279,7 +278,7 @@ export default class Utils {
      */
     public declare url: string;
     public declare aliases: string[];
-    public declare instructions: Instructions;
+    public declare source: Source;
     public declare amount: number;
 
     private static decode(str: string = ""): string {
@@ -291,12 +290,12 @@ export default class Utils {
     }
 
     request(options: AxiosRequestConfig): Promise<AxiosResponse> {
-        if (this.instructions["ignoreCertificates"])
+        if (this.source.instructions["ignoreCertificates"])
             options.httpsAgent = httpsAgent;
 
         if(!options.headers)
             options.headers = {};
-        options.headers['User-Agent'] = <any>this.instructions.getSource().userAgent
+        options.headers['User-Agent'] = <any>this.source.userAgent
 
         return axios.request(options);
     }
@@ -322,13 +321,8 @@ export default class Utils {
      * @throws SourceException if there is a problem parsing the source file.
      */
     async parse(sourceJson: object): Promise<ParserResult[]> {
-        let source: Source = Source.fileToSource(sourceJson);
-        source.instructions.getSource = (): Source => source;
-
-        let job = Job.createJob(source.getId(), '', 0);
-        job.getSource = (): Source => source;
-        job.getInstructions = (): Instructions => source.instructions;
-
+        let source: Source = Source.parseSourceFile(sourceJson, null);
+        let job = new Job(source, '', 0, null);
         return await Worker.parse(job);
     }
 

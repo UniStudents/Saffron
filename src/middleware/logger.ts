@@ -16,31 +16,31 @@ export default function logger(type: LoggerTypes, data: any): void {
         minute: '2-digit',
         second: '2-digit',
         hour12: false
-    })}`)
+    })}`);
 
     switch (type) {
         case LoggerTypes.INSTALL_ERROR:
-            console.log(chalk.red(" | "))
-            console.log(chalk.red.bold(` ⊗ ${time}: ${data}${data.slice(-1) === "." ? "" : "."} Please consult our docs, at https://saffron.poiw.org/source-files.\n`))
-            return
+            console.log(chalk.red(" | "));
+            console.log(chalk.red.bold(` ⊗ ${time}: ${data}${data.slice(-1) === "." ? "" : "."} Please consult our docs, at https://saffron.poiw.org/source-files.\n`));
+            return;
         case LoggerTypes.STEP:
-            console.log(chalk.white(`${chalk.green(" | ")}`))
-            console.log(chalk.white(`${chalk.green(" ✓ ")} ${time}: ${data}`))
-            return
+            console.log(chalk.white(`${chalk.green(" | ")}`));
+            console.log(chalk.white(`${chalk.green(" ✓ ")} ${time}: ${data}`));
+            return;
         case LoggerTypes.ERROR:
             console.log(chalk.red(" | "))
-            console.log(chalk.red.bold(` ⊗ ${time}: ${data}`))
-            return
+            console.log(chalk.red.bold(` ⊗ ${time}: ${data}`));
+            return;
         case LoggerTypes.INFO:
-            console.log(chalk.white(`${chalk.blue(" | ")}`))
-            console.log(chalk.white(`${chalk.blue(" ◉ ")} ${time}: ${data}`))
-            return
+            console.log(chalk.white(`${chalk.blue(" | ")}`));
+            console.log(chalk.white(`${chalk.blue(" ◉ ")} ${time}: ${data}`));
+            return;
         case LoggerTypes.DEBUG:
-            console.log(chalk.white(`${chalk.blue(" | ")}`))
-            console.log(chalk.white(`${chalk.blue(" ⦿ ")} ${time}: ${data}`))
-            return
+            console.log(chalk.white(`${chalk.blue(" | ")}`));
+            console.log(chalk.white(`${chalk.blue(" ⦿ ")} ${time}: ${data}`));
+            return;
         default:
-            console.log(chalk.black(`${chalk.bgGreen(" saffron ")}`), chalk.white(chalk.white(data)))
+            console.log(chalk.black(`${chalk.bgGreen(" saffron ")}`), chalk.white(chalk.white(data)));
             return;
     }
 }

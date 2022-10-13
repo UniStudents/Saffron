@@ -1,6 +1,5 @@
 import {ParserClass} from "../ParserClass";
 import Instructions from "../../../components/instructions";
-import Job from "../../../components/job";
 import Article from "../../../components/article";
 import Utils from "../Utils";
 
@@ -13,7 +12,7 @@ export class WordpressV1Parser extends ParserClass {
         }
     }
 
-    async parse(job: Job, utils: Utils): Promise<Article[]> {
+    async parse(utils: Utils): Promise<Article[]> {
         throw new Error(`WordpressParserV1Exception job failed because it is not implemented yet.`);
     }
 

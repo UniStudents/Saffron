@@ -1,10 +1,9 @@
 import hashCode from "../src/middleware/hashCode";
 import {pack, unpack} from "../src/middleware/serializer";
-import Job from "../src/components/job";
+import Job, {JobStatus} from "../src/components/job";
 import {expect} from "chai";
 import Source from "../src/components/source";
 import {ParserType} from "../src/components/ParserType";
-import {JobStatus} from "../src/components/JobStatus";
 import Utils from "../src/modules/parsers/Utils";
 import Extensions from "../src/modules/extensions";
 
@@ -26,40 +25,37 @@ describe('Other', function () {
     });
 
     it('Serializer', function () {
-        const job = Job.createJob('source_source-name', 'worker-id', 25000);
-        job.getSource = () => {
-            return Source.fileToSource({
-                name: 'source-name',
-                tableName: 'table-name',
-                interval: 10000,
-                retryInterval: 5000,
-                timeout: 20000,
-                extra: ['random', 'data'],
-                amount: 100,
-                ignoreCertificates: true,
-                encoding: 'iso-8859-7',
-                url: [
-                    ['Category 1', 'https://example.com'],
-                    ['Category 2', 'Category 3', 'https://example2.com']
-                ],
-                type: 'html',
-                scrape: {article: {}}
-            });
-        };
-        job.source.source = job.getSource();
+        const jobSource = Source.parseSourceFile({
+            name: 'source-name',
+            tableName: 'table-name',
+            interval: 10000,
+            retryInterval: 5000,
+            timeout: 20000,
+            extra: ['random', 'data'],
+            amount: 100,
+            ignoreCertificates: true,
+            encoding: 'iso-8859-7',
+            url: [
+                ['Category 1', 'https://example.com'],
+                ['Category 2', 'Category 3', 'https://example2.com']
+            ],
+            type: 'html',
+            scrape: {article: {}}
+        }, null);
+
+        const job = new Job(jobSource, 'worker-id', 25000, null);
 
         const packed = pack(job);
         const unpacked: Job = unpack(packed);
-        unpacked.getSource = () => unpacked.source.source!;
 
-        expect(job.source.id).to.equal('source_source-name');
+        expect(job.source.id).to.equal('src_source-name');
         expect(job.worker.id).to.equal('worker-id');
         expect(job.attempts).to.equal(0);
         expect(job.emitAttempts).to.equal(0);
         expect(job.untilRetry).to.be.greaterThanOrEqual(0);
         expect(job.status).to.equal(JobStatus.PENDING);
 
-        const source = unpacked.getSource();
+        const source = unpacked.source;
         expect(source.name).to.equal('source-name');
         expect(source.tableName).to.equal('table-name');
         expect(source.interval).to.equal(10000);
@@ -95,7 +91,7 @@ describe('Other', function () {
     });
 
     it('Extensions', function () {
-        const ext = Extensions.getInstance();
+        const ext = new Extensions();
         ext.push({event: 'articles', callback: (...args: any[]) => 0});
         ext.push({event: 'article.format', callback: (...args: any[]) => 1});
         ext.push({event: 'article.format', callback: (...args: any[]) => 2});

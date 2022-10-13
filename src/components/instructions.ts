@@ -1,4 +1,3 @@
-import Source from "./source";
 import {ParserType} from "./ParserType";
 
 export type InstructionUrl = {
@@ -13,7 +12,6 @@ export type InstructionUrl = {
  * a web page content.
  */
 export default class Instructions {
-    declare source: { id: string; };
     declare url: InstructionUrl[];
     declare parserType: ParserType;
     declare endPoint: string;
@@ -25,12 +23,4 @@ export default class Instructions {
     declare textDecoder: TextDecoder;
     declare ignoreCertificates: boolean;
     declare extraFields: string[];
-
-    /**
-     * Return the source that variable source refers to.
-     * @return Source
-     */
-    getSource(): Source {
-        return Source.getSourceFrom(this);
-    }
 }

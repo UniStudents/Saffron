@@ -1,6 +1,5 @@
 import {ParserClass} from "../ParserClass";
 import Instructions from "../../../components/instructions";
-import Job from "../../../components/job";
 import Article from "../../../components/article";
 import randomId from "../../../middleware/randomId";
 import Utils from "../Utils";
@@ -18,8 +17,8 @@ export class DynamicParser extends ParserClass {
         instructions.scrapeFunctionStr = scrapeStr;
     }
 
-    async parse(job: Job, utils: Utils): Promise<Article[]> {
-        let instructions = job.getInstructions();
+    async parse(utils: Utils): Promise<Article[]> {
+        let instructions = utils.source.instructions;
         let scrapeFunc = typeof instructions.scrapeFunction === 'function'
             ? instructions.scrapeFunction
             : eval(instructions.scrapeFunctionStr);
@@ -28,16 +27,13 @@ export class DynamicParser extends ParserClass {
         try {
             articles = await scrapeFunc(utils, Article);
         } catch (e: any) {
-            const err =  new Error(`DynamicParserException job failed for ${job.getSource().name}, original error: ${e.message}`);
+            const err =  new Error(`DynamicParserException job failed for ${utils.source.name}, original error: ${e.message}`);
             err.stack = e.stack
             throw err;
         }
 
         articles.forEach(article => {
             article.id = randomId("art")
-            article.setSource(instructions.getSource().getId(), instructions.getSource().name);
-            article.getSource = job.getSource;
-
             article.pushCategories(utils.aliases.map((alias: string) => {
                 return {
                     name: alias,

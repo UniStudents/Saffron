@@ -1,5 +1,5 @@
 require('dotenv').config();
-const Saffron = require('../dist/index').default;
+const {Saffron} = require('../dist/index');
 const loggerTypes = require('../dist/components/LoggerTypes');
 const util = require("util");
 const logger = require('../dist/middleware/logger').default;

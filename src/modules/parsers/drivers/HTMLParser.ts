@@ -50,7 +50,6 @@ export class HTMLParser extends ParserClass {
                     }
                     // It stores the article data to an instance of Article class.
                     tmpArticle = new Article()
-                    tmpArticle.setSource(instructions.getSource().getId(), instructions.getSource().name);
                     tmpArticle.setLink((Array.isArray(articleData.link) && articleData.link[0]?.value)
                         ? articleData.link[0].value
                         : (articleData.link ? articleData.link : ''));
@@ -100,7 +99,7 @@ export class HTMLParser extends ParserClass {
             })
             .catch((e: any) => {
                 console.log(e)
-                throw new Error(`HTMLParserException job failed for ${instructions.getSource().name}, original error: ${e.message}`)
+                throw new Error(`HTMLParserException job failed for ${utils.source.name}, original error: ${e.message}`)
             })
         return parsedArticles
     }
@@ -108,9 +107,8 @@ export class HTMLParser extends ParserClass {
     private static async request(utils: Utils): Promise<AxiosResponse> {
         return new Promise((resolve, reject) => {
             utils.get(utils.url, {
-                timeout: utils.instructions.getSource().timeout,
+                timeout: utils.source.timeout,
                 responseType: 'arraybuffer',
-                // @ts-ignore
                 responseEncoding: 'binary'
             }).then((result: AxiosResponse) => {
                 resolve(result);
@@ -256,8 +254,8 @@ export class HTMLParser extends ParserClass {
         instructions.endPoint = sourceJson.scrape.endPoint;
     }
 
-    async parse(job: Job, utils: Utils): Promise<Article[]> {
-        let instructions = job.getInstructions();
+    async parse(utils: Utils): Promise<Article[]> {
+        let instructions = utils.source.instructions;
         return await HTMLParser.parse2(instructions, utils)
     }
 }

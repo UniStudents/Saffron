@@ -1,14 +1,10 @@
-import Job from "../components/job";
 import Instructions from "./instructions";
 import {ParserType} from "./ParserType";
-import Article from "./article";
 import Config, {ConfigOptions} from "./config";
 import ParserLoader from "../modules/parsers/ParserLoader";
 
 
 export default class Source {
-
-    static _sources: Source[] = [];
 
     declare name: string;
     declare tableName: string;
@@ -18,13 +14,20 @@ export default class Source {
     declare userAgent?: string;
     declare instructions: Instructions;
     declare extra: any;
-    private declare id: string;
+    private declare _id: string;
+
+    get id(): string {
+        if (!this._id)
+            this._id = `src_${this.name}`;
+        return this._id;
+    }
 
     /**
      * Parse and store a source file contents to an array in memory
      * @param source the source file
+     * @param config
      */
-    static fileToSource(source: any): Source {
+    static parseSourceFile(source: any, config: Config | null): Source {
         source.filename = source.filename ? source.filename : source.name ? source.name : 'unknown filename';
 
         let ret = new Source();
@@ -41,29 +44,28 @@ export default class Source {
 
         if (source.interval != null && (typeof source.interval != 'number' || source.interval < 0))
             throw new Error(`SourceException: [${source.filename}] Field interval is not valid, requirements(type = number, positive or zero).`);
-        ret.interval = source.interval ? source.interval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT);
+        ret.interval = source.interval ? source.interval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, config);
 
         if (source.retryInterval != null && (typeof source.retryInterval != 'number' || source.retryInterval < 0))
             throw new Error(`SourceException: [${source.filename}] Field retryInterval is not valid, requirements(type = number, positive or zero).`);
-        ret.retryInterval = source.retryInterval ? source.retryInterval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT) / 2;
+        ret.retryInterval = source.retryInterval ? source.retryInterval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, config) / 2;
 
         if (source.timeout != null && (typeof source.timeout != 'number' || source.timeout < 0))
             throw new Error(`SourceException: [${source.filename}] Field timeout is not valid, requirements(type = number, positive or zero).`);
-        ret.timeout = source.timeout ? source.timeout : Config.getOption(ConfigOptions.REQUEST_TIMEOUT);
+        ret.timeout = source.timeout ? source.timeout : Config.getOption(ConfigOptions.REQUEST_TIMEOUT, config);
 
         if (source.userAgent != null && (typeof source.userAgent != 'string'))
             throw new Error(`SourceException: [${source.filename}] Field userAgent is not valid, requirements(type = string).`);
-        ret.userAgent = source.userAgent ? source.userAgent : Config.getOption(ConfigOptions.WORKER_USERAGENT);
+        ret.userAgent = source.userAgent ? source.userAgent : Config.getOption(ConfigOptions.WORKER_USERAGENT, config);
 
         ret.extra = source.extra;
 
         const instructions = new Instructions();
         ret.instructions = instructions;
-        instructions.source = {id: ret.getId()}
 
         if (source.amount != null && (typeof source.amount != 'number' || source.amount <= 0))
             throw new Error(`SourceException: [${source.filename}] Field amount is not valid, requirements(type = number, positive).`);
-        instructions.amount = source.amount ? source.amount : Config.getOption(ConfigOptions.ARTICLE_AMOUNT);
+        instructions.amount = source.amount ? source.amount : Config.getOption(ConfigOptions.ARTICLE_AMOUNT, config);
 
         if (source.ignoreCertificates != null && typeof source.ignoreCertificates !== 'boolean')
             throw new Error(`SourceException: [${source.filename}] Field ignoreCertificates is not valid, requirements(type = boolean).`);
@@ -119,38 +121,5 @@ export default class Source {
         ParserLoader.assignScrapeInstructions(parserType, ret.instructions, source);
 
         return ret;
-    }
-
-    static pushSource(source: Source) {
-        this._sources.push(source);
-    }
-
-    /**
-     * Return an array of the parsed sources.
-     */
-    static getSources(): Source[] {
-        return this._sources;
-    }
-
-    /**
-     * Return the source class based on job, article or source id
-     * @param from
-     */
-    static getSourceFrom(from: Job | Article | Instructions | string): Source {
-        let id = '';
-        if (from instanceof Job || from instanceof Article || from instanceof Instructions)
-            id = from.source?.id;
-        else id = from;
-
-        return this._sources.find(source => source.getId() === id)!;
-    }
-
-    /**
-     * Generate and return the id of the source
-     */
-    getId(): string {
-        if (!this.id)
-            this.id = `src_${this.name}`;
-        return this.id;
     }
 }
