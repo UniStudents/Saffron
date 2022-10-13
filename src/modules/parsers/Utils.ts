@@ -2,7 +2,7 @@ import cheerio from "cheerio";
 import {Attachment} from "../../components/article";
 import https from "https";
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
-import {ParserResult} from "../../components/types";
+import {ParserResult, SourceFile} from "../../components/types";
 import Source from "../../components/source";
 import Job from "../../components/job";
 import Worker from "../worker";
@@ -320,8 +320,8 @@ export default class Utils {
      * @param sourceJson The json object of the source file.
      * @throws SourceException if there is a problem parsing the source file.
      */
-    async parse(sourceJson: object): Promise<ParserResult[]> {
-        let source: Source = Source.parseSourceFile(sourceJson, null);
+    async parse(sourceJson: SourceFile): Promise<ParserResult[]> {
+        let source = Source.parseSourceFile(sourceJson, null);
         let job = new Job(source, '', 0, null);
         return await Worker.parse(job);
     }

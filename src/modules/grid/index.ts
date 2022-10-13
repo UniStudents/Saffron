@@ -256,7 +256,7 @@ export default class Grid {
         this.saffron.events.emit("worker.articles.new", articles, tableName); // Can be empty array
 
         try {
-            await Config.getOption(ConfigOptions.DB_PUSH_ARTICLES, this.saffron.config)(toSaveArticles);
+            await Config.getOption(ConfigOptions.DB_PUSH_ARTICLES, this.saffron.config)(articles);
         }  catch (e) {
             this.saffron.events.emit("database.set.error", source, e);
             return;

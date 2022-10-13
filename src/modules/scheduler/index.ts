@@ -45,8 +45,8 @@ export default class Scheduler {
 
         this.running = true;
         if (!keepPreviousSession) {
-            const sources = await this.resetSources();
-            this.resetJobs(sources);
+            await this.resetSources();
+            this.resetJobs(this.sources);
         }
 
         // Check grid for job status
@@ -142,9 +142,7 @@ export default class Scheduler {
 
     async resetSources(): Promise<Source[]> {
         // Read all source files
-        this.sources = [];
         await this.scanSourceFiles();
-        let sources = this.sources;
 
         let includeOnly = Config.getOption(ConfigOptions.SOURCES_INCLUDE_ONLY, this.saffron.config);
         let excluded = Config.getOption(ConfigOptions.SOURCES_EXCLUDE, this.saffron.config);
@@ -155,22 +153,22 @@ export default class Scheduler {
         // Include only
         if (includeOnly.length > 0) {
             let tmpSources: Source[] = [];
-            sources.forEach((source: Source) => {
+            this.sources.forEach((source: Source) => {
                 if (includeOnly.includes(source.name))
                     tmpSources.push(source);
             });
-            sources = tmpSources;
+            this.sources = tmpSources;
         }
 
         // Exclude sources
         excluded.forEach((ex_source: any) => {
-            let index = sources.findIndex((source: Source) => source.name === ex_source);
+            let index = this.sources.findIndex((source: Source) => source.name === ex_source);
             if (index !== -1)
-                sources.splice(index, 1);
+                this.sources.splice(index, 1);
         });
 
-        this.saffron.events.emit("scheduler.sources.new", sources.map((source: Source) => source.name));
-        return sources;
+        this.saffron.events.emit("scheduler.sources.new", this.sources.map((source: Source) => source.name));
+        return this.sources;
     }
 
     changeJobStatus(id: string, status: JobStatus) {
@@ -203,6 +201,7 @@ export default class Scheduler {
                     };
                 });
 
+                this.sources = [];
                 sources.forEach((sourceFile: any) => {
                     try {
                         sourceFile = {

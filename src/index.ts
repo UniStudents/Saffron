@@ -9,7 +9,7 @@ import Job from "./components/job"
 import Source from "./components/source"
 import Instructions from "./components/instructions";
 import Extensions, {PairEvent} from "./modules/extensions";
-import {ParserResult} from "./components/types";
+import {ParserResult, SourceFile} from "./components/types";
 
 
 class Saffron {
@@ -121,8 +121,8 @@ class Saffron {
      * @param sourceJson The json object of the source file.
      * @throws SourceException if there is a problem parsing the source file.
      */
-    static async parse(sourceJson: object): Promise<ParserResult[]> {
-        let source: Source = Source.parseSourceFile(sourceJson, null);
+    static async parse(sourceJson: SourceFile): Promise<ParserResult[]> {
+        let source = Source.parseSourceFile(sourceJson, null);
         let job = new Job(source, '', 0, null);
         return await Worker.parse(job);
     }
@@ -131,7 +131,7 @@ class Saffron {
      * Get current source files.
      * By editing the result of this function the main sources will be edited as well.
      */
-    getSources(): Source[] {
+    get sources(): Source[] {
         return this.scheduler.sources;
     }
 

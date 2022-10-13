@@ -25,7 +25,7 @@ export default class Article {
     declare thumbnail: string;
 
     constructor() {
-        this.id = randomId("art")
+        this.id = randomId("art");
     }
 
     /**

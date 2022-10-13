@@ -1,9 +1,5 @@
 import {ParserType} from "./ParserType";
-
-export type InstructionUrl = {
-    url: string;
-    aliases: string[];
-};
+import {InstructionUrl} from "./types.js";
 
 /**
  * The instructions class is used mainly by parsers.
