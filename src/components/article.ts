@@ -1,4 +1,3 @@
-import Source from "./source";
 import randomId from "../middleware/randomId"
 
 export type Attachment = {
@@ -20,7 +19,7 @@ export default class Article {
     declare pubDate: string;
     declare timestamp: number;
     declare extras: { [key: string]: any };
-    declare source: Source;
+    declare source: string;
     declare attachments: Attachment[];
     declare categories: Category[];
     declare thumbnail: string;

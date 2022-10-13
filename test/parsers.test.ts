@@ -62,8 +62,7 @@ describe("Parsers", function () {
 
             for (const article of obj.articles) {
                 expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
-                expect(article.source.id).to.equal('src_dynamic-source');
-                expect(article.source.name).to.equal('dynamic-source');
+                expect(article.source).to.equal('src_dynamic-source');
 
                 expect(article.title).to.equal('My title');
                 expect(article.content).to.equal('My content');
@@ -150,8 +149,7 @@ describe("Parsers", function () {
 
             for (const article of obj.articles) {
                 expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
-                expect(article.source.id).to.equal('src_html-source');
-                expect(article.source.name).to.equal('html-source');
+                expect(article.source).to.equal('src_html-source');
 
                 const cat = article.categories.find(cat => cat.name === 'Γενικές Ανακοινώσεις');
                 expect(cat).to.not.be.undefined;
@@ -182,8 +180,7 @@ describe("Parsers", function () {
 
             for (const article of obj.articles) {
                 expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
-                expect(article.source.id).to.equal('src_rss-source');
-                expect(article.source.name).to.equal('rss-source');
+                expect(article.source).to.equal('src_rss-source');
             }
 
             const article = obj.articles[0];
@@ -211,8 +208,7 @@ describe("Parsers", function () {
 
             for (const article of obj.articles) {
                 expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
-                expect(article.source.id).to.equal('src_wordpress-source');
-                expect(article.source.name).to.equal('wordpress-source');
+                expect(article.source).to.equal('src_wordpress-source');
             }
 
             const article = obj.articles[0];

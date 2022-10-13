@@ -255,14 +255,6 @@ export default class Grid {
         articles = articles.filter((article: Article) => !hashes.includes(article.getHash()));
         this.saffron.events.emit("worker.articles.new", articles, tableName); // Can be empty array
 
-        const toSaveArticles = articles.map(a => {
-            return {
-                ...a,
-                source_id: a.source.id,
-                source: undefined
-            };
-        });
-
         try {
             await Config.getOption(ConfigOptions.DB_PUSH_ARTICLES, this.saffron.config)(toSaveArticles);
         }  catch (e) {

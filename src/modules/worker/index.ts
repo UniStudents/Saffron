@@ -42,7 +42,7 @@ export default class Worker {
 
         results.forEach(r => {
             r.articles.forEach((article: Article) => {
-                article.source = job.source
+                article.source = job.source.id
             });
         });
 
