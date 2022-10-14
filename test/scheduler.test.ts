@@ -1,4 +1,4 @@
-import Scheduler from "../src/modules/scheduler/index";
+import Scheduler from "../src/modules/scheduler";
 import {expect} from "chai";
 import {Saffron} from "../src/index";
 

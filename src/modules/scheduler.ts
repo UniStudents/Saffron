@@ -1,10 +1,10 @@
-import Config, {ConfigOptions} from "../../components/config";
-import Job, {JobStatus} from "../../components/job";
-import Source from "../../components/source";
-import Worker from "../worker";
+import Config, {ConfigOptions} from "../components/config";
+import Job, {JobStatus} from "../components/job";
+import Source from "../components/source";
+import Worker from "./worker";
 import glob from "glob";
 import * as path from "path";
-import {Saffron} from "../../index";
+import {Saffron} from "../index";
 
 export default class Scheduler {
 

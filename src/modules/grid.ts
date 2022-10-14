@@ -1,15 +1,15 @@
-import Job, {JobStatus} from "../../components/job";
-import Worker from "../worker";
-import Config, {ConfigOptions} from "../../components/config";
-import Article from "../../components/article";
-import Source from "../../components/source";
+import Job, {JobStatus} from "../components/job";
+import Worker from "./worker";
+import Config, {ConfigOptions} from "../components/config";
+import Article from "../components/article";
+import Source from "../components/source";
 import * as ServerIO from "socket.io"
 import * as ClientIO from "socket.io-client";
 import * as http from "http";
 import * as https from "https";
-import {ParserResult} from "../../components/types";
-import {pack, unpack} from "../../middleware/serializer";
-import {Saffron} from "../../index.js";
+import {ParserResult} from "../components/types";
+import {pack, unpack} from "../middleware/serializer";
+import {Saffron} from "../index";
 
 
 export default class Grid {

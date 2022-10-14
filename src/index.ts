@@ -42,8 +42,8 @@ class Saffron {
         this.events.emit('title');
 
         // Initialize and start grid
+        this.grid = new Grid(this);
         if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED, this.config)) {
-            this.grid = new Grid(this);
             try {
                 await this.grid.connect();
                 this.events.emit('grid.connection.okay');
