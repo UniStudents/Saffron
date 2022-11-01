@@ -177,7 +177,12 @@ export class HTMLParser extends ParserClass {
                            endPoint: string): Array<String | Object> | String {
 
         let results: Array<String | Object> = new Array<String | Object>()
-        let tmpElement = htmlContent(currArticle).find(htmlClass)
+
+        let tmpElement: cheerio.Cheerio;
+        if(htmlClass)
+            tmpElement = htmlContent(currArticle).find(htmlClass);
+        else tmpElement = htmlContent(currArticle);
+
         let tmpArray: Array<string> | null
         let finalLocation: cheerio.Cheerio
         let finalData: cheerio.Cheerio
