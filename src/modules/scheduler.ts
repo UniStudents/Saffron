@@ -10,10 +10,12 @@ export default class Scheduler {
 
     declare sources: Source[];
     private declare running: boolean;
-    private declare jobsStorage: Job[];
+    declare jobs: Job[];
+    declare interval:  NodeJS.Timeout
+    checkInterval: number = 2000;
 
     constructor(private readonly saffron: Saffron) {
-        this.jobsStorage = [];
+        this.jobs = [];
         this.running = false;
         this.sources = [];
     }
@@ -33,81 +35,74 @@ export default class Scheduler {
         let worker = Worker.electWorker(lasWorkerId, this.saffron.grid);
         let nJob = new Job(source, worker, interval !== -1 ? interval : source.interval, this.saffron.config);
 
-        this.jobsStorage.push(nJob);
+        this.jobs.push(nJob);
         this.saffron.events.emit("scheduler.job.new", nJob);
     }
 
     /**
      * Starts the scheduler
      */
-    async start(keepPreviousSession: boolean): Promise<void> {
-        const checkInterval = Config.getOption(ConfigOptions.SCHEDULER_CHECKS_INT, this.saffron.config);
-
+    async start(reset: boolean): Promise<void> {
         this.running = true;
-        if (!keepPreviousSession) {
+
+        if (reset) {
             await this.resetSources();
-            this.resetJobs(this.sources);
+            this.resetJobs();
         }
 
-        // Check grid for job status
-        const mInterval = setInterval(async () => {
-            if (!this.running) {
-                clearInterval(mInterval);
-                return;
-            }
+        const noResponseThreshold = Config.getOption(ConfigOptions.SCHEDULER_NO_RESPONSE_THRESHOLD, this.saffron.config);
 
-            // Load all jobs
-            for (let job of this.jobsStorage) {
-                job.untilRetry -= checkInterval;
+        let checkingJobs = false;
+        this.interval = setInterval(async () => {
+            if(checkingJobs) return;
+            checkingJobs = true;
+            if (!this.running) return;
 
-                switch (job.status) {
-                    // Issue new job for this source
-                    case JobStatus.FINISHED:
-                        this.saffron.events.emit("scheduler.job.finished", job);
-                        this.deleteJob(job);
+            for (let job of this.jobs) {
+                // Subtract the elapsed time
+                job.untilRetry -= this.checkInterval;
 
-                        // TODO: Maybe do not delete jobs. Keep same instances with updated data.
+                if (job.status === JobStatus.FINISHED) {
+                    this.saffron.events.emit("scheduler.job.finished", job);
 
-                        await this.issueJobForSource(job.source, job.worker.id);
-                        break;
-                    // A job failed so increment the attempts and try again
-                    case JobStatus.FAILED:
-                        this.saffron.events.emit("scheduler.job.failed", job);
+                    // Delete job
+                    let index = this.jobs.findIndex((obj: Job) => obj.id === job.id);
+                    if (index !== -1) this.jobs.splice(index, 1);
 
-                        job.attempts++;
+                    await this.issueJobForSource(job.source, job.worker);
+                } else if (job.status === JobStatus.FAILED) {
+                    this.saffron.events.emit("scheduler.job.failed", job);
+
+                    job.attempts++;
+                    job.emitAttempts = 0;
+
+                    // If attempts > 10 increase interval to heavy interval
+                    job.untilRetry = job.attempts > 10
+                        ? Config.getOption(ConfigOptions.SCHEDULER_JOB_HEAVY_INT, this.saffron.config)
+                        : (job.source.retryInterval ? job.source.retryInterval : job.source.interval / 2);
+
+                    job.status = JobStatus.PENDING;
+                    this.saffron.events.emit("scheduler.job.reincarnate", job);
+                } else if (job.status === JobStatus.PENDING && job.untilRetry <= 0) {
+                    // Replace worker under conditions
+                    if (job.untilRetry < -job.source.interval * noResponseThreshold || !job.worker.trim().length) {
+                        let oldWorker = job.worker;
+                        this.saffron.grid.fireWorker(oldWorker);
+
+                        job.worker = Worker.electWorker(oldWorker, this.saffron.grid);
                         job.emitAttempts = 0;
+                        this.saffron.events.emit("scheduler.job.worker.replace", oldWorker, job);
+                    }
 
-                        // If attempts > e.x. 10 increase interval to check on e.x. a day after
-                        let interval = job.attempts > 10
-                            ? Config.getOption(ConfigOptions.SCHEDULER_JOB_HEAVY_INT, this.saffron.config)
-                            : (job.source.retryInterval ? job.source.retryInterval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, this.saffron.config) / 2);
+                    if (job.emitAttempts === 0)
+                        this.saffron.events.emit("scheduler.job.push", job);
 
-                        job.untilRetry = interval;
-                        job.status = JobStatus.PENDING;
-
-                        this.saffron.events.emit("scheduler.job.reincarnate", job);
-                        break;
-                    // Pending jobs
-                    case JobStatus.PENDING:
-                        if (job.untilRetry <= 0) {
-                            // If the worker did not change the job status after 5 times (totally: 5 * checkInterval ms),
-                            // expect it to have crashed, so we elect a new worker to take its place.
-                            if (job.emitAttempts > 5 || job.worker.id.trim().length === 0) {
-                                let oldWorker = job.worker.id;
-                                this.saffron.grid.fireWorker(job.source.id, oldWorker);
-
-                                job.worker.id = Worker.electWorker(job.worker.id, this.saffron.grid);
-                                job.emitAttempts = 0;
-                                this.saffron.events.emit("scheduler.job.worker.replace", oldWorker, job);
-                            }
-
-                            if (job.emitAttempts === 0) this.saffron.events.emit("scheduler.job.push", job);
-                            job.emitAttempts++;
-                        }
-                        break;
+                    job.emitAttempts++;
                 }
             }
-        }, checkInterval);
+
+            checkingJobs = false;
+        }, this.checkInterval);
     }
 
     /**
@@ -115,34 +110,43 @@ export default class Scheduler {
      */
     stop() {
         this.running = false;
+        clearInterval(this.interval);
     }
 
-    getJobs(): Job[] {
-        return this.jobsStorage;
-    }
-
+    /**
+     * It will replace the current jobs with new ones. It will also override the workers' ids
+     * with new ones.
+     * @param jobs
+     */
     replaceCurrentJobs(jobs: Job[]) {
-        jobs.forEach(job => job.worker.id = Worker.electWorker(job.worker.id, this.saffron.grid))
-        this.jobsStorage = jobs;
+        jobs.forEach(job => job.worker = Worker.electWorker(job.worker, this.saffron.grid))
+        this.jobs = jobs;
     }
 
-    resetJobs(sources: Source[]) {
-        this.jobsStorage = [];
+    /**
+     * Reset jobs for current loaded sources.
+     */
+    resetJobs() {
+        this.jobs = [];
 
         // Create separation interval
-        let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, this.saffron.config) / sources.length
+        let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, this.saffron.config) / this.sources.length
 
         let workersIds = this.saffron.grid.getWorkers();
         let sI = 0, wI = 0;
-        for (let source of sources) {
+        for (let source of this.sources) {
             this.issueJobForSource(source, workersIds[wI++], separationInterval * sI++);
             if (wI == workersIds.length) wI = 0;
         }
     }
 
-    async resetSources(): Promise<Source[]> {
+    async resetSources() {
         // Read all source files
-        await this.scanSourceFiles();
+        let parsedSources = await this.scanSourceFiles();
+        if(parsedSources.length == 0) {
+            this.sources = [];
+            return;
+        }
 
         let includeOnly = Config.getOption(ConfigOptions.SOURCES_INCLUDE_ONLY, this.saffron.config);
         let excluded = Config.getOption(ConfigOptions.SOURCES_EXCLUDE, this.saffron.config);
@@ -153,43 +157,48 @@ export default class Scheduler {
         // Include only
         if (includeOnly.length > 0) {
             let tmpSources: Source[] = [];
-            this.sources.forEach((source: Source) => {
+            parsedSources.forEach((source: Source) => {
                 if (includeOnly.includes(source.name))
                     tmpSources.push(source);
             });
-            this.sources = tmpSources;
+            parsedSources = tmpSources;
         }
 
         // Exclude sources
         excluded.forEach((ex_source: any) => {
             let index = this.sources.findIndex((source: Source) => source.name === ex_source);
             if (index !== -1)
-                this.sources.splice(index, 1);
+                parsedSources.splice(index, 1);
         });
 
+        this.sources.length = 0;
+        this.sources.push(...parsedSources);
+
         this.saffron.events.emit("scheduler.sources.new", this.sources.map((source: Source) => source.name));
-        return this.sources;
     }
 
     changeJobStatus(id: string, status: JobStatus) {
-        let job = this.jobsStorage.find((obj: Job) => obj.id === id);
+        let job = this.jobs.find((obj: Job) => obj.id === id);
         if (job) job.status = status;
     }
 
     /**
      * Scans the source files from given path and translate them to classes
      */
-    private scanSourceFiles(): Promise<void> {
+    private scanSourceFiles(): Promise<Source[]> {
         return new Promise((resolve, reject) => {
             let sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH, this.saffron.config);
             glob(`${path.join(process.cwd(), sourcesPath)}/**`, {}, (error: any, files: string[]) => {
                 if (error) {
                     this.saffron.events.emit('scheduler.path.error', error);
-                    return reject(error);
+                    reject(error);
+                    return;
                 }
 
-                if (!files || files.length <= 0)
-                    return reject(new Error("No source files were found."));
+                if (!files || files.length == 0) {
+                    resolve([]);
+                    return;
+                }
 
                 let acceptedFiles = new RegExp(/.*js/);
                 let rawSources = files.filter((file: any) => acceptedFiles.test(file))
@@ -201,7 +210,7 @@ export default class Scheduler {
                     };
                 });
 
-                this.sources = [];
+                const parsedSources: Source[] = [];
                 sources.forEach((sourceFile: any) => {
                     try {
                         sourceFile = {
@@ -215,23 +224,14 @@ export default class Scheduler {
 
                     try {
                         const newSource = Source.parseSourceFile(sourceFile, this.saffron.config);
-                        this.sources.push(newSource);
+                        parsedSources.push(newSource);
                     } catch (e) {
                         this.saffron.events.emit("scheduler.sources.error", sourceFile, e);
                     }
                 });
 
-                resolve();
+                resolve(parsedSources);
             });
         });
-    }
-
-    /**
-     * Delete a job from storage so a new one can be issued.
-     * @param job
-     */
-    private deleteJob(job: Job) {
-        let index = this.jobsStorage.findIndex((obj: Job) => obj.id === job.id);
-        if (index !== -1) this.jobsStorage.splice(index, 1);
     }
 }

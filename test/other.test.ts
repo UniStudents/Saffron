@@ -3,7 +3,7 @@ import {pack, unpack} from "../src/middleware/serializer";
 import Job, {JobStatus} from "../src/components/job";
 import {expect} from "chai";
 import Source from "../src/components/source";
-import {ParserType} from "../src/components/ParserType";
+import {ParserType} from "../src/components/ParserClass";
 import Utils from "../src/modules/parsers/Utils";
 import Extensions from "../src/modules/extensions";
 
@@ -48,8 +48,8 @@ describe('Other', function () {
         const packed = pack(job);
         const unpacked: Job = unpack(packed);
 
-        expect(job.source.id).to.equal('src_source-name');
-        expect(job.worker.id).to.equal('worker-id');
+        expect(job.source.name).to.equal('source-name');
+        expect(job.worker).to.equal('worker-id');
         expect(job.attempts).to.equal(0);
         expect(job.emitAttempts).to.equal(0);
         expect(job.untilRetry).to.be.greaterThanOrEqual(0);
@@ -60,8 +60,8 @@ describe('Other', function () {
         expect(source.tableName).to.equal('table-name');
         expect(source.interval).to.equal(10000);
         expect(source.retryInterval).to.equal(5000);
-        expect(source.timeout).to.equal(20000);
         expect(source.extra).to.deep.equal(['random', 'data']);
+        expect(source.instructions.timeout).to.equal(20000);
         expect(source.instructions.amount).to.equal(100);
         expect(source.instructions.ignoreCertificates).to.equal(true);
 
@@ -86,7 +86,7 @@ describe('Other', function () {
 
     it('Utils -> HTML cleanup text', function () {
         const utils = new Utils();
-        utils.cleanupHTMLText('');
+        expect(utils.cleanupHTMLText('')).to.equal('');
         // TODO: Add more normalize html text cases
     });
 

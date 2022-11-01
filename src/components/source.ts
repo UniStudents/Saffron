@@ -1,7 +1,8 @@
 import Instructions from "./instructions";
-import {ParserType} from "./ParserType";
+import {ParserType} from "./ParserClass";
 import Config, {ConfigOptions} from "./config";
 import ParserLoader from "../modules/parsers/ParserLoader";
+import {SourceFile} from "./types";
 
 
 export default class Source {
@@ -10,25 +11,16 @@ export default class Source {
     declare tableName: string;
     declare interval: number;
     declare retryInterval: number;
-    declare timeout: number;
-    declare userAgent?: string;
     declare instructions: Instructions;
     declare extra: any;
-    private declare _id: string;
-
-    get id(): string {
-        if (!this._id)
-            this._id = `src_${this.name}`;
-        return this._id;
-    }
 
     /**
      * Parse and store a source file contents to an array in memory
      * @param source the source file
      * @param config
      */
-    static parseSourceFile(source: any, config: Config | null): Source {
-        source.filename = source.filename ? source.filename : source.name ? source.name : 'unknown filename';
+    static parseSourceFile(source: SourceFile, config: Config | null): Source {
+        source.filename = source.filename ?? source.name ?? 'unknown filename';
 
         let ret = new Source();
 
@@ -38,43 +30,34 @@ export default class Source {
         ret.name = source.name;
 
         // Source tableName
-        if (source.tableName != null && (typeof source.tableName !== 'string' || source.tableName.length < 3 || ["saffron", "config", "workers"].includes(source.tableName)))
+        if (source.tableName != null && (source.tableName.length < 3 || ["saffron", "config", "workers"].includes(source.tableName)))
             throw new Error(`SourceException: [${source.filename}] Field tableName  is not valid, requirements(type = string, length >= 3, != saffron, != workers, != config).`);
-        ret.tableName = source.tableName;
+        ret.tableName = source.tableName!;
 
-        if (source.interval != null && (typeof source.interval != 'number' || source.interval < 0))
+        if (source.interval != null && (source.interval < 0))
             throw new Error(`SourceException: [${source.filename}] Field interval is not valid, requirements(type = number, positive or zero).`);
         ret.interval = source.interval ? source.interval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, config);
 
-        if (source.retryInterval != null && (typeof source.retryInterval != 'number' || source.retryInterval < 0))
+        if (source.retryInterval != null && (source.retryInterval < 0))
             throw new Error(`SourceException: [${source.filename}] Field retryInterval is not valid, requirements(type = number, positive or zero).`);
         ret.retryInterval = source.retryInterval ? source.retryInterval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, config) / 2;
-
-        if (source.timeout != null && (typeof source.timeout != 'number' || source.timeout < 0))
-            throw new Error(`SourceException: [${source.filename}] Field timeout is not valid, requirements(type = number, positive or zero).`);
-        ret.timeout = source.timeout ? source.timeout : Config.getOption(ConfigOptions.REQUEST_TIMEOUT, config);
-
-        if (source.userAgent != null && (typeof source.userAgent != 'string'))
-            throw new Error(`SourceException: [${source.filename}] Field userAgent is not valid, requirements(type = string).`);
-        ret.userAgent = source.userAgent ? source.userAgent : Config.getOption(ConfigOptions.WORKER_USERAGENT, config);
 
         ret.extra = source.extra;
 
         const instructions = new Instructions();
         ret.instructions = instructions;
 
-        if (source.amount != null && (typeof source.amount != 'number' || source.amount <= 0))
+        if (source.timeout != null && (source.timeout < 0))
+            throw new Error(`SourceException: [${source.filename}] Field timeout is not valid, requirements(type = number, positive or zero).`);
+        instructions.timeout = source.timeout ? source.timeout : Config.getOption(ConfigOptions.REQUEST_TIMEOUT, config);
+
+        if (source.amount != null && (source.amount <= 0))
             throw new Error(`SourceException: [${source.filename}] Field amount is not valid, requirements(type = number, positive).`);
         instructions.amount = source.amount ? source.amount : Config.getOption(ConfigOptions.ARTICLE_AMOUNT, config);
 
-        if (source.ignoreCertificates != null && typeof source.ignoreCertificates !== 'boolean')
-            throw new Error(`SourceException: [${source.filename}] Field ignoreCertificates is not valid, requirements(type = boolean).`);
-        instructions.ignoreCertificates = source.ignoreCertificates ? source.ignoreCertificates : false;
-
-        if (source.encoding != null && typeof source.encoding !== 'string')
-            throw new Error(`SourceException: [${source.filename}] Field encoding is not valid requirements(type = string).`);
+        instructions.userAgent = source.userAgent ?? Config.getOption(ConfigOptions.WORKER_USERAGENT, config);
+        instructions.ignoreCertificates = source.ignoreCertificates ?? false;
         instructions.textDecoder = source.encoding ? new TextDecoder(`${source.encoding}`) : new TextDecoder();
-
 
         instructions.url = [];
         if (typeof source.url === 'string') {
@@ -88,7 +71,7 @@ export default class Source {
                     let url = pair[pair.length - 1];
 
                     aliases.forEach(alias => {
-                        if (typeof alias !== 'string' || alias.trim() === '')
+                        if (alias.trim() === '')
                             throw new Error(`SourceException: [${source.filename}] At field url, field alias is not valid, requirements(type = string, not empty, not whitespace).`);
                     });
 

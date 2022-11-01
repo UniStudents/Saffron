@@ -1,4 +1,4 @@
-import Config, {ConfigType, ConfigOptions} from "./components/config"
+import Config, {ConfigOptions, ConfigType} from "./components/config"
 import Scheduler from "./modules/scheduler";
 import Grid from "./modules/grid";
 import Events from "./modules/events";
@@ -29,14 +29,20 @@ class Saffron {
      * Initialize saffron with the given configuration file.
      * It will also connect to the database if it is given and add a route to the server instance if it given.
      * @param config The config file path or object
+     * @param discardOldConfig
      * @see https://saffron.poiw.org
      */
     async initialize(config?: Partial<ConfigType>
-        | { production: Partial<ConfigType> }
-        | { development: Partial<ConfigType> }
-        | { testing: Partial<ConfigType> }) {
+        & { production?: Partial<ConfigType> }
+        & { development?: Partial<ConfigType> }
+        & { testing?: Partial<ConfigType> }, discardOldConfig: boolean = false) {
         // Load config file
-        this.config = new Config(config);
+        if(this.config == null || discardOldConfig)
+            this.config = new Config(config);
+        else this.config.initializeConfig(config);
+
+        if(Config.getOption(ConfigOptions.WORKER_NODES, this.config) < 1)
+            throw new Error("SaffronError Nodes must be at least 1.");
 
         this.events.registerLogListeners(this.config);
         this.events.emit('title');
@@ -66,19 +72,19 @@ class Saffron {
 
     /**
      * Starts a Saffron instance.
-     * @param keepPreviousSession If you want to start and stop the saffron without interrupting the schedule
      * you can set keepPreviousSession to true.
      *
-     * If keepPreviousSession is set to true, it will not read sources' folder and no new jobs will not be generated.
+     * If reset is set to false, it will not read sources' folder and no new jobs will not be generated.
+     * @param reset
      */
-    async start(keepPreviousSession: boolean = false) {
+    async start(reset: boolean = true) {
         for (let worker of this.workers) {
             // TODO - Start worker on new node thread - https://nodejs.org/api/worker_threads.html
-            await worker.start();
+            worker.start();
         }
 
         if (Config.getOption(ConfigOptions.SAFFRON_MODE, this.config) === 'main')
-            await this.scheduler.start(keepPreviousSession);
+            await this.scheduler.start(reset);
 
         this.events.emit("start");
     }
@@ -125,40 +131,6 @@ class Saffron {
         let source = Source.parseSourceFile(sourceJson, null);
         let job = new Job(source, '', 0, null);
         return await Worker.parse(job);
-    }
-
-    /**
-     * Get current source files.
-     * By editing the result of this function the main sources will be edited as well.
-     */
-    get sources(): Source[] {
-        return this.scheduler.sources;
-    }
-
-    async resetSources() {
-        if(this.scheduler != null)
-            await this.scheduler.resetSources();
-        else throw new Error('Scheduler is not initialized. Set mode main to get active jobs');
-    }
-
-    /**
-     * Get current jobs.
-     * By editing the result of this function the jobs will be edited as well.
-     */
-    getJobs(): Job[] {
-        if(this.scheduler != null)
-            return this.scheduler.getJobs();
-        else throw new Error('Scheduler is not initialized. Set mode main to get active jobs');
-    }
-
-    /**
-     * Replace the current running jobs.
-     * @param jobs
-     */
-    replaceCurrentJobs(jobs: Job[]) {
-        if(this.scheduler != null)
-            this.scheduler.replaceCurrentJobs(jobs);
-        else throw new Error('Scheduler is not initialized. Set mode main to get active jobs');
     }
 }
 

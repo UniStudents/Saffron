@@ -28,7 +28,6 @@ export default class Worker {
             utils.url = pair.url;
             utils.aliases = pair.aliases;
             utils.isScrapeAfterError = job.attempts !== 0;
-            utils.amount = job.source.instructions.amount;
             utils.source = job.source;
 
             // Will throw error in case of fail (catch in call function).
@@ -42,7 +41,7 @@ export default class Worker {
 
         results.forEach(r => {
             r.articles.forEach((article: Article) => {
-                article.source = job.source.id
+                article.source = job.source.name
             });
         });
 
@@ -75,14 +74,14 @@ export default class Worker {
     /**
      * Worker will start accepting jobs
      */
-    async start(): Promise<void> {
+    start() {
         this.saffron.grid.announceWorker(this);
         this.isRunning = true;
 
         // start listening for new jobs
         this.saffron.events.on("scheduler.job.push", async (job: Job) => {
             if (!this.isRunning) return;
-            if (this.id !== job.worker.id) return;
+            if (this.id !== job.worker) return;
 
             let result: ParserResult[];
             try {
@@ -104,7 +103,7 @@ export default class Worker {
     /**
      * Worker will stop accepting jobs and abort existing ones.
      */
-    stop(): void {
+    stop() {
         this.isRunning = false;
         this.saffron.grid.destroyWorker(this);
     }

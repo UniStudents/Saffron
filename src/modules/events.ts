@@ -120,7 +120,7 @@ class Antennae {
     constructor(private readonly saffron: Saffron) {
     }
 
-    public on(eventName: string, callback: CallbackVoid): void {
+    public on(eventName: string, callback: CallbackVoid) {
         if (eventName.length === 0) throw Error("You cannot create an event for nothing!");
 
         if (!this._callbacks[eventName])
@@ -129,7 +129,7 @@ class Antennae {
         this._callbacks[eventName].push(callback);
     }
 
-    public emit(eventName: string, ...args: any[]): void {
+    public emit(eventName: string, ...args: any[]) {
         if (!this._callbacks[eventName]) return;
 
         this.saffron.grid.emit(eventName, ...args);

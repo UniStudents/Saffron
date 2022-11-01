@@ -1,4 +1,4 @@
-import {ParserType} from "../src/components/ParserType";
+import {ParserType} from "../src/components/ParserClass";
 import ParserLoader from "../src/modules/parsers/ParserLoader";
 import {expect} from "chai";
 import {HTMLParser} from "../src/modules/parsers/drivers/HTMLParser";
@@ -6,7 +6,7 @@ import {RSSParser} from "../src/modules/parsers/drivers/RSSParser";
 import {WordpressV1Parser} from "../src/modules/parsers/drivers/WordpressV1Parser";
 import {WordpressV2Parser} from "../src/modules/parsers/drivers/WordpressV2Parser";
 import {DynamicParser} from "../src/modules/parsers/drivers/DynamicParser";
-import {Saffron, Utils, Article} from "../src/index";
+import {Article, Saffron, Utils} from "../src/index";
 
 describe("Parsers", function () {
     it('Type translation', function () {
@@ -38,10 +38,10 @@ describe("Parsers", function () {
             scrape: async (utils: Utils, _ArticleInitiator: any) => {
                 // Use _ArticleInitiator if you don't want to import Article class.
                 const article = new Article();
-                article.setTitle('My title');
-                article.setContent('My content');
-                article.setLink('My link');
-                article.setPubDate('My date');
+                article.title = 'My title';
+                article.content = 'My content';
+                article.link = 'My link';
+                article.pubDate = 'My date';
                 article.pushCategory('Custom', ['link2', 'link3']);
                 article.pushAttachment({
                     text: 'My text',
@@ -62,7 +62,7 @@ describe("Parsers", function () {
 
             for (const article of obj.articles) {
                 expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
-                expect(article.source).to.equal('src_dynamic-source');
+                expect(article.source).to.equal('dynamic-source');
 
                 expect(article.title).to.equal('My title');
                 expect(article.content).to.equal('My content');
@@ -86,57 +86,44 @@ describe("Parsers", function () {
         });
     });
 
-    it('HTML parser', function () {
+    it('HTML parser 1', function () {
         return Saffron.parse({
             url: [
-                ["Γενικές Ανακοινώσεις", 'http://127.0.0.1:3000/html']
+                ["Γενικές Ανακοινώσεις", 'http://127.0.0.1:3000/html1']
             ],
-            name: 'html-source',
+            name: 'html1-source',
             type: 'html',
             ignoreCertificates: true,
             scrape: {
                 container: ".catItemView",
                 endPoint: "unipi.gr",
                 article: {
-                    "link": {
-                        "class": ".catItemTitle",
-                        "find": [
-                            "a"
-                        ],
-                        "attributes": [
-                            "href"
-                        ],
-                        "multiple": false
+                    link: {
+                        class: ".catItemTitle",
+                        find: ["a"],
+                        attributes: ["href"],
+                        multiple: false
                     },
-                    "pubDate": {
-                        "class": ".catItemDateCreated",
-                        "find": null,
-                        "multiple": false
+                    pubDate: {
+                        class: ".catItemDateCreated",
+                        find: null,
+                        multiple: false
                     },
-                    "title": {
-                        "class": ".catItemTitle",
-                        "find": [
-                            "a"
-                        ],
-                        "multiple": false
+                    title: {
+                        class: ".catItemTitle",
+                        find: ["a"],
+                        multiple: false
                     },
-                    "content": {
-                        "class": ".catItemIntroText",
-                        "find": null,
-                        "multiple": false
+                    content: {
+                        class: ".catItemIntroText",
+                        find: null,
+                        multiple: false
                     },
-                    "attachments": {
-                        "class": ".catItemLinks",
-                        "attributes": [
-                            "value",
-                            "href"
-                        ],
-                        "find": [
-                            ".catItemAttachmentsBlock",
-                            "li",
-                            "a"
-                        ],
-                        "multiple": true
+                    attachments: {
+                        class: ".catItemLinks",
+                        attributes: ["value", "href"],
+                        find: [".catItemAttachmentsBlock", "li", "a"],
+                        multiple: true
                     }
                 }
             }
@@ -144,16 +131,16 @@ describe("Parsers", function () {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases).to.deep.equal(['Γενικές Ανακοινώσεις']);
-            expect(obj.url).to.equal('http://127.0.0.1:3000/html');
+            expect(obj.url).to.equal('http://127.0.0.1:3000/html1');
             expect(obj.articles.length).to.equal(10);
 
             for (const article of obj.articles) {
                 expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
-                expect(article.source).to.equal('src_html-source');
+                expect(article.source).to.equal('html1-source');
 
                 const cat = article.categories.find(cat => cat.name === 'Γενικές Ανακοινώσεις');
                 expect(cat).to.not.be.undefined;
-                expect(cat!.links).to.deep.equal(['http://127.0.0.1:3000/html']);
+                expect(cat!.links).to.deep.equal(['http://127.0.0.1:3000/html1']);
             }
 
             const article = obj.articles[0];
@@ -161,6 +148,79 @@ describe("Parsers", function () {
             expect(article.content).to.equal('Στις 26 Αυγούστου έφυγε από κοντά μας, ύστερα από πολύμηνη ασθένεια, το εξαίρετο μέλος ΕΕΠ και εκλεκτή συνάδελφος Χρυσούλα Τόμπρου αφήνοντας ένα μεγάλο και δυσαναπλήρωτο κενό τόσο στον τομέα Ξένων Γλωσσών του Πανεπιστημίου μας, το οποίο με ζήλο υπηρέτησε για 36 συναπτά έτη, όσο και σε εμάς τις συναδέλφους της. Έφυγε αθόρυβα όπως αθόρυβη και διακριτική υπήρξε σε όλη της τη ζωή.Ως καθηγήτρια υπήρξε πάντοτε  συνεπής και αφοσιωμένη στο καθήκον της  με γνήσιο ενδιαφέρον για την επιστήμη της και βαθιά αγάπη για τον άνθρωπο. Ανήσυχο και δημιουργικό πνεύμα, πάντα ενημερωμένο γύρω από  τις τελευταίες εξελίξεις. Ήταν άριστη παιδαγωγός, με υψηλό αίσθημα ευθύνης, δεκτική  και ανοιχτή σε όλους με ιδιαίτερη ευαισθησία σε φοιτητές με δυσκολίες ή προβλήματα.Ως συνάδελφος ήταν αληθινή, ανιδιοτελής και δοτική. Αναλάμβανε  αγόγγυστα μεγάλο φόρτο εργασίας  πάντα σκεπτόμενη την διευκόλυνση του έργου των άλλων. Θα της είμαστε πάντα ευγνώμονες  για την καθοδήγηση  και ενθάρρυνση όλων μας  στα πρώτα  μας βήματα στο χώρο της τριτοβάθμιας εκπαίδευσης. Την ευχαριστούμε για την κατανόησή της, τις πολύτιμες συμβουλές και τη συμπαράστασή της στις δύσκολες στιγμές μας  ως γνήσια φίλη, συνάδελφος  και  έμπειρη μητέρα. Υπήρξαμε τυχεροί που συνεργαστήκαμε  μαζί της για πολλά χρόνια.Θα έχει πάντα τη θέση της στο Γραφείο Ξένων Γλωσσών και στην καρδιά μας.  Την αποχαιρετούμε με θλίψη, πόνο και συγκίνηση αλλά και με την υπόσχεση ότι θα συνεχίσουμε το έργο της και θα αξιοποιήσουμε την  ανεκτίμητη κληρονομιά που άφησε σε όλους μας.Στους οικείους της εκφράζουμε τα ειλικρινή μας συλλυπητήρια και τη συμμετοχή μας στο βαρύ πένθος τους. Να τη θυμούνται πάντα με αγάπη και υπερηφάνεια.Μέλη ΕΕΠ Γραφείου Ξένων ΓλωσσώνΌσοι επιθυμούν να προσφέρουν κάτι στη μνήμη της, μπορούν να καταθέσουν χρήματα στην Κιβωτό του Κόσμου. Παραθέτουμε τους λογαριασμού της Κιβωτού.EUROBANK: 0026 0178 870100 872073 IBAN : GR3702601780000870100872073SWIFT / BIC: ERBKGRAA (ΓΙΑ ΕΞΩΤΕΡΙΚΟ)ΤΡΑΠΕΖΑ ΠΕΙΡΑΙΩΣ: 5023 – 032595 - 870 IBAN:GR3801720230005023032595870ΕΘΝΙΚΗ ΤΡΑΠΕΖΑ: 100/296102-42 IBAN: GR6201101000000010029610242ALPHA BANK: 183002002003534 IBAN: GR4801401830183002002003534Σημείωση: Κατά την κατάθεση, στην αιτιολογία να συμπληρώσετε (υποχρεωτικά) ότι η δωρεά γίνεται εις μνήμην της ΧΡΥΣΟΥΛΑΣ ΤΟΜΠΡΟΥ. Μετά τη δωρεά σας, παρακαλούμε να επικοινωνήσετε με την Κιβωτό προκειμένου να κρατήσουμε τα στοιχεία της απόδειξης.Τηλ. Επικοινωνίας: 210 5141953 - 210 5141935');
             expect(article.link).to.equal('/unipi/el/ανακοινώσεις/item/13591-εις-μνήμην-χρυσούλας-τόμπρου.html');
             expect(article.pubDate).to.equal(' Τετάρτη, 14 Σεπτεμβρίου 2022 12:15 ');
+            expect(article.attachments.length).to.equal(0);
+            expect(article.thumbnail).to.be.undefined;
+        });
+    });
+
+    it('HTML parser 2', function () {
+        return Saffron.parse({
+            url: "http://127.0.0.1:3000/html2",
+            name: "html2-source",
+            type: "html",
+            ignoreCertificates: true,
+            scrape: {
+                container: "body > section > div > div.col-md-9.col-sm-8.single_page.col-md-push-3.col-sm-push-4 > div.single_page--content > div.article.clearfix.articletype-0 > div.article__content.matchHeight",
+                article: {
+                    link: {
+                        class: ".article__title",
+                        find: ["a"],
+                        attributes: ["href"],
+                        multiple: false
+                    },
+                    pubDate: {
+                        class: ".article__info > span",
+                        find: ["time"],
+                        attributes: ["datetime"],
+                        multiple: false
+                    },
+                    title: {
+                        class: ".article__title",
+                        find: ["a"],
+                        multiple: false
+                    },
+                    content: {
+                        class: ".teaser-text",
+                        find: null,
+                        multiple: false
+                    },
+                    category: {
+                        class: ".article__info > a > span",
+                        find: null,
+                        multiple: true
+                    }
+                }
+            }
+        }).then(result => {
+            expect(result.length).to.equal(1);
+            const obj = result[0];
+            expect(obj.aliases.length).to.equal(0);
+            expect(obj.url).to.equal('http://127.0.0.1:3000/html2');
+            expect(obj.articles.length).to.equal(10);
+
+            for (const article of obj.articles) {
+                expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
+                expect(article.source).to.equal('html2-source');
+                expect(article.categories.length).to.equal(1);
+                expect([
+                    '\n\t\t\t\tΠΡΟΠΤΥΧΙΑΚΕΣ ΣΠΟΥΔΕΣ',
+                    '\n\t\t\t\tΕΚΔΗΛΩΣΕΙΣ - ΣΗΜΑΝΤΙΚΑ',
+                    '\n\t\t\t\tΜΕΤΑΠΤΥΧΙΑΚΕΣ ΣΠΟΥΔΕΣ',
+                    '\n\t\t\t\tΕΚΔΗΛΩΣΕΙΣ - ΣΗΜΑΝΤΙΚΑ',
+                    '\n\t\t\t\tΠΡΟΠΤΥΧΙΑΚΟ ΤΟΜΕΑ ΔΙΕΘΝΩΝ ΣΠΟΥΔΩΝ',
+                    '\n\t\t\t\tΠΡΟΚΗΡΥΞΕΙΣ - ΕΞΕΛΙΞΕΙΣ ΜΕΛΩΝ ΔΕΠ',
+                    '\n\t\t\t\tΔΙΔΑΚΤΟΡΙΚΕΣ ΣΠΟΥΔΕΣ',
+                    "\n\t\t\t\tΠΡΟΠΤΥΧΙΑΚΟ ΤΟΜΕΑ Β' ΙΔΙΩΤΙΚΟΥ ΔΙΚΑΙΟΥ",
+                ].includes(article.categories[0].name)).to.be.true;
+                expect(article.categories[0].links.length).to.equal(1);
+                expect(article.categories[0].links[0]).to.equal('http://127.0.0.1:3000/html2');
+            }
+
+            const article = obj.articles[0];
+            expect(article.title).to.equal('\n\t\t\t\t\t\tΕΚΤΑΚΤΗ ΑΝΑΚΟΙΝΩΣΗ ΓΙΑ ΤΗΝ ΟΡΚΩΜΟΣΙΑ ΠΤΥΧΙΟΥΧΩΝ ΙΟΥΝΙΟΥ -ΙΟΥΛΙΟΥ 2022 (ΚΛΙΜ. Β 18-10-2022)\n\t\t\t\t\t');
+            expect(article.content).to.equal('Εν όψει της ορκωμοσίας των πτυχιούχων Ιουνίου - Ιουλίου 2022 σας ενημερώνουμε ότι λόγω έκτακτης υποχρέωσης του Κοσμήτορα της Σχολής η ώρα έναρξης της τελετής της ορκωμοσίας του 2ου Κλιμακίου 18-10-2022 (ΕΠΩΝΥΜΑ: ΚΑΡΑΜΠ. - ΜΠΑΓ.) μεταφέρεται από τις 09.00 π.μ. για τις 09.45 π.μ.');
+            expect(article.link).to.equal('/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/ektakti_anakoinosi_gia_tin_orkomosia_ptychioychon_ioynioy_ioylioy_2022_klim_b_18_10_2022/');
+            expect(article.pubDate).to.equal('2022-10-14');
             expect(article.attachments.length).to.equal(0);
             expect(article.thumbnail).to.be.undefined;
         });
@@ -180,7 +240,7 @@ describe("Parsers", function () {
 
             for (const article of obj.articles) {
                 expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
-                expect(article.source).to.equal('src_rss-source');
+                expect(article.source).to.equal('rss-source');
             }
 
             const article = obj.articles[0];
@@ -196,19 +256,19 @@ describe("Parsers", function () {
 
     it('Wordpress V2 parser', function () {
         return Saffron.parse({
-            url: 'http://127.0.0.1:3000/',
+            url: 'http://127.0.0.1:3000/wp1',
             name: 'wordpress-source',
             type: 'wordpress-v2'
         }).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases.length).to.equal(0);
-            expect(obj.url).to.equal('http://127.0.0.1:3000/');
+            expect(obj.url).to.equal('http://127.0.0.1:3000/wp1/');
             expect(obj.articles.length).to.equal(30);
 
             for (const article of obj.articles) {
                 expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
-                expect(article.source).to.equal('src_wordpress-source');
+                expect(article.source).to.equal('wordpress-source');
             }
 
             const article = obj.articles[0];
@@ -232,4 +292,6 @@ describe("Parsers", function () {
             expect(article.thumbnail).to.be.undefined;
         });
     });
+
+    // TODO: Add test cases where the parser fails (timeout, failed to parse etc).
 });

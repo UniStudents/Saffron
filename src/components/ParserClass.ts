@@ -1,3 +1,16 @@
+import Instructions from "./instructions";
+import Article from "./article";
+import Utils from "../modules/parsers/Utils";
+
+export abstract class ParserClass {
+
+    abstract validateScrape(scrape: object): void
+
+    abstract assignInstructions(instructions: Instructions, sourceJson: object): void
+
+    abstract parse(utils: Utils): Promise<Article[]>
+}
+
 /**
  * The types of parsing
  */

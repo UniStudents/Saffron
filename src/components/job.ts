@@ -3,9 +3,9 @@ import randomId from "../middleware/randomId"
 import Config, {ConfigOptions} from "./config";
 
 export enum JobStatus {
-    FAILED = 'failed',
-    PENDING = 'pending',
-    FINISHED = 'finished'
+    FAILED = -1,
+    PENDING = 0,
+    FINISHED = 1
 }
 
 export default class Job {
@@ -15,14 +15,12 @@ export default class Job {
     declare attempts: number;
     declare emitAttempts: number;
     declare status: JobStatus;
-    declare worker: {
-        id: string;
-    };
+    declare worker: string;
 
     constructor(source: Source, workerId: string, interval: number, config: Config | null) {
         this.id = randomId("job");
         this.source = source;
-        this.worker = {id: workerId};
+        this.worker = workerId;
         this.attempts = 0;
         this.emitAttempts = 0;
 

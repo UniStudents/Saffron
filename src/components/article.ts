@@ -35,26 +35,6 @@ export default class Article {
         return `${this.link}:${this.title}`;
     }
 
-    public setThumbnail(thumbnail: string) {
-        this.thumbnail = thumbnail;
-    }
-
-    public setTitle(title: string) {
-        this.title = title;
-    }
-
-    public setContent(content: string) {
-        this.content = content;
-    }
-
-    public setLink(link: string) {
-        this.link = link;
-    }
-
-    public setPubDate(pubDate: string) {
-        this.pubDate = pubDate;
-    }
-
     public addExtra(key: string, value: any) {
         if (typeof this.extras === 'undefined')
             this.extras = {};

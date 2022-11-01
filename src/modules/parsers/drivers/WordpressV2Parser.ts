@@ -1,10 +1,10 @@
-import {ParserClass} from "../ParserClass";
+import {ParserClass} from "../../../components/ParserClass";
 import Instructions from "../../../components/instructions";
-import Job from "../../../components/job";
 import Article from "../../../components/article";
 import Utils from "../Utils";
 
 export class WordpressV2Parser extends ParserClass {
+
     validateScrape(scrape: object): void {
     }
 
@@ -65,7 +65,7 @@ export class WordpressV2Parser extends ParserClass {
         let instructions = utils.source.instructions;
 
         let categoriesUrl = `${utils.url}wp-json/wp/v2/categories/`;
-        let postsUrl = `${utils.url}wp-json/wp/v2/posts?_embed&per_page=${utils.amount}`;
+        let postsUrl = `${utils.url}wp-json/wp/v2/posts?_embed&per_page=${instructions.amount}`;
 
         const filters = instructions.scrapeOptions.articles.filter;
         if (filters.search) postsUrl += `&search=${encodeURIComponent(filters.search)}`;
@@ -86,7 +86,7 @@ export class WordpressV2Parser extends ParserClass {
             , posts: any[];
 
         let config = {
-            timeout: utils.source.timeout,
+            timeout: utils.source.instructions.timeout,
             responseType: 'arraybuffer',
             responseEncoding: 'binary'
         };
@@ -105,13 +105,13 @@ export class WordpressV2Parser extends ParserClass {
 
         const parsedCategories = Array.isArray(categories) ?
             categories.map((category: any) => {
-                let links: string[] = []
+                let links: string[] = [];
 
-                const linkCatsKeys = Object.keys(category._links)
+                const linkCatsKeys = Object.keys(category._links);
 
                 for (const linkCat of linkCatsKeys) {
                     for (let href of category._links[linkCat])
-                        links.push(href.href)
+                        links.push(href.href);
                 }
 
                 return {
@@ -119,18 +119,19 @@ export class WordpressV2Parser extends ParserClass {
                     description: utils.cleanupHTMLText(category.description, false),
                     name: utils.cleanupHTMLText(category.name, false),
                     links
-                }
+                };
             }) : [];
 
         let count = 0
         for (let p of posts) {
+            // WordPress will return the specified amount, but we double-check to be sure
             if (count >= instructions.amount) continue;
             count++;
 
-            const article = new Article()
-            article.setTitle(utils.cleanupHTMLText(p.title.rendered, false));
-            article.setContent(p.content.rendered);
-            article.setLink(p.link);
+            const article = new Article();
+            article.title = utils.cleanupHTMLText(p.title.rendered, false);
+            article.content = p.content.rendered;
+            article.link = p.link;
             article.pushCategories(utils.aliases.map(alias => {
                 return {
                     name: alias,
@@ -140,10 +141,10 @@ export class WordpressV2Parser extends ParserClass {
 
             if (instructions.scrapeOptions.articles.dates.gmt) {
                 if (p.date_gmt != null)
-                    article.setPubDate(p.date_gmt);
+                    article.pubDate = p.date_gmt;
                 else if (instructions.scrapeOptions.articles.dates.fallback)
-                    article.setPubDate(p.date);
-            } else article.setPubDate(p.date);
+                    article.pubDate = p.date;
+            }  else article.pubDate = p.date;
 
             article.pushAttachments(utils.extractLinks(article.content));
 
@@ -154,9 +155,7 @@ export class WordpressV2Parser extends ParserClass {
 
             // Thumbnail
             let thumbnailSize = instructions.scrapeOptions.articles.thumbnail;
-            let thumbnailUrl: string = p._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes[thumbnailSize]?.source_url;
-
-            article.setThumbnail(thumbnailUrl)
+            article.thumbnail = p._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes[thumbnailSize]?.source_url;
 
             let include: string[] = instructions.scrapeOptions.articles.include;
             // The date the object was last modified.
@@ -179,8 +178,7 @@ export class WordpressV2Parser extends ParserClass {
                 else article.addExtra(elem, p[elem]);
             }
 
-
-            articles.push(article)
+            articles.push(article);
         }
 
         return articles;

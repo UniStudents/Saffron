@@ -277,9 +277,14 @@ export default class Utils {
      * The specified URL.
      */
     public declare url: string;
+    /**
+     * The specified categories assigned to the url.
+     */
     public declare aliases: string[];
+    /**
+     * The source object.
+     */
     public declare source: Source;
-    public declare amount: number;
 
     private static decode(str: string = ""): string {
         if (!str) str = ""
@@ -293,9 +298,8 @@ export default class Utils {
         if (this.source.instructions["ignoreCertificates"])
             options.httpsAgent = httpsAgent;
 
-        if(!options.headers)
-            options.headers = {};
-        options.headers['User-Agent'] = <any>this.source.userAgent
+        if(!options.headers) options.headers = {};
+        options.headers['User-Agent'] = this.source.instructions.userAgent;
 
         return axios.request(options);
     }

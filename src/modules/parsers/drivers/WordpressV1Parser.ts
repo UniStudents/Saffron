@@ -1,4 +1,4 @@
-import {ParserClass} from "../ParserClass";
+import {ParserClass} from "../../../components/ParserClass";
 import Instructions from "../../../components/instructions";
 import Article from "../../../components/article";
 import Utils from "../Utils";

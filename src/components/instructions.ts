@@ -1,5 +1,5 @@
-import {ParserType} from "./ParserType";
-import {InstructionUrl} from "./types.js";
+import {ParserType} from "./ParserClass";
+import {InstructionUrl} from "./types";
 
 /**
  * The instructions class is used mainly by parsers.
@@ -10,13 +10,22 @@ import {InstructionUrl} from "./types.js";
 export default class Instructions {
     declare url: InstructionUrl[];
     declare parserType: ParserType;
-    declare endPoint: string;
+
+    declare timeout: number;
     declare amount: number;
-    declare scrapeOptions: any;
-    declare elementSelector: string;
-    declare scrapeFunction: any;
-    declare scrapeFunctionStr: string;
+    declare userAgent: string;
     declare textDecoder: TextDecoder;
     declare ignoreCertificates: boolean;
+
+    // HTML Parser
+    declare scrapeOptions: any;
+    declare elementSelector: string;
+
+    // Dynamic Parser
+    declare scrapeFunction: any;
+    declare scrapeFunctionStr: string;
+
+    // RSS parser
     declare extraFields: string[];
+
 }

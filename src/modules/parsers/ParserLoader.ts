@@ -1,9 +1,9 @@
-import {ParserType} from "../../components/ParserType";
+import {ParserType} from "../../components/ParserClass";
 import {HTMLParser} from "./drivers/HTMLParser";
 import {RSSParser} from "./drivers/RSSParser";
 import {WordpressV2Parser} from "./drivers/WordpressV2Parser";
 import {DynamicParser} from "./drivers/DynamicParser";
-import {ParserClass} from "./ParserClass";
+import {ParserClass} from "../../components/ParserClass";
 import Instructions from "../../components/instructions";
 import {WordpressV1Parser} from "./drivers/WordpressV1Parser";
 

@@ -162,10 +162,9 @@ export default class Grid {
 
     /**
      * Forcefully remove a worker from the grid
-     * @param sourceId
      * @param workerId
      */
-    fireWorker(sourceId: string, workerId: string): void {
+    fireWorker(workerId: string): void {
         if (!this.isMain) return;
 
         let k = this.workersIds.findIndex(id => workerId == id);

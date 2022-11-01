@@ -3,47 +3,47 @@ import Article from "./article";
 
 export type ConfigType = {
     mode: 'main' | 'worker';
-    database?: {
+    database: {
         pushArticles: (articles: Article[]) => Promise<void>;
         getArticles: (opts: {
             tableName: string;
             count: number;
         }) => Promise<Article[]>;
     } | 'none';
-    sources: {
-        path?: string;
-        includeOnly?: string[];
-        exclude?: string[];
-    };
-    workers: {
-        nodes?: number;
-        userAgent?: string;
-        jobs?: {
-            timeout?: number;
-        };
-        articles?: {
+    sources: Partial<{
+        path: string;
+        includeOnly: string[];
+        exclude: string[];
+    }>;
+    workers: Partial<{
+        nodes: number;
+        userAgent: string;
+        jobs: Partial<{
+            timeout: number;
+        }>;
+        articles: Partial<{
             amount?: number;
-        };
-    };
-    scheduler: {
-        jobsInterval?: number,
-        heavyJobFailureInterval?: number,
-        checksInterval?: number;
-        randomizeInterval?: () => number;
-    };
-    grid: {
+        }>;
+    }>;
+    scheduler: Partial<{
+        jobsInterval: number,
+        heavyJobFailureInterval: number,
+        noResponseThreshold: number;
+        randomizeInterval: () => number;
+    }>;
+    grid: Partial<{
         distributed: boolean;
-        useHTTP?: boolean;
+        useHTTP: boolean;
 
-        serverAddress?: string;
-        serverPort?: number;
-        authToken?: string;
-        key?: any;
-        cert?: any;
-    };
-    misc: {
-        log?: 'all' | 'info' | 'errors' | 'none';
-    };
+        serverAddress: string;
+        serverPort: number;
+        authToken: string;
+        key: any;
+        cert: any;
+    }>;
+    misc: Partial<{
+        log: 'all' | 'info' | 'errors' | 'none';
+    }>;
 }
 
 export enum ConfigOptions {
@@ -55,9 +55,9 @@ export enum ConfigOptions {
     WORKER_USERAGENT = 'worker.useragent',
     REQUEST_TIMEOUT = 'worker.request.timeout',
     ARTICLE_AMOUNT = 'worker.article.amount',
-    SCHEDULER_JOB_INT = 'scheduler.job.interval',
-    SCHEDULER_JOB_HEAVY_INT = 'scheduler.job.heavyInterval',
-    SCHEDULER_CHECKS_INT = 'scheduler.job.checkInterval',
+    SCHEDULER_JOB_INT = 'scheduler.interval',
+    SCHEDULER_JOB_HEAVY_INT = 'scheduler.heavyInterval',
+    SCHEDULER_NO_RESPONSE_THRESHOLD = 'scheduler.threshold',
     SCHEDULER_RANDOMIZER = 'scheduler.job.randomizer',
     GRID_DISTRIBUTED = 'grid.distributed',
     GRID_SERVER_ADDRESS = 'grid.server.address',
@@ -73,7 +73,7 @@ export enum ConfigOptions {
 }
 
 export default class Config {
-    readonly config: ConfigType = {
+    config: ConfigType = {
         mode: "main",
         database: 'none',
         sources: {
@@ -93,7 +93,7 @@ export default class Config {
         scheduler: {
             jobsInterval: 3600000,
             heavyJobFailureInterval: 86400000,
-            checksInterval: 120000,
+            noResponseThreshold: 2,
             randomizeInterval: () => {
                 if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
                     return 0;
@@ -116,27 +116,40 @@ export default class Config {
         }
     };
 
-    constructor(config?: Partial<ConfigType> | {
-        production: Partial<ConfigType>;
-    } | {
-        development: Partial<ConfigType>;
-    } | {
-        testing: Partial<ConfigType>;
+    constructor(config?: Partial<ConfigType> & {
+        production?: Partial<ConfigType>;
+    } & {
+        development?: Partial<ConfigType>;
+    } & {
+        testing?: Partial<ConfigType>;
     }) {
+        this.initializeConfig(config);
+    }
+
+    initializeConfig(config?: Partial<ConfigType> & {
+        production?: Partial<ConfigType>;
+    } & {
+        development?: Partial<ConfigType>;
+    } & {
+        testing?: Partial<ConfigType>;
+    }) {
+        // To avoid overriding user's object
+        config = _.cloneDeep(config);
+
         this.config = this.mergeObject(config, this.config);
 
         switch (process.env.NODE_ENV) {
             case "production":
                 if ((config as any).production)
-                    this.config = this.mergeObject((config as any).production, this.config);
+                    this.config = this.mergeObject(config?.production, this.config);
                 break;
             case "development":
                 if ((config as any).development)
-                    this.config = this.mergeObject((config as any).development, this.config);
+                    this.config = this.mergeObject(config?.development, this.config);
                 break;
             case "testing":
                 if ((config as any).testing)
-                    this.config = this.mergeObject((config as any).testing, this.config);
+                    this.config = this.mergeObject(config?.testing, this.config);
                 break;
             default:
         }
@@ -151,48 +164,48 @@ export default class Config {
                 return config ? config.config.mode : "main";
 
             case ConfigOptions.SOURCES_PATH:
-                return config ? config.config.sources.path : '../../../sources';
+                return config ? config.config.sources?.path : '../../../sources';
             case ConfigOptions.SOURCES_INCLUDE_ONLY:
-                return config ? config.config.sources.includeOnly : [];
+                return config ? config.config.sources?.includeOnly : [];
             case ConfigOptions.SOURCES_EXCLUDE:
-                return config ? config.config.sources.exclude : [];
+                return config ? config.config.sources?.exclude : [];
 
             case ConfigOptions.WORKER_NODES:
-                return config ? config.config.workers.nodes : 1;
+                return config ? config.config.workers?.nodes : 1;
             case ConfigOptions.WORKER_USERAGENT:
-                return config ? config.config.workers.userAgent : undefined;
+                return config ? config.config.workers?.userAgent : 'saffron';
             case ConfigOptions.REQUEST_TIMEOUT:
-                return config ? config.config.workers.jobs?.timeout : 10000;
+                return config ? config.config.workers?.jobs?.timeout : 10000;
 
             case ConfigOptions.ARTICLE_AMOUNT:
-                return config ? config.config.workers.articles?.amount : 30;
+                return config ? config.config.workers?.articles?.amount : 30;
 
             case ConfigOptions.SCHEDULER_JOB_INT:
-                return config ? config.config.scheduler.jobsInterval : 3600000;
+                return config ? config.config.scheduler?.jobsInterval : 3600000;
             case ConfigOptions.SCHEDULER_JOB_HEAVY_INT:
-                return config ? config.config.scheduler.heavyJobFailureInterval : 86400000;
-            case ConfigOptions.SCHEDULER_CHECKS_INT:
-                return config ? config.config.scheduler.checksInterval : 120000;
+                return config ? config.config.scheduler?.heavyJobFailureInterval : 86400000;
             case ConfigOptions.SCHEDULER_RANDOMIZER:
-                return config ? config.config.scheduler.randomizeInterval : () => 0;
+                return config ? config.config.scheduler?.randomizeInterval : () => 0;
+            case ConfigOptions.SCHEDULER_NO_RESPONSE_THRESHOLD:
+                return config ? config.config.scheduler?.noResponseThreshold : 2;
 
             case ConfigOptions.GRID_DISTRIBUTED:
-                return config ? config.config.grid.distributed : false;
+                return config ? config.config.grid?.distributed : false;
             case ConfigOptions.GRID_SERVER_ADDRESS:
                 return config ? config.config.grid?.serverAddress : 'localhost';
             case ConfigOptions.GRID_SERVER_PORT:
-                return config ? config.config.grid.serverPort : 3000;
+                return config ? config.config.grid?.serverPort : 3000;
             case ConfigOptions.GRID_AUTH:
-                return config ? config.config.grid.authToken : undefined;
+                return config ? config.config.grid?.authToken : undefined;
             case ConfigOptions.GRID_USE_HTTP:
-                return config ? config.config.grid.useHTTP : false;
+                return config ? config.config.grid?.useHTTP : false;
             case ConfigOptions.GRID_HTTPS_KEY:
-                return config ? config.config.grid.key : undefined;
+                return config ? config.config.grid?.key : undefined;
             case ConfigOptions.GRID_HTTPS_CERT:
-                return config ? config.config.grid.cert : undefined;
+                return config ? config.config.grid?.cert : undefined;
 
             case ConfigOptions.MISC_LOG_LEVEL:
-                return config ? config.config.misc.log : "all";
+                return config ? config.config.misc?.log : "all";
 
             case ConfigOptions.DB_IS_INITIALIZED:
                 return config ? config.config.database != undefined && config.config.database !== 'none' : false;
