@@ -176,7 +176,11 @@ export class HTMLParser extends ParserClass {
 
 
         // going deeper into the html content.
-        let tmpElement = htmlContent(currArticle).find(htmlClass);
+        let tmpElement: cheerio.Cheerio;
+        if(htmlClass)
+            tmpElement = htmlContent(currArticle).find(htmlClass);
+        else tmpElement = htmlContent(currArticle);
+
         tmpArray.forEach(value => tmpElement = htmlContent(tmpElement).find(value));
 
         // We are at the location of the information we want.
