@@ -6,6 +6,12 @@ import Source from "../src/components/source";
 import {ParserType} from "../src/components/ParserClass";
 import Utils from "../src/modules/parsers/Utils";
 import Extensions from "../src/modules/extensions";
+import ParserLoader from "../src/modules/parsers/ParserLoader";
+import {HTMLParser} from "../src/modules/parsers/drivers/HTMLParser";
+import {RSSParser} from "../src/modules/parsers/drivers/RSSParser";
+import {WordpressV1Parser} from "../src/modules/parsers/drivers/WordpressV1Parser";
+import {WordpressV2Parser} from "../src/modules/parsers/drivers/WordpressV2Parser";
+import {DynamicParser} from "../src/modules/parsers/drivers/DynamicParser";
 
 const randStr = (myLength: number) => {
     const chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
@@ -76,7 +82,7 @@ describe('Other', function () {
         expect(source.instructions.parserType).to.equal(ParserType.HTML);
     });
 
-    it('Utils -> Extract links', function () {
+    it('Utils - Extract links', function () {
         const utils = new Utils();
 
         expect(utils.extractLinks()).to.deep.equal([]);
@@ -84,7 +90,7 @@ describe('Other', function () {
         // TODO: Add more extract links cases (with html code)
     });
 
-    it('Utils -> HTML cleanup text', function () {
+    it('Utils - HTML cleanup text', function () {
         const utils = new Utils();
         expect(utils.cleanupHTMLText('')).to.equal('');
         // TODO: Add more normalize html text cases
@@ -103,5 +109,23 @@ describe('Other', function () {
         let expectedValue = 0;
         while ((pair = getExtPair()) != null)
             expect(pair.callback()).to.equal(expectedValue++)
+    });
+
+    it('Parsers - Type translation', function () {
+        expect(ParserType.getFromString('html')).to.equal(ParserType.HTML)
+        expect(ParserType.getFromString('rss')).to.equal(ParserType.RSS)
+        expect(ParserType.getFromString('dynamic')).to.equal(ParserType.DYNAMIC)
+        expect(ParserType.getFromString('wordpress-v1')).to.equal(ParserType.WORDPRESS_V1)
+        expect(ParserType.getFromString('wordpress-v2')).to.equal(ParserType.WORDPRESS_V2)
+        expect(ParserType.getFromString('wordpress')).to.equal(ParserType.WORDPRESS_V2)
+        expect(ParserType.getFromString('failed')).to.equal(ParserType.UNKNOWN)
+    });
+
+    it('Parsers - Loader', function () {
+        expect(ParserLoader.getParser(ParserType.HTML)).to.be.instanceof(HTMLParser);
+        expect(ParserLoader.getParser(ParserType.RSS)).to.be.instanceof(RSSParser);
+        expect(ParserLoader.getParser(ParserType.WORDPRESS_V1)).to.be.instanceof(WordpressV1Parser);
+        expect(ParserLoader.getParser(ParserType.WORDPRESS_V2)).to.be.instanceof(WordpressV2Parser);
+        expect(ParserLoader.getParser(ParserType.DYNAMIC)).to.be.instanceof(DynamicParser);
     });
 });

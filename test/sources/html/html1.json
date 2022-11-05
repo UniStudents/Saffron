@@ -1,0 +1,41 @@
+{
+    "url": [
+        ["Γενικές Ανακοινώσεις", "http://127.0.0.1:3000/html1"]
+    ],
+    "name": "html1-source",
+    "type": "html",
+    "ignoreCertificates": true,
+    "scrape": {
+        "container": ".catItemView",
+        "endPoint": "unipi.gr",
+        "article": {
+            "link": {
+                "class": ".catItemTitle",
+                "find": ["a"],
+                "attributes": ["href"],
+                "multiple": false
+            },
+            "pubDate": {
+                "class": ".catItemDateCreated",
+                "find": null,
+                "multiple": false
+            },
+            "title": {
+                "class": ".catItemTitle",
+                "find": ["a"],
+                "multiple": false
+            },
+            "content": {
+                "class": ".catItemIntroText",
+                "find": null,
+                "multiple": false
+            },
+            "attachments": {
+                "class": ".catItemLinks",
+                "attributes": ["value", "href"],
+                "find": [".catItemAttachmentsBlock", "li", "a"],
+                "multiple": true
+            }
+        }
+    }
+}

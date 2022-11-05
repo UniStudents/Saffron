@@ -60,8 +60,8 @@ class Saffron {
         }
 
         // Initialize worker
-        this.workers = [];
         let nodes = Config.getOption(ConfigOptions.WORKER_NODES, this.config);
+        this.workers = [];
         for (let i = 0; i < nodes; i++)
             this.workers.push(new Worker(this));
 
@@ -78,7 +78,7 @@ class Saffron {
      * @param reset
      */
     async start(reset: boolean = true) {
-        for (let worker of this.workers) {
+        for (const worker of this.workers) {
             // TODO - Start worker on new node thread - https://nodejs.org/api/worker_threads.html
             worker.start();
         }

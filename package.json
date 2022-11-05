@@ -19,8 +19,6 @@
   },
   "scripts": {
     "test": "mocha --exit --bail --forbid-only --require ts-node/register test/*.test.ts",
-    "dev": "cross-env NODE_ENV=development MODE=main tsc-watch --onSuccess \"node --stack-trace-limit=100 ./test/index.js\"",
-    "dev-worker": "cross-env NODE_ENV=development MODE=worker tsc-watch --onSuccess \"node --stack-trace-limit=100 ./test/worker.js\"",
     "docker-compose": "cd ./test/docker && sudo docker-compose up --remove-orphans ",
     "docker-compose-build": "cd ./test/docker && sudo docker-compose up --build --remove-orphans ",
     "build": "rm -rf dist && tsc -d"

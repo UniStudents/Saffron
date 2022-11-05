@@ -1,10 +1,9 @@
 {
     "url": [
-        ["Νέα", "http://www.arch.upatras.gr/el/news/news"]
+        ["Νέα", "http://127.0.0.1:3000/html3"]
     ],
-    "name": "arch.upatras.gr",
+    "name": "html3-source",
     "type": "html",
-    "endpoint": "arch.upatras.gr",
     "scrape": {
         "container": "#block-system-main > div > div.view-content > div > div > div.row > div.views-row",
         "article": {

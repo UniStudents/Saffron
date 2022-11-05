@@ -53,7 +53,7 @@ export default class Scheduler {
         const noResponseThreshold = Config.getOption(ConfigOptions.SCHEDULER_NO_RESPONSE_THRESHOLD, this.saffron.config);
 
         let checkingJobs = false;
-        this.interval = setInterval(async () => {
+        this.interval = setInterval(() => {
             if(checkingJobs) return;
             checkingJobs = true;
             if (!this.running) return;
@@ -69,7 +69,7 @@ export default class Scheduler {
                     let index = this.jobs.findIndex((obj: Job) => obj.id === job.id);
                     if (index !== -1) this.jobs.splice(index, 1);
 
-                    await this.issueJobForSource(job.source, job.worker);
+                    this.issueJobForSource(job.source, job.worker);
                 } else if (job.status === JobStatus.FAILED) {
                     this.saffron.events.emit("scheduler.job.failed", job);
 
@@ -94,7 +94,7 @@ export default class Scheduler {
                         this.saffron.events.emit("scheduler.job.worker.replace", oldWorker, job);
                     }
 
-                    if (job.emitAttempts === 0)
+                    if (job.emitAttempts == 0)
                         this.saffron.events.emit("scheduler.job.push", job);
 
                     job.emitAttempts++;

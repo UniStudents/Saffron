@@ -1,25 +1,23 @@
-import Scheduler from "../src/modules/scheduler";
 import {expect} from "chai";
 import {Saffron} from "../src/index";
 import {JobStatus} from "../src/components/job";
-import Worker from "../src/modules/worker";
 
-describe('Scheduler', async function () {
+describe('Scheduler', function () {
 
     const saffron = new Saffron();
-    await saffron.initialize({misc: {log: 'none'}});
-
-    const worker = new Worker(saffron);
-    worker.start();
-    saffron.workers.push(worker);
-
-    const scheduler = new Scheduler(saffron);
+    before(function () {
+        return saffron.initialize({
+            mode: 'main',
+            workers: {nodes: 1},
+            misc: {log: 'none'}
+        });
+    });
 
     it('Initialization', function () {
         // Scheduler has not started, so expect 0 jobs and sources
-        expect(scheduler.isRunning).to.equal(false);
-        expect(scheduler.sources.length).to.equal(0);
-        expect(scheduler.jobs.length).to.equal(0);
+        expect(saffron.scheduler.isRunning).to.equal(false);
+        expect(saffron.scheduler.sources.length).to.equal(0);
+        expect(saffron.scheduler.jobs.length).to.equal(0);
     });
 
     it('Reset sources with invalid path', function () {
@@ -30,10 +28,10 @@ describe('Scheduler', async function () {
                 },
             });
 
-            await scheduler.resetSources();
-            expect(scheduler.isRunning).to.equal(false);
-            expect(scheduler.sources.length).to.equal(0);
-            expect(scheduler.jobs.length).to.equal(0);
+            await saffron.scheduler.resetSources();
+            expect(saffron.scheduler.isRunning).to.equal(false);
+            expect(saffron.scheduler.sources.length).to.equal(0);
+            expect(saffron.scheduler.jobs.length).to.equal(0);
             resolve(undefined);
         });
     });
@@ -46,20 +44,20 @@ describe('Scheduler', async function () {
                 },
             });
 
-            await scheduler.resetSources();
-            expect(scheduler.isRunning).to.equal(false);
-            expect(scheduler.sources.length).to.equal(8);
-            expect(scheduler.jobs.length).to.equal(0);
+            await saffron.scheduler.resetSources();
+            expect(saffron.scheduler.isRunning).to.equal(false);
+            expect(saffron.scheduler.sources.length).to.equal(8);
+            expect(saffron.scheduler.jobs.length).to.equal(0);
             resolve(undefined);
         });
     });
 
     it('Reset jobs', function () {
-        scheduler.resetJobs();
-        expect(scheduler.isRunning).to.equal(false);
-        expect(scheduler.sources.length).to.equal(8);
-        expect(scheduler.jobs.length).to.equal(8);
-        for(const job of scheduler.jobs) {
+        saffron.scheduler.resetJobs();
+        expect(saffron.scheduler.isRunning).to.equal(false);
+        expect(saffron.scheduler.sources.length).to.equal(8);
+        expect(saffron.scheduler.jobs.length).to.equal(8);
+        for(const job of saffron.scheduler.jobs) {
             expect(job.attempts).to.equal(0);
             expect(job.emitAttempts).to.equal(0);
             expect(job.untilRetry).to.be.greaterThanOrEqual(0);
@@ -68,14 +66,14 @@ describe('Scheduler', async function () {
     });
 
     it('Replace jobs', function () {
-        const oldJobs = scheduler.jobs;
+        const oldJobs = saffron.scheduler.jobs;
         oldJobs.length--;
 
-        scheduler.replaceCurrentJobs(oldJobs);
-        expect(scheduler.isRunning).to.equal(false);
-        expect(scheduler.sources.length).to.equal(8);
-        expect(scheduler.jobs.length).to.equal(7);
-        for(const job of scheduler.jobs) {
+        saffron.scheduler.replaceCurrentJobs(oldJobs);
+        expect(saffron.scheduler.isRunning).to.equal(false);
+        expect(saffron.scheduler.sources.length).to.equal(8);
+        expect(saffron.scheduler.jobs.length).to.equal(7);
+        for(const job of saffron.scheduler.jobs) {
             expect(job.attempts).to.equal(0);
             expect(job.emitAttempts).to.equal(0);
             expect(job.untilRetry).to.be.greaterThanOrEqual(0);
@@ -85,14 +83,14 @@ describe('Scheduler', async function () {
 
     it('Reset false', function () {
         return new Promise(async resolve => {
-            await scheduler.start(false);
-            expect(scheduler.isRunning).to.equal(true);
-            scheduler.stop();
+            await saffron.scheduler.start(false);
+            expect(saffron.scheduler.isRunning).to.equal(true);
+            saffron.scheduler.stop();
 
-            expect(scheduler.isRunning).to.equal(false);
-            expect(scheduler.sources.length).to.equal(8);
-            expect(scheduler.jobs.length).to.equal(7);
-            for(const job of scheduler.jobs) {
+            expect(saffron.scheduler.isRunning).to.equal(false);
+            expect(saffron.scheduler.sources.length).to.equal(8);
+            expect(saffron.scheduler.jobs.length).to.equal(7);
+            for(const job of saffron.scheduler.jobs) {
                 expect(job.attempts).to.equal(0);
                 expect(job.emitAttempts).to.equal(0);
                 expect(job.untilRetry).to.be.greaterThanOrEqual(0);
@@ -115,17 +113,44 @@ describe('Scheduler', async function () {
                 }
             });
 
-            await scheduler.start(true);
-            expect(scheduler.isRunning).to.equal(true);
+            await saffron.start(true);
+            expect(saffron.scheduler.isRunning).to.equal(true);
 
             setTimeout(() => {
-                scheduler.stop();
-                expect(scheduler.isRunning).to.equal(false);
+                saffron.stop();
+                expect(saffron.scheduler.isRunning).to.equal(false);
 
+                let counter = 0;
+                for (const job of saffron.scheduler.jobs) {
+                    expect(job.status).to.equal(JobStatus.PENDING);
+                    expect(job.untilRetry).to.equal(counter);
+                    counter += 1250;
+                }
 
+                saffron.start(false);
 
+                setTimeout(() => {
+                    saffron.stop();
 
-                resolve(undefined);
+                    const jobs = saffron.scheduler.jobs;
+                    expect(jobs[0].emitAttempts).to.equal(1);
+                    expect(jobs[0].untilRetry).to.equal(-2000);
+                    expect(jobs[0].status).to.equal(JobStatus.FINISHED);
+
+                    expect(jobs[1].emitAttempts).to.equal(1);
+                    expect(jobs[1].untilRetry).to.equal(-750);
+                    expect(jobs[1].status).to.equal(JobStatus.FINISHED);
+
+                    let counter = 500;
+                    for(let i = 2; i < jobs.length; i++) {
+                        expect(jobs[i].emitAttempts).to.equal(0);
+                        expect(jobs[i].status).to.equal(JobStatus.PENDING);
+                        expect(jobs[i].untilRetry).to.equal(counter);
+                        counter += 1250;
+                    }
+
+                    resolve(true);
+                }, 2500);
             }, 1000);
         });
     });

@@ -190,12 +190,12 @@ export class HTMLParser extends ParserClass {
             // We get all the information. ( e.g each link of the article ).
             finalLocation.each((index, element) => {
                 // We upload the information ( e.g the link of the article ).
-                const finalData = htmlContent(element)
+                const finalData = htmlContent(element);
 
                 if (!hasAttributes) {
                     // If we do not want to get the attributes, then we just get the information found in the location stored in the variable dataStoredAt.
-                    if (dataStoredAt.length >= 1 && finalData.find(dataStoredAt).text() === '') return
-                    if (dataStoredAt.length < 1 && finalData.text() === '') return
+                    if (dataStoredAt.length >= 1 && finalData.find(dataStoredAt).text() === '') return;
+                    if (dataStoredAt.length < 1 && finalData.text() === '') return;
 
                     if (dataStoredAt)
                         results.push(finalData.find(dataStoredAt).text());
@@ -203,11 +203,7 @@ export class HTMLParser extends ParserClass {
                         results.push(finalData.text());
                 } else {
                     const tmp = HTMLParser.attributes(finalData, dataStoredAt, attributesArr);
-                    if (tmp) {
-                        tmp.forEach((object: Object) => {
-                            results.push(object);
-                        });
-                    }
+                    if (tmp) tmp.forEach((object: Object) => results.push(object));
                 }
             });
         } else {
