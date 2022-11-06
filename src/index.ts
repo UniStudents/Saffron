@@ -50,13 +50,7 @@ class Saffron {
         // Initialize and start grid
         this.grid = new Grid(this);
         if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED, this.config)) {
-            try {
-                await this.grid.connect();
-                this.events.emit('grid.connection.okay');
-            } catch (e) {
-                this.events.emit('grid.connection.failed', e);
-                return;
-            }
+            await this.grid.connect();
         }
 
         // Initialize worker
@@ -72,10 +66,8 @@ class Saffron {
 
     /**
      * Starts a Saffron instance.
-     * you can set keepPreviousSession to true.
-     *
-     * If reset is set to false, it will not read sources' folder and no new jobs will not be generated.
-     * @param reset
+     * If reset is set to false, it will not read source folder and no new jobs will not be generated.
+     * @param reset Defaults to true
      */
     async start(reset: boolean = true) {
         for (const worker of this.workers) {

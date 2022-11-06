@@ -332,16 +332,14 @@ export default class Utils {
 
     public cleanupHTMLText(text: string, stripTags: boolean = true): string {
         text = Utils.decode(text)
+            .replace(/\n/g, '')
+            .replace(/\t/g, '')
+            .trim()
+
         if (stripTags) {
-            text = text.replace(/\n/g, '')
-                .replace(/\t/g, '')
-                .replace(/(<([^>]+)>)/gi, '')
-                .trim()
+            text = text.replace(/(<([^>]+)>)/gi, '')
             text = striptags(text)
-        } else
-            text = text.replace(/\n/g, '')
-                .replace(/\t/g, '')
-                .trim()
+        }
 
         return text.toString()
     }
@@ -362,8 +360,8 @@ export default class Utils {
 
         $('img').each((index, element) => {
             links.push({
-                text: $(element).attr('alt'), // get the text
-                value: $(element).attr('src'), // get the href attribute
+                text: $(element).attr('alt'), // get the alt
+                value: $(element).attr('src'), // get the src attribute
                 attribute: 'src'
             });
         });

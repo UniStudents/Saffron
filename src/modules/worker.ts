@@ -55,7 +55,7 @@ export default class Worker {
      */
     static electWorker(lastWorkerId: string, grid: Grid): string {
         // Make a copy of the array
-        let workers = grid.getWorkers().slice();
+        let workers = grid.workers.slice();
 
         // This is not supposed to be true
         if(workers.length === 0) return lastWorkerId;

@@ -33,9 +33,9 @@ export type ConfigType = {
     }>;
     grid: Partial<{
         distributed: boolean;
-        useHTTP: boolean;
+        useHTTPS: boolean;
 
-        serverAddress: string;
+        serverHost: string;
         serverPort: number;
         authToken: string;
         key: any;
@@ -43,6 +43,7 @@ export type ConfigType = {
     }>;
     misc: Partial<{
         log: 'all' | 'info' | 'errors' | 'none';
+        eventDelay: number;
     }>;
 }
 
@@ -63,10 +64,11 @@ export enum ConfigOptions {
     GRID_SERVER_ADDRESS = 'grid.server.address',
     GRID_SERVER_PORT = 'grid.server.port',
     GRID_AUTH = 'grid.auth',
-    GRID_USE_HTTP = 'grid.use_http',
+    GRID_USE_HTTPS = 'grid.use_https',
     GRID_HTTPS_KEY = 'grid.https.key',
     GRID_HTTPS_CERT = 'grid.https.cert',
     MISC_LOG_LEVEL = 'misc.log',
+    MISC_EVENT_DELAY = 'misc.eventDelay',
     DB_IS_INITIALIZED = 'db.initialized',
     DB_PUSH_ARTICLES = 'db.articles.push',
     DB_GET_ARTICLES = 'db.articles.get'
@@ -107,12 +109,13 @@ export default class Config {
         },
         grid: {
             distributed: false,
-            useHTTP: false,
-            serverAddress: 'localhost',
+            useHTTPS: false,
+            serverHost: '127.0.0.1',
             serverPort: 3000
         },
         misc: {
-            log: "all"
+            log: "all",
+            eventDelay: 0
         }
     };
 
@@ -141,21 +144,20 @@ export default class Config {
         switch (process.env.NODE_ENV) {
             case "production":
                 if ((config as any).production)
-                    this.config = this.mergeObject(config?.production, this.config);
+                    this.config = this.mergeObject(config!.production, this.config);
                 break;
             case "development":
                 if ((config as any).development)
-                    this.config = this.mergeObject(config?.development, this.config);
+                    this.config = this.mergeObject(config!.development, this.config);
                 break;
             case "testing":
                 if ((config as any).testing)
-                    this.config = this.mergeObject(config?.testing, this.config);
+                    this.config = this.mergeObject(config!.testing, this.config);
                 break;
-            default:
         }
 
         if (process.env.SAFFRON_MODE && ["main", "worker"].includes(process.env.SAFFRON_MODE))
-            this.config.mode = process.env.SAFFRON_MODE as any;
+            this.config.mode = <any>process.env.SAFFRON_MODE;
     }
 
     static getOption(option: ConfigOptions, config: Config | null): any {
@@ -192,13 +194,13 @@ export default class Config {
             case ConfigOptions.GRID_DISTRIBUTED:
                 return config ? config.config.grid?.distributed : false;
             case ConfigOptions.GRID_SERVER_ADDRESS:
-                return config ? config.config.grid?.serverAddress : 'localhost';
+                return config ? config.config.grid?.serverHost : '127.0.0.1';
             case ConfigOptions.GRID_SERVER_PORT:
                 return config ? config.config.grid?.serverPort : 3000;
             case ConfigOptions.GRID_AUTH:
                 return config ? config.config.grid?.authToken : undefined;
-            case ConfigOptions.GRID_USE_HTTP:
-                return config ? config.config.grid?.useHTTP : false;
+            case ConfigOptions.GRID_USE_HTTPS:
+                return config ? config.config.grid?.useHTTPS : false;
             case ConfigOptions.GRID_HTTPS_KEY:
                 return config ? config.config.grid?.key : undefined;
             case ConfigOptions.GRID_HTTPS_CERT:
@@ -206,6 +208,8 @@ export default class Config {
 
             case ConfigOptions.MISC_LOG_LEVEL:
                 return config ? config.config.misc?.log : "all";
+            case ConfigOptions.MISC_EVENT_DELAY:
+                return config ? config.config.misc?.eventDelay : 0;
 
             case ConfigOptions.DB_IS_INITIALIZED:
                 return config ? config.config.database != undefined && config.config.database !== 'none' : false;

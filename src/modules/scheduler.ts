@@ -132,7 +132,7 @@ export default class Scheduler {
         // Create separation interval
         let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, this.saffron.config) / this.sources.length
 
-        let workersIds = this.saffron.grid.getWorkers();
+        let workersIds = this.saffron.grid.workers;
         let sI = 0, wI = 0;
         for (let source of this.sources) {
             this.issueJobForSource(source, workersIds[wI++], separationInterval * sI++);

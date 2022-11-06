@@ -19,8 +19,8 @@
   },
   "scripts": {
     "test": "mocha --exit --bail --forbid-only --require ts-node/register test/*.test.ts",
-    "docker-compose": "cd ./test/docker && sudo docker-compose up --remove-orphans ",
-    "docker-compose-build": "cd ./test/docker && sudo docker-compose up --build --remove-orphans ",
+    "docker-compose": "cd docker && sudo docker-compose up --remove-orphans ",
+    "docker-compose-build": "cd docker && sudo docker-compose up --build --remove-orphans ",
     "build": "rm -rf dist && tsc -d"
   },
   "repository": {

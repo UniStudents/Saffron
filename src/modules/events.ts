@@ -64,6 +64,8 @@ export default class Events {
                 Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - worker announced (${worker_id}).`));
             this.antennae.on("grid.worker.destroyed", (worker_id: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - worker destroyed (${worker_id}).`));
+            this.antennae.on("grid.node.auth.failed", () =>
+                Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - node authentication failed.`));
 
             this.antennae.on("worker.job.finished", (jobId: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - finished job(${jobId}).`));
@@ -132,26 +134,32 @@ class Antennae {
     public emit(eventName: string, ...args: any[]) {
         if (!this._callbacks[eventName]) return;
 
-        this.saffron.grid.emit(eventName, ...args);
+        const _emit = () => {
+            this.saffron.grid.emit(eventName, ...args);
 
-        // Call specified callback
-        this._callbacks[eventName].forEach(callback => {
-            // Catch callbacks errors that the saffron cannot handle
-            try {
-                callback(...args);
-            } catch (e) {
-                console.log(e);
-            }
-        });
-
-        if(this._callbacks['*'])
-            this._callbacks['*'].forEach(callback => {
+            // Call specified callback
+            this._callbacks[eventName].forEach(callback => {
                 // Catch callbacks errors that the saffron cannot handle
                 try {
-                    callback(eventName, ...args);
+                    callback(...args);
                 } catch (e) {
                     console.log(e);
                 }
             });
+
+            if(this._callbacks['*'])
+                this._callbacks['*'].forEach(callback => {
+                    // Catch callbacks errors that the saffron cannot handle
+                    try {
+                        callback(eventName, ...args);
+                    } catch (e) {
+                        console.log(e);
+                    }
+                });
+        };
+
+        const delay = Config.getOption(ConfigOptions.MISC_EVENT_DELAY, this.saffron.config);
+        if(!delay) return _emit();
+        setTimeout(_emit, delay);
     }
 }
