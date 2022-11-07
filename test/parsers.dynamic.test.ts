@@ -11,7 +11,6 @@ describe("Dynamic parser", function () {
             expect(obj.articles.length).to.equal(1);
 
             for (const article of obj.articles) {
-                expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
                 expect(article.source).to.equal('dynamic-source');
 
                 expect(article.title).to.equal('My title');

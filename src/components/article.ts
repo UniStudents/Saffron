@@ -14,7 +14,6 @@ export type Category = {
 };
 
 export default class Article {
-    declare id: string;
     declare title: string;
     declare content: string;
     declare link: string;
@@ -27,7 +26,6 @@ export default class Article {
     declare thumbnail: string;
 
     constructor() {
-        this.id = randomId("art");
     }
 
     public getSource(saffron: Saffron): Source {

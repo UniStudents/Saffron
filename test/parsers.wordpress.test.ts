@@ -11,7 +11,6 @@ describe("WordPress parser", function () {
             expect(obj.articles.length).to.equal(30);
 
             for (const article of obj.articles) {
-                expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
                 expect(article.source).to.equal('wp1-source');
             }
 
@@ -46,7 +45,6 @@ describe("WordPress parser", function () {
             expect(obj.articles.length).to.equal(10);
 
             for (const article of obj.articles) {
-                expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
                 expect(article.source).to.equal('wp2-source');
             }
 

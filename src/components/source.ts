@@ -20,7 +20,7 @@ export default class Source {
      * @param config
      */
     static parseSourceFile(source: SourceFile, config: Config | null): Source {
-        source.filename = source.filename ?? source.name ?? 'unknown filename';
+        source.filename = source.filename ?? 'unknown filename';
 
         let ret = new Source();
 
@@ -36,11 +36,11 @@ export default class Source {
 
         if (source.interval != null && (source.interval < 0))
             throw new Error(`SourceException [${source.filename}] Field interval is not valid, requirements(type = number, positive or zero).`);
-        ret.interval = source.interval ? source.interval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, config);
+        ret.interval = source.interval ?? Config.getOption(ConfigOptions.JOB_INT, config);
 
         if (source.retryInterval != null && (source.retryInterval < 0))
             throw new Error(`SourceException [${source.filename}] Field retryInterval is not valid, requirements(type = number, positive or zero).`);
-        ret.retryInterval = source.retryInterval ? source.retryInterval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, config) / 2;
+        ret.retryInterval = source.retryInterval ?? Config.getOption(ConfigOptions.JOB_INT, config) / 2;
 
         ret.extra = source.extra;
 
@@ -49,13 +49,14 @@ export default class Source {
 
         if (source.timeout != null && (source.timeout < 0))
             throw new Error(`SourceException [${source.filename}] Field timeout is not valid, requirements(type = number, positive or zero).`);
-        instructions.timeout = source.timeout ? source.timeout : Config.getOption(ConfigOptions.REQUEST_TIMEOUT, config);
+        instructions.timeout = source.timeout ?? Config.getOption(ConfigOptions.TIMEOUT, config);
 
         if (source.amount != null && (source.amount <= 0))
             throw new Error(`SourceException [${source.filename}] Field amount is not valid, requirements(type = number, positive).`);
-        instructions.amount = source.amount ? source.amount : Config.getOption(ConfigOptions.ARTICLE_AMOUNT, config);
+        instructions.amount = source.amount ?? Config.getOption(ConfigOptions.ARTICLE_AMOUNT, config);
 
-        instructions.userAgent = source.userAgent ?? Config.getOption(ConfigOptions.WORKER_USERAGENT, config);
+        instructions.includeContentAttachments = source.includeContentAttachments ?? Config.getOption(ConfigOptions.INCLUDE_CNT_ATTACHMENTS, config);
+        instructions.userAgent = source.userAgent ?? Config.getOption(ConfigOptions.USERAGENT, config);
         instructions.ignoreCertificates = source.ignoreCertificates ?? false;
         instructions.textDecoder = source.encoding ? new TextDecoder(`${source.encoding}`) : new TextDecoder();
 

@@ -146,7 +146,8 @@ export class WordpressV2Parser extends ParserClass {
                     article.pubDate = p.date;
             }  else article.pubDate = p.date;
 
-            article.pushAttachments(utils.extractLinks(article.content));
+            if(instructions.includeContentAttachments)
+                article.pushAttachments(utils.extractLinks(article.content));
 
             for (let cId of p.categories) {
                 let cat = parsedCategories.find((c: any) => c.id == cId)

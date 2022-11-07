@@ -180,7 +180,8 @@ export class RSSParser extends ParserClass {
                 ? article["link"]
                 : renameFields.get("link") && article.hasOwnProperty(renameFields.get("link")!) ? article[renameFields.get("link")!] : "";
 
-            tmpArticle.pushAttachments(utils.extractLinks(tmpArticle.content));
+            if(utils.source.instructions.includeContentAttachments)
+                tmpArticle.pushAttachments(utils.extractLinks(tmpArticle.content));
 
             if (article.categories)
                 article.categories.forEach((c: any) => tmpArticle.pushCategory(c, []));

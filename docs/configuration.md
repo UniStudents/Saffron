@@ -73,6 +73,11 @@ Default value: `30`
 
 The maximum amount of articles that saffron will return for each source scraping job.
 
+### `articles.includeContentAttachments`
+Default value: `true`
+
+If the generated article's attachments will contain the extracted urls from article's content.
+
 ## `scheduler`
 
 ### `jobsInterval`

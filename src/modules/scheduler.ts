@@ -50,7 +50,7 @@ export default class Scheduler {
             this.resetJobs();
         }
 
-        const noResponseThreshold = Config.getOption(ConfigOptions.SCHEDULER_NO_RESPONSE_THRESHOLD, this.saffron.config);
+        const noResponseThreshold = Config.getOption(ConfigOptions.NO_RESPONSE_THR, this.saffron.config);
 
         let checkingJobs = false;
         this.interval = setInterval(() => {
@@ -78,7 +78,7 @@ export default class Scheduler {
 
                     // If attempts > 10 increase interval to heavy interval
                     job.untilRetry = job.attempts > 10
-                        ? Config.getOption(ConfigOptions.SCHEDULER_JOB_HEAVY_INT, this.saffron.config)
+                        ? Config.getOption(ConfigOptions.JOB_HEAVY_INT, this.saffron.config)
                         : (job.source.retryInterval ? job.source.retryInterval : job.source.interval / 2);
 
                     job.status = JobStatus.PENDING;
@@ -131,11 +131,11 @@ export default class Scheduler {
 
         if(this.sources.length == 0) return;
 
-        const jobInt: number = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, this.saffron.config);
+        const jobInt: number = Config.getOption(ConfigOptions.JOB_INT, this.saffron.config);
         if(jobInt < 5000) throw new Error('SaffronException scheduler.jobInterval must be at least 5000ms');
 
         // Create separation interval
-        let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, this.saffron.config) / this.sources.length;
+        let separationInterval = Config.getOption(ConfigOptions.JOB_INT, this.saffron.config) / this.sources.length;
 
         let workersIds = this.saffron.grid.workers;
         let sI = 0, wI = 0;

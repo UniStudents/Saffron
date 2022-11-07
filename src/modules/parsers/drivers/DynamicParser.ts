@@ -32,7 +32,6 @@ export class DynamicParser extends ParserClass {
         }
 
         articles.forEach(article => {
-            article.id = randomId("art");
             article.pushCategories(utils.aliases.map((alias: string) => {
                 return {
                     name: alias,

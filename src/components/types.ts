@@ -24,9 +24,10 @@ export type SourceFile = {
     userAgent?: string;
     ignoreCertificates?: boolean;
     amount?: number;
+    includeContentAttachments?: boolean;
     encoding?: string;
 
     extra?: any;
 
-    scrape?: any;
+    scrape?: any; // TODO: Create type for scrape field
 };

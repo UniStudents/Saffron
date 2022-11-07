@@ -16,7 +16,8 @@ export type ConfigType = {
             timeout: number;
         }>;
         articles: Partial<{
-            amount?: number;
+            amount: number;
+            includeContentAttachments: boolean;
         }>;
     }>;
     scheduler: Partial<{
@@ -42,29 +43,30 @@ export type ConfigType = {
 }
 
 export enum ConfigOptions {
-    SOURCES_PATH = 'sources.path',
-    SOURCES_INCLUDE_ONLY = 'sources.includeOnly',
-    SOURCES_EXCLUDE = 'sources.exlude',
-    SAFFRON_MODE = 'mode',
-    WORKER_NODES = 'worker.nodes',
-    WORKER_USERAGENT = 'worker.useragent',
-    REQUEST_TIMEOUT = 'worker.request.timeout',
-    ARTICLE_AMOUNT = 'worker.article.amount',
-    SCHEDULER_JOB_INT = 'scheduler.interval',
-    SCHEDULER_JOB_HEAVY_INT = 'scheduler.heavyInterval',
-    SCHEDULER_NO_RESPONSE_THRESHOLD = 'scheduler.threshold',
-    SCHEDULER_RANDOMIZER = 'scheduler.job.randomizer',
-    GRID_DISTRIBUTED = 'grid.distributed',
-    GRID_SERVER_ADDRESS = 'grid.server.address',
-    GRID_SERVER_PORT = 'grid.server.port',
-    GRID_AUTH = 'grid.auth',
-    GRID_USE_HTTPS = 'grid.use_https',
-    GRID_HTTPS_KEY = 'grid.https.key',
-    GRID_HTTPS_CERT = 'grid.https.cert',
-    MISC_LOG_LEVEL = 'misc.log',
-    MISC_EVENT_DELAY = 'misc.eventDelay',
-    NEW_ARTICLES_IS_INITIALIZED = 'db.initialized',
-    NEW_ARTICLES = 'db.articles.push',
+    SOURCES_PATH = 0,
+    SOURCES_INCLUDE_ONLY = 1,
+    SOURCES_EXCLUDE = 3,
+    MODE = 4,
+    WORKER_NODES = 5,
+    USERAGENT = 6,
+    TIMEOUT = 7,
+    ARTICLE_AMOUNT = 8,
+    JOB_INT = 9,
+    JOB_HEAVY_INT = 10,
+    NO_RESPONSE_THR = 11,
+    INT_RANDOMIZER = 12,
+    DISTRIBUTED = 13,
+    HOST = 14,
+    PORT = 15,
+    AUTH_TOKEN = 16,
+    USE_HTTPS = 17,
+    HTTPS_KEY = 18,
+    HTTPS_CERT = 19,
+    LOG_LEVEL = 20,
+    EVENT_DELAY = 21,
+    NEW_ARTICLES_EXISTS = 22,
+    NEW_ARTICLES = 23,
+    INCLUDE_CNT_ATTACHMENTS = 24
 }
 
 export default class Config {
@@ -83,7 +85,8 @@ export default class Config {
                 timeout: 10000
             },
             articles: {
-                amount: 30
+                amount: 30,
+                includeContentAttachments: true
             }
         },
         scheduler: {
@@ -156,7 +159,7 @@ export default class Config {
 
     static getOption(option: ConfigOptions, config: Config | null): any {
         switch (option) {
-            case ConfigOptions.SAFFRON_MODE:
+            case ConfigOptions.MODE:
                 return config ? config.config.mode : "main";
 
             case ConfigOptions.SOURCES_PATH:
@@ -168,44 +171,46 @@ export default class Config {
 
             case ConfigOptions.WORKER_NODES:
                 return config ? config.config.workers?.nodes : 1;
-            case ConfigOptions.WORKER_USERAGENT:
+            case ConfigOptions.USERAGENT:
                 return config ? config.config.workers?.userAgent : 'saffron';
-            case ConfigOptions.REQUEST_TIMEOUT:
+            case ConfigOptions.TIMEOUT:
                 return config ? config.config.workers?.jobs?.timeout : 10000;
 
             case ConfigOptions.ARTICLE_AMOUNT:
                 return config ? config.config.workers?.articles?.amount : 30;
+            case ConfigOptions.INCLUDE_CNT_ATTACHMENTS:
+                return config ? config.config.workers?.articles?.includeContentAttachments : true;
 
-            case ConfigOptions.SCHEDULER_JOB_INT:
+            case ConfigOptions.JOB_INT:
                 return config ? config.config.scheduler?.jobsInterval : 3600000;
-            case ConfigOptions.SCHEDULER_JOB_HEAVY_INT:
+            case ConfigOptions.JOB_HEAVY_INT:
                 return config ? config.config.scheduler?.heavyJobFailureInterval : 86400000;
-            case ConfigOptions.SCHEDULER_RANDOMIZER:
+            case ConfigOptions.INT_RANDOMIZER:
                 return config ? config.config.scheduler?.randomizeInterval : () => 0;
-            case ConfigOptions.SCHEDULER_NO_RESPONSE_THRESHOLD:
+            case ConfigOptions.NO_RESPONSE_THR:
                 return config ? config.config.scheduler?.noResponseThreshold : 2;
 
-            case ConfigOptions.GRID_DISTRIBUTED:
+            case ConfigOptions.DISTRIBUTED:
                 return config ? config.config.grid?.distributed : false;
-            case ConfigOptions.GRID_SERVER_ADDRESS:
+            case ConfigOptions.HOST:
                 return config ? config.config.grid?.serverHost : '127.0.0.1';
-            case ConfigOptions.GRID_SERVER_PORT:
+            case ConfigOptions.PORT:
                 return config ? config.config.grid?.serverPort : 3000;
-            case ConfigOptions.GRID_AUTH:
+            case ConfigOptions.AUTH_TOKEN:
                 return config ? config.config.grid?.authToken : undefined;
-            case ConfigOptions.GRID_USE_HTTPS:
+            case ConfigOptions.USE_HTTPS:
                 return config ? config.config.grid?.useHTTPS : false;
-            case ConfigOptions.GRID_HTTPS_KEY:
+            case ConfigOptions.HTTPS_KEY:
                 return config ? config.config.grid?.key : undefined;
-            case ConfigOptions.GRID_HTTPS_CERT:
+            case ConfigOptions.HTTPS_CERT:
                 return config ? config.config.grid?.cert : undefined;
 
-            case ConfigOptions.MISC_LOG_LEVEL:
+            case ConfigOptions.LOG_LEVEL:
                 return config ? config.config.misc?.log : "all";
-            case ConfigOptions.MISC_EVENT_DELAY:
+            case ConfigOptions.EVENT_DELAY:
                 return config ? config.config.misc?.eventDelay : 0;
 
-            case ConfigOptions.NEW_ARTICLES_IS_INITIALIZED:
+            case ConfigOptions.NEW_ARTICLES_EXISTS:
                 return config ? config.config.newArticles != undefined && config.config.newArticles !== 'none' : false;
             case ConfigOptions.NEW_ARTICLES:
                 return config ? config.config.newArticles : (opts: any) => {};

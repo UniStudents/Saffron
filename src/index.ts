@@ -46,7 +46,7 @@ class Saffron {
 
         // Initialize and start grid
         this.grid = new Grid(this);
-        if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED, this.config))
+        if (Config.getOption(ConfigOptions.DISTRIBUTED, this.config))
             this.grid.connect();
 
         // Initialize worker
@@ -56,7 +56,7 @@ class Saffron {
             this.workers.push(new Worker(this));
 
         // Initialize scheduler
-        if (Config.getOption(ConfigOptions.SAFFRON_MODE, this.config) === 'main')
+        if (Config.getOption(ConfigOptions.MODE, this.config) === 'main')
             this.scheduler = new Scheduler(this);
     }
 
@@ -71,7 +71,7 @@ class Saffron {
             worker.start();
         }
 
-        if (Config.getOption(ConfigOptions.SAFFRON_MODE, this.config) === 'main')
+        if (Config.getOption(ConfigOptions.MODE, this.config) === 'main')
             await this.scheduler.start(reset);
 
         this.events.emit("start");
@@ -83,7 +83,7 @@ class Saffron {
      * else if mode equals 'worker' then the worker will stop getting future jobs and disconnect from the main saffron instance.
      */
     stop() {
-        if (Config.getOption(ConfigOptions.SAFFRON_MODE, this.config) === 'main')
+        if (Config.getOption(ConfigOptions.MODE, this.config) === 'main')
             this.scheduler.stop();
 
         for (let worker of this.workers)

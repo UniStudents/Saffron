@@ -21,19 +21,19 @@ export default class Grid {
     declare readonly node: IOServer | IOSocket;
 
     constructor(private readonly saffron: Saffron) {
-        this.isMain = Config.getOption(ConfigOptions.SAFFRON_MODE, this.saffron.config) === 'main';
+        this.isMain = Config.getOption(ConfigOptions.MODE, this.saffron.config) === 'main';
         this.workers = [];
 
-        if(!Config.getOption(ConfigOptions.GRID_DISTRIBUTED, this.saffron.config)) return;
+        if(!Config.getOption(ConfigOptions.DISTRIBUTED, this.saffron.config)) return;
 
-        if (Config.getOption(ConfigOptions.GRID_AUTH, this.saffron.config) == null)
+        if (Config.getOption(ConfigOptions.AUTH_TOKEN, this.saffron.config) == null)
             throw new Error('SaffronException The field grid.authToken must be supplied');
 
         if (this.isMain) {
-            if (Config.getOption(ConfigOptions.GRID_USE_HTTPS, this.saffron.config))
+            if (Config.getOption(ConfigOptions.USE_HTTPS, this.saffron.config))
                 this.http_server = https.createServer({
-                    key: Config.getOption(ConfigOptions.GRID_HTTPS_KEY, this.saffron.config),
-                    cert: Config.getOption(ConfigOptions.GRID_HTTPS_CERT, this.saffron.config)
+                    key: Config.getOption(ConfigOptions.HTTPS_KEY, this.saffron.config),
+                    cert: Config.getOption(ConfigOptions.HTTPS_CERT, this.saffron.config)
                 });
             else
                 this.http_server = http.createServer();
@@ -43,26 +43,26 @@ export default class Grid {
                 connectTimeout: 30 * 1000
             });
         } else {
-            let url = Config.getOption(ConfigOptions.GRID_USE_HTTPS, this.saffron.config) ? 'https://' : 'http://'
-                + Config.getOption(ConfigOptions.GRID_SERVER_ADDRESS, this.saffron.config)
-                + `:${Config.getOption(ConfigOptions.GRID_SERVER_PORT, this.saffron.config)}/`;
+            let url = Config.getOption(ConfigOptions.USE_HTTPS, this.saffron.config) ? 'https://' : 'http://'
+                + Config.getOption(ConfigOptions.HOST, this.saffron.config)
+                + `:${Config.getOption(ConfigOptions.PORT, this.saffron.config)}/`;
 
             this.node = IOClient(url, {
                 autoConnect: false,
                 reconnection: true,
                 reconnectionDelay: 5 * 1000,
                 timeout: 15 * 1000,
-                key: Config.getOption(ConfigOptions.GRID_HTTPS_KEY, this.saffron.config),
-                cert: Config.getOption(ConfigOptions.GRID_HTTPS_CERT, this.saffron.config),
+                key: Config.getOption(ConfigOptions.HTTPS_KEY, this.saffron.config),
+                cert: Config.getOption(ConfigOptions.HTTPS_CERT, this.saffron.config),
                 auth: {
-                    token: Config.getOption(ConfigOptions.GRID_AUTH, this.saffron.config)
+                    token: Config.getOption(ConfigOptions.AUTH_TOKEN, this.saffron.config)
                 }
             });
         }
     }
 
     emit(eventName: string, ...args: any[]): void {
-        if (!Config.getOption(ConfigOptions.GRID_DISTRIBUTED, this.saffron.config))
+        if (!Config.getOption(ConfigOptions.DISTRIBUTED, this.saffron.config))
             return;
 
         if (this.isMain) {
@@ -83,7 +83,7 @@ export default class Grid {
         if (this.isMain) {
             (<IOServer>this.node).on("connection", socket => {
                 const clientAuthToken = socket.handshake.auth.token;
-                if (!clientAuthToken || clientAuthToken !== Config.getOption(ConfigOptions.GRID_AUTH, this.saffron.config)) {
+                if (!clientAuthToken || clientAuthToken !== Config.getOption(ConfigOptions.AUTH_TOKEN, this.saffron.config)) {
                     this.saffron.events.emit('grid.node.auth.failed', socket);
                     return socket.disconnect();
                 }
@@ -104,7 +104,7 @@ export default class Grid {
                 });
             });
 
-            const port: number = Config.getOption(ConfigOptions.GRID_SERVER_PORT, this.saffron.config)
+            const port: number = Config.getOption(ConfigOptions.PORT, this.saffron.config)
             this.http_server.listen(port, () => this.saffron.events.emit('grid.connection.okay'));
         } else if (Config.getOption(ConfigOptions.WORKER_NODES, this.saffron.config) > 0) {
             this.node.on('connect', () => this.saffron.events.emit('grid.connection.okay'));
@@ -214,7 +214,7 @@ export default class Grid {
         this.saffron.events.emit("middleware.after", articles);
 
         // Do not do database checks if there is no database
-        if(!Config.getOption(ConfigOptions.NEW_ARTICLES_IS_INITIALIZED, this.saffron.config)) return;
+        if(!Config.getOption(ConfigOptions.NEW_ARTICLES_EXISTS, this.saffron.config)) return;
 
         try {
             await Config.getOption(ConfigOptions.NEW_ARTICLES, this.saffron.config)(tableName, articles);

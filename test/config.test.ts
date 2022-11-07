@@ -16,6 +16,7 @@ describe('Configuration', function () {
         expect(c.workers?.userAgent).to.equal('saffron');
         expect(c.workers?.jobs?.timeout).to.equal(10000);
         expect(c.workers?.articles?.amount).to.equal(30);
+        expect(c.workers?.articles?.includeContentAttachments).to.equal(true);
         expect(c.scheduler?.jobsInterval).to.equal(3600000);
         expect(c.scheduler?.heavyJobFailureInterval).to.equal(86400000);
         expect(c.scheduler?.noResponseThreshold).to.equal(2);
@@ -83,6 +84,7 @@ describe('Configuration', function () {
         expect(c.workers?.userAgent).to.equal(ec.workers.userAgent);
         expect(c.workers?.jobs?.timeout).to.equal(ec.workers.jobs?.timeout);
         expect(c.workers?.articles?.amount).to.equal(ec.workers.articles?.amount);
+        expect(c.workers?.articles?.includeContentAttachments).to.equal(ec.workers.articles?.includeContentAttachments);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);
         expect(c.scheduler?.heavyJobFailureInterval).to.equal(ec.scheduler.heavyJobFailureInterval);
         expect(c.scheduler?.noResponseThreshold).to.equal(ec.scheduler.noResponseThreshold);
@@ -159,6 +161,7 @@ describe('Configuration', function () {
         expect(c.workers?.userAgent).to.equal(ec.workers.userAgent);
         expect(c.workers?.jobs?.timeout).to.equal(ec.workers.jobs?.timeout);
         expect(c.workers?.articles?.amount).to.equal(100);
+        expect(c.workers?.articles?.includeContentAttachments).to.equal(ec.workers.articles?.includeContentAttachments);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);
         expect(c.scheduler?.heavyJobFailureInterval).to.equal(ec.scheduler.heavyJobFailureInterval);
         expect(c.scheduler?.noResponseThreshold).to.equal(ec.scheduler.noResponseThreshold);
@@ -190,6 +193,7 @@ describe('Configuration', function () {
         expect(c.workers?.userAgent).to.equal(ec.workers.userAgent);
         expect(c.workers?.jobs?.timeout).to.equal(100);
         expect(c.workers?.articles?.amount).to.equal(ec.workers?.articles?.amount);
+        expect(c.workers?.articles?.includeContentAttachments).to.equal(ec.workers.articles?.includeContentAttachments);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);
         expect(c.scheduler?.heavyJobFailureInterval).to.equal(ec.scheduler.heavyJobFailureInterval);
         expect(c.scheduler?.noResponseThreshold).to.equal(ec.scheduler.noResponseThreshold);
@@ -220,6 +224,7 @@ describe('Configuration', function () {
         expect(c.workers?.userAgent).to.equal(ec.workers.userAgent);
         expect(c.workers?.jobs?.timeout).to.equal(ec.workers.jobs?.timeout);
         expect(c.workers?.articles?.amount).to.equal(ec.workers.articles?.amount);
+        expect(c.workers?.articles?.includeContentAttachments).to.equal(ec.workers.articles?.includeContentAttachments);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);
         expect(c.scheduler?.heavyJobFailureInterval).to.equal(ec.scheduler.heavyJobFailureInterval);
         expect(c.scheduler?.noResponseThreshold).to.equal(ec.scheduler.noResponseThreshold);
@@ -235,12 +240,17 @@ describe('Configuration', function () {
         expect(c.misc?.eventDelay).to.equal(ec.misc.eventDelay);
     });
 
-    it('Saffron mode', function () {
+    it('Saffron mode main', function () {
         process.env.SAFFRON_MODE = 'main';
 
         // Config
         const c = new Config(_c).config;
-
         expect(c.mode).to.equal('main');
+
+        process.env.SAFFRON_MODE = 'worker';
+
+        // Config
+        const c2 = new Config(_c).config;
+        expect(c2.mode).to.equal('worker');
     });
 });

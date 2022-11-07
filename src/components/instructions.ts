@@ -13,6 +13,7 @@ export default class Instructions {
 
     declare timeout: number;
     declare amount: number;
+    declare includeContentAttachments: boolean;
     declare userAgent: string;
     declare textDecoder: TextDecoder;
     declare ignoreCertificates: boolean;

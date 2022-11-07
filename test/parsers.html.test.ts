@@ -11,7 +11,6 @@ describe("HTML parser", function () {
             expect(obj.articles.length).to.equal(10);
 
             for (const article of obj.articles) {
-                expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
                 expect(article.source).to.equal('html1-source');
 
                 const cat = article.categories.find(cat => cat.name === 'Γενικές Ανακοινώσεις');
@@ -92,7 +91,6 @@ describe("HTML parser", function () {
             expect(obj.articles.length).to.equal(10);
 
             for (const article of obj.articles) {
-                expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
                 expect(article.source).to.equal('html2-source');
                 expect(article.categories.length).to.equal(1);
                 expect([
@@ -128,7 +126,6 @@ describe("HTML parser", function () {
             expect(obj.articles.length).to.equal(20);
 
             for (const article of obj.articles) {
-                expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
                 expect(article.source).to.equal('html3-source');
                 expect(article.categories.length).to.equal(1);
                 expect(article.categories[0].name).to.equal('Νέα');
@@ -155,7 +152,6 @@ describe("HTML parser", function () {
             expect(obj.articles.length).to.equal(10);
 
             for (const article of obj.articles) {
-                expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
                 expect(article.source).to.equal('html4-source');
                 expect(article.categories.length).to.equal(1);
                 expect(article.categories[0].name).to.equal('Γενικές Ανακοινώσεις');

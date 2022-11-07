@@ -24,7 +24,7 @@ export default class Job {
         this.attempts = 0;
         this.emitAttempts = 0;
 
-        let untilRetry = interval + Config.getOption(ConfigOptions.SCHEDULER_RANDOMIZER, config)();
+        let untilRetry = interval + Config.getOption(ConfigOptions.INT_RANDOMIZER, config)();
         if(untilRetry < 0) untilRetry = interval;
 
         this.untilRetry = untilRetry;

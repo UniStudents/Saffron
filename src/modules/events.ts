@@ -25,7 +25,7 @@ export default class Events {
     }
 
     registerLogListeners(config: Config | null): void {
-        let logLevel = Config.getOption(ConfigOptions.MISC_LOG_LEVEL, config);
+        let logLevel = Config.getOption(ConfigOptions.LOG_LEVEL, config);
         if (logLevel === 'none') return;
 
         this.antennae.on('title', () =>
@@ -139,7 +139,7 @@ class Antennae {
             });
         };
 
-        const delay = Config.getOption(ConfigOptions.MISC_EVENT_DELAY, this.saffron.config);
+        const delay = Config.getOption(ConfigOptions.EVENT_DELAY, this.saffron.config);
         if(!delay) return _emit();
         setTimeout(_emit, delay);
     }
