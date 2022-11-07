@@ -2,10 +2,9 @@
  * The log types for logging
  */
 export enum LoggerTypes {
-    INSTALL_ERROR = 0,
-    STEP = 1,
-    ERROR = 2,
-    INFO = 3,
-    TITLE = 4,
-    DEBUG = 5
+    STEP = 0,
+    ERROR = 1,
+    INFO = 2,
+    TITLE = 3,
+    DEBUG = 4
 }

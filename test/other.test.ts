@@ -12,8 +12,6 @@ import {RSSParser} from "../src/modules/parsers/drivers/RSSParser";
 import {WordpressV1Parser} from "../src/modules/parsers/drivers/WordpressV1Parser";
 import {WordpressV2Parser} from "../src/modules/parsers/drivers/WordpressV2Parser";
 import {DynamicParser} from "../src/modules/parsers/drivers/DynamicParser";
-import * as fs from "fs";
-import path from "path";
 
 const randStr = (myLength: number) => {
     const chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
@@ -135,17 +133,21 @@ describe('Other', function () {
 
     it('Extensions', function () {
         const ext = new Extensions();
-        ext.push({event: 'articles', callback: (...args: any[]) => 0});
-        ext.push({event: 'article.format', callback: (...args: any[]) => 1});
-        ext.push({event: 'article.format', callback: (...args: any[]) => 2});
-        ext.push({event: 'articles', callback: (...args: any[]) => 3});
-        ext.push({event: 'article.format', callback: (...args: any[]) => 4});
+        let counter = 0;
+
+        ext.push({event: 'articles', callback: () => counter = 1});
+        ext.push({event: 'article.format', callback: () => counter = 2});
+        ext.push({event: 'article.format', callback: () => counter = 3});
+        ext.push({event: 'articles', callback: () => counter = 4});
+        ext.push({event: 'article.format', callback: () => counter = 5});
 
         let getExtPair = ext.startPairCount();
         let pair: any;
-        let expectedValue = 0;
-        while ((pair = getExtPair()) != null)
-            expect(pair.callback()).to.equal(expectedValue++)
+        let expectedValue = 1;
+        while ((pair = getExtPair()) != null) {
+            pair.callback();
+            expect(counter).to.equal(expectedValue++)
+        }
     });
 
     it('Parsers - Type translation', function () {

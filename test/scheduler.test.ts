@@ -6,7 +6,7 @@ describe('Scheduler', function () {
 
     const saffron = new Saffron();
     before(function () {
-        return saffron.initialize({
+        saffron.initialize({
             mode: 'main',
             workers: {nodes: 1},
             misc: {log: 'none'}
@@ -22,7 +22,7 @@ describe('Scheduler', function () {
 
     it('Reset sources with invalid path', function () {
         return new Promise(async (resolve) => {
-            await saffron.initialize({
+            saffron.initialize({
                 sources: {
                     path: './invalid/sources/path'
                 },
@@ -38,7 +38,7 @@ describe('Scheduler', function () {
 
     it('Reset sources', function () {
         return new Promise(async (resolve) => {
-            await saffron.initialize({
+            saffron.initialize({
                 sources: {
                     path: './test/sources'
                 },
@@ -104,7 +104,7 @@ describe('Scheduler', function () {
     it('Start anew', function () {
         this.timeout(15000);
         return new Promise(async resolve => {
-            await saffron.initialize({
+            saffron.initialize({
                 scheduler: {
                     jobsInterval: 10000,
                     randomizeInterval: () => 0,
@@ -112,6 +112,9 @@ describe('Scheduler', function () {
                     heavyJobFailureInterval: 20000
                 }
             });
+
+            // Check jobs in a 2 seconds interval
+            saffron.scheduler.checkInterval = 2000;
 
             await saffron.start(true);
             expect(saffron.scheduler.isRunning).to.equal(true);

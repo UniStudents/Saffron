@@ -1,15 +1,11 @@
 import Article from "./article";
 
 export type InstructionUrl = {
-    url: string;
     aliases: string[];
+    url: string;
 };
 
-export type ParserResult = {
-    aliases: string[];
-    url: string;
-    articles: Article[];
-};
+export type ParserResult = InstructionUrl & { articles: Article[]; };
 
 export type CallbackVoid = (...args: any[]) => void;
 

@@ -6,7 +6,7 @@ import Utils from "../Utils";
 
 export class DynamicParser extends ParserClass {
     validateScrape(scrape: any): void {
-        if (typeof scrape !== 'function') throw new Error("DynamicParser: scrape is not a function");
+        if (typeof scrape !== 'function') throw new Error("SourceException scrape is not a function");
     }
 
     assignInstructions(instructions: Instructions, sourceJson: any): void {

@@ -9,10 +9,10 @@ export class RSSParser extends ParserClass {
     validateScrape(scrape: any): void {
         if (!scrape) return;
 
-        if (!(scrape.extraFields ? Array.isArray(scrape.extraFields) : true)) throw new Error('RSSParserSourceException extraFields is not an array.');
+        if (scrape.extraFields ? !Array.isArray(scrape.extraFields) : false) throw new Error('SourceException extraFields is not an array.');
 
         if (scrape.renameFields && (typeof scrape.renameFields !== 'object' || Array.isArray(scrape.renameFields)))
-            throw new Error('RSSParserSourceException renameFields is not a JSON object.');
+            throw new Error('SourceException renameFields is not a JSON object.');
     }
 
     assignInstructions(instructions: Instructions, sourceJson: any): void {

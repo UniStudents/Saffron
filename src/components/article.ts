@@ -1,4 +1,6 @@
 import randomId from "../middleware/randomId"
+import {Saffron} from "../index";
+import Source from "./source";
 
 export type Attachment = {
     attribute: string;
@@ -28,11 +30,8 @@ export default class Article {
         this.id = randomId("art");
     }
 
-    /**
-     * Generate and return the hash of the article
-     */
-    getHash() {
-        return `${this.link}:${this.title}`;
+    public getSource(saffron: Saffron): Source {
+        return saffron.scheduler.sources.find(s => s.name = this.source)!;
     }
 
     public addExtra(key: string, value: any) {

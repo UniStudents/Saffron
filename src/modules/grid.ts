@@ -27,7 +27,7 @@ export default class Grid {
         if(!Config.getOption(ConfigOptions.GRID_DISTRIBUTED, this.saffron.config)) return;
 
         if (Config.getOption(ConfigOptions.GRID_AUTH, this.saffron.config) == null)
-            throw new Error('GridException The field grid.authToken must be supplied');
+            throw new Error('SaffronException The field grid.authToken must be supplied');
 
         if (this.isMain) {
             if (Config.getOption(ConfigOptions.GRID_USE_HTTPS, this.saffron.config))
@@ -79,29 +79,19 @@ export default class Grid {
     /**
      * Connect to grid network.
      */
-    async connect(): Promise<void> {
+    connect() {
         if (this.isMain) {
-            this.node.on("connection", socket => {
+            (<IOServer>this.node).on("connection", socket => {
                 const clientAuthToken = socket.handshake.auth.token;
                 if (!clientAuthToken || clientAuthToken !== Config.getOption(ConfigOptions.GRID_AUTH, this.saffron.config)) {
                     this.saffron.events.emit('grid.node.auth.failed', socket);
-                    socket.disconnect();
-                    return;
+                    return socket.disconnect();
                 }
 
                 this.saffron.events.emit('grid.node.connected', socket);
-
-                socket.on("disconnect", () => {
-                    this.saffron.events.emit('grid.node.disconnected', socket);
-                });
-
-                socket.on("worker.job.finished", (jobId: string) => {
-                    this.saffron.scheduler.changeJobStatus(jobId, JobStatus.FINISHED);
-                });
-
-                socket.on("worker.job.failed", (jobId: string) => {
-                    this.saffron.scheduler.changeJobStatus(jobId, JobStatus.FAILED);
-                });
+                socket.on("disconnect", () => this.saffron.events.emit('grid.node.disconnected', socket));
+                socket.on("worker.job.finished", (jobId: string) => this.saffron.scheduler.changeJobStatus(jobId, JobStatus.FINISHED));
+                socket.on("worker.job.failed", (jobId: string) => this.saffron.scheduler.changeJobStatus(jobId, JobStatus.FAILED));
 
                 socket.on("grid.worker.announced", (workerId: string) => {
                     if(!this.workers.find(wId => wId === workerId))
@@ -110,28 +100,16 @@ export default class Grid {
 
                 socket.on("grid.worker.destroyed", (workerId: string) => {
                     let index = this.workers.findIndex(id => id === workerId);
-                    if (index !== -1)
-                        this.workers.splice(index, 1);
+                    if (index !== -1) this.workers.splice(index, 1);
                 });
             });
 
             const port: number = Config.getOption(ConfigOptions.GRID_SERVER_PORT, this.saffron.config)
-            this.http_server.listen(port, () => {
-                this.saffron.events.emit('grid.connection.okay');
-            });
+            this.http_server.listen(port, () => this.saffron.events.emit('grid.connection.okay'));
         } else if (Config.getOption(ConfigOptions.WORKER_NODES, this.saffron.config) > 0) {
-            this.node.on('connect', () => {
-                this.saffron.events.emit('grid.connection.okay');
-            });
-
-            this.node.on('connect_error', reason => {
-                this.saffron.events.emit('grid.connection.failed', reason);
-            });
-
-            this.node.on('scheduler.job.push', (newJobStr: string) => {
-                let newJob: Job = unpack(newJobStr);
-                this.saffron.events.emit("scheduler.job.push", newJob);
-            });
+            this.node.on('connect', () => this.saffron.events.emit('grid.connection.okay'));
+            this.node.on('connect_error', reason => this.saffron.events.emit('grid.connection.failed', reason));
+            this.node.on('scheduler.job.push', (newJobStr: string) => this.saffron.events.emit("scheduler.job.push", unpack(newJobStr)));
 
             (<IOSocket>this.node).connect();
         }
@@ -197,14 +175,17 @@ export default class Grid {
     /**
      * Will be called from both the main and sub programs
      * @param source
-     * @param tableName
      * @param result
      */
-    async mergeArticles(source: Source, tableName: string, result: ParserResult[]): Promise<void> {
-        let articles: Article[] = [];
-        result.forEach(res => articles.push(...res.articles));
+    async mergeArticles(source: Source, result: ParserResult[]): Promise<void> {
+        const tableName = source.tableName || source.name
 
-        articles.forEach(article => article.timestamp = Date.now());
+        let articles: Article[] = [];
+        const timestamp = Date.now();
+        result.forEach(r => {
+            for(const a of r.articles) a.timestamp = timestamp;
+            articles.push(...r.articles);
+        });
 
         this.saffron.events.emit("worker.articles.found", articles, tableName); // Can be empty array
         if (articles.length == 0) return;
@@ -212,14 +193,17 @@ export default class Grid {
         this.saffron.events.emit("middleware.before", articles);
 
         let getExtPair = this.saffron.extensions.startPairCount();
-        let pair: any = {};
+        let pair;
         while ((pair = getExtPair()) != null) {
             try {
-                if (pair.event === 'article.format') {
-                    for (const i in articles)
-                        articles[i] = await pair.callback(articles[i]);
-                } else if (pair.event === 'articles') {
-                    articles = await pair.callback(articles);
+                switch (pair.event) {
+                    case 'article.format':
+                        for (const i in articles)
+                            articles[i] = await pair.callback(articles[i]);
+                        break;
+                    case 'articles':
+                        articles = await pair.callback(articles);
+                        break;
                 }
             } catch (e) {
                 this.saffron.events.emit("middleware.error", pair.event, e);
@@ -230,33 +214,13 @@ export default class Grid {
         this.saffron.events.emit("middleware.after", articles);
 
         // Do not do database checks if there is no database
-        if(!Config.getOption(ConfigOptions.DB_IS_INITIALIZED, this.saffron.config)) return;
-
-        // TODO - use result and request each category for separate checks
-
-        let dbArticles: Article[];
-        try {
-            dbArticles = await Config.getOption(ConfigOptions.DB_GET_ARTICLES, this.saffron.config)({
-                tableName,
-                count: articles.length >= 5 ? articles.length * 2 : 10
-            });
-        } catch (e) {
-            this.saffron.events.emit("database.get.error", source, e);
-            return;
-        }
-
-        // And then check if they already exist.
-        let hashes = dbArticles.map((article: Article) => article.getHash());
-        articles = articles.filter((article: Article) => !hashes.includes(article.getHash()));
-        this.saffron.events.emit("worker.articles.new", articles, tableName); // Can be empty array
+        if(!Config.getOption(ConfigOptions.NEW_ARTICLES_IS_INITIALIZED, this.saffron.config)) return;
 
         try {
-            await Config.getOption(ConfigOptions.DB_PUSH_ARTICLES, this.saffron.config)(articles);
+            await Config.getOption(ConfigOptions.NEW_ARTICLES, this.saffron.config)(tableName, articles);
         }  catch (e) {
-            this.saffron.events.emit("database.set.error", source, e);
-            return;
+            // Handle errors saffron cannot handle
+            console.log(e);
         }
-
-        this.saffron.events.emit("database.set.okay", source, articles);
     }
 }

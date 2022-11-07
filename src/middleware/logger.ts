@@ -19,10 +19,6 @@ export default function logger(type: LoggerTypes, data: any): void {
     })}`);
 
     switch (type) {
-        case LoggerTypes.INSTALL_ERROR:
-            console.log(chalk.red(" | "));
-            console.log(chalk.red.bold(` ⊗ ${time}: ${data}${data.slice(-1) === "." ? "" : "."} Please consult our docs, at https://saffron.poiw.org/source-files.\n`));
-            return;
         case LoggerTypes.STEP:
             console.log(chalk.white(`${chalk.green(" | ")}`));
             console.log(chalk.white(`${chalk.green(" ✓ ")} ${time}: ${data}`));

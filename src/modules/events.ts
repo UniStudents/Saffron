@@ -36,9 +36,6 @@ export default class Events {
             Logger(LoggerTypes.DEBUG, `${chalk.white('Saffron')} - Saffron stopped.`));
 
         if (logLevel === 'all' || logLevel === 'info') {
-            this.antennae.on("database.set.okay", (source: Source, articles: Article[]) =>
-                Logger(LoggerTypes.DEBUG, `${chalk.red('Database')} - Upload ${articles.length} articles to db for ${source.name}.`));
-
             this.antennae.on("scheduler.sources.new", (names: string[]) =>
                 Logger(LoggerTypes.INFO, `Loaded ${names.length} sources`))
 
@@ -56,6 +53,8 @@ export default class Events {
             this.antennae.on("scheduler.job.push", (job: Job) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.blue('Scheduler')} - pushing job(${job.id}) to workers.`));
 
+            this.antennae.on("grid.connection.okay", () =>
+                Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - grid is online.`));
             this.antennae.on("grid.node.connected", () =>
                 Logger(LoggerTypes.DEBUG, `${chalk.yellow('Grid')} - node connected.`));
             this.antennae.on("grid.node.disconnected", () =>
@@ -74,45 +73,29 @@ export default class Events {
 
             this.antennae.on("worker.articles.found", (articles: Article[], src: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.cyan('Articles')} - Finished job returned ${articles.length} articles for ${src}.`));
-            this.antennae.on("worker.articles.new", (articles: Article[], src: string) =>
-                Logger(LoggerTypes.INFO, `${chalk.cyan('Articles')} - ${articles.length} articles will be added to to the db for ${src}.`));
         }
 
         if (logLevel === 'all' || logLevel === 'info' || logLevel === 'errors') {
-            this.antennae.on("database.get.error", (source: Source, error: any) => {
-                Logger(LoggerTypes.DEBUG, `${chalk.red('Database')} - Cannot get articles from db for ${source.name}.`);
-                console.log(error);
-            });
-
-            this.antennae.on("database.set.error", (source: Source, error: any) => {
-                Logger(LoggerTypes.DEBUG, `${chalk.red('Database')} - Cannot upload articles to db for ${source.name}.`);
-                console.log(error);
-            });
-
             this.antennae.on("scheduler.path.error", (error: any) => {
                 Logger(LoggerTypes.DEBUG, `${chalk.red('Scheduler')} - Path is invalid or there are insufficient permissions.`);
                 console.log(error);
             });
-
             this.antennae.on("scheduler.sources.error", (sourceFile: any, error: any) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.red('Scheduler')} - failed to parse source '${sourceFile.path}' with error: ${error.message}`));
 
             this.antennae.on('grid.connection.failed', (error: any) => {
-                Logger(LoggerTypes.INSTALL_ERROR, 'Failed to start grid.')
+                Logger(LoggerTypes.ERROR, 'grid failed to start.')
                 console.log(error)
             });
-
             this.antennae.on("worker.parsers.error", (e: any) => {
                 Logger(LoggerTypes.INFO, `${chalk.red('Parsers')} - failed to scrape the articles.`);
                 console.log(e);
             });
-
             this.antennae.on("middleware.error", (mid: string, e: any) => {
                 Logger(LoggerTypes.INFO, `${chalk.red('Middleware')} - an error was caught at ${mid}.`);
                 console.log(e);
             });
         }
-
     }
 }
 
@@ -132,13 +115,12 @@ class Antennae {
     }
 
     public emit(eventName: string, ...args: any[]) {
-        if (!this._callbacks[eventName]) return;
-
         const _emit = () => {
-            this.saffron.grid.emit(eventName, ...args);
+            // Will not be initialized when emitting 'title' event
+            this.saffron.grid?.emit(eventName, ...args);
 
             // Call specified callback
-            this._callbacks[eventName].forEach(callback => {
+            this._callbacks[eventName]?.forEach(callback => {
                 // Catch callbacks errors that the saffron cannot handle
                 try {
                     callback(...args);
@@ -147,15 +129,14 @@ class Antennae {
                 }
             });
 
-            if(this._callbacks['*'])
-                this._callbacks['*'].forEach(callback => {
-                    // Catch callbacks errors that the saffron cannot handle
-                    try {
-                        callback(eventName, ...args);
-                    } catch (e) {
-                        console.log(e);
-                    }
-                });
+            this._callbacks['*']?.forEach(callback => {
+                // Catch callbacks errors that the saffron cannot handle
+                try {
+                    callback(eventName, ...args);
+                } catch (e) {
+                    console.log(e);
+                }
+            });
         };
 
         const delay = Config.getOption(ConfigOptions.MISC_EVENT_DELAY, this.saffron.config);

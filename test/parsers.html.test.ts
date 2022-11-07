@@ -146,7 +146,7 @@ describe("HTML parser", function () {
         });
     });
 
-    it('Test 3', function () {
+    it('Test 4', function () {
         return Saffron.parse(require('./sources/html/html4.json')).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];

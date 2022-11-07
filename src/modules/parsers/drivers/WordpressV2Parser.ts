@@ -98,7 +98,7 @@ export class WordpressV2Parser extends ParserClass {
             categories = JSON.parse(instructions.textDecoder.decode(catReq.data));
             posts = JSON.parse(instructions.textDecoder.decode(postsReq.data));
         } catch (e: any) {
-            throw new Error(`WordpressParserException job failed for ${utils.source.name}, original error: ${e.message}`);
+            throw new Error(`WordpressParserException failed [${utils.source.name}] job: ${e.message}`);
         }
 
         let articles: Article[] = [];

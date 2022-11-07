@@ -13,7 +13,7 @@ export class WordpressV1Parser extends ParserClass {
     }
 
     async parse(utils: Utils): Promise<Article[]> {
-        throw new Error(`WordpressParserV1Exception job failed because it is not implemented yet.`);
+        throw new Error(`WordpressParserV1Exception failed [${utils.source.name}] job: not implemented.`);
     }
 
 }

@@ -7,32 +7,28 @@ describe('Grid', function () {
     });
 
     it('Initialization', function () {
-        return new Promise(async resolve => {
-            const saffron = new Saffron();
-            await saffron.initialize({
-                mode: 'main',
-                misc: {log: 'none'},
-                workers: {nodes: 2}
-            });
-
-            expect(saffron.grid.workers.length).to.equal(0);
-            expect(saffron.grid.isMain).to.equal(true);
-
-            await saffron.initialize({
-                mode: 'worker'
-            });
-
-            expect(saffron.grid.workers.length).to.equal(0);
-            expect(saffron.grid.isMain).to.equal(false);
-
-            resolve(true);
+        const saffron = new Saffron();
+        saffron.initialize({
+            mode: 'main',
+            misc: {log: 'none'},
+            workers: {nodes: 2}
         });
+
+        expect(saffron.grid.workers.length).to.equal(0);
+        expect(saffron.grid.isMain).to.equal(true);
+
+        saffron.initialize({
+            mode: 'worker'
+        });
+
+        expect(saffron.grid.workers.length).to.equal(0);
+        expect(saffron.grid.isMain).to.equal(false);
     });
 
     it('Workers announce/destroy/fire', function () {
         return new Promise(async resolve => {
             const saffron = new Saffron();
-            await saffron.initialize({
+            saffron.initialize({
                 misc: {log: 'none'},
                 workers: {nodes: 2}
             });
@@ -50,47 +46,38 @@ describe('Grid', function () {
         });
     });
 
-    // it('Merge articles', function () {
-    //    // TODO
-    //
-    // });
-
     const saffMain = new Saffron();
     const saffWorker = new Saffron();
     before(function () {
-        return new Promise(async resolve => {
-            saffWorker.on('grid.connection.okay', () => {/*console.log('HERE I AM')*/});
-            await saffMain.initialize({
-                mode: 'main',
-                misc: {
-                    log: 'none',
-                    // To allow Connection test to listen to events before firing
-                    eventDelay: 2000
-                },
-                grid: {
-                    distributed: true,
-                    useHTTPS: false,
-                    serverPort: 5000,
-                    serverHost: '127.0.0.1',
-                    authToken: '123abc'
-                }
-            });
-            await saffWorker.initialize({
-                mode: 'worker',
-                misc: {
-                    log: 'none',
-                    // To allow Connection test to listen to events before firing
-                    eventDelay: 2000
-                },
-                grid: {
-                    distributed: true,
-                    useHTTPS: false,
-                    serverPort: 5000,
-                    serverHost: '127.0.0.1',
-                    authToken: '123abc'
-                }
-            });
-            resolve(true);
+        saffMain.initialize({
+            mode: 'main',
+            misc: {
+                log: 'none',
+                // To allow Connection test to listen to events before firing
+                eventDelay: 2000
+            },
+            grid: {
+                distributed: true,
+                useHTTPS: false,
+                serverPort: 5000,
+                serverHost: '127.0.0.1',
+                authToken: '123abc'
+            }
+        });
+        saffWorker.initialize({
+            mode: 'worker',
+            misc: {
+                log: 'none',
+                // To allow Connection test to listen to events before firing
+                eventDelay: 2000
+            },
+            grid: {
+                distributed: true,
+                useHTTPS: false,
+                serverPort: 5000,
+                serverHost: '127.0.0.1',
+                authToken: '123abc'
+            }
         });
     });
 

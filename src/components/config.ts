@@ -3,13 +3,7 @@ import Article from "./article";
 
 export type ConfigType = {
     mode: 'main' | 'worker';
-    database: {
-        pushArticles: (articles: Article[]) => Promise<void>;
-        getArticles: (opts: {
-            tableName: string;
-            count: number;
-        }) => Promise<Article[]>;
-    } | 'none';
+    newArticles: (((tableName: string, articles: Article[]) => void) | ((tableName: string, articles: Article[]) => Promise<void>) | 'none');
     sources: Partial<{
         path: string;
         includeOnly: string[];
@@ -69,22 +63,22 @@ export enum ConfigOptions {
     GRID_HTTPS_CERT = 'grid.https.cert',
     MISC_LOG_LEVEL = 'misc.log',
     MISC_EVENT_DELAY = 'misc.eventDelay',
-    DB_IS_INITIALIZED = 'db.initialized',
-    DB_PUSH_ARTICLES = 'db.articles.push',
-    DB_GET_ARTICLES = 'db.articles.get'
+    NEW_ARTICLES_IS_INITIALIZED = 'db.initialized',
+    NEW_ARTICLES = 'db.articles.push',
 }
 
 export default class Config {
     config: ConfigType = {
         mode: "main",
-        database: 'none',
+        newArticles: 'none',
         sources: {
-            path: "../../../sources",
+            path: "./sources",
             includeOnly: [],
             exclude: []
         },
         workers: {
             nodes: 1, // Start one worker
+            userAgent: 'saffron',
             jobs: {
                 timeout: 10000
             },
@@ -211,14 +205,10 @@ export default class Config {
             case ConfigOptions.MISC_EVENT_DELAY:
                 return config ? config.config.misc?.eventDelay : 0;
 
-            case ConfigOptions.DB_IS_INITIALIZED:
-                return config ? config.config.database != undefined && config.config.database !== 'none' : false;
-            case ConfigOptions.DB_PUSH_ARTICLES:
-                // @ts-ignore
-                return config ? config.config.database?.pushArticles : (articles: Article[]) => undefined;
-            case ConfigOptions.DB_GET_ARTICLES:
-                // @ts-ignore
-                return config ? config.config.database?.getArticles : (opts: any) => [];
+            case ConfigOptions.NEW_ARTICLES_IS_INITIALIZED:
+                return config ? config.config.newArticles != undefined && config.config.newArticles !== 'none' : false;
+            case ConfigOptions.NEW_ARTICLES:
+                return config ? config.config.newArticles : (opts: any) => {};
         }
     }
 

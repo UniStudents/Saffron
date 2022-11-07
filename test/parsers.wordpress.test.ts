@@ -12,7 +12,7 @@ describe("WordPress parser", function () {
 
             for (const article of obj.articles) {
                 expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
-                expect(article.source).to.equal('wordpress-source');
+                expect(article.source).to.equal('wp1-source');
             }
 
             const article = obj.articles[0];
@@ -37,7 +37,7 @@ describe("WordPress parser", function () {
         });
     });
 
-    it('Wordpress V2 parser 2', function () {
+    it('Test 2', function () {
         return Saffron.parse(require('./sources/wordpress-v2/wordpress2.json')).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
@@ -47,7 +47,7 @@ describe("WordPress parser", function () {
 
             for (const article of obj.articles) {
                 expect(article.id).to.be.a('string').and.satisfy((id: string) => id.startsWith('art_'));
-                expect(article.source).to.equal('wordpress-source');
+                expect(article.source).to.equal('wp2-source');
             }
 
             const article = obj.articles[0];

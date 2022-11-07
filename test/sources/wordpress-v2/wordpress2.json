@@ -1,6 +1,6 @@
 {
     "url": "http://127.0.0.1:3000/wp2",
-    "name": "wordpress-source",
+    "name": "wp2-source",
     "type": "wordpress-v2",
     "ignoreCertificates": true,
     "scrape": {

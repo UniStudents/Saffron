@@ -8,11 +8,12 @@ describe('Configuration', function () {
 
         // Expected config
         expect(c.mode).to.equal('main');
-        expect(c.database).to.equal('none');
-        expect(c.sources?.path).to.equal('../../../sources');
+        expect(c.newArticles).to.equal('none');
+        expect(c.sources?.path).to.equal('./sources');
         expect(c.sources?.includeOnly).to.deep.equal([]);
         expect(c.sources?.exclude).to.deep.equal([]);
         expect(c.workers?.nodes).to.equal(1);
+        expect(c.workers?.userAgent).to.equal('saffron');
         expect(c.workers?.jobs?.timeout).to.equal(10000);
         expect(c.workers?.articles?.amount).to.equal(30);
         expect(c.scheduler?.jobsInterval).to.equal(3600000);
@@ -33,14 +34,15 @@ describe('Configuration', function () {
     // Expected/loaded config
     const ec: Required<ConfigType> = {
         mode: "worker",
-        database: 'none',
+        newArticles: 'none',
         sources: {
             path: ".",
             includeOnly: ['source.name.one', 'source.name.two'],
             exclude: ['source.name.three']
         },
         workers: {
-            nodes: 10, // Start one worker
+            nodes: 10,
+            userAgent: 'saffron-',
             jobs: {
                 timeout: 25500
             },
@@ -73,11 +75,12 @@ describe('Configuration', function () {
         const c = new Config(ec).config;
 
         expect(c.mode).to.equal(ec.mode);
-        expect(c.database).to.equal(ec.database);
+        expect(c.newArticles).to.equal(ec.newArticles);
         expect(c.sources?.path).to.equal(ec.sources.path);
         expect(c.sources?.includeOnly).to.deep.equal(ec.sources.includeOnly);
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect(c.workers?.nodes).to.equal(ec.workers.nodes);
+        expect(c.workers?.userAgent).to.equal(ec.workers.userAgent);
         expect(c.workers?.jobs?.timeout).to.equal(ec.workers.jobs?.timeout);
         expect(c.workers?.articles?.amount).to.equal(ec.workers.articles?.amount);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);
@@ -105,10 +108,7 @@ describe('Configuration', function () {
         ...ec,
         production: {
             mode: 'main',
-            database: {
-                pushArticles: async articles => {},
-                getArticles: async (opts) => []
-            },
+            newArticles: (tableName, articles) => {},
             workers: {
                 nodes: 5,
                 jobs: {
@@ -120,10 +120,7 @@ describe('Configuration', function () {
             }
         },
         development: {
-            database: {
-                pushArticles: async articles => {},
-                getArticles: async (opts) => []
-            },
+            newArticles: (tableName, articles) => {},
             workers: {
                 nodes: 1,
                 jobs: {
@@ -153,12 +150,13 @@ describe('Configuration', function () {
         const c = new Config(_c).config;
 
         expect(c.mode).to.equal('main');
-        expect((<any>c.database).pushArticles).to.be.a('function');
-        expect((<any>c.database).getArticles).to.be.a('function');
+        expect(c.newArticles).to.be.a('function');
+        expect(c.newArticles).to.be.a('function');
         expect(c.sources?.path).to.equal(ec.sources.path);
         expect(c.sources?.includeOnly).to.deep.equal(ec.sources.includeOnly);
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect(c.workers?.nodes).to.equal(5);
+        expect(c.workers?.userAgent).to.equal(ec.workers.userAgent);
         expect(c.workers?.jobs?.timeout).to.equal(ec.workers.jobs?.timeout);
         expect(c.workers?.articles?.amount).to.equal(100);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);
@@ -183,12 +181,13 @@ describe('Configuration', function () {
         const c = new Config(_c).config;
 
         expect(c.mode).to.equal(ec.mode);
-        expect((<any>c.database).pushArticles).to.be.a('function');
-        expect((<any>c.database).getArticles).to.be.a('function');
+        expect(c.newArticles).to.be.a('function');
+        expect(c.newArticles).to.be.a('function');
         expect(c.sources?.path).to.equal('./../sources');
         expect(c.sources?.includeOnly).to.deep.equal(ec.sources.includeOnly);
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect(c.workers?.nodes).to.equal(1);
+        expect(c.workers?.userAgent).to.equal(ec.workers.userAgent);
         expect(c.workers?.jobs?.timeout).to.equal(100);
         expect(c.workers?.articles?.amount).to.equal(ec.workers?.articles?.amount);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);
@@ -213,11 +212,12 @@ describe('Configuration', function () {
         const c = new Config(_c).config;
 
         expect(c.mode).to.equal(ec.mode);
-        expect(c.database).to.equal(ec.database);
+        expect(c.newArticles).to.equal(ec.newArticles);
         expect(c.sources?.path).to.equal(ec.sources.path);
         expect(c.sources?.includeOnly).to.deep.equal(ec.sources.includeOnly);
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect(c.workers?.nodes).to.equal(ec.workers.nodes);
+        expect(c.workers?.userAgent).to.equal(ec.workers.userAgent);
         expect(c.workers?.jobs?.timeout).to.equal(ec.workers.jobs?.timeout);
         expect(c.workers?.articles?.amount).to.equal(ec.workers.articles?.amount);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);

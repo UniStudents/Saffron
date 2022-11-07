@@ -16,9 +16,10 @@ class Saffron {
     declare config: Config;
     declare scheduler: Scheduler;
     declare grid: Grid;
-    declare events: Events;
-    declare extensions: Extensions;
     declare workers: Worker[];
+
+    readonly events: Events;
+    readonly extensions: Extensions;
 
     constructor() {
         this.events = new Events(this);
@@ -30,9 +31,8 @@ class Saffron {
      * It will also connect to the database if it is given and add a route to the server instance if it given.
      * @param config The config file path or object
      * @param discardOldConfig
-     * @see https://saffron.poiw.org
      */
-    async initialize(config?: Partial<ConfigType>
+    initialize(config?: Partial<ConfigType>
         & { production?: Partial<ConfigType> }
         & { development?: Partial<ConfigType> }
         & { testing?: Partial<ConfigType> }, discardOldConfig: boolean = false) {
@@ -41,17 +41,13 @@ class Saffron {
             this.config = new Config(config);
         else this.config.initializeConfig(config);
 
-        if(Config.getOption(ConfigOptions.WORKER_NODES, this.config) < 1)
-            throw new Error("SaffronError Nodes must be at least 1.");
-
         this.events.registerLogListeners(this.config);
         this.events.emit('title');
 
         // Initialize and start grid
         this.grid = new Grid(this);
-        if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED, this.config)) {
-            await this.grid.connect();
-        }
+        if (Config.getOption(ConfigOptions.GRID_DISTRIBUTED, this.config))
+            this.grid.connect();
 
         // Initialize worker
         let nodes = Config.getOption(ConfigOptions.WORKER_NODES, this.config);

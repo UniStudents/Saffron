@@ -94,8 +94,7 @@ export default class Worker {
 
             if (!this.isRunning) return;
 
-            const tableName = job.source.tableName || job.source.name;
-            await this.saffron.grid.mergeArticles(job.source, tableName, result);
+            await this.saffron.grid.mergeArticles(job.source, result);
             await this.saffron.grid.finishedJob(job);
         });
     }

@@ -20,7 +20,7 @@ export class HTMLParser extends ParserClass {
                 responseEncoding: 'binary'
             });
         } catch (e: any) {
-            throw new Error(`HTMLParserException job failed for ${utils.source.name}, original error: ${e.message}`)
+            throw new Error(`HTMLParserException failed [${utils.source.name}] job: ${e.message}`)
         }
 
         let parsedArticles: Article[] = [];
@@ -226,7 +226,7 @@ export class HTMLParser extends ParserClass {
 
     validateScrape(scrape: any): void {
         let value = Object.entries(scrape.article).some((key: any) => key === undefined || key[1].class === undefined);
-        if (value) throw new Error("HTMLParserSourceException found empty key or key with no class.")
+        if (value) throw new Error("SourceException found empty key or key with no class.")
     }
 
     assignInstructions(instructions: Instructions, sourceJson: any): void {

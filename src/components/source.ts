@@ -26,20 +26,20 @@ export default class Source {
 
         // Source name
         if (source.name == null || source.name.length < 3)
-            throw new Error(`SourceException: [${source.filename}] Field name is not valid, requirements(type = string, length >= 3).`);
+            throw new Error(`SourceException [${source.filename}] Field name is not valid, requirements(type = string, length >= 3).`);
         ret.name = source.name;
 
         // Source tableName
         if (source.tableName != null && (source.tableName.length < 3 || ["saffron", "config", "workers"].includes(source.tableName)))
-            throw new Error(`SourceException: [${source.filename}] Field tableName  is not valid, requirements(type = string, length >= 3, != saffron, != workers, != config).`);
+            throw new Error(`SourceException [${source.filename}] Field tableName  is not valid, requirements(type = string, length >= 3, != saffron, != workers, != config).`);
         ret.tableName = source.tableName!;
 
         if (source.interval != null && (source.interval < 0))
-            throw new Error(`SourceException: [${source.filename}] Field interval is not valid, requirements(type = number, positive or zero).`);
+            throw new Error(`SourceException [${source.filename}] Field interval is not valid, requirements(type = number, positive or zero).`);
         ret.interval = source.interval ? source.interval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, config);
 
         if (source.retryInterval != null && (source.retryInterval < 0))
-            throw new Error(`SourceException: [${source.filename}] Field retryInterval is not valid, requirements(type = number, positive or zero).`);
+            throw new Error(`SourceException [${source.filename}] Field retryInterval is not valid, requirements(type = number, positive or zero).`);
         ret.retryInterval = source.retryInterval ? source.retryInterval : Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, config) / 2;
 
         ret.extra = source.extra;
@@ -48,11 +48,11 @@ export default class Source {
         ret.instructions = instructions;
 
         if (source.timeout != null && (source.timeout < 0))
-            throw new Error(`SourceException: [${source.filename}] Field timeout is not valid, requirements(type = number, positive or zero).`);
+            throw new Error(`SourceException [${source.filename}] Field timeout is not valid, requirements(type = number, positive or zero).`);
         instructions.timeout = source.timeout ? source.timeout : Config.getOption(ConfigOptions.REQUEST_TIMEOUT, config);
 
         if (source.amount != null && (source.amount <= 0))
-            throw new Error(`SourceException: [${source.filename}] Field amount is not valid, requirements(type = number, positive).`);
+            throw new Error(`SourceException [${source.filename}] Field amount is not valid, requirements(type = number, positive).`);
         instructions.amount = source.amount ? source.amount : Config.getOption(ConfigOptions.ARTICLE_AMOUNT, config);
 
         instructions.userAgent = source.userAgent ?? Config.getOption(ConfigOptions.WORKER_USERAGENT, config);
@@ -62,7 +62,7 @@ export default class Source {
         instructions.url = [];
         if (typeof source.url === 'string') {
             if (source.url.length == 0)
-                throw new Error(`SourceException: [${source.filename}] Field url is not valid, requirements(type = string, not empty).`);
+                throw new Error(`SourceException [${source.filename}] Field url is not valid, requirements(type = string, not empty).`);
             instructions.url.push({url: source.url, aliases: []});
         } else if (Array.isArray(source.url)) {
             for (const pair of source.url) {
@@ -72,11 +72,11 @@ export default class Source {
 
                     aliases.forEach(alias => {
                         if (alias.trim() === '')
-                            throw new Error(`SourceException: [${source.filename}] At field url, field alias is not valid, requirements(type = string, not empty, not whitespace).`);
+                            throw new Error(`SourceException [${source.filename}] At field url, field alias is not valid, requirements(type = string, not empty, not whitespace).`);
                     });
 
                     if (typeof url !== 'string' || url.trim() === '')
-                        throw new Error(`SourceException: [${source.filename}] At field url, field url is not valid, requirements(type = string, not empty not whitespace).`);
+                        throw new Error(`SourceException [${source.filename}] At field url, field url is not valid, requirements(type = string, not empty not whitespace).`);
 
                     instructions.url.push({url, aliases});
                 } else if (typeof pair === 'string' || ((Array.isArray(pair) && pair.length == 1))) {
@@ -85,20 +85,20 @@ export default class Source {
 
                     instructions.url.push({url, aliases: []});
                 } else
-                    throw new Error(`SourceException: [${source.filename}] Field url is not valid, requirements(type = string[] | string[][]).`);
+                    throw new Error(`SourceException [${source.filename}] Field url is not valid, requirements(type = string[] | string[][]).`);
             }
         } else
-            throw new Error(`SourceException: [${source.filename}] Field url is not valid, requirements(type = string | string[] | string[][]).`);
+            throw new Error(`SourceException [${source.filename}] Field url is not valid, requirements(type = string | string[] | string[][]).`);
 
         let parserType = ParserType.getFromString(source.type);
         if (parserType === ParserType.UNKNOWN)
-            throw new Error(`SourceException: [${source.filename}] Field type is not valid, requirements(equals html, rss, dynamic, wordpress-v1, wordpress-v2).`);
+            throw new Error(`SourceException [${source.filename}] Field type is not valid, requirements(equals html, rss, dynamic, wordpress-v1, wordpress-v2).`);
         instructions.parserType = parserType;
 
         try {
             ParserLoader.validateScrapeOptions(parserType, source.scrape);
         } catch (e: any) {
-            throw new Error(`SourceException: [${source.filename}] Field scrape is not valid, parser error: ${e.message}`);
+            throw new Error(`SourceException [${source.filename}] Field scrape is not valid, parser error: ${e.message}`);
         }
 
         ParserLoader.assignScrapeInstructions(parserType, ret.instructions, source);

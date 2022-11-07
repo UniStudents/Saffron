@@ -12,7 +12,7 @@ export default class Scheduler {
     private declare running: boolean;
     declare jobs: Job[];
     declare interval:  NodeJS.Timeout
-    checkInterval: number = 2000;
+    checkInterval: number = 1000;
 
     constructor(private readonly saffron: Saffron) {
         this.jobs = [];
@@ -129,8 +129,13 @@ export default class Scheduler {
     resetJobs() {
         this.jobs = [];
 
+        if(this.sources.length == 0) return;
+
+        const jobInt: number = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, this.saffron.config);
+        if(jobInt < 5000) throw new Error('SaffronException scheduler.jobInterval must be at least 5000ms');
+
         // Create separation interval
-        let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, this.saffron.config) / this.sources.length
+        let separationInterval = Config.getOption(ConfigOptions.SCHEDULER_JOB_INT, this.saffron.config) / this.sources.length;
 
         let workersIds = this.saffron.grid.workers;
         let sI = 0, wI = 0;
@@ -151,8 +156,8 @@ export default class Scheduler {
         let includeOnly = Config.getOption(ConfigOptions.SOURCES_INCLUDE_ONLY, this.saffron.config);
         let excluded = Config.getOption(ConfigOptions.SOURCES_EXCLUDE, this.saffron.config);
 
-        if (!Array.isArray(includeOnly)) throw new Error("Config.sources.includeOnly is not an array.");
-        if (!Array.isArray(excluded)) throw new Error("Config.sources.excluded is not an array.");
+        if (!Array.isArray(includeOnly)) throw new Error("SaffronException sources.includeOnly is not an array.");
+        if (!Array.isArray(excluded)) throw new Error("SaffronException sources.excluded is not an array.");
 
         // Include only
         if (includeOnly.length > 0) {
@@ -200,7 +205,7 @@ export default class Scheduler {
                     return;
                 }
 
-                let acceptedFiles = new RegExp(/.*js/);
+                let acceptedFiles = new RegExp(/.+\.(json|js)/); // Both .js and .json
                 let rawSources = files.filter((file: any) => acceptedFiles.test(file))
 
                 let sources = rawSources.map((file: string) => {
