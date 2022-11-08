@@ -68,8 +68,6 @@ export default class Events {
 
             this.antennae.on("worker.job.finished", (jobId: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - finished job(${jobId}).`));
-            this.antennae.on("worker.job.failed", (jobId: string) =>
-                Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - failed job(${jobId}).`));
 
             this.antennae.on("worker.articles.found", (articles: Article[], src: string) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.cyan('Articles')} - Finished job returned ${articles.length} articles for ${src}.`));
@@ -80,6 +78,7 @@ export default class Events {
                 Logger(LoggerTypes.DEBUG, `${chalk.red('Scheduler')} - Path is invalid or there are insufficient permissions.`);
                 console.log(error);
             });
+
             this.antennae.on("scheduler.sources.error", (sourceFile: any, error: any) =>
                 Logger(LoggerTypes.DEBUG, `${chalk.red('Scheduler')} - failed to parse source '${sourceFile.path}' with error: ${error.message}`));
 
@@ -87,10 +86,15 @@ export default class Events {
                 Logger(LoggerTypes.ERROR, 'grid failed to start.')
                 console.log(error)
             });
+
+            this.antennae.on("worker.job.failed", (jobId: string) =>
+                Logger(LoggerTypes.DEBUG, `${chalk.green('Worker')} - failed job(${jobId}).`));
+
             this.antennae.on("worker.parsers.error", (e: any) => {
                 Logger(LoggerTypes.INFO, `${chalk.red('Parsers')} - failed to scrape the articles.`);
                 console.log(e);
             });
+
             this.antennae.on("middleware.error", (mid: string, e: any) => {
                 Logger(LoggerTypes.INFO, `${chalk.red('Middleware')} - an error was caught at ${mid}.`);
                 console.log(e);

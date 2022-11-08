@@ -195,7 +195,7 @@ export default class Scheduler {
             let sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH, this.saffron.config);
             glob(`${path.join(process.cwd(), sourcesPath)}/**`, {}, (error: any, files: string[]) => {
                 if (error) {
-                    this.saffron.events.emit('scheduler.path.error', error);
+                    this.saffron.events.emit('scheduler.sources.error', error);
                     reject(error);
                     return;
                 }
