@@ -4,7 +4,7 @@ import Source from "../components/source";
 import Worker from "./worker";
 import glob from "glob";
 import * as path from "path";
-import {Saffron} from "../index";
+import type {Saffron} from "../index";
 
 export default class Scheduler {
 

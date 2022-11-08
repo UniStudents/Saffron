@@ -1,4 +1,4 @@
-import Source from "./source";
+import type Source from "./source";
 import randomId from "../middleware/randomId"
 import Config, {ConfigOptions} from "./config";
 

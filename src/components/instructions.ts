@@ -1,5 +1,5 @@
-import {ParserType} from "./ParserClass";
-import {InstructionUrl} from "./types";
+import type {ParserType} from "./ParserClass";
+import type {InstructionUrl} from "./types";
 
 /**
  * The instructions class is used mainly by parsers.

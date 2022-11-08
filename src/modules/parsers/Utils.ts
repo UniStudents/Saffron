@@ -1,8 +1,8 @@
 import cheerio from "cheerio";
-import {Attachment} from "../../components/article";
+import type{Attachment} from "../../components/article";
 import https from "https";
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
-import {ParserResult, SourceFile} from "../../components/types";
+import type{ParserResult, SourceFile} from "../../components/types";
 import Source from "../../components/source";
 import Job from "../../components/job";
 import Worker from "../worker";

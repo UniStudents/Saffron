@@ -2,7 +2,7 @@ import Instructions from "./instructions";
 import {ParserType} from "./ParserClass";
 import Config, {ConfigOptions} from "./config";
 import ParserLoader from "../modules/parsers/ParserLoader";
-import {SourceFile} from "./types";
+import type {SourceFile} from "./types";
 
 
 export default class Source {

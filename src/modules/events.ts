@@ -1,13 +1,12 @@
 import Logger from "../middleware/logger";
 import {LoggerTypes} from "../components/LoggerTypes";
-import Job from "../components/job";
-import Article from "../components/article";
+import type Job from "../components/job";
+import type Article from "../components/article";
 import chalk from "chalk";
 import Grid from "./grid";
 import Config, {ConfigOptions} from "../components/config";
-import Source from "../components/source";
-import {CallbackVoid} from "../components/types";
-import {Saffron} from "../index";
+import type {CallbackVoid} from "../components/types";
+import type {Saffron} from "../index";
 
 export default class Events {
 

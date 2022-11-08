@@ -1,5 +1,5 @@
 import _ from "lodash"
-import Article from "./article";
+import type Article from "./article";
 
 export type ConfigType = {
     mode: 'main' | 'worker';

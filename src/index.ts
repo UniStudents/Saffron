@@ -9,7 +9,7 @@ import Job from "./components/job"
 import Source from "./components/source"
 import Instructions from "./components/instructions";
 import Extensions, {PairEvent} from "./modules/extensions";
-import {ParserResult, SourceFile} from "./components/types";
+import type {ParserResult, SourceFile} from "./components/types";
 
 
 class Saffron {

@@ -1,7 +1,7 @@
 import {ParserClass} from "../../../components/ParserClass";
-import Instructions from "../../../components/instructions";
-import Article from "../../../components/article";
-import Utils from "../Utils";
+import type Instructions from "../../../components/instructions";
+import type Article from "../../../components/article";
+import type Utils from "../Utils";
 
 export class WordpressV1Parser extends ParserClass {
     validateScrape(scrape: object): void {}

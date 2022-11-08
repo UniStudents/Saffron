@@ -1,6 +1,5 @@
-import randomId from "../middleware/randomId"
-import {Saffron} from "../index";
-import Source from "./source";
+import type {Saffron} from "../index";
+import type Source from "./source";
 
 export type Attachment = {
     attribute: string;

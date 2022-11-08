@@ -22,7 +22,7 @@ const randStr = (myLength: number) => {
 
 describe('Other', function () {
     it('Hash code', function () {
-        const strings = [];
+        const strings: string[] = [];
         for (let i = 0; i < 100; i++)
             strings.push(randStr(i));
 

@@ -1,8 +1,7 @@
 import {ParserClass} from "../../../components/ParserClass";
-import Instructions from "../../../components/instructions";
+import type Instructions from "../../../components/instructions";
 import Article from "../../../components/article";
-import randomId from "../../../middleware/randomId";
-import Utils from "../Utils";
+import type Utils from "../Utils";
 
 export class DynamicParser extends ParserClass {
     validateScrape(scrape: any): void {

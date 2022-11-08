@@ -1,12 +1,12 @@
-import Job from "../components/job";
+import type Job from "../components/job";
 import randomId from "../middleware/randomId";
-import Grid from "./grid";
-import Article from "../components/article";
+import type Grid from "./grid";
+import type Article from "../components/article";
 import ParserLoader from "./parsers/ParserLoader";
 import hashCode from "../middleware/hashCode";
-import {ParserResult} from "../components/types";
+import type {ParserResult} from "../components/types";
 import Utils from "./parsers/Utils";
-import {Saffron} from "../index";
+import type {Saffron} from "../index";
 
 
 export default class Worker {

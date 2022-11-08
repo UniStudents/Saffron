@@ -1,15 +1,15 @@
 import Job, {JobStatus} from "../components/job";
-import Worker from "./worker";
+import type Worker from "./worker";
 import Config, {ConfigOptions} from "../components/config";
-import Article from "../components/article";
-import Source from "../components/source";
+import type Article from "../components/article";
+import type Source from "../components/source";
 import {Server as IOServer} from "socket.io"
 import {Socket as IOSocket, io as IOClient} from "socket.io-client";
 import * as http from "http";
 import * as https from "https";
-import {ParserResult} from "../components/types";
+import type {ParserResult} from "../components/types";
 import {pack, unpack} from "../middleware/serializer";
-import {Saffron} from "../index";
+import type {Saffron} from "../index";
 
 
 export default class Grid {
@@ -85,7 +85,8 @@ export default class Grid {
                 const clientAuthToken = socket.handshake.auth.token;
                 if (!clientAuthToken || clientAuthToken !== Config.getOption(ConfigOptions.AUTH_TOKEN, this.saffron.config)) {
                     this.saffron.events.emit('grid.node.auth.failed', socket);
-                    return socket.disconnect();
+                    socket.disconnect();
+                    return;
                 }
 
                 this.saffron.events.emit('grid.node.connected', socket);
