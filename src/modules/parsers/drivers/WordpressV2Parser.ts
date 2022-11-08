@@ -144,7 +144,7 @@ export class WordpressV2Parser extends ParserClass {
                     article.pubDate = p.date_gmt;
                 else if (instructions.scrapeOptions.articles.dates.fallback)
                     article.pubDate = p.date;
-            }  else article.pubDate = p.date;
+            } else article.pubDate = p.date;
 
             if(instructions.includeContentAttachments)
                 article.pushAttachments(utils.extractLinks(article.content));
