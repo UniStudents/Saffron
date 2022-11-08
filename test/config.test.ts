@@ -48,7 +48,8 @@ describe('Configuration', function () {
                 timeout: 25500
             },
             articles: {
-                amount: 150
+                amount: 150,
+                includeContentAttachments: true
             }
         },
         scheduler: {
