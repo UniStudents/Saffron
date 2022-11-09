@@ -2,10 +2,6 @@ import {expect} from "chai";
 import {Job, Source, Saffron} from "../src";
 
 describe('Grid', function () {
-    before(function () {
-        process.env.SAFFRON_MODE = undefined;
-    });
-
     it('Initialization', function () {
         const saffron = new Saffron();
         saffron.initialize({

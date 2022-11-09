@@ -9,7 +9,6 @@ import Extensions from "../src/modules/extensions";
 import ParserLoader from "../src/modules/parsers/ParserLoader";
 import {HTMLParser} from "../src/modules/parsers/drivers/HTMLParser";
 import {RSSParser} from "../src/modules/parsers/drivers/RSSParser";
-import {WordpressV1Parser} from "../src/modules/parsers/drivers/WordpressV1Parser";
 import {WordpressV2Parser} from "../src/modules/parsers/drivers/WordpressV2Parser";
 import {DynamicParser} from "../src/modules/parsers/drivers/DynamicParser";
 
@@ -154,7 +153,6 @@ describe('Other', function () {
         expect(ParserType.getFromString('html')).to.equal(ParserType.HTML)
         expect(ParserType.getFromString('rss')).to.equal(ParserType.RSS)
         expect(ParserType.getFromString('dynamic')).to.equal(ParserType.DYNAMIC)
-        expect(ParserType.getFromString('wordpress-v1')).to.equal(ParserType.WORDPRESS_V1)
         expect(ParserType.getFromString('wordpress-v2')).to.equal(ParserType.WORDPRESS_V2)
         expect(ParserType.getFromString('wordpress')).to.equal(ParserType.WORDPRESS_V2)
         expect(ParserType.getFromString('failed')).to.equal(ParserType.UNKNOWN)
@@ -163,7 +161,6 @@ describe('Other', function () {
     it('Parsers - Loader', function () {
         expect(ParserLoader.getParser(ParserType.HTML)).to.be.instanceof(HTMLParser);
         expect(ParserLoader.getParser(ParserType.RSS)).to.be.instanceof(RSSParser);
-        expect(ParserLoader.getParser(ParserType.WORDPRESS_V1)).to.be.instanceof(WordpressV1Parser);
         expect(ParserLoader.getParser(ParserType.WORDPRESS_V2)).to.be.instanceof(WordpressV2Parser);
         expect(ParserLoader.getParser(ParserType.DYNAMIC)).to.be.instanceof(DynamicParser);
     });

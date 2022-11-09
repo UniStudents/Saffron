@@ -5,7 +5,6 @@ import {WordpressV2Parser} from "./drivers/WordpressV2Parser";
 import {DynamicParser} from "./drivers/DynamicParser";
 import type {ParserClass} from "../../components/ParserClass";
 import type Instructions from "../../components/instructions";
-import {WordpressV1Parser} from "./drivers/WordpressV1Parser";
 
 export default class ParserLoader {
 
@@ -16,9 +15,6 @@ export default class ParserLoader {
                 break;
             case ParserType.RSS:
                 new RSSParser().validateScrape(scrapeOptions);
-                break;
-            case ParserType.WORDPRESS_V1:
-                new WordpressV1Parser().validateScrape(scrapeOptions);
                 break;
             case ParserType.WORDPRESS_V2:
                 new WordpressV2Parser().validateScrape(scrapeOptions);
@@ -37,9 +33,6 @@ export default class ParserLoader {
             case ParserType.RSS:
                 new RSSParser().assignInstructions(instructions, sourceJson);
                 break
-            case ParserType.WORDPRESS_V1:
-                new WordpressV1Parser().assignInstructions(instructions, sourceJson);
-                break
             case ParserType.WORDPRESS_V2:
                 new WordpressV2Parser().assignInstructions(instructions, sourceJson);
                 break
@@ -55,8 +48,6 @@ export default class ParserLoader {
                 return new HTMLParser();
             case ParserType.RSS:
                 return new RSSParser();
-            case ParserType.WORDPRESS_V1:
-                return new WordpressV1Parser();
             case ParserType.WORDPRESS_V2:
                 return new WordpressV2Parser();
             case ParserType.DYNAMIC:

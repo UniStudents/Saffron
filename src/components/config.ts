@@ -3,7 +3,7 @@ import type Article from "./article";
 
 export type ConfigType = {
     mode: 'main' | 'worker';
-    newArticles: (((tableName: string, articles: Article[]) => void) | ((tableName: string, articles: Article[]) => Promise<void>) | 'none');
+    newArticles: ((tableName: string, articles: Article[]) => void) | ((tableName: string, articles: Article[]) => Promise<void>);
     sources: Partial<{
         path: string;
         includeOnly: string[];
@@ -14,6 +14,7 @@ export type ConfigType = {
         userAgent: string;
         jobs: Partial<{
             timeout: number;
+            // TODO: Add max-redirects option
         }>;
         articles: Partial<{
             amount: number;
@@ -64,21 +65,21 @@ export enum ConfigOptions {
     HTTPS_CERT = 19,
     LOG_LEVEL = 20,
     EVENT_DELAY = 21,
-    NEW_ARTICLES_EXISTS = 22,
-    NEW_ARTICLES = 23,
-    INCLUDE_CNT_ATTACHMENTS = 24
+    NEW_ARTICLES = 22,
+    INCLUDE_CNT_ATTACHMENTS = 23
 }
 
 export default class Config {
     config: ConfigType = {
         mode: "main",
-        newArticles: 'none',
+        newArticles: (tableName, articles) => {},
         sources: {
             path: "./sources",
             includeOnly: [],
             exclude: []
         },
         workers: {
+            // TODO: Allow nodes to take an array of strings instead of number which will be the names of the workers (instead of auto generated ids)
             nodes: 1, // Start one worker
             userAgent: 'saffron',
             jobs: {
@@ -209,11 +210,8 @@ export default class Config {
                 return config ? config.config.misc?.log : "all";
             case ConfigOptions.EVENT_DELAY:
                 return config ? config.config.misc?.eventDelay : 0;
-
-            case ConfigOptions.NEW_ARTICLES_EXISTS:
-                return config ? config.config.newArticles != undefined && config.config.newArticles !== 'none' : false;
             case ConfigOptions.NEW_ARTICLES:
-                return config ? config.config.newArticles : (opts: any) => {};
+                return config ? config.config.newArticles : (tableName, articles) => {};
         }
     }
 

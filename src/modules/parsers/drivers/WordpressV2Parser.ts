@@ -131,7 +131,7 @@ export class WordpressV2Parser extends ParserClass {
             const article = new Article();
             article.title = utils.cleanupHTMLText(p.title.rendered, false);
             article.content = p.content.rendered;
-            article.link = p.link;
+            article.link = utils.cleanupHTMLText(p.link, false);
             article.pushCategories(utils.aliases.map(alias => {
                 return {
                     name: alias,

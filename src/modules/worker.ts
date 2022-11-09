@@ -80,8 +80,7 @@ export default class Worker {
 
         // start listening for new jobs
         this.saffron.events.on("scheduler.job.push", async (job: Job) => {
-            if (!this.isRunning) return;
-            if (this.id !== job.worker) return;
+            if (!this.isRunning || this.id !== job.worker) return;
 
             let result: ParserResult[];
             try {

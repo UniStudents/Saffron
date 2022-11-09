@@ -11,6 +11,21 @@ interface ArticleImage {
 
 export class HTMLParser extends ParserClass {
 
+    validateScrape(scrape: any): void {
+        let value = Object.entries(scrape.article).some((key: any) => key === undefined || key[1].class === undefined);
+        if (value) throw new Error("SourceException found empty key or key with no class.")
+    }
+
+    assignInstructions(instructions: Instructions, sourceJson: any): void {
+        instructions.elementSelector = sourceJson.scrape.container;
+        instructions.scrapeOptions = sourceJson.scrape.article;
+    }
+
+    async parse(utils: Utils): Promise<Article[]> {
+        let instructions = utils.source.instructions;
+        return await HTMLParser.request(instructions, utils)
+    }
+
     static async request(instructions: Instructions, utils: Utils): Promise<Article[]> {
         let response: AxiosResponse;
         try {
@@ -20,7 +35,9 @@ export class HTMLParser extends ParserClass {
                 responseEncoding: 'binary'
             });
         } catch (e: any) {
-            throw new Error(`HTMLParserException failed [${utils.source.name}] job: ${e.message}`)
+            const error = new Error(`HTMLParserException failed [${utils.source.name}] job: ${e.message}`)
+            error.stack = e.stack;
+            throw error;
         }
 
         let parsedArticles: Article[] = [];
@@ -60,7 +77,7 @@ export class HTMLParser extends ParserClass {
 
             const tmpArticle = new Article();
             if (Array.isArray(articleData.link) && articleData.link[0]?.value)
-                tmpArticle.link = articleData.link[0].value;
+                tmpArticle.link = utils.cleanupHTMLText(articleData.link[0].value, false);
             else if (articleData.link)
                 tmpArticle.link = articleData.link;
 
@@ -70,7 +87,7 @@ export class HTMLParser extends ParserClass {
                 tmpArticle.title = articleData.title;
 
             if (Array.isArray(articleData.pubDate) && articleData.pubDate[0]?.value)
-                tmpArticle.pubDate = utils.cleanupHTMLText(articleData.pubDate[0].value);
+                tmpArticle.pubDate = utils.cleanupHTMLText(articleData.pubDate[0].value, false);
             else if (articleData.pubDate)
                 tmpArticle.pubDate = articleData.pubDate;
 
@@ -223,20 +240,5 @@ export class HTMLParser extends ParserClass {
         }
 
         return results;
-    }
-
-    validateScrape(scrape: any): void {
-        let value = Object.entries(scrape.article).some((key: any) => key === undefined || key[1].class === undefined);
-        if (value) throw new Error("SourceException found empty key or key with no class.")
-    }
-
-    assignInstructions(instructions: Instructions, sourceJson: any): void {
-        instructions.elementSelector = sourceJson.scrape.container;
-        instructions.scrapeOptions = sourceJson.scrape.article;
-    }
-
-    async parse(utils: Utils): Promise<Article[]> {
-        let instructions = utils.source.instructions;
-        return await HTMLParser.request(instructions, utils)
     }
 }

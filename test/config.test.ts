@@ -8,7 +8,7 @@ describe('Configuration', function () {
 
         // Expected config
         expect(c.mode).to.equal('main');
-        expect(c.newArticles).to.equal('none');
+        expect(c.newArticles).to.be.a('function');
         expect(c.sources?.path).to.equal('./sources');
         expect(c.sources?.includeOnly).to.deep.equal([]);
         expect(c.sources?.exclude).to.deep.equal([]);
@@ -35,7 +35,7 @@ describe('Configuration', function () {
     // Expected/loaded config
     const ec: Required<ConfigType> = {
         mode: "worker",
-        newArticles: 'none',
+        newArticles: (tableName, articles) => {},
         sources: {
             path: ".",
             includeOnly: ['source.name.one', 'source.name.two'],
@@ -253,5 +253,8 @@ describe('Configuration', function () {
         // Config
         const c2 = new Config(_c).config;
         expect(c2.mode).to.equal('worker');
+
+        // Reset
+        process.env.SAFFRON_MODE = undefined;
     });
 });

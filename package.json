@@ -14,7 +14,7 @@
         "url": "https://github.com/poiw-org/saffron/issues"
     },
     "scripts": {
-        "test": "mocha --exit --bail --forbid-only --require ts-node/register test/*.test.ts",
+        "test": "mocha --exit --bail --forbid-only --require ts-node/register test/index.test.ts",
         "docker-compose": "cd docker && sudo docker-compose up --remove-orphans ",
         "docker-compose-build": "cd docker && sudo docker-compose up --build --remove-orphans ",
         "clean": "rm -rf dist",

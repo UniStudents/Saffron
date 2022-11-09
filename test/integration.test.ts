@@ -90,13 +90,24 @@ describe('Integration', function () {
         expect(_events['stop'].length).to.equal(0);
     });
 
+    it('No errors', function () {
+        expect(_events['scheduler.job.failed']).to.be.undefined;
+        expect(_events['grid.connection.failed']).to.be.undefined;
+        expect(_events['grid.node.auth.failed']).to.be.undefined;
+        expect(_events['worker.job.failed']).to.be.undefined;
+        expect(_events['scheduler.path.error']).to.be.undefined;
+        expect(_events['scheduler.sources.error']).to.be.undefined;
+        expect(_events['grid.connection.failed']).to.be.undefined;
+        expect(_events['worker.parsers.error']).to.be.undefined;
+        expect(_events['middleware.error']).to.be.undefined;
+    });
+
     it('Expected grid behaviour', function () {
         expect(_events['grid.connection.okay'].length).to.equal(0);
         expect(_events['grid.node.connected']).to.be.undefined;
         expect(_events['grid.node.disconnected']).to.be.undefined;
         expect(_events['grid.worker.announced'].length).to.equal(1);
         expect(_events['grid.worker.destroyed'].length).to.equal(1);
-
         expect(_events['worker.job.finished'].length).to.equal(saffron.scheduler.sources.length);
     });
 
@@ -109,18 +120,6 @@ describe('Integration', function () {
         expect(_events['scheduler.job.reincarnate']).to.be.undefined;
         expect(_events['scheduler.job.worker.replace']).to.be.undefined;
         expect(_events['scheduler.job.push'].length).to.equal(source_s);
-    });
-
-    it('No errors', function () {
-        expect(_events['scheduler.job.failed']).to.be.undefined;
-        expect(_events['grid.connection.failed']).to.be.undefined;
-        expect(_events['grid.node.auth.failed']).to.be.undefined;
-        expect(_events['worker.job.failed']).to.be.undefined;
-        expect(_events['scheduler.path.error']).to.be.undefined;
-        expect(_events['scheduler.sources.error']).to.be.undefined;
-        expect(_events['grid.connection.failed']).to.be.undefined;
-        expect(_events['worker.parsers.error']).to.be.undefined;
-        expect(_events['middleware.error']).to.be.undefined;
     });
 
     // TODO: Create tests to check that events are passing correct values

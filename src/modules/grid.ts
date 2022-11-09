@@ -214,9 +214,6 @@ export default class Grid {
 
         this.saffron.events.emit("middleware.after", articles);
 
-        // Do not do database checks if there is no database
-        if(!Config.getOption(ConfigOptions.NEW_ARTICLES_EXISTS, this.saffron.config)) return;
-
         try {
             await Config.getOption(ConfigOptions.NEW_ARTICLES, this.saffron.config)(tableName, articles);
         }  catch (e) {
