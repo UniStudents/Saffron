@@ -290,6 +290,8 @@ export default class Utils {
         if(!options.headers) options.headers = {};
         options.headers['User-Agent'] = this.source.instructions.userAgent;
 
+        options.maxRedirects = this.source.instructions.maxRedirects
+
         return axios.request(options);
     }
 

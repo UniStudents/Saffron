@@ -4,6 +4,7 @@ import Article from "../../../components/article";
 import type {AxiosResponse} from "axios";
 import cheerio from "cheerio";
 import type Utils from "../Utils";
+import type {ScrapeHTML, SourceScrape} from "../../../components/types.js";
 
 interface ArticleImage {
     [key: string]: any
@@ -11,14 +12,18 @@ interface ArticleImage {
 
 export class HTMLParser extends ParserClass {
 
-    validateScrape(scrape: any): void {
+    validateScrape(scrape?: SourceScrape): void {
+        scrape = scrape as ScrapeHTML;
+
+        if(scrape.article == null)
+            throw new Error("article cannot be null.");
+
         let value = Object.entries(scrape.article).some((key: any) => key === undefined || key[1].class === undefined);
-        if (value) throw new Error("SourceException found empty key or key with no class.")
+        if (value) throw new Error("found empty key or key with no class.")
     }
 
-    assignInstructions(instructions: Instructions, sourceJson: any): void {
-        instructions.elementSelector = sourceJson.scrape.container;
-        instructions.scrapeOptions = sourceJson.scrape.article;
+    assignInstructions(instructions: Instructions, scrape?: SourceScrape): void {
+        instructions.html = scrape as ScrapeHTML;
     }
 
     async parse(utils: Utils): Promise<Article[]> {
@@ -35,13 +40,13 @@ export class HTMLParser extends ParserClass {
 
         let parsedArticles: Article[] = [];
         const cheerioLoad: cheerio.Root = cheerio.load(instructions.textDecoder.decode(response.data));
-        cheerioLoad(`${instructions.elementSelector}`).each((index, element) => {
+        cheerioLoad(`${instructions.html.container}`).each((index, element) => {
             if (index >= instructions.amount) return;
 
             let articleData: ArticleImage = {};
             // Exp. If you remove the title, then the title is going to be on the extra information of each article.
             let basicData = ["title", "pubDate", "content", "attachments", "link", "category"];
-            let options: any = instructions.scrapeOptions;
+            let options: any = instructions.html.article;
 
             // for each option. The options provided by instructions.
             for (let item in options) {

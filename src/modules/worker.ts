@@ -14,8 +14,8 @@ export default class Worker {
     declare readonly id: string;
     private declare isRunning: boolean;
 
-    constructor(private readonly saffron: Saffron) {
-        this.id = randomId("wkr");
+    constructor(private readonly saffron: Saffron, id?: string) {
+        this.id = id ?? randomId("wkr");
     }
 
     static async parse(job: Job): Promise<ParserResult[]> {

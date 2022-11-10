@@ -68,6 +68,7 @@ Such as:
 * `extra`: The extra data passed to the source file.
 * `instructions.timeout`: The request timeout.
 * `instructions.amount` : The articles that must be returned.
+* `instructions.maxRedirects` : The maximum redirects a request is allowed to do.
 * `includeContentAttachments`: Whether you must use the [`extractLinks`](#extractlinks) function
 to the content and append the result to the attachments.
 
@@ -75,7 +76,8 @@ to the content and append the result to the attachments.
 Type: `function`
 
 Wrapper functions that will use the `axios` library to make a request.
-They will automatically set the `User-Agent` and detect if the certificates can be ignored.
+They will automatically set the `User-Agent`,
+detect if the certificates can be ignored and how many redirects are allowed.
 
 ### `parse`
 Type: `function`

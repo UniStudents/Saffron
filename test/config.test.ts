@@ -13,8 +13,9 @@ describe('Configuration', function () {
         expect(c.sources?.includeOnly).to.deep.equal([]);
         expect(c.sources?.exclude).to.deep.equal([]);
         expect(c.workers?.nodes).to.equal(1);
-        expect(c.workers?.userAgent).to.equal('saffron');
-        expect(c.workers?.jobs?.timeout).to.equal(10000);
+        expect(c.workers?.requests?.userAgent).to.equal('saffron');
+        expect(c.workers?.requests?.timeout).to.equal(10000);
+        expect(c.workers?.requests?.maxRedirects).to.equal(5);
         expect(c.workers?.articles?.amount).to.equal(30);
         expect(c.workers?.articles?.includeContentAttachments).to.equal(true);
         expect(c.scheduler?.jobsInterval).to.equal(3600000);
@@ -43,9 +44,10 @@ describe('Configuration', function () {
         },
         workers: {
             nodes: 10,
-            userAgent: 'saffron-',
-            jobs: {
-                timeout: 25500
+            requests: {
+                timeout: 25500,
+                userAgent: 'saffron-',
+                maxRedirects: 5
             },
             articles: {
                 amount: 150,
@@ -82,8 +84,9 @@ describe('Configuration', function () {
         expect(c.sources?.includeOnly).to.deep.equal(ec.sources.includeOnly);
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect(c.workers?.nodes).to.equal(ec.workers.nodes);
-        expect(c.workers?.userAgent).to.equal(ec.workers.userAgent);
-        expect(c.workers?.jobs?.timeout).to.equal(ec.workers.jobs?.timeout);
+        expect(c.workers?.requests?.userAgent).to.equal(ec.workers.requests?.userAgent);
+        expect(c.workers?.requests?.timeout).to.equal(ec.workers.requests?.timeout);
+        expect(c.workers?.requests?.maxRedirects).to.equal(ec.workers.requests?.maxRedirects);
         expect(c.workers?.articles?.amount).to.equal(ec.workers.articles?.amount);
         expect(c.workers?.articles?.includeContentAttachments).to.equal(ec.workers.articles?.includeContentAttachments);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);
@@ -113,8 +116,8 @@ describe('Configuration', function () {
             mode: 'main',
             newArticles: (tableName, articles) => {},
             workers: {
-                nodes: 5,
-                jobs: {
+                nodes: ['Ailly', 'Billy', 'Cilly', 'Dilly', 'Eilly'],
+                requests: {
 
                 },
                 articles: {
@@ -126,8 +129,8 @@ describe('Configuration', function () {
             newArticles: (tableName, articles) => {},
             workers: {
                 nodes: 1,
-                jobs: {
-                    timeout: 100
+                requests: {
+                    timeout: 100,
                 }
             },
             sources: {
@@ -158,9 +161,10 @@ describe('Configuration', function () {
         expect(c.sources?.path).to.equal(ec.sources.path);
         expect(c.sources?.includeOnly).to.deep.equal(ec.sources.includeOnly);
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
-        expect(c.workers?.nodes).to.equal(5);
-        expect(c.workers?.userAgent).to.equal(ec.workers.userAgent);
-        expect(c.workers?.jobs?.timeout).to.equal(ec.workers.jobs?.timeout);
+        expect((<string[]>c.workers?.nodes)).to.deep.equal(['Ailly', 'Billy', 'Cilly', 'Dilly', 'Eilly']);
+        expect(c.workers?.requests?.userAgent).to.equal(ec.workers.requests?.userAgent);
+        expect(c.workers?.requests?.timeout).to.equal(ec.workers.requests?.timeout);
+        expect(c.workers?.requests?.maxRedirects).to.equal(ec.workers.requests?.maxRedirects);
         expect(c.workers?.articles?.amount).to.equal(100);
         expect(c.workers?.articles?.includeContentAttachments).to.equal(ec.workers.articles?.includeContentAttachments);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);
@@ -191,8 +195,9 @@ describe('Configuration', function () {
         expect(c.sources?.includeOnly).to.deep.equal(ec.sources.includeOnly);
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect(c.workers?.nodes).to.equal(1);
-        expect(c.workers?.userAgent).to.equal(ec.workers.userAgent);
-        expect(c.workers?.jobs?.timeout).to.equal(100);
+        expect(c.workers?.requests?.userAgent).to.equal(ec.workers.requests?.userAgent);
+        expect(c.workers?.requests?.timeout).to.equal(100);
+        expect(c.workers?.requests?.maxRedirects).to.equal(ec.workers.requests?.maxRedirects);
         expect(c.workers?.articles?.amount).to.equal(ec.workers?.articles?.amount);
         expect(c.workers?.articles?.includeContentAttachments).to.equal(ec.workers.articles?.includeContentAttachments);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);
@@ -222,8 +227,9 @@ describe('Configuration', function () {
         expect(c.sources?.includeOnly).to.deep.equal(ec.sources.includeOnly);
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect(c.workers?.nodes).to.equal(ec.workers.nodes);
-        expect(c.workers?.userAgent).to.equal(ec.workers.userAgent);
-        expect(c.workers?.jobs?.timeout).to.equal(ec.workers.jobs?.timeout);
+        expect(c.workers?.requests?.userAgent).to.equal(ec.workers.requests?.userAgent);
+        expect(c.workers?.requests?.timeout).to.equal(ec.workers.requests?.timeout);
+        expect(c.workers?.requests?.maxRedirects).to.equal(ec.workers.requests?.maxRedirects);
         expect(c.workers?.articles?.amount).to.equal(ec.workers.articles?.amount);
         expect(c.workers?.articles?.includeContentAttachments).to.equal(ec.workers.articles?.includeContentAttachments);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);

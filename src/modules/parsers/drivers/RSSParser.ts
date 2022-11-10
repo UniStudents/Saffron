@@ -3,31 +3,41 @@ import type Instructions from "../../../components/instructions";
 import Article from "../../../components/article";
 import Parser from "rss-parser";
 import type Utils from "../Utils";
+import type {ScrapeRSS, SourceScrape} from "../../../components/types.js";
 
 export class RSSParser extends ParserClass {
 
-    validateScrape(scrape: any): void {
-        if (scrape?.extraFields ? !Array.isArray(scrape.extraFields) : false) throw new Error('SourceException extraFields is not an array.');
+    validateScrape(scrape?: SourceScrape): void {
+        scrape = scrape as ScrapeRSS;
+
+        if ((scrape)?.extraFields ? !Array.isArray(scrape.extraFields) : false) throw new Error('extraFields is not an array.');
 
         if (scrape?.assignFields && (typeof scrape.assignFields !== 'object' || Array.isArray(scrape.assignFields)))
-            throw new Error('SourceException assignFields is not a JSON object.');
+            throw new Error('assignFields is not a JSON object.');
     }
 
-    assignInstructions(instructions: Instructions, sourceJson: any): void {
-        instructions.scrapeOptions = {};
-        instructions.scrapeOptions.assignFields = sourceJson.scrape?.assignFields ?? {};
-        instructions.extraFields = sourceJson.scrape?.extraFields ?? [];
+    assignInstructions(instructions: Instructions, scrape?: SourceScrape): void {
+        scrape = scrape as ScrapeRSS;
+
+        scrape = scrape ?? {};
+        scrape.assignFields = scrape.assignFields ?? {};
+        scrape.extraFields = scrape.extraFields ?? [];
+
+        instructions.rss = scrape;
     }
 
     async parse(utils: Utils): Promise<Article[]> {
-        let instructions = utils.source.instructions;
-        let assignFields = instructions.scrapeOptions.assignFields;
+        const instructions = utils.source.instructions;
+
+        const assignFields = instructions.rss.assignFields;
+        const extraFields = instructions.rss.extraFields;
 
         // Default fields & extra fields
-        const requestFields: string[] = ["title", "link", "content", "pubDate", "categories", ...instructions.extraFields];
+        const requestFields: string[] = ["title", "link", "content", "pubDate", "categories", ...extraFields];
 
         const parser = new Parser({
             timeout: utils.source.instructions.timeout,
+            maxRedirects: utils.source.instructions.maxRedirects,
             headers: {
                 'User-Agent': utils.source.instructions.userAgent
             },

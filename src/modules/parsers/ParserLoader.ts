@@ -5,10 +5,11 @@ import {WordpressV2Parser} from "./drivers/WordpressV2Parser";
 import {DynamicParser} from "./drivers/DynamicParser";
 import type {ParserClass} from "../../components/ParserClass";
 import type Instructions from "../../components/instructions";
+import type {SourceScrape} from "../../components/types.js";
 
 export default class ParserLoader {
 
-    static validateScrapeOptions(parser: ParserType, scrapeOptions: object): void {
+    static validateScrapeOptions(parser: ParserType, scrapeOptions?: SourceScrape): void {
         switch (parser) {
             case ParserType.HTML:
                 new HTMLParser().validateScrape(scrapeOptions);
@@ -25,19 +26,19 @@ export default class ParserLoader {
         }
     }
 
-    static assignScrapeInstructions(parser: ParserType, instructions: Instructions, sourceJson: object): void {
+    static assignScrapeInstructions(parser: ParserType, instructions: Instructions, scrape?: SourceScrape): void {
         switch (parser) {
             case ParserType.HTML:
-                new HTMLParser().assignInstructions(instructions, sourceJson);
+                new HTMLParser().assignInstructions(instructions, scrape);
                 break
             case ParserType.RSS:
-                new RSSParser().assignInstructions(instructions, sourceJson);
+                new RSSParser().assignInstructions(instructions, scrape);
                 break
             case ParserType.WORDPRESS_V2:
-                new WordpressV2Parser().assignInstructions(instructions, sourceJson);
+                new WordpressV2Parser().assignInstructions(instructions, scrape);
                 break
             case ParserType.DYNAMIC:
-                new DynamicParser().assignInstructions(instructions, sourceJson);
+                new DynamicParser().assignInstructions(instructions, scrape);
                 break
         }
     }

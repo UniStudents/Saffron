@@ -1,5 +1,5 @@
 import type {ParserType} from "./ParserClass";
-import type {InstructionUrl} from "./types";
+import type {InstructionUrl, ScrapeDynamic, ScrapeHTML, ScrapeRSS, ScrapeWordPressV2} from "./types";
 
 /**
  * The instructions class is used mainly by parsers.
@@ -12,21 +12,18 @@ export default class Instructions {
     declare parserType: ParserType;
 
     declare timeout: number;
-    declare amount: number;
-    declare includeContentAttachments: boolean;
+    declare maxRedirects: number;
     declare userAgent: string;
-    declare textDecoder: TextDecoder;
     declare ignoreCertificates: boolean;
 
-    // HTML Parser
-    declare scrapeOptions: any;
-    declare elementSelector: string;
+    declare textDecoder: TextDecoder;
+    declare includeContentAttachments: boolean;
+    declare amount: number;
 
-    // Dynamic Parser
-    declare scrapeFunction: any;
-    declare scrapeFunctionStr: string;
+    declare html: ScrapeHTML;
+    declare rss: ScrapeRSS;
+    declare wp: ScrapeWordPressV2;
 
-    // RSS parser
-    declare extraFields: string[];
-
+    declare dynamic: ScrapeDynamic;
+    declare dynamicFuncStr: string;
 }

@@ -58,15 +58,20 @@ The workers that will be initialized. Each worker runs in different thread using
 When saffron loads a lot of source files having multiple workers on different threads
 may ease the load on your machine.
 
-### `userAgent`
+### `requests.userAgent`
 Default value: `saffron`
 
 The User-Agent that will accompany the requests made by saffron.
 
-### `jobs.timeout`
+### `requests.timeout`
 Default value: `10000`
 
 The timeout of a request when scraping data.
+
+### `requests.maxRedirects`
+Default value: `10`
+
+The maximum redirects that are allowed during a request.
 
 ### `articles.amount`
 Default value: `30`

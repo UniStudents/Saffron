@@ -18,7 +18,7 @@ export default class Job {
     declare worker: string;
 
     constructor(source: Source, workerId: string, interval: number, config: Config | null) {
-        this.id = randomId("job");
+        this.id = randomId(`job_${source?.name}`);
         this.source = source;
         this.worker = workerId;
         this.attempts = 0;

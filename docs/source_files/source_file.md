@@ -1,5 +1,8 @@
 # Source file
 
+The option set here apply only for the current source file and will override the default
+options set in the configuration.
+
 ## Common options
 
 ### `name`
@@ -17,6 +20,8 @@ to specify where the articles should be saved.
 This is useful in case of multiple source files want to save at the same place.
 
 If it is not defined it will fall back to the [`name`](#name) field.
+
+
 
 ### `url`
 This field contains the website's url(s) where the news are displayed.
@@ -72,6 +77,11 @@ The timeframe where Saffron will wait to get a response from an url.
 Default value: `workers.userAgent`
 
 The User-Agent that will accompany the requests made by saffron.
+
+### `maxRedirects`
+Default value: `10`
+
+The maximum redirects that are allowed during a request.
 
 ### `ignoreCertificates`
 Default value: `false`

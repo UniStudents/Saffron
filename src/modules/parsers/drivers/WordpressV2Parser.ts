@@ -2,63 +2,50 @@ import {ParserClass} from "../../../components/ParserClass";
 import type Instructions from "../../../components/instructions";
 import Article from "../../../components/article";
 import type Utils from "../Utils";
+import type {ScrapeWordPressV2, SourceScrape} from "../../../components/types";
 
 export class WordpressV2Parser extends ParserClass {
 
-    validateScrape(scrape: object): void {
+    validateScrape(scrape?: SourceScrape): void {
     }
 
-    assignInstructions(instructions: Instructions, sourceJson: any): void {
+    assignInstructions(instructions: Instructions, scrape?: SourceScrape): void {
+        scrape = scrape as ScrapeWordPressV2;
+
         for (let pair of instructions.url) {
             pair.url = `${pair.url}${pair.url.endsWith('/') ? '' : '/'}`
         }
 
-        let artScrapeOpts = sourceJson.scrape?.articles;
-        let articlesOpts: any = {
-            include: [],
-            dates: {},
-            filter: {},
-            thumbnail: "thumbnail"
-        };
+        scrape = scrape ?? {};
+        scrape.articles = scrape.articles ?? {};
 
-        if (artScrapeOpts != null) {
-            if (Array.isArray(sourceJson.scrape?.articles?.include)) {
-                for (const item of sourceJson.scrape.articles.include) {
-                    if (typeof item === 'string')
-                        articlesOpts.include.push(item)
-                }
-            }
+        scrape.articles.include = scrape.articles.include ?? [];
 
-            if (artScrapeOpts.dates) {
-                articlesOpts.dates.gmt = typeof artScrapeOpts.dates.gmt === 'boolean' ? artScrapeOpts.dates.gmt : false;
-                articlesOpts.dates.fallback = typeof artScrapeOpts.dates.fallback === 'boolean' ? artScrapeOpts.dates.fallback : false;
-            }
+        scrape.articles.dates = scrape.articles.dates ?? {};
+        scrape.articles.dates.gmt = scrape.articles.dates.gmt ?? false;
+        scrape.articles.dates.fallback = scrape.articles.dates.fallback ?? false;
 
-            if (artScrapeOpts.filter) {
-                articlesOpts.filter.search = typeof artScrapeOpts.filter?.search === 'string' ? artScrapeOpts.filter.search : null;
-                articlesOpts.filter.author = typeof artScrapeOpts.filter?.author === 'string' ? artScrapeOpts.filter.author : null;
-                articlesOpts.filter.authorExclude = typeof artScrapeOpts.filter?.authorExclude === 'string' ? artScrapeOpts.filter.authorExclude : null;
+        scrape.articles.filter = scrape.articles.filter ?? {};
+        scrape.articles.filter.search = scrape.articles.filter.search ?? null;
+        scrape.articles.filter.author = scrape.articles.filter.author ?? null;
+        scrape.articles.filter.authorExclude = scrape.articles.filter.authorExclude ?? null;
 
-                // ISO8601 compliant date
-                articlesOpts.filter.after = typeof artScrapeOpts.filter?.after === 'string' ? artScrapeOpts.filter.after : null;
-                articlesOpts.filter.before = typeof artScrapeOpts.filter?.before === 'string' ? artScrapeOpts.filter.before : null;
+        // ISO8601 compliant date
+        scrape.articles.filter.after = scrape.articles.filter.after ?? null;
+        scrape.articles.filter.before = scrape.articles.filter.before ?? null;
 
-                // offset: typeof articleOptions.filter?.offset === 'number' ? articleOptions.filter.offset : 0,
-                articlesOpts.filter.slug = typeof artScrapeOpts.filter?.slug === 'string' ? artScrapeOpts.filter.slug : null;
-                articlesOpts.filter.status = typeof artScrapeOpts.filter?.status === 'string' ? artScrapeOpts.filter.status : null;
-                articlesOpts.filter.categories = typeof artScrapeOpts.filter?.categories === 'string' ? artScrapeOpts.filter.categories : null;
-                articlesOpts.filter.categoriesExclude = typeof artScrapeOpts.filter?.categoriesExclude === 'string' ? artScrapeOpts.filter.categoriesExclude : null;
-                articlesOpts.filter.tags = typeof artScrapeOpts.filter?.tags === 'string' ? artScrapeOpts.filter.tags : null;
-                articlesOpts.filter.tagsExclude = typeof artScrapeOpts.filter?.tagsExclude === 'string' ? artScrapeOpts.filter.tagsExclude : null;
-                articlesOpts.filter.sticky = typeof artScrapeOpts.filter?.sticky === 'boolean' ? artScrapeOpts.filter.sticky : null;
-            }
+        scrape.articles.filter.slug = scrape.articles.filter.slug ?? null;
+        // offset: typeof articleOptions.filter?.offset === 'number' ? articleOptions.filter.offset : 0,
+        scrape.articles.filter.status = scrape.articles.filter.status ?? null;
+        scrape.articles.filter.categories = scrape.articles.filter.categories ?? null;
+        scrape.articles.filter.categoriesExclude = scrape.articles.filter.categoriesExclude ?? null;
+        scrape.articles.filter.tags = scrape.articles.filter.tags ?? null;
+        scrape.articles.filter.tagsExclude = scrape.articles.filter.tagsExclude ?? null;
+        scrape.articles.filter.sticky = scrape.articles.filter.sticky ?? null;
 
-            articlesOpts.thumbnail = typeof artScrapeOpts.thumbnail === 'string' ? artScrapeOpts.thumbnail : 'thumbnail';
-        }
+        scrape.articles.thumbnail = scrape.articles.thumbnail ?? 'thumbnail';
 
-        instructions.scrapeOptions = {
-            articles: articlesOpts
-        };
+        instructions.wp = scrape;
     }
 
     async parse(utils: Utils): Promise<Article[]> {
@@ -67,7 +54,7 @@ export class WordpressV2Parser extends ParserClass {
         let categoriesUrl = `${utils.url}wp-json/wp/v2/categories/`;
         let postsUrl = `${utils.url}wp-json/wp/v2/posts?_embed&per_page=${instructions.amount}`;
 
-        const filters = instructions.scrapeOptions.articles.filter;
+        const filters = instructions.wp.articles!.filter!;
         if (filters.search) postsUrl += `&search=${encodeURIComponent(filters.search)}`;
         if (filters.author) postsUrl += `&author=${filters.author}`;
         if (filters.authorExclude) postsUrl += `&author_exclude=${filters.authorExclude}`;
@@ -126,10 +113,10 @@ export class WordpressV2Parser extends ParserClass {
             article.content = p.content.rendered;
             article.link = utils.cleanupHTMLText(p.link, false);
 
-            if (instructions.scrapeOptions.articles.dates.gmt) {
+            if (instructions.wp.articles!.dates!.gmt) {
                 if (p.date_gmt != null)
                     article.pubDate = p.date_gmt;
-                else if (instructions.scrapeOptions.articles.dates.fallback)
+                else if (instructions.wp.articles!.dates!.fallback)
                     article.pubDate = p.date;
             } else article.pubDate = p.date;
 
@@ -142,16 +129,16 @@ export class WordpressV2Parser extends ParserClass {
             }
 
             // Thumbnail
-            let thumbnailSize = instructions.scrapeOptions.articles.thumbnail;
+            let thumbnailSize = instructions.wp.articles!.thumbnail!;
             article.thumbnail = p._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes[thumbnailSize]?.source_url;
 
-            let include: string[] = instructions.scrapeOptions.articles.include;
+            let include: string[] = instructions.wp.articles!.include!;
             // The date the object was last modified.
             if (include.includes('modified')) {
-                if (instructions.scrapeOptions.articles.dates.gmt) {
+                if (instructions.wp.articles!.dates!.gmt) {
                     if (p.modified_gmt != null)
                         article.addExtra('modified', p.modified_gmt);
-                    else if (instructions.scrapeOptions.articles.dates.fallback)
+                    else if (instructions.wp.articles!.dates!.fallback)
                         article.addExtra('modified', p.modified);
                 } else article.addExtra('modified', p.modified);
 

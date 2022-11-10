@@ -10,11 +10,11 @@ export type ConfigType = {
         exclude: string[];
     }>;
     workers: Partial<{
-        nodes: number;
-        userAgent: string;
-        jobs: Partial<{
+        nodes: number | string[];
+        requests: Partial<{
             timeout: number;
-            // TODO: Add max-redirects option
+            userAgent: string;
+            maxRedirects: number;
         }>;
         articles: Partial<{
             amount: number;
@@ -66,7 +66,8 @@ export enum ConfigOptions {
     LOG_LEVEL = 20,
     EVENT_DELAY = 21,
     NEW_ARTICLES = 22,
-    INCLUDE_CNT_ATTACHMENTS = 23
+    INCLUDE_CNT_ATTACHMENTS = 23,
+    MAX_REDIRECTS = 23
 }
 
 export default class Config {
@@ -79,11 +80,11 @@ export default class Config {
             exclude: []
         },
         workers: {
-            // TODO: Allow nodes to take an array of strings instead of number which will be the names of the workers (instead of auto generated ids)
             nodes: 1, // Start one worker
-            userAgent: 'saffron',
-            jobs: {
-                timeout: 10000
+            requests: {
+                timeout: 10000,
+                userAgent: 'saffron',
+                maxRedirects: 5
             },
             articles: {
                 amount: 30,
@@ -173,9 +174,11 @@ export default class Config {
             case ConfigOptions.WORKER_NODES:
                 return config ? config.config.workers?.nodes : 1;
             case ConfigOptions.USERAGENT:
-                return config ? config.config.workers?.userAgent : 'saffron';
+                return config ? config.config.workers?.requests?.userAgent : 'saffron';
             case ConfigOptions.TIMEOUT:
-                return config ? config.config.workers?.jobs?.timeout : 10000;
+                return config ? config.config.workers?.requests?.timeout : 10000;
+            case ConfigOptions.MAX_REDIRECTS:
+                return config ? config.config.workers?.requests?.maxRedirects : 10;
 
             case ConfigOptions.ARTICLE_AMOUNT:
                 return config ? config.config.workers?.articles?.amount : 30;

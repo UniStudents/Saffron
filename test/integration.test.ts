@@ -33,9 +33,9 @@ describe('Integration', function () {
                 },
                 workers: {
                     nodes: 1,
-                    userAgent: 'User-Agent',
-                    jobs: {
-                        timeout: 2000
+                    requests: {
+                        timeout: 2000,
+                        userAgent: 'User-Agent'
                     },
                     articles: {
                         amount: 5

@@ -19,8 +19,8 @@ describe('Sources', function () {
                 ['Category 1', 'https://example.com'],
                 ['Category 2', 'Category 3', 'https://example2.com']
             ],
-            type: 'html',
-            scrape: {article: {}}
+            type: 'wordpress-v2',
+            scrape: {articles: {}}
         }, null);
 
         expect(source.name).to.equal('source-name');
@@ -42,6 +42,6 @@ describe('Sources', function () {
                 expect(p.aliases).to.deep.equal(['Category 2', 'Category 3']);
         }
 
-        expect(source.instructions.parserType).to.equal(ParserType.HTML);
+        expect(source.instructions.parserType).to.equal(ParserType.WORDPRESS_V2);
     });
 })

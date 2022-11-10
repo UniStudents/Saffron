@@ -2,25 +2,24 @@ import {ParserClass} from "../../../components/ParserClass";
 import type Instructions from "../../../components/instructions";
 import Article from "../../../components/article";
 import type Utils from "../Utils";
+import type {ScrapeDynamic, SourceScrape} from "../../../components/types.js";
 
 export class DynamicParser extends ParserClass {
-    validateScrape(scrape: any): void {
-        if (typeof scrape !== 'function') throw new Error("SourceException scrape is not a function");
+    validateScrape(scrape?: SourceScrape): void {
+        if (typeof scrape !== 'function') throw new Error("scrape is not a function");
     }
 
-    assignInstructions(instructions: Instructions, sourceJson: any): void {
-        let scrapeStr = sourceJson.scrape.toString();
-
-        instructions.scrapeFunction = sourceJson.scrape;
-        instructions.scrapeFunctionStr = scrapeStr;
+    assignInstructions(instructions: Instructions, scrape?: SourceScrape): void {
+        instructions.dynamic = scrape as ScrapeDynamic;
+        instructions.dynamicFuncStr = instructions.dynamic.toString();
     }
 
     async parse(utils: Utils): Promise<Article[]> {
         let instructions = utils.source.instructions;
-        let scrapeFunc = typeof instructions.scrapeFunction === 'function'
-            ? instructions.scrapeFunction
-            : eval(instructions.scrapeFunctionStr);
+        let scrapeFunc = typeof instructions.dynamic === 'function'
+            ? instructions.dynamic
+            : eval(instructions.dynamicFuncStr);
 
-        return await scrapeFunc(utils, Article);
+        return scrapeFunc(utils, Article);
     }
 }
