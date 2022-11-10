@@ -100,8 +100,6 @@ export class HTMLParser extends ParserClass {
             if(instructions.includeContentAttachments)
                 tmpArticle.pushAttachments(utils.extractLinks(tmpArticle.content))
 
-            tmpArticle.pushCategories(utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]})));
-
             // for each extra data. Data that are not described in the baseData variable.
             Object.entries(articleData).forEach((extra) => {
                 if (basicData.indexOf(extra[0]) !== -1) return;

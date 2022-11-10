@@ -72,8 +72,6 @@ export class RSSParser extends ParserClass {
             if(utils.source.instructions.includeContentAttachments)
                 article.pushAttachments(utils.extractLinks(article.content));
 
-            article.pushCategories(utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]})));
-
             // Assign remaining fields too extra
             Object.keys(data).forEach(key => {
                 if(!Object.keys(article).some(v => v === key))

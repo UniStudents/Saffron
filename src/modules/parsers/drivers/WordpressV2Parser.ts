@@ -125,7 +125,6 @@ export class WordpressV2Parser extends ParserClass {
             article.title = utils.cleanupHTMLText(p.title.rendered, false);
             article.content = p.content.rendered;
             article.link = utils.cleanupHTMLText(p.link, false);
-            article.pushCategories(utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]})));
 
             if (instructions.scrapeOptions.articles.dates.gmt) {
                 if (p.date_gmt != null)

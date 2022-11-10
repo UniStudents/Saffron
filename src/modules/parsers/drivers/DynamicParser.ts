@@ -21,12 +21,6 @@ export class DynamicParser extends ParserClass {
             ? instructions.scrapeFunction
             : eval(instructions.scrapeFunctionStr);
 
-        let articles: Article[] = await scrapeFunc(utils, Article);
-
-        articles.forEach(article => {
-            article.pushCategories(utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]})));
-        });
-
-        return articles;
+        return await scrapeFunc(utils, Article);
     }
 }

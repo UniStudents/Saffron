@@ -111,7 +111,9 @@ scrape: async (utils, Article) => {
     console.log(message);  
   }
   
-  const other = require('other');
+  const foo = require('foo');
+  other.foo('bar');
+  
   log('Using a nested function.');
   // ...
 }

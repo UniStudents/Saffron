@@ -31,11 +31,14 @@ export default class Worker {
             utils.source = job.source;
 
             // Will throw error in case of fail (catch in call function).
-            const newArticles = await parser.parse(utils);
+            const articles = await parser.parse(utils);
+            articles.forEach(article => {
+                article.pushCategories(utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]})));
+            });
             results.push({
                 aliases: pair.aliases,
                 url: pair.url,
-                articles: newArticles
+                articles
             });
         }
 
