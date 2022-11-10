@@ -86,6 +86,8 @@ export default class Worker {
             try {
                 result = await Worker.parse(job);
             } catch (e: any) {
+                e.message = `${job.source.instructions.parserType.toUpperCase()}ParserException failed [${job.source.name}] job: ${e.message}`;
+
                 this.saffron.events.emit("worker.parsers.error", e);
                 await this.saffron.grid.failedJob(job);
                 return;

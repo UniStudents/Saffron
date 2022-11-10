@@ -21,22 +21,10 @@ export class DynamicParser extends ParserClass {
             ? instructions.scrapeFunction
             : eval(instructions.scrapeFunctionStr);
 
-        let articles: Article[];
-        try {
-            articles = await scrapeFunc(utils, Article);
-        } catch (e: any) {
-            const err =  new Error(`DynamicParserException job failed for ${utils.source.name}, original error: ${e.message}`);
-            err.stack = e.stack;
-            throw err;
-        }
+        let articles: Article[] = await scrapeFunc(utils, Article);
 
         articles.forEach(article => {
-            article.pushCategories(utils.aliases.map((alias: string) => {
-                return {
-                    name: alias,
-                    links: [utils.url]
-                };
-            }));
+            article.pushCategories(utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]})));
         });
 
         return articles;

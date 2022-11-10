@@ -40,12 +40,7 @@ export class RSSParser extends ParserClass {
             }
         });
 
-        let feed;
-        try {
-            feed = await parser.parseURL(utils.url);
-        } catch (e: any) {
-            throw new Error(`RSSParserException failed [${utils.source.name}] job: ${e.message}`);
-        }
+        let feed = await parser.parseURL(utils.url);
 
         const parsedArticles: Article[] = [];
         let count = 0;
@@ -77,12 +72,7 @@ export class RSSParser extends ParserClass {
             if(utils.source.instructions.includeContentAttachments)
                 article.pushAttachments(utils.extractLinks(article.content));
 
-            article.pushCategories(utils.aliases.map(alias => {
-                return {
-                    name: alias,
-                    links: [utils.url]
-                };
-            }));
+            article.pushCategories(utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]})));
 
             // Assign remaining fields too extra
             Object.keys(data).forEach(key => {

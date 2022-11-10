@@ -269,21 +269,10 @@ export default class Utils {
         '&#34;': '"',
         '&#034;': '"'
     }
-    /**
-     * True if the previous scrape returned exception.
-     */
+
     public isScrapeAfterError = false;
-    /**
-     * The specified URL.
-     */
     public declare url: string;
-    /**
-     * The specified categories assigned to the url.
-     */
     public declare aliases: string[];
-    /**
-     * The source object.
-     */
     public declare source: Source;
 
     private static decode(str: string = ""): string {
@@ -319,12 +308,7 @@ export default class Utils {
         return this.request(options);
     }
 
-    /**
-     * Get a source file and return an array of the parsed articles
-     * @param sourceJson The json object of the source file.
-     * @throws SourceException if there is a problem parsing the source file.
-     */
-    async parse(sourceJson: SourceFile): Promise<ParserResult[]> {
+   async parse(sourceJson: SourceFile): Promise<ParserResult[]> {
         let source = Source.parseSourceFile(sourceJson, null);
         let job = new Job(source, '', 0, null);
         return await Worker.parse(job);

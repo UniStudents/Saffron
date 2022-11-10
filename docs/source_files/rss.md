@@ -1,7 +1,7 @@
 # RSS parser
 
 The `rss` parser has one of the most simple source files after `wordpress-v2` parser.
-It can run only by providing a url and all the other options are for rare cases and are optional.
+It is a JSON file, and it can run only by providing an url and all the other options are for rare cases and are optional.
 
 ## Scrape
 

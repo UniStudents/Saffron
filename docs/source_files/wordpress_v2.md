@@ -1,7 +1,7 @@
 # WordPress V2 parser
 
-The `wordpress-v2` parser has one of the most simple source files. It can run only by
-providing a url and all the other options are for customization and are optional.
+The `wordpress-v2` parser has one of the most simple source files. It is a JSON file, and it
+can run only by providing a url and all the other options are for customization and are optional.
 
 ## Scrape
 

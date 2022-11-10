@@ -27,18 +27,11 @@ export class HTMLParser extends ParserClass {
     }
 
     static async request(instructions: Instructions, utils: Utils): Promise<Article[]> {
-        let response: AxiosResponse;
-        try {
-            response = await utils.get(utils.url, {
-                timeout: utils.source.instructions.timeout,
-                responseType: 'arraybuffer',
-                responseEncoding: 'binary'
-            });
-        } catch (e: any) {
-            const error = new Error(`HTMLParserException failed [${utils.source.name}] job: ${e.message}`)
-            error.stack = e.stack;
-            throw error;
-        }
+        let response: AxiosResponse = await utils.get(utils.url, {
+            timeout: utils.source.instructions.timeout,
+            responseType: 'arraybuffer', // This will be used to textDecoder below
+            responseEncoding: 'binary'
+        });
 
         let parsedArticles: Article[] = [];
         const cheerioLoad: cheerio.Root = cheerio.load(instructions.textDecoder.decode(response.data));
@@ -107,12 +100,7 @@ export class HTMLParser extends ParserClass {
             if(instructions.includeContentAttachments)
                 tmpArticle.pushAttachments(utils.extractLinks(tmpArticle.content))
 
-            tmpArticle.pushCategories(utils.aliases.map(alias => {
-                return {
-                    name: alias,
-                    links: [utils.url]
-                };
-            }));
+            tmpArticle.pushCategories(utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]})));
 
             // for each extra data. Data that are not described in the baseData variable.
             Object.entries(articleData).forEach((extra) => {

@@ -82,24 +82,17 @@ export class WordpressV2Parser extends ParserClass {
         if (filters.tagsExclude) postsUrl += `&tags_exclude=${filters.tagsExclude}`;
         if (filters.sticky) postsUrl += `&_sticky`;
 
-        let categories: any
-            , posts: any[];
-
         let config = {
             timeout: utils.source.instructions.timeout,
             responseType: 'arraybuffer',
             responseEncoding: 'binary'
         };
 
-        try {
-            const catReq = await utils.get(categoriesUrl, config as any);
-            const postsReq = await utils.get(postsUrl, config as any);
+        const catReq = await utils.get(categoriesUrl, config as any);
+        const postsReq = await utils.get(postsUrl, config as any);
 
-            categories = JSON.parse(instructions.textDecoder.decode(catReq.data));
-            posts = JSON.parse(instructions.textDecoder.decode(postsReq.data));
-        } catch (e: any) {
-            throw new Error(`WordpressParserException failed [${utils.source.name}] job: ${e.message}`);
-        }
+        const categories = JSON.parse(instructions.textDecoder.decode(catReq.data));
+        const posts = JSON.parse(instructions.textDecoder.decode(postsReq.data));
 
         let articles: Article[] = [];
 
@@ -132,12 +125,7 @@ export class WordpressV2Parser extends ParserClass {
             article.title = utils.cleanupHTMLText(p.title.rendered, false);
             article.content = p.content.rendered;
             article.link = utils.cleanupHTMLText(p.link, false);
-            article.pushCategories(utils.aliases.map(alias => {
-                return {
-                    name: alias,
-                    links: [utils.url]
-                };
-            }));
+            article.pushCategories(utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]})));
 
             if (instructions.scrapeOptions.articles.dates.gmt) {
                 if (p.date_gmt != null)
