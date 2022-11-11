@@ -3,7 +3,7 @@
 The option set here apply only for the current source file and will override the default
 options set in the configuration.
 
-## Common options
+# Common options
 
 ### `name`
 This field identifies the source file.

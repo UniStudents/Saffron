@@ -3,7 +3,7 @@
 The `rss` parser has one of the most simple source files after `wordpress-v2` parser.
 It is a JSON file, and it can run only by providing an url and all the other options are for rare cases and are optional.
 
-## Scrape
+# Scrape
 
 ### `extraFields`
 An array of field names that will be appended to the article.

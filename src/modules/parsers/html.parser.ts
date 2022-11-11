@@ -21,6 +21,11 @@ export class HTMLParser extends ParserClass {
         if (typeof scrape.article !== 'object' || Array.isArray(scrape.article))
             throw new Error("article is not valid JSON object");
 
+        const articleKeys = Object.keys(scrape.article);
+
+        if((new Set(articleKeys)).size !== articleKeys.length)
+            throw new Error("article cannot have duplicates keys");
+
         for (const key of Object.keys(scrape.article)) {
             const options = scrape.article[key];
 
@@ -82,7 +87,6 @@ export class HTMLParser extends ParserClass {
         cheerioLoad(`${instructions.html.container}`).each((index, element) => {
             if (index >= instructions.amount) return;
 
-
             // Exp. If you remove the title, then the title is going to be on the extra information of each article.
             let basicData = ["title", "pubDate", "content", "attachments", "link", "categories"];
 
@@ -124,10 +128,10 @@ export class HTMLParser extends ParserClass {
             }
 
             const article = new Article();
-            article.link = HTMLParser.simplifyData(utils, articleData.link, false);
-            article.title = HTMLParser.simplifyData(utils, articleData.title, true);
-            article.pubDate = HTMLParser.simplifyData(utils, articleData.pubDate, false);
-            article.content = HTMLParser.simplifyData(utils, articleData.content, false);
+            article.link = HTMLParser.parseField(utils, articleData.link, false);
+            article.title = HTMLParser.parseField(utils, articleData.title, true);
+            article.pubDate = HTMLParser.parseField(utils, articleData.pubDate, false);
+            article.content = HTMLParser.parseField(utils, articleData.content, false);
 
             if (articleData.categories) {
                 if (Array.isArray(articleData.categories))
@@ -152,16 +156,13 @@ export class HTMLParser extends ParserClass {
         return parsedArticles
     }
 
-    private static simplifyData(utils: Utils, data: string | any[], excessive: boolean): string | null {
+    private static parseField(utils: Utils, data: string | any[], excessive: boolean): string | null {
         let ret;
-
         if (Array.isArray(data) && data[0]?.value)
             ret = data[0].value;
         else if (typeof data === 'string')
             ret = data;
-
-        if(!ret) return ret;
-        return utils.cleanupHTMLText(ret, excessive);
+        return ret ? utils.cleanupHTMLText(ret, excessive) : ret;
     }
 
     private static attributes(location: cheerio.Cheerio, attributesArr: string[]): HTMLAttribute[] {

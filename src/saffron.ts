@@ -61,6 +61,9 @@ export class Saffron {
         let nodes = Config.getOption(ConfigOptions.WORKER_NODES, this.config);
         this.workers = [];
         if (Array.isArray(nodes)) {
+            if((new Set(nodes)).size !== nodes.length)
+                throw new Error("worker.nodes cannot have duplicates names");
+
             for (const n of nodes)
                 this.workers.push(new Worker(this, n));
         } else {

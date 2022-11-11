@@ -28,7 +28,7 @@ module.exports = {
 }
 ```
 
-## Scrape
+# Scrape
 
 Create the `scrape` asynchronous function to write down code needed for scraping.
 Saffron will ignore the rest of the file when it comes to scrapping so all code must
@@ -39,7 +39,7 @@ The `scrape` function will be called for every url mentioned in the general opti
 
 Any other libraries used must be added to your `package.json` file.
 
-## Utils
+# Utils
 Utils provide a set of necessary functions and fields that are used by all scrappers.
 
 ### `isScrapeAfterError`
@@ -99,11 +99,11 @@ It will accept HTML as string and extract the text and links of the following ta
 `a`, `img` and `link`.
 
 
-## Article
+# Article
 
 Saffron offers the Article class to construct an Article object.
 
-## Writing code
+# Writing code
 
 ### Nested functions & Imports
 Saffron will ignore the rest of the file when it comes to scrapping,

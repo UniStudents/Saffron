@@ -3,8 +3,9 @@
 The `wordpress-v2` parser has one of the most simple source files. It is a JSON file, and it
 can run only by providing a url and all the other options are for customization and are optional.
 
-## Scrape
+# Scrape
 
+## `articles`
 The scrape function contains an `articles` object that will have all the necessary data that
 the `wordpress-v2` parser will need.
 
