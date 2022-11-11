@@ -8,7 +8,6 @@ import Job from "../../components/job";
 import Worker from "../worker";
 import striptags from "striptags";
 
-const httpsAgent = new https.Agent({rejectUnauthorized: false})
 
 export default class Utils {
 
@@ -285,12 +284,12 @@ export default class Utils {
 
     request(options: AxiosRequestConfig): Promise<AxiosResponse> {
         if (this.source.instructions["ignoreCertificates"])
-            options.httpsAgent = httpsAgent;
+            options.httpsAgent = new https.Agent({rejectUnauthorized: false});
 
-        if(!options.headers) options.headers = {};
-        options.headers['User-Agent'] = this.source.instructions.userAgent;
-
-        options.maxRedirects = this.source.instructions.maxRedirects
+        options.headers ??= {};
+        options.headers['User-Agent'] ??= this.source.instructions.userAgent;
+        options.timeout ??= this.source.instructions.timeout
+        options.maxRedirects ??= this.source.instructions.maxRedirects
 
         return axios.request(options);
     }
@@ -316,21 +315,26 @@ export default class Utils {
         return await Worker.parse(job);
     }
 
-    public cleanupHTMLText(text: string, stripTags: boolean = true): string {
-        text = Utils.decode(text)
-            .replace(/\n/g, '')
-            .replace(/\t/g, '')
-            .trim()
+    public cleanupHTMLText(text: string, excessive: boolean): string {
+        text = Utils.decode(text);
 
-        if (stripTags) {
-            text = text.replace(/(<([^>]+)>)/gi, '')
-            text = striptags(text)
+        // Remove all consecutive \n, \t and \s
+        text = text.replace(/ +(?= )/g, '')
+            .replace(/\t+(?=\t)/g, '')
+            .replace(/\n+(?=\n)/gm, '')
+            .trim();
+
+        if (excessive) {
+            text = text.replace(/\t/g, '')
+                .replace(/\n/gm, '')
+                .replace(/(<([^>]+)>)/gi, '');
+            text = striptags(text);
         }
 
-        return text.toString()
+        return text;
     }
 
-    public extractLinks(html?: string): Attachment[] {
+    public extractLinks(html?: string | null): Attachment[] {
         if (!html) return [];
 
         const $ = cheerio.load(html);

@@ -10,37 +10,26 @@
         "article": {
             "link": {
                 "class": ".news_title",
-                "find": [
-                    "a"
-                ],
-                "attributes": [
-                    "href"
-                ],
+                "find": ["a"],
+                "attributes": ["href"],
                 "multiple": false
             },
             "pubDate": {
                 "class": ".news_date",
-                "find": null,
                 "multiple": false
             },
             "title": {
                 "class": ".news_title",
-                "find": null,
                 "multiple": false
             },
             "content": {
                 "class": ".news_main",
-                "find": null,
                 "multiple": false
             },
             "attachments": {
                 "class": ".news_main",
-                "find": [
-                    "a"
-                ],
-                "attributes": [
-                    "href"
-                ],
+                "find": ["a"],
+                "attributes": ["href"],
                 "multiple": true
             }
         }

@@ -13,16 +13,16 @@ export type Category = {
 };
 
 export default class Article {
-    declare title: string;
-    declare content: string;
-    declare link: string;
-    declare pubDate: string;
+    declare title: string | null;
+    declare content: string | null;
+    declare link: string | null;
+    declare pubDate: string | null;
     declare timestamp: number;
     declare extras: { [key: string]: any };
     declare source: string;
     declare attachments: Attachment[];
     declare categories: Category[];
-    declare thumbnail: string;
+    declare thumbnail: string | null;
 
     constructor() {
     }

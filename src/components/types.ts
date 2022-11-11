@@ -9,13 +9,20 @@ export type ParserResult = InstructionUrl & { articles: Article[]; };
 
 export type CallbackVoid = (...args: any[]) => void;
 
+export type HTMLAttribute = {
+    attribute: string;
+    value: string | null;
+    text: string;
+};
+
 export type ScrapeDynamic = () => Promise<Article[]>;
 export type ScrapeHTML = {
     container: string;
     article: {
         [field: 'title' | 'link' | 'content' | 'pubDate' | 'categories' | string]: {
-            class: string | null; // TODO
-            find: string[] | null;
+            parent?: string | null;
+            class?: string | null;
+            find?: string[];
             attributes?: string[];
             multiple?: boolean;
         };
@@ -50,7 +57,7 @@ export type ScrapeWordPressV2 = {
     }
 };
 
-export type SourceScrape = ScrapeDynamic | ScrapeHTML | ScrapeRSS | ScrapeWordPressV2;
+export type SourceScrape = ScrapeDynamic | ScrapeHTML | ScrapeRSS | ScrapeWordPressV2 | undefined;
 
 export type SourceFile = {
     filename?: string;

@@ -1,8 +1,8 @@
-import {ParserClass} from "../../../components/ParserClass";
-import type Instructions from "../../../components/instructions";
-import Article from "../../../components/article";
-import type Utils from "../Utils";
-import type {ScrapeWordPressV2, SourceScrape} from "../../../components/types";
+import {ParserClass} from "../../components/ParserClass";
+import type Instructions from "../../components/instructions";
+import Article from "../../components/article";
+import type Utils from "./Utils";
+import type {ScrapeWordPressV2, SourceScrape} from "../../components/types";
 
 export class WordpressV2Parser extends ParserClass {
 
@@ -12,38 +12,37 @@ export class WordpressV2Parser extends ParserClass {
     assignInstructions(instructions: Instructions, scrape?: SourceScrape): void {
         scrape = scrape as ScrapeWordPressV2;
 
-        for (let pair of instructions.url) {
+        for (let pair of instructions.url)
             pair.url = `${pair.url}${pair.url.endsWith('/') ? '' : '/'}`
-        }
 
         scrape = scrape ?? {};
-        scrape.articles = scrape.articles ?? {};
+        scrape.articles ??= {};
 
-        scrape.articles.include = scrape.articles.include ?? [];
+        scrape.articles.include ??= [];
 
-        scrape.articles.dates = scrape.articles.dates ?? {};
-        scrape.articles.dates.gmt = scrape.articles.dates.gmt ?? false;
-        scrape.articles.dates.fallback = scrape.articles.dates.fallback ?? false;
+        scrape.articles.dates ??= {};
+        scrape.articles.dates.gmt ??= false;
+        scrape.articles.dates.fallback ??= false;
 
-        scrape.articles.filter = scrape.articles.filter ?? {};
-        scrape.articles.filter.search = scrape.articles.filter.search ?? null;
-        scrape.articles.filter.author = scrape.articles.filter.author ?? null;
-        scrape.articles.filter.authorExclude = scrape.articles.filter.authorExclude ?? null;
+        scrape.articles.filter ??= {};
+        scrape.articles.filter.search ??= null;
+        scrape.articles.filter.author ??= null;
+        scrape.articles.filter.authorExclude ??= null;
 
         // ISO8601 compliant date
-        scrape.articles.filter.after = scrape.articles.filter.after ?? null;
-        scrape.articles.filter.before = scrape.articles.filter.before ?? null;
+        scrape.articles.filter.after ??= null;
+        scrape.articles.filter.before ??= null;
 
-        scrape.articles.filter.slug = scrape.articles.filter.slug ?? null;
+        scrape.articles.filter.slug ??= null;
         // offset: typeof articleOptions.filter?.offset === 'number' ? articleOptions.filter.offset : 0,
-        scrape.articles.filter.status = scrape.articles.filter.status ?? null;
-        scrape.articles.filter.categories = scrape.articles.filter.categories ?? null;
-        scrape.articles.filter.categoriesExclude = scrape.articles.filter.categoriesExclude ?? null;
-        scrape.articles.filter.tags = scrape.articles.filter.tags ?? null;
-        scrape.articles.filter.tagsExclude = scrape.articles.filter.tagsExclude ?? null;
-        scrape.articles.filter.sticky = scrape.articles.filter.sticky ?? null;
+        scrape.articles.filter.status ??= null;
+        scrape.articles.filter.categories ??= null;
+        scrape.articles.filter.categoriesExclude ??= null;
+        scrape.articles.filter.tags ??= null;
+        scrape.articles.filter.tagsExclude ??= null;
+        scrape.articles.filter.sticky ??= null;
 
-        scrape.articles.thumbnail = scrape.articles.thumbnail ?? 'thumbnail';
+        scrape.articles.thumbnail ??= 'thumbnail';
 
         instructions.wp = scrape;
     }
@@ -70,7 +69,6 @@ export class WordpressV2Parser extends ParserClass {
         if (filters.sticky) postsUrl += `&_sticky`;
 
         let config = {
-            timeout: utils.source.instructions.timeout,
             responseType: 'arraybuffer',
             responseEncoding: 'binary'
         };
@@ -97,7 +95,7 @@ export class WordpressV2Parser extends ParserClass {
                 return {
                     id: category.id,
                     description: utils.cleanupHTMLText(category.description, false),
-                    name: utils.cleanupHTMLText(category.name, false),
+                    name: utils.cleanupHTMLText(category.name, true),
                     links
                 };
             }) : [];
@@ -109,8 +107,8 @@ export class WordpressV2Parser extends ParserClass {
             count++;
 
             const article = new Article();
-            article.title = utils.cleanupHTMLText(p.title.rendered, false);
-            article.content = p.content.rendered;
+            article.title = utils.cleanupHTMLText(p.title.rendered, true);
+            article.content = utils.cleanupHTMLText(p.content.rendered, false);
             article.link = utils.cleanupHTMLText(p.link, false);
 
             if (instructions.wp.articles!.dates!.gmt) {

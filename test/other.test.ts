@@ -7,10 +7,10 @@ import {ParserType} from "../src/components/ParserClass";
 import Utils from "../src/modules/parsers/Utils";
 import Extensions from "../src/modules/extensions";
 import ParserLoader from "../src/modules/parsers/ParserLoader";
-import {HTMLParser} from "../src/modules/parsers/drivers/HTMLParser";
-import {RSSParser} from "../src/modules/parsers/drivers/RSSParser";
-import {WordpressV2Parser} from "../src/modules/parsers/drivers/WordpressV2Parser";
-import {DynamicParser} from "../src/modules/parsers/drivers/DynamicParser";
+import {HTMLParser} from "../src/modules/parsers/html.parser";
+import {RssParser} from "../src/modules/parsers/rss.parser";
+import {WordpressV2Parser} from "../src/modules/parsers/wordpress.v2.parser";
+import {DynamicParser} from "../src/modules/parsers/dynamic.parser";
 
 const randStr = (myLength: number) => {
     const chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
@@ -123,7 +123,7 @@ describe('Other', function () {
 
     it('Utils - HTML cleanup text', function () {
         const utils = new Utils();
-        expect(utils.cleanupHTMLText('')).to.equal('');
+        expect(utils.cleanupHTMLText('', false)).to.equal('');
         expect(utils.cleanupHTMLText(`<a href="url1">text1</a>`, true)).to.equal('text1')
         expect(utils.cleanupHTMLText(`<a href="url1">text1</a>`, false)).to.equal(`<a href="url1">text1</a>`)
         expect(utils.cleanupHTMLText(`<p>My custom text 123</p>`, true)).to.equal('My custom text 123')
@@ -160,7 +160,7 @@ describe('Other', function () {
 
     it('Parsers - Loader', function () {
         expect(ParserLoader.getParser(ParserType.HTML)).to.be.instanceof(HTMLParser);
-        expect(ParserLoader.getParser(ParserType.RSS)).to.be.instanceof(RSSParser);
+        expect(ParserLoader.getParser(ParserType.RSS)).to.be.instanceof(RssParser);
         expect(ParserLoader.getParser(ParserType.WORDPRESS_V2)).to.be.instanceof(WordpressV2Parser);
         expect(ParserLoader.getParser(ParserType.DYNAMIC)).to.be.instanceof(DynamicParser);
     });

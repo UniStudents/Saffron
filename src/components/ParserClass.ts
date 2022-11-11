@@ -4,16 +4,19 @@ import type Utils from "../modules/parsers/Utils";
 
 export abstract class ParserClass {
 
+    /**
+     * A function that will validate if the scrape field is correct
+     */
     abstract validateScrape(scrape: object): void
 
+    /**
+     * A function that will take the validated scrape function and set the instructions properly.
+     */
     abstract assignInstructions(instructions: Instructions, sourceJson: object): void
 
     abstract parse(utils: Utils): Promise<Article[]>
 }
 
-/**
- * The types of parsing
- */
 export enum ParserType {
     RSS = 'rss',
     HTML = 'html',
@@ -23,10 +26,6 @@ export enum ParserType {
 }
 
 export namespace ParserType {
-    /**
-     * Translate a string to ParserType enum
-     * @param str
-     */
     export function getFromString(str: string): ParserType {
         switch (str) {
             case "html":

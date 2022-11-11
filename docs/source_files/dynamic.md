@@ -76,6 +76,9 @@ to the content and append the result to the attachments.
 Type: `function`
 
 Wrapper functions that will use the `axios` library to make a request.
+It will set by default the fields `timeout`, `maxRedirects`, `ignoreCertificates` and
+`userAgent`.
+
 They will automatically set the `User-Agent`,
 detect if the certificates can be ignored and how many redirects are allowed.
 

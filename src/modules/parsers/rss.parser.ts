@@ -1,13 +1,14 @@
-import {ParserClass} from "../../../components/ParserClass";
-import type Instructions from "../../../components/instructions";
-import Article from "../../../components/article";
+import {ParserClass} from "../../components/ParserClass";
+import type Instructions from "../../components/instructions";
+import Article from "../../components/article";
 import Parser from "rss-parser";
-import type Utils from "../Utils";
-import type {ScrapeRSS, SourceScrape} from "../../../components/types.js";
+import type Utils from "./Utils";
+import type {ScrapeRSS, SourceScrape} from "../../components/types";
 
-export class RSSParser extends ParserClass {
+export class RssParser extends ParserClass {
 
     validateScrape(scrape?: SourceScrape): void {
+        // This exists only for typescript, it is not valid and will not run at runtime.
         scrape = scrape as ScrapeRSS;
 
         if ((scrape)?.extraFields ? !Array.isArray(scrape.extraFields) : false) throw new Error('extraFields is not an array.');
@@ -20,8 +21,8 @@ export class RSSParser extends ParserClass {
         scrape = scrape as ScrapeRSS;
 
         scrape = scrape ?? {};
-        scrape.assignFields = scrape.assignFields ?? {};
-        scrape.extraFields = scrape.extraFields ?? [];
+        scrape.assignFields ??= {};
+        scrape.extraFields ??= [];
 
         instructions.rss = scrape;
     }
@@ -73,8 +74,8 @@ export class RSSParser extends ParserClass {
 
             let article = new Article();
 
-            article.title = utils.cleanupHTMLText(data["title"] ?? "");
-            article.content = data["content"] ?? "";
+            article.title = utils.cleanupHTMLText(data["title"] ?? "", true);
+            article.content = utils.cleanupHTMLText(data["content"] ?? "", false);
             article.pubDate = utils.cleanupHTMLText(data["pubDate"] ?? "", false);
             article.link = utils.cleanupHTMLText(data["link"] ?? "", false);
             data.categories?.forEach((c: string) => article.pushCategory(c, []));
@@ -93,5 +94,4 @@ export class RSSParser extends ParserClass {
 
         return parsedArticles;
     }
-
 }

@@ -20,7 +20,7 @@ export default class Source {
      * @param config
      */
     static parseSourceFile(source: SourceFile, config: Config | null): Source {
-        source.filename = source.filename ?? 'unknown filename';
+        source.filename = source.filename ?? 'static file';
 
         let ret = new Source();
 

@@ -17,7 +17,6 @@
             },
             "pubDate": {
                 "class": ".catItemDateCreated",
-                "find": null,
                 "multiple": false
             },
             "title": {
@@ -27,7 +26,6 @@
             },
             "content": {
                 "class": ".catItemIntroText",
-                "find": null,
                 "multiple": false
             },
             "attachments": {

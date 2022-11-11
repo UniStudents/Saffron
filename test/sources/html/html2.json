@@ -25,12 +25,10 @@
             },
             "content": {
                 "class": ".teaser-text",
-                "find": null,
                 "multiple": false
             },
-            "category": {
+            "categories": {
                 "class": ".article__info > a > span",
-                "find": null,
                 "multiple": true
             }
         }

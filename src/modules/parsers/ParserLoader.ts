@@ -1,11 +1,11 @@
 import {ParserType} from "../../components/ParserClass";
-import {HTMLParser} from "./drivers/HTMLParser";
-import {RSSParser} from "./drivers/RSSParser";
-import {WordpressV2Parser} from "./drivers/WordpressV2Parser";
-import {DynamicParser} from "./drivers/DynamicParser";
+import {HTMLParser} from "./html.parser";
+import {RssParser} from "./rss.parser";
+import {WordpressV2Parser} from "./wordpress.v2.parser";
+import {DynamicParser} from "./dynamic.parser";
 import type {ParserClass} from "../../components/ParserClass";
 import type Instructions from "../../components/instructions";
-import type {SourceScrape} from "../../components/types.js";
+import type {SourceScrape} from "../../components/types";
 
 export default class ParserLoader {
 
@@ -15,7 +15,7 @@ export default class ParserLoader {
                 new HTMLParser().validateScrape(scrapeOptions);
                 break;
             case ParserType.RSS:
-                new RSSParser().validateScrape(scrapeOptions);
+                new RssParser().validateScrape(scrapeOptions);
                 break;
             case ParserType.WORDPRESS_V2:
                 new WordpressV2Parser().validateScrape(scrapeOptions);
@@ -32,7 +32,7 @@ export default class ParserLoader {
                 new HTMLParser().assignInstructions(instructions, scrape);
                 break
             case ParserType.RSS:
-                new RSSParser().assignInstructions(instructions, scrape);
+                new RssParser().assignInstructions(instructions, scrape);
                 break
             case ParserType.WORDPRESS_V2:
                 new WordpressV2Parser().assignInstructions(instructions, scrape);
@@ -48,7 +48,7 @@ export default class ParserLoader {
             case ParserType.HTML:
                 return new HTMLParser();
             case ParserType.RSS:
-                return new RSSParser();
+                return new RssParser();
             case ParserType.WORDPRESS_V2:
                 return new WordpressV2Parser();
             case ParserType.DYNAMIC:

@@ -18,18 +18,16 @@
                 "multiple": false
             },
             "pubDate": {
+                "parent": "title",
                 "class": "div > div > div > div > div > div.field.field-name-field-date-deppost.field-type-datetime.field-label-hidden > div > div > span",
-                "find": null,
                 "multiple": false
             },
             "title": {
                 "class": "div > div > div > div > div > div.field.field-name-title-field.field-type-text.field-label-hidden > div > div > h2 > a",
-                "find": null,
                 "multiple": false
             },
             "content": {
                 "class": "div > div > div > div > div > div.field.field-name-body.field-type-text-with-summary.field-label-hidden > div > div > p",
-                "find": null,
                 "multiple": false
             }
         }
