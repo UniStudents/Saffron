@@ -1,4 +1,4 @@
-import type Article from "./article";
+import type {Article} from "./article";
 
 export type InstructionUrl = {
     aliases: string[];
@@ -30,7 +30,7 @@ export type ScrapeHTML = {
 };
 export type ScrapeRSS = {
     extraFields: string[];
-    assignFields: {[assign: string]: string};
+    assignFields: { [assign: string]: string };
 };
 export type ScrapeWordPressV2 = {
     articles?: {

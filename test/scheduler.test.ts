@@ -58,7 +58,7 @@ describe('Scheduler', function () {
         expect(saffron.scheduler.isRunning).to.equal(false);
         expect(saffron.scheduler.sources.length).to.equal(SOURCES_SIZE);
         expect(saffron.scheduler.jobs.length).to.equal(SOURCES_SIZE);
-        for(const job of saffron.scheduler.jobs) {
+        for (const job of saffron.scheduler.jobs) {
             expect(job.attempts).to.equal(0);
             expect(job.emitAttempts).to.equal(0);
             expect(job.untilRetry).to.be.greaterThanOrEqual(0);
@@ -74,7 +74,7 @@ describe('Scheduler', function () {
         expect(saffron.scheduler.isRunning).to.equal(false);
         expect(saffron.scheduler.sources.length).to.equal(SOURCES_SIZE);
         expect(saffron.scheduler.jobs.length).to.equal(SOURCES_SIZE - 1);
-        for(const job of saffron.scheduler.jobs) {
+        for (const job of saffron.scheduler.jobs) {
             expect(job.attempts).to.equal(0);
             expect(job.emitAttempts).to.equal(0);
             expect(job.untilRetry).to.be.greaterThanOrEqual(0);
@@ -91,7 +91,7 @@ describe('Scheduler', function () {
             expect(saffron.scheduler.isRunning).to.equal(false);
             expect(saffron.scheduler.sources.length).to.equal(SOURCES_SIZE);
             expect(saffron.scheduler.jobs.length).to.equal(SOURCES_SIZE - 1);
-            for(const job of saffron.scheduler.jobs) {
+            for (const job of saffron.scheduler.jobs) {
                 expect(job.attempts).to.equal(0);
                 expect(job.emitAttempts).to.equal(0);
                 expect(job.untilRetry).to.be.greaterThanOrEqual(0);
@@ -150,7 +150,7 @@ describe('Scheduler', function () {
                     expect(jobs[2].status).to.equal(JobStatus.FINISHED);
 
                     let counter = 1000;
-                    for(let i = 3; i < jobs.length; i++) {
+                    for (let i = 3; i < jobs.length; i++) {
                         expect(jobs[i].emitAttempts).to.equal(0);
                         expect(jobs[i].status).to.equal(JobStatus.PENDING);
                         expect(jobs[i].untilRetry).to.equal(counter);

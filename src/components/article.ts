@@ -1,5 +1,5 @@
 import type {Saffron} from "../index";
-import type Source from "./source";
+import type {Source} from "./source";
 
 export type Attachment = {
     attribute: string;
@@ -12,7 +12,7 @@ export type Category = {
     links: string[];
 };
 
-export default class Article {
+export class Article {
     declare title: string | null;
     declare content: string | null;
     declare link: string | null;

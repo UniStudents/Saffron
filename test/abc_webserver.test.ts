@@ -71,7 +71,7 @@ app.listen(3000, () => {
     console.log('Web server started at port 3000')
 });
 
-process.on('unhandledRejection', function onUncaught(err){
+process.on('unhandledRejection', function onUncaught(err) {
     console.log(err);
     process.exit(1);
 });

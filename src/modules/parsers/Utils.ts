@@ -1,15 +1,14 @@
 import cheerio from "cheerio";
-import type{Attachment} from "../../components/article";
+import type {Attachment} from "../../components/article";
 import https from "https";
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
-import type{ParserResult, SourceFile} from "../../components/types";
-import Source from "../../components/source";
-import Job from "../../components/job";
-import Worker from "../worker";
+import type {ParserResult, SourceFile} from "../../components/types";
+import {Source} from "../../components/source";
+import {Job} from "../../components/job";
+import {Worker} from "../worker";
 import striptags from "striptags";
 
-
-export default class Utils {
+export class Utils {
 
     private static htmlEntries: any = {
         '&apos;': "'",
@@ -309,7 +308,7 @@ export default class Utils {
         return this.request(options);
     }
 
-   async parse(sourceJson: SourceFile): Promise<ParserResult[]> {
+    async parse(sourceJson: SourceFile): Promise<ParserResult[]> {
         let source = Source.parseSourceFile(sourceJson, null);
         let job = new Job(source, '', 0, null);
         return await Worker.parse(job);

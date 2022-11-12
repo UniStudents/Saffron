@@ -1,7 +1,7 @@
-import Article from "../components/article";
-import Source from "../components/source";
-import Job from "../components/job";
-import Instructions from "../components/instructions";
+import {Article} from "../components/article";
+import {Source} from "../components/source";
+import {Job} from "../components/job";
+import {Instructions} from "../components/instructions";
 
 const types = [Article, Source, Job, Instructions, TextDecoder, Object, Array, Function];
 
@@ -21,7 +21,7 @@ export class Serializer {
     }
 
     _serialize(object: any): object {
-        if(!(object instanceof Object)) return object;
+        if (!(object instanceof Object)) return object;
 
         let i = this.types.findIndex(e => e.name == object.constructor.name);
         if (i == -1) throw "Type '" + object.constructor.name + "' is not supported for serialization";
@@ -35,7 +35,7 @@ export class Serializer {
     }
 
     _deserialize(data: any): any {
-        if(data !== Object(data)) return data;
+        if (data !== Object(data)) return data;
 
         const obj = new this.types[data.index]();
         data.entries.map((entry: any) => obj[entry[0]] = this._deserialize(entry[1]));

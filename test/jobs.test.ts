@@ -1,4 +1,4 @@
-import Job, {JobStatus} from "../src/components/job";
+import {Job, JobStatus} from "../src/components/job";
 import {expect} from "chai";
 import {Source} from "../src/index";
 

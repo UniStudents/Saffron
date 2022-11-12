@@ -4,8 +4,8 @@ import {expect} from "chai";
 describe('Integration', function () {
 
     // Variables storing useful data
-    const _articles: {[tableName: string]: Article[]} = {};
-    const _events: {[event: string]: any[]} = {};
+    const _articles: { [tableName: string]: Article[] } = {};
+    const _events: { [event: string]: any[] } = {};
 
     // Run program here
     const saffron = new Saffron();
@@ -14,7 +14,7 @@ describe('Integration', function () {
         return new Promise(async resolve => {
             // Register events
             saffron.on("*", (event, ...args: any[]) => {
-                if(!Array.isArray(_events[event]))
+                if (!Array.isArray(_events[event]))
                     _events[event] = [];
                 _events[event].push(...args);
             });
@@ -58,7 +58,7 @@ describe('Integration', function () {
                     exclude: []
                 },
                 newArticles: (tableName, articles) => {
-                    if(!Array.isArray(_articles[tableName]))
+                    if (!Array.isArray(_articles[tableName]))
                         _articles[tableName] = [];
                     _articles[tableName].push(...articles);
                 }
@@ -77,7 +77,7 @@ describe('Integration', function () {
         expect(_events['worker.articles.found'].length).to.be.a('number');
 
         let count = 0;
-        for(const tableName in _articles)
+        for (const tableName in _articles)
             count += _articles[tableName].length;
 
         // times 5 articles per source (except dynamic which returns 1)

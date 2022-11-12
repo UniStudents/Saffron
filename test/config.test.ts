@@ -1,4 +1,4 @@
-import Config, {ConfigType} from "../src/components/config"
+import {Config, ConfigType} from "../src/components/config"
 import {expect} from "chai";
 
 describe('Configuration', function () {
@@ -36,7 +36,8 @@ describe('Configuration', function () {
     // Expected/loaded config
     const ec: Required<ConfigType> = {
         mode: "worker",
-        newArticles: (tableName, articles) => {},
+        newArticles: (tableName, articles) => {
+        },
         sources: {
             path: ".",
             includeOnly: ['source.name.one', 'source.name.two'],
@@ -114,19 +115,19 @@ describe('Configuration', function () {
         ...ec,
         production: {
             mode: 'main',
-            newArticles: (tableName, articles) => {},
+            newArticles: (tableName, articles) => {
+            },
             workers: {
                 nodes: ['Ailly', 'Billy', 'Cilly', 'Dilly', 'Eilly'],
-                requests: {
-
-                },
+                requests: {},
                 articles: {
                     amount: 100
                 }
             }
         },
         development: {
-            newArticles: (tableName, articles) => {},
+            newArticles: (tableName, articles) => {
+            },
             workers: {
                 nodes: 1,
                 requests: {

@@ -1,7 +1,7 @@
 import {ParserClass} from "../../components/ParserClass";
-import type Instructions from "../../components/instructions";
-import Article from "../../components/article";
-import type Utils from "./Utils";
+import type {Instructions} from "../../components/instructions";
+import {Article} from "../../components/article";
+import type {Utils} from "./Utils";
 import type {ScrapeWordPressV2, SourceScrape} from "../../components/types";
 
 export class WordpressV2Parser extends ParserClass {
@@ -118,7 +118,7 @@ export class WordpressV2Parser extends ParserClass {
                     article.pubDate = p.date;
             } else article.pubDate = p.date;
 
-            if(instructions.includeContentAttachments)
+            if (instructions.includeContentAttachments)
                 article.pushAttachments(utils.extractLinks(article.content));
 
             for (let cId of p.categories) {

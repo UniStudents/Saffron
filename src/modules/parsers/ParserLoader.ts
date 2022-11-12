@@ -1,13 +1,13 @@
+import type {ParserClass} from "../../components/ParserClass";
 import {ParserType} from "../../components/ParserClass";
 import {HTMLParser} from "./html.parser";
 import {RssParser} from "./rss.parser";
 import {WordpressV2Parser} from "./wordpress.v2.parser";
 import {DynamicParser} from "./dynamic.parser";
-import type {ParserClass} from "../../components/ParserClass";
-import type Instructions from "../../components/instructions";
+import type {Instructions} from "../../components/instructions";
 import type {SourceScrape} from "../../components/types";
 
-export default class ParserLoader {
+export class ParserLoader {
 
     static validateScrapeOptions(parser: ParserType, scrapeOptions?: SourceScrape): void {
         switch (parser) {

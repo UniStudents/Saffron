@@ -1,4 +1,4 @@
-import Source from "../src/components/source";
+import {Source} from "../src/index";
 import {ParserType} from "../src/components/ParserClass";
 import {expect} from "chai";
 
@@ -35,10 +35,10 @@ describe('Sources', function () {
         expect(source.instructions.textDecoder.encoding).to.equal('iso-8859-7');
 
         expect(source.instructions.url.length).to.equal(2);
-        for(const p of source.instructions.url) {
-            if(p.url === 'https://example.com')
+        for (const p of source.instructions.url) {
+            if (p.url === 'https://example.com')
                 expect(p.aliases).to.deep.equal(['Category 1']);
-            else if(p.url === 'https://example2.com')
+            else if (p.url === 'https://example2.com')
                 expect(p.aliases).to.deep.equal(['Category 2', 'Category 3']);
         }
 

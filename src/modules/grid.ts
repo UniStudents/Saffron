@@ -1,18 +1,17 @@
-import Job, {JobStatus} from "../components/job";
-import type Worker from "./worker";
-import Config, {ConfigOptions} from "../components/config";
-import type Article from "../components/article";
-import type Source from "../components/source";
+import {Job, JobStatus} from "../components/job";
+import type {Worker} from "./worker";
+import {Config, ConfigOptions} from "../components/config";
+import type {Article} from "../components/article";
+import type {Source} from "../components/source";
 import {Server as IOServer} from "socket.io"
-import {Socket as IOSocket, io as IOClient} from "socket.io-client";
+import {io as IOClient, Socket as IOSocket} from "socket.io-client";
 import * as http from "http";
 import * as https from "https";
 import type {ParserResult} from "../components/types";
 import {pack, unpack} from "../middleware/serializer";
 import type {Saffron} from "../index";
 
-
-export default class Grid {
+export class Grid {
 
     readonly isMain: boolean;
     readonly workers: string[];
@@ -24,7 +23,7 @@ export default class Grid {
         this.isMain = Config.getOption(ConfigOptions.MODE, this.saffron.config) === 'main';
         this.workers = [];
 
-        if(!Config.getOption(ConfigOptions.DISTRIBUTED, this.saffron.config)) return;
+        if (!Config.getOption(ConfigOptions.DISTRIBUTED, this.saffron.config)) return;
 
         if (Config.getOption(ConfigOptions.AUTH_TOKEN, this.saffron.config) == null)
             throw new Error('SaffronException The field grid.authToken must be supplied');
@@ -95,7 +94,7 @@ export default class Grid {
                 socket.on("worker.job.failed", (jobId: string) => this.saffron.scheduler.changeJobStatus(jobId, JobStatus.FAILED));
 
                 socket.on("grid.worker.announced", (workerId: string) => {
-                    if(!this.workers.find(wId => wId === workerId))
+                    if (!this.workers.find(wId => wId === workerId))
                         this.workers.push(workerId);
                 });
 
@@ -184,7 +183,7 @@ export default class Grid {
         let articles: Article[] = [];
         const timestamp = Date.now();
         result.forEach(r => {
-            for(const a of r.articles) a.timestamp = timestamp;
+            for (const a of r.articles) a.timestamp = timestamp;
             articles.push(...r.articles);
         });
 
@@ -216,7 +215,7 @@ export default class Grid {
 
         try {
             await Config.getOption(ConfigOptions.NEW_ARTICLES, this.saffron.config)(tableName, articles);
-        }  catch (e) {
+        } catch (e) {
             // Handle errors saffron cannot handle
             console.log(e);
         }

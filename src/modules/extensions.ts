@@ -5,7 +5,7 @@ type Pair = {
     callback: (...args: any[]) => any;
 };
 
-export default class Extensions {
+export class Extensions {
 
     private readonly pairs: Pair[];
 

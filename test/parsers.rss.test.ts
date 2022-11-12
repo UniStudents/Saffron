@@ -1,6 +1,5 @@
 import {Saffron} from "../src/index";
 import {expect} from "chai";
-import * as util from "util";
 
 describe("RSS parser", function () {
     it('Test 1', function () {

@@ -1,15 +1,15 @@
-import type Job from "../components/job";
-import randomId from "../middleware/randomId";
-import type Grid from "./grid";
-import type Article from "../components/article";
-import ParserLoader from "./parsers/ParserLoader";
-import hashCode from "../middleware/hashCode";
+import type {Job} from "../components/job";
+import {randomId} from "../middleware/randomId";
+import type {Grid} from "./grid";
+import type {Article} from "../components/article";
+import {ParserLoader} from "./parsers/ParserLoader";
+import {hashCode} from "../middleware/hashCode";
 import type {ParserResult} from "../components/types";
-import Utils from "./parsers/Utils";
+import {Utils} from "./parsers/Utils";
 import type {Saffron} from "../index";
 
 
-export default class Worker {
+export class Worker {
 
     declare readonly id: string;
     private declare isRunning: boolean;
@@ -61,7 +61,7 @@ export default class Worker {
         let workers = grid.workers.slice();
 
         // This is not supposed to be true
-        if(workers.length === 0) return lastWorkerId;
+        if (workers.length === 0) return lastWorkerId;
 
         // If only one worker return that worker
         if (workers.length === 1) return workers[0];

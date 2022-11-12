@@ -1,5 +1,5 @@
 import {expect} from "chai";
-import {Job, Source, Saffron} from "../src";
+import {Job, Saffron, Source} from "../src";
 
 describe('Grid', function () {
     it('Initialization', function () {
@@ -93,7 +93,7 @@ describe('Grid', function () {
             saffWorker.config.config.misc.eventDelay = 0;
 
             saffWorker.on('scheduler.job.push', job => {
-                if(job.worker !== 'worker-id')
+                if (job.worker !== 'worker-id')
                     reject('Worker id is not matching');
                 else resolve(true);
             });

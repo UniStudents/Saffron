@@ -1,12 +1,11 @@
-import hashCode from "../src/middleware/hashCode";
+import {hashCode} from "../src/middleware/hashCode";
 import {pack, unpack} from "../src/middleware/serializer";
-import Job, {JobStatus} from "../src/components/job";
+import {Job, JobStatus} from "../src/components/job";
 import {expect} from "chai";
-import Source from "../src/components/source";
+import {Source, Utils} from "../src/index";
 import {ParserType} from "../src/components/ParserClass";
-import Utils from "../src/modules/parsers/Utils";
-import Extensions from "../src/modules/extensions";
-import ParserLoader from "../src/modules/parsers/ParserLoader";
+import {Extensions} from "../src/modules/extensions";
+import {ParserLoader} from "../src/modules/parsers/ParserLoader";
 import {HTMLParser} from "../src/modules/parsers/html.parser";
 import {RssParser} from "../src/modules/parsers/rss.parser";
 import {WordpressV2Parser} from "../src/modules/parsers/wordpress.v2.parser";
@@ -25,7 +24,7 @@ describe('Other', function () {
         for (let i = 0; i < 100; i++)
             strings.push(randStr(i));
 
-        for(const s of strings)
+        for (const s of strings)
             expect(hashCode(s)).to.equal(hashCode(s));
     });
 
@@ -71,10 +70,10 @@ describe('Other', function () {
         expect(source.instructions.ignoreCertificates).to.equal(true);
 
         expect(source.instructions.url.length).to.equal(2);
-        for(const p of source.instructions.url) {
-            if(p.url === 'https://example.com')
+        for (const p of source.instructions.url) {
+            if (p.url === 'https://example.com')
                 expect(p.aliases).to.deep.equal(['Category 1']);
-            else if(p.url === 'https://example2.com')
+            else if (p.url === 'https://example2.com')
                 expect(p.aliases).to.deep.equal(['Category 2', 'Category 3']);
         }
 

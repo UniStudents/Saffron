@@ -1,18 +1,18 @@
-import Config, {ConfigOptions} from "../components/config";
-import Job, {JobStatus} from "../components/job";
-import Source from "../components/source";
-import Worker from "./worker";
+import {Config, ConfigOptions} from "../components/config";
+import {Job, JobStatus} from "../components/job";
+import {Source} from "../components/source";
+import {Worker} from "./worker";
 import glob from "glob";
 import * as path from "path";
 import type {Saffron} from "../index";
 
-export default class Scheduler {
+export class Scheduler {
 
     declare sources: Source[];
-    private declare running: boolean;
     declare jobs: Job[];
-    declare interval:  NodeJS.Timeout
+    declare interval: NodeJS.Timeout
     checkInterval: number = 1000;
+    private declare running: boolean;
 
     constructor(private readonly saffron: Saffron) {
         this.jobs = [];
@@ -54,7 +54,7 @@ export default class Scheduler {
 
         let checkingJobs = false;
         this.interval = setInterval(() => {
-            if(checkingJobs) return;
+            if (checkingJobs) return;
             checkingJobs = true;
             if (!this.running) return;
 
@@ -129,10 +129,10 @@ export default class Scheduler {
     resetJobs() {
         this.jobs = [];
 
-        if(this.sources.length == 0) return;
+        if (this.sources.length == 0) return;
 
         const jobInt: number = Config.getOption(ConfigOptions.JOB_INT, this.saffron.config);
-        if(jobInt < 5000) throw new Error('SaffronException scheduler.jobInterval must be at least 5000ms');
+        if (jobInt < 5000) throw new Error('SaffronException scheduler.jobInterval must be at least 5000ms');
 
         // Create separation interval
         let separationInterval = Config.getOption(ConfigOptions.JOB_INT, this.saffron.config) / this.sources.length;
@@ -148,7 +148,7 @@ export default class Scheduler {
     async resetSources() {
         // Read all source files
         let parsedSources = await this.scanSourceFiles();
-        if(parsedSources.length == 0) {
+        if (parsedSources.length == 0) {
             this.sources = [];
             return;
         }

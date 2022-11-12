@@ -1,6 +1,6 @@
-import type Source from "./source";
-import randomId from "../middleware/randomId"
-import Config, {ConfigOptions} from "./config";
+import type {Source} from "./source";
+import {randomId} from "../middleware/randomId"
+import {Config, ConfigOptions} from "./config";
 
 export enum JobStatus {
     FAILED = -1,
@@ -8,7 +8,7 @@ export enum JobStatus {
     FINISHED = 1
 }
 
-export default class Job {
+export class Job {
     declare id: string;
     declare source: Source;
     declare untilRetry: number;
@@ -25,7 +25,7 @@ export default class Job {
         this.emitAttempts = 0;
 
         let untilRetry = interval + Config.getOption(ConfigOptions.INT_RANDOMIZER, config)();
-        if(untilRetry < 0) untilRetry = interval;
+        if (untilRetry < 0) untilRetry = interval;
 
         this.untilRetry = untilRetry;
         this.status = JobStatus.PENDING;

@@ -1,8 +1,8 @@
 import {ParserClass} from "../../components/ParserClass";
-import type Instructions from "../../components/instructions";
-import Article from "../../components/article";
+import type {Instructions} from "../../components/instructions";
+import {Article} from "../../components/article";
 import Parser from "rss-parser";
-import type Utils from "./Utils";
+import type {Utils} from "./Utils";
 import type {ScrapeRSS, SourceScrape} from "../../components/types";
 
 export class RssParser extends ParserClass {
@@ -64,7 +64,7 @@ export class RssParser extends ParserClass {
 
             // Copy all requested fields except the ones inside the assignFields keys
             for (const field of requestFields) {
-                if(!Object.keys(assignFields).includes(field))
+                if (!Object.keys(assignFields).includes(field))
                     data[field] = item[field] ?? null;
             }
 
@@ -80,12 +80,12 @@ export class RssParser extends ParserClass {
             article.link = utils.cleanupHTMLText(data["link"] ?? "", false);
             data.categories?.forEach((c: string) => article.pushCategory(c, []));
 
-            if(utils.source.instructions.includeContentAttachments)
+            if (utils.source.instructions.includeContentAttachments)
                 article.pushAttachments(utils.extractLinks(article.content));
 
             // Assign remaining fields too extra
             Object.keys(data).forEach(key => {
-                if(!Object.keys(article).some(v => v === key))
+                if (!Object.keys(article).some(v => v === key))
                     article.addExtra(key, data[key]);
             });
 

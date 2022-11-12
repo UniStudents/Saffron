@@ -7,7 +7,7 @@ import chalk from 'chalk'
  * @param type The type of log based on LoggerTypes
  * @param data The message that will be logged
  */
-export default function logger(type: LoggerTypes, data: any): void {
+export function logger(type: LoggerTypes, data: any): void {
     let time = chalk.bold(`${DateTime.now().toLocaleString({
         day: '2-digit',
         month: '2-digit',

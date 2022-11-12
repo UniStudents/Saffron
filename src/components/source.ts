@@ -1,11 +1,10 @@
-import Instructions from "./instructions";
+import {Instructions} from "./instructions";
 import {ParserType} from "./ParserClass";
-import Config, {ConfigOptions} from "./config";
-import ParserLoader from "../modules/parsers/ParserLoader";
+import {Config, ConfigOptions} from "./config";
+import {ParserLoader} from "../modules/parsers/ParserLoader";
 import type {SourceFile} from "./types";
 
-
-export default class Source {
+export class Source {
 
     declare name: string;
     declare tableName: string;
@@ -14,11 +13,6 @@ export default class Source {
     declare instructions: Instructions;
     declare extra: any;
 
-    /**
-     * Parse and store a source file contents to an array in memory
-     * @param source the source file
-     * @param config
-     */
     static parseSourceFile(source: SourceFile, config: Config | null): Source {
         source.filename = source.filename ?? 'static file';
 

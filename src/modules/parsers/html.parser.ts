@@ -1,9 +1,9 @@
 import {ParserClass} from "../../components/ParserClass";
-import type Instructions from "../../components/instructions";
-import Article from "../../components/article";
+import type {Instructions} from "../../components/instructions";
+import {Article} from "../../components/article";
 import type {AxiosResponse} from "axios";
 import cheerio from "cheerio";
-import type Utils from "./Utils";
+import type {Utils} from "./Utils";
 import type {HTMLAttribute, ScrapeHTML, SourceScrape} from "../../components/types";
 
 export class HTMLParser extends ParserClass {
@@ -23,7 +23,7 @@ export class HTMLParser extends ParserClass {
 
         const articleKeys = Object.keys(scrape.article);
 
-        if((new Set(articleKeys)).size !== articleKeys.length)
+        if ((new Set(articleKeys)).size !== articleKeys.length)
             throw new Error("article cannot have duplicates keys");
 
         for (const key of Object.keys(scrape.article)) {
@@ -73,10 +73,7 @@ export class HTMLParser extends ParserClass {
 
     async parse(utils: Utils): Promise<Article[]> {
         let instructions = utils.source.instructions;
-        return await HTMLParser.request(instructions, utils)
-    }
 
-    static async request(instructions: Instructions, utils: Utils): Promise<Article[]> {
         let response: AxiosResponse = await utils.get(utils.url, {
             responseType: 'arraybuffer', // This will be used to textDecoder below
             responseEncoding: 'binary'
@@ -98,7 +95,7 @@ export class HTMLParser extends ParserClass {
                 if (options[item].find!.length == 0 && !options[item].multiple && options[item].attributes!.length == 0)
                     articleData[item] = cheerioLoad(element).find(options[item].class!).text();
                 else
-                    articleData[item] = HTMLParser.getData(cheerioLoad, element,
+                    articleData[item] = this.getData(cheerioLoad, element,
                         options[item].multiple!, options[item].attributes!,
                         options[item].find!, options[item].class
                     );
@@ -107,31 +104,31 @@ export class HTMLParser extends ParserClass {
             // Utility to merge other items with the basic Data of the article
             for (let item in options) {
                 const parent = options[item].parent;
-                if(!parent) continue;
+                if (!parent) continue;
 
                 // Parent is string
-                if(typeof articleData[parent] === 'string') {
+                if (typeof articleData[parent] === 'string') {
                     // Parent (string) - Child (string)
-                    if(typeof articleData[item] === 'string')
+                    if (typeof articleData[item] === 'string')
                         articleData[parent] += articleData[item];
                     // Parent (string) - Child (array)
-                    else if(Array.isArray(articleData[item]))
+                    else if (Array.isArray(articleData[item]))
                         articleData[parent] += articleData[item].reduce((acc, curr) => acc + curr.value, '');
-                } else if(Array.isArray(articleData[parent])) {
+                } else if (Array.isArray(articleData[parent])) {
                     // Parent (array) - Child (string)
-                    if(typeof articleData[item] === 'string')
+                    if (typeof articleData[item] === 'string')
                         articleData[parent].push(...(articleData[item] ? [articleData[item]] : []));
                     // Parent (array) - Child (array)
-                    else if(Array.isArray(articleData[item]))
+                    else if (Array.isArray(articleData[item]))
                         articleData[parent].push(...(articleData[item] ? articleData[item] : []));
                 }
             }
 
             const article = new Article();
-            article.link = HTMLParser.parseField(utils, articleData.link, false);
-            article.title = HTMLParser.parseField(utils, articleData.title, true);
-            article.pubDate = HTMLParser.parseField(utils, articleData.pubDate, false);
-            article.content = HTMLParser.parseField(utils, articleData.content, false);
+            article.link = this.parseField(utils, articleData.link, false);
+            article.title = this.parseField(utils, articleData.title, true);
+            article.pubDate = this.parseField(utils, articleData.pubDate, false);
+            article.content = this.parseField(utils, articleData.content, false);
 
             if (articleData.categories) {
                 if (Array.isArray(articleData.categories))
@@ -153,10 +150,10 @@ export class HTMLParser extends ParserClass {
             parsedArticles.push(article);
         });
 
-        return parsedArticles
+        return parsedArticles;
     }
 
-    private static parseField(utils: Utils, data: string | any[], excessive: boolean): string | null {
+    private parseField(utils: Utils, data: string | any[], excessive: boolean): string | null {
         let ret;
         if (Array.isArray(data) && data[0]?.value)
             ret = data[0].value;
@@ -165,7 +162,7 @@ export class HTMLParser extends ParserClass {
         return ret ? utils.cleanupHTMLText(ret, excessive) : ret;
     }
 
-    private static attributes(location: cheerio.Cheerio, attributesArr: string[]): HTMLAttribute[] {
+    private attributes(location: cheerio.Cheerio, attributesArr: string[]): HTMLAttribute[] {
         // Search into same element if Instructions(Find = null) and class is the same
         return attributesArr.filter(item => location.attr(item)).map(item => {
             return {
@@ -176,9 +173,9 @@ export class HTMLParser extends ParserClass {
         });
     }
 
-    private static getData(htmlContent: cheerio.Root, currArticle: cheerio.Element,
-                           multiple: boolean, attributes: string[], find: string[],
-                           htmlClass?: string | null): (String | Object)[] | string {
+    private getData(htmlContent: cheerio.Root, currArticle: cheerio.Element,
+                    multiple: boolean, attributes: string[], find: string[],
+                    htmlClass?: string | null): (String | Object)[] | string {
 
         // Save the point where the data is stored.
         let dataStoredAt: string = find.length > 0 ? find[find.length - 1] : "";
@@ -186,37 +183,37 @@ export class HTMLParser extends ParserClass {
         // Going deeper into the html content.
         let tmpElement = htmlContent(currArticle);
         if (htmlClass) tmpElement = tmpElement.find(htmlClass);
-        if(multiple) find.slice(0, find.length - 1).forEach(value => tmpElement = htmlContent(tmpElement).find(value));
+        if (multiple) find.slice(0, find.length - 1).forEach(value => tmpElement = htmlContent(tmpElement).find(value));
 
         // We are at the location of the information we want.
         let finalLocation = htmlContent(tmpElement);
 
         // We only take one item, so return the text from the current location
-        if(!multiple && attributes.length == 0)
+        if (!multiple && attributes.length == 0)
             return finalLocation.text();
 
-        if(multiple) {
+        if (multiple) {
             const results: (string | object)[] = [];
             finalLocation.each((index, element) => {
                 let location = htmlContent(element);
-                if(dataStoredAt.length != 0)
+                if (dataStoredAt.length != 0)
                     location = location.find(dataStoredAt);
 
-                if(attributes.length != 0) {
-                    HTMLParser.attributes(location, attributes).forEach((object: Object) => results.push(object));
+                if (attributes.length != 0) {
+                    this.attributes(location, attributes).forEach((object: Object) => results.push(object));
                     return;
                 }
 
                 const text = location.text();
-                if(text !== '') results.push(text);
+                if (text !== '') results.push(text);
             });
 
             return results;
         }
 
         // if (attributes.length != 0)
-        if(dataStoredAt.length != 0)
+        if (dataStoredAt.length != 0)
             finalLocation = finalLocation.find(dataStoredAt);
-        return HTMLParser.attributes(finalLocation, attributes);
+        return this.attributes(finalLocation, attributes);
     }
 }

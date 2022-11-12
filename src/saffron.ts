@@ -1,11 +1,11 @@
-import Config, {ConfigOptions, ConfigType} from "./components/config"
-import Scheduler from "./modules/scheduler";
-import Grid from "./modules/grid";
-import Events from "./modules/events";
-import Worker from "./modules/worker";
-import Job from "./components/job"
-import Source from "./components/source"
-import Extensions, {PairEvent} from "./modules/extensions";
+import {Config, ConfigOptions, ConfigType} from "./components/config"
+import {Scheduler} from "./modules/scheduler";
+import {Grid} from "./modules/grid";
+import {Events} from "./modules/events";
+import {Worker} from "./modules/worker";
+import {Job} from "./components/job"
+import {Source} from "./components/source"
+import {Extensions, PairEvent} from "./modules/extensions";
 import type {ParserResult, SourceFile} from "./components/types";
 
 
@@ -61,7 +61,7 @@ export class Saffron {
         let nodes = Config.getOption(ConfigOptions.WORKER_NODES, this.config);
         this.workers = [];
         if (Array.isArray(nodes)) {
-            if((new Set(nodes)).size !== nodes.length)
+            if ((new Set(nodes)).size !== nodes.length)
                 throw new Error("worker.nodes cannot have duplicates names");
 
             for (const n of nodes)

@@ -1,11 +1,7 @@
 export type {ConfigType} from "./components/config"
-import Article from "./components/article";
-import Utils from "./modules/parsers/Utils";
-import Job from "./components/job"
-import Source from "./components/source"
-import Instructions from "./components/instructions";
-import {Saffron} from "./saffron";
-
-
-export default Saffron;
-export {Article, Utils, Job, Source, Instructions, Saffron};
+export {Article} from "./components/article";
+export {Utils} from "./modules/parsers/Utils";
+export {Job} from "./components/job"
+export {Source} from "./components/source"
+export {Instructions} from "./components/instructions";
+export {Saffron} from "./saffron";

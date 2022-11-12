@@ -7,7 +7,7 @@ import type {InstructionUrl, ScrapeDynamic, ScrapeHTML, ScrapeRSS, ScrapeWordPre
  * parsers will work during the process of analyzing
  * a web page content.
  */
-export default class Instructions {
+export class Instructions {
     declare url: InstructionUrl[];
     declare parserType: ParserType;
 
