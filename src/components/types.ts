@@ -33,6 +33,10 @@ export type ScrapeRSS = {
     assignFields: { [assign: string]: string };
 };
 export type ScrapeWordPressV2 = {
+    paths?: {
+        posts?: string;
+        categories?: string;
+    };
     articles?: {
         include?: string[];
         dates?: {
@@ -40,21 +44,21 @@ export type ScrapeWordPressV2 = {
             fallback?: boolean;
         };
         filter?: {
-            search?: string | null;
-            author?: string | null;
-            authorExclude?: string | null;
-            after?: string | null;
-            before?: string | null;
-            slug?: string | null;
-            status?: string | null;
-            categories?: string | null;
-            categoriesExclude?: string | null;
-            tags?: string | null;
-            tagsExclude?: string | null;
-            sticky?: boolean | null;
+            search?: string;
+            author?: string;
+            authorExclude?: string;
+            after?: string;
+            before?: string;
+            slug?: string;
+            status?: string;
+            categories?: string;
+            categoriesExclude?: string;
+            tags?: string;
+            tagsExclude?: string;
+            sticky?: boolean;
         };
-        thumbnail?: string | null;
-    }
+        thumbnail?: string;
+    };
 };
 
 export type SourceScrape = ScrapeDynamic | ScrapeHTML | ScrapeRSS | ScrapeWordPressV2 | undefined;
@@ -65,14 +69,13 @@ export type SourceFile = {
     name: string;
     tableName?: string;
     url: string | string[] | string[][];
-    type: 'html' | 'rss' | 'dynamic' | 'wordpress-v2';
 
     interval?: number;
     retryInterval?: number;
 
     timeout?: number;
     maxRedirects?: number;
-    userAgent?: string;
+    headers?: string;
     ignoreCertificates?: boolean;
 
     amount?: number;
@@ -80,6 +83,16 @@ export type SourceFile = {
     includeContentAttachments?: boolean;
 
     extra?: any;
-
-    scrape?: SourceScrape;
-};
+} & ({
+    type: 'dynamic'
+    scrape?: ScrapeDynamic;
+} | {
+    type: 'html'
+    scrape?: ScrapeHTML;
+} | {
+    type: 'rss'
+    scrape?: ScrapeRSS;
+} | {
+    type: 'wordpress-v2'
+    scrape?: ScrapeWordPressV2;
+});

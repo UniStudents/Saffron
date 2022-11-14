@@ -24,13 +24,6 @@ export class Scheduler {
         return this.running;
     }
 
-    /**
-     * Issue a new job for a specific source
-     * @param source The source
-     * @param lasWorkerId The worker who has the job last time (Optional)
-     * @param interval
-     * @return Return the issued job id
-     */
     issueJobForSource(source: Source, lasWorkerId: string = "", interval: number = -1): void {
         let worker = Worker.electWorker(lasWorkerId, this.saffron.grid);
         let nJob = new Job(source, worker, interval !== -1 ? interval : source.interval, this.saffron.config);
@@ -39,9 +32,6 @@ export class Scheduler {
         this.saffron.events.emit("scheduler.job.new", nJob);
     }
 
-    /**
-     * Starts the scheduler
-     */
     async start(reset: boolean): Promise<void> {
         this.running = true;
 
@@ -105,27 +95,16 @@ export class Scheduler {
         }, this.checkInterval);
     }
 
-    /**
-     * Stops the scheduler from issuing new jobs
-     */
     stop() {
         this.running = false;
         clearInterval(this.interval);
     }
 
-    /**
-     * It will replace the current jobs with new ones. It will also override the workers' ids
-     * with new ones.
-     * @param jobs
-     */
     replaceCurrentJobs(jobs: Job[]) {
         jobs.forEach(job => job.worker = Worker.electWorker(job.worker, this.saffron.grid))
         this.jobs = jobs;
     }
 
-    /**
-     * Reset jobs for current loaded sources.
-     */
     resetJobs() {
         this.jobs = [];
 
@@ -135,7 +114,7 @@ export class Scheduler {
         if (jobInt < 5000) throw new Error('SaffronException scheduler.jobInterval must be at least 5000ms');
 
         // Create separation interval
-        let separationInterval = Config.getOption(ConfigOptions.JOB_INT, this.saffron.config) / this.sources.length;
+        let separationInterval = jobInt / this.sources.length;
 
         let workersIds = this.saffron.grid.workers;
         let sI = 0, wI = 0;
@@ -187,9 +166,6 @@ export class Scheduler {
         if (job) job.status = status;
     }
 
-    /**
-     * Scans the source files from given path and translate them to classes
-     */
     private scanSourceFiles(): Promise<Source[]> {
         return new Promise((resolve, reject) => {
             let sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH, this.saffron.config);

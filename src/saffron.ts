@@ -8,7 +8,6 @@ import {Source} from "./components/source"
 import {Extensions, PairEvent} from "./modules/extensions";
 import type {ParserResult, SourceFile} from "./components/types";
 
-
 export class Saffron {
     declare config: Config;
     declare scheduler: Scheduler;
@@ -25,11 +24,11 @@ export class Saffron {
 
     /**
      * Get a source file and return an array of the parsed articles
-     * @param sourceJson The json object of the source file.
+     * @param obj The json object of the source file.
      * @throws SourceException if there is a problem parsing the source file.
      */
-    static async parse(sourceJson: SourceFile): Promise<ParserResult[]> {
-        let source = Source.parseSourceFile(sourceJson, null);
+    static async parse(obj: SourceFile): Promise<ParserResult[]> {
+        let source = Source.parseSourceFile(obj, null);
         let job = new Job(source, '', 0, null);
         return await Worker.parse(job);
     }
@@ -82,10 +81,8 @@ export class Saffron {
      * @param reset Defaults to true
      */
     async start(reset: boolean = true) {
-        for (const worker of this.workers) {
-            // TODO - Start worker on new node thread - https://nodejs.org/api/worker_threads.html
+        for (const worker of this.workers)
             worker.start();
-        }
 
         if (Config.getOption(ConfigOptions.MODE, this.config) === 'main')
             await this.scheduler.start(reset);
@@ -108,20 +105,12 @@ export class Saffron {
         this.events.emit("stop");
     }
 
-    /**
-     * Register a new event
-     * @param event The name of the event
-     * @param cb The callback that will send the data
-     */
+    /** Register a new event*/
     on(event: string, cb: (...args: any[]) => void) {
         this.events.on(event, cb);
     }
 
-    /**
-     * Assign an extension function.
-     * @param event The event of the function.
-     * @param callback The callback function that will be called.
-     */
+    /** Append a new middleware to the queue. */
     use(event: PairEvent, callback: (...args: any[]) => any): void {
         this.extensions.push({event, callback});
     }

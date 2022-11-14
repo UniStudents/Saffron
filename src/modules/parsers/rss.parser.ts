@@ -11,10 +11,16 @@ export class RssParser extends ParserClass {
         // This exists only for typescript, it is not valid and will not run at runtime.
         scrape = scrape as ScrapeRSS;
 
-        if ((scrape)?.extraFields ? !Array.isArray(scrape.extraFields) : false) throw new Error('extraFields is not an array.');
+        if(typeof scrape !== 'undefined') {
+            if (typeof scrape !== 'object' || Array.isArray(scrape))
+                throw new Error("must be a JSON object");
 
-        if (scrape?.assignFields && (typeof scrape.assignFields !== 'object' || Array.isArray(scrape.assignFields)))
-            throw new Error('assignFields is not a JSON object.');
+            if (typeof scrape.extraFields !== 'undefined' && !Array.isArray(scrape.extraFields))
+                throw new Error('extraFields must be an array of string');
+
+            if (typeof scrape.assignFields !== 'undefined' && (typeof scrape.assignFields !== 'object' || Array.isArray(scrape.assignFields)))
+                throw new Error('assignFields must be a JSON object');
+        }
     }
 
     assignInstructions(instructions: Instructions, scrape?: SourceScrape): void {
@@ -39,9 +45,7 @@ export class RssParser extends ParserClass {
         const parser = new Parser({
             timeout: utils.source.instructions.timeout,
             maxRedirects: utils.source.instructions.maxRedirects,
-            headers: {
-                'User-Agent': utils.source.instructions.userAgent
-            },
+            headers: utils.source.instructions.headers,
             requestOptions: {
                 rejectUnauthorized: !utils.source.instructions.ignoreCertificates
             },

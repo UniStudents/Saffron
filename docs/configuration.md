@@ -53,15 +53,19 @@ Setting a environment variable for this may be a good choice.
 ### `nodes`
 Default value: `1`
 
-The workers that will be initialized. Each worker runs in different thread using
-[Node.Js Worker thread](https://nodejs.org/api/worker_threads.html).
-When saffron loads a lot of source files having multiple workers on different threads
-may ease the load on your machine.
+The workers that will be initialized. All workers run in the same instance.
+There is not a clear benefit in having multiple workers, they will not
+run in different threads or processes. They exist for purpose of analytics.
 
-### `requests.userAgent`
-Default value: `saffron`
+If you want to run saffron in different processes check out about [`Grid`](#grid).
 
-The User-Agent that will accompany the requests made by saffron.
+If you want to assign a name to each worker, you can replace the number with
+an array of names (strings), like: `nodes: ['Worker 1', 'Worker 2', 'Billy']`.
+
+### `requests.headers`
+The headers that will accompany the requests made by saffron.
+
+It can be used to set `User-Agent` and other fields.
 
 ### `requests.timeout`
 Default value: `10000`

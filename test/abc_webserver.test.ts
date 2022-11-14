@@ -19,7 +19,7 @@ app.get('/wp2/wp-json/wp/v2/categories/', function (req, res) {
         root: path.join(__dirname)
     });
 });
-app.get('/wp2/wp-json/wp/v2/posts', function (req, res) {
+app.get('/wp2/wp-json/wp/v2/articles', function (req, res) {
     res.status(200).sendFile('./webfiles/wp2-posts.json', {
         root: path.join(__dirname)
     });

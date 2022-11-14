@@ -73,10 +73,10 @@ Default value: `workers.jobs.timeout`
 
 The timeframe where Saffron will wait to get a response from an url.
 
-### `userAgent`
-Default value: `workers.userAgent`
+### `headers`
+The headers that will accompany the requests made by saffron.
 
-The User-Agent that will accompany the requests made by saffron.
+It can be used to set `User-Agent` and other fields.
 
 ### `maxRedirects`
 Default value: `10`

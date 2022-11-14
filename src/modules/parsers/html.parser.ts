@@ -13,13 +13,13 @@ export class HTMLParser extends ParserClass {
         scrape = scrape as ScrapeHTML;
 
         if (typeof scrape !== 'object' || Array.isArray(scrape))
-            throw new Error("is not valid JSON object");
+            throw new Error("must be a JSON object");
 
         if (typeof scrape.container !== 'string')
-            throw new Error("container is not valid string");
+            throw new Error("container must be a string");
 
         if (typeof scrape.article !== 'object' || Array.isArray(scrape.article))
-            throw new Error("article is not valid JSON object");
+            throw new Error("article must be JSON object");
 
         const articleKeys = Object.keys(scrape.article);
 

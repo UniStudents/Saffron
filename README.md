@@ -22,6 +22,7 @@
   * [Format article](#format-article)
 * [Articles](#articles)
 * [Listeners](#listeners)
+* [Standalone](#standalone)
 * [Collaborators](#collaborators)
 
 ## What is Saffron?
@@ -207,6 +208,39 @@ saffron.use("articles", (articles: Article[]) => {
 Saffron supports listeners for various event. Listeners can be used for logging or creating analytics.
 
 Read the [listeners](./docs/listeners.md) file for more information.
+
+## Standalone
+Saffron supports immediate parsing using the static function `parse`.
+
+```ts
+import {Saffron} from "@poiw/saffron";
+
+try {
+    const result = Saffron.parse({
+      name: 'source-name',
+      url: ['Category 1', 'https://example.com'],
+      // ...
+      scrape: {
+          // ...
+      }
+    });
+  
+  console.log('Articles retrieved:', result);
+} catch (e) {
+  console.log('Encountered an error during parsing:', e);
+}
+```
+
+The result of the `parse` function is an array of objects for each url passed in the source file:
+```ts
+[
+  {
+    url: 'https://example.com',
+    aliases: ['Category 1'],
+    articles: [/*Article*/, /*Article*/, /*Article*/, /*...*/]
+  }   
+]
+```
 
 ## Collaborators
 

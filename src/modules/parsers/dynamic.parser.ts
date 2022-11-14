@@ -6,7 +6,8 @@ import type {ScrapeDynamic, SourceScrape} from "../../components/types";
 
 export class DynamicParser extends ParserClass {
     validateScrape(scrape?: SourceScrape): void {
-        if (typeof scrape !== 'function') throw new Error("scrape is not a function");
+        if (typeof scrape !== 'function')
+            throw new Error("must be a function");
     }
 
     assignInstructions(instructions: Instructions, scrape?: SourceScrape): void {

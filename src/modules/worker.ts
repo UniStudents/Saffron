@@ -51,11 +51,6 @@ export class Worker {
         return results;
     }
 
-    /**
-     * Return the id of a worker that will be used for the next job
-     * @param lastWorkerId The job's previous worker id. It will be excluded from the election only if the worker are greater that one
-     * @param grid
-     */
     static electWorker(lastWorkerId: string, grid: Grid): string {
         // Make a copy of the array
         let workers = grid.workers.slice();
@@ -74,38 +69,34 @@ export class Worker {
         return workers[Math.abs(hashCode(lastWorkerId)) % workers.length];
     }
 
-    /**
-     * Worker will start accepting jobs
-     */
+    private async acceptJob(job: Job) {
+        if (!this.isRunning || this.id !== job.worker) return;
+
+        let result: ParserResult[];
+        try {
+            result = await Worker.parse(job);
+        } catch (e: any) {
+            e.message = `${job.source.instructions.parserType.toUpperCase()}ParserException failed [${job.source.name}] job: ${e.message}`;
+
+            this.saffron.events.emit("worker.parsers.error", e);
+            await this.saffron.grid.failedJob(job);
+            return;
+        }
+
+        if (!this.isRunning) return;
+
+        await this.saffron.grid.mergeArticles(job.source, result);
+        await this.saffron.grid.finishedJob(job);
+    }
+
     start() {
         this.saffron.grid.announceWorker(this);
         this.isRunning = true;
 
         // start listening for new jobs
-        this.saffron.events.on("scheduler.job.push", async (job: Job) => {
-            if (!this.isRunning || this.id !== job.worker) return;
-
-            let result: ParserResult[];
-            try {
-                result = await Worker.parse(job);
-            } catch (e: any) {
-                e.message = `${job.source.instructions.parserType.toUpperCase()}ParserException failed [${job.source.name}] job: ${e.message}`;
-
-                this.saffron.events.emit("worker.parsers.error", e);
-                await this.saffron.grid.failedJob(job);
-                return;
-            }
-
-            if (!this.isRunning) return;
-
-            await this.saffron.grid.mergeArticles(job.source, result);
-            await this.saffron.grid.finishedJob(job);
-        });
+        this.saffron.events.on("scheduler.job.push", this.acceptJob.bind(this));
     }
 
-    /**
-     * Worker will stop accepting jobs and abort existing ones.
-     */
     stop() {
         this.isRunning = false;
         this.saffron.grid.destroyWorker(this);

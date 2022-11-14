@@ -4,6 +4,9 @@
     "type": "wordpress-v2",
     "ignoreCertificates": true,
     "scrape": {
+        "paths": {
+            "posts": "/wp-json/wp/v2/articles/"
+        },
         "articles": {
             "thumbnail": "medium_large"
         }

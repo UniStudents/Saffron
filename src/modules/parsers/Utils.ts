@@ -286,7 +286,8 @@ export class Utils {
             options.httpsAgent = new https.Agent({rejectUnauthorized: false});
 
         options.headers ??= {};
-        options.headers['User-Agent'] ??= this.source.instructions.userAgent;
+        options.headers = {...options.headers,  ...this.source.instructions.headers};
+
         options.timeout ??= this.source.instructions.timeout
         options.maxRedirects ??= this.source.instructions.maxRedirects
 

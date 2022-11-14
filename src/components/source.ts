@@ -53,7 +53,7 @@ export class Source {
             throw new Error(`SourceException [${source.filename}] Field amount is not valid, requirements(type = number, positive).`);
         instructions.amount = source.amount ?? Config.getOption(ConfigOptions.ARTICLE_AMOUNT, config);
 
-        instructions.userAgent = source.userAgent ?? Config.getOption(ConfigOptions.USERAGENT, config);
+        instructions.headers = source.headers ?? Config.getOption(ConfigOptions.HEADERS, config);
         instructions.ignoreCertificates = source.ignoreCertificates ?? false;
 
         instructions.includeContentAttachments = source.includeContentAttachments ?? Config.getOption(ConfigOptions.INCLUDE_CNT_ATTACHMENTS, config);

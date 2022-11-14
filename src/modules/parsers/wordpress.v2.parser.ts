@@ -7,15 +7,82 @@ import type {ScrapeWordPressV2, SourceScrape} from "../../components/types";
 export class WordpressV2Parser extends ParserClass {
 
     validateScrape(scrape?: SourceScrape): void {
+        // This exists only for typescript, it is not valid and will not run at runtime.
+        scrape = scrape as ScrapeWordPressV2;
+
+        if(typeof scrape !== 'undefined') {
+            if (typeof scrape !== 'object' || Array.isArray(scrape))
+                throw new Error("must be a JSON object");
+
+            if(typeof scrape.paths !== 'undefined') {
+                if (typeof scrape.paths !== 'object' || Array.isArray(scrape.paths))
+                    throw new Error("paths must be a JSON object");
+
+                if(typeof scrape.paths.posts !== 'undefined' && typeof scrape.paths.posts !== 'string')
+                    throw new Error(`articles.paths.posts must be a string`);
+
+                if(typeof scrape.paths.categories !== 'undefined' && typeof scrape.paths.categories !== 'string')
+                    throw new Error(`articles.paths.categories must be a string`);
+            }
+
+            if(typeof scrape.articles !== 'undefined') {
+                if (typeof scrape.articles !== 'object' || Array.isArray(scrape.articles))
+                    throw new Error("articles must be a JSON object");
+
+                if(scrape.articles.include && !Array.isArray(scrape.articles.include))
+                    throw new Error("articles.include must be an array of strings");
+
+                if(typeof scrape.articles.dates !== 'undefined') {
+                    if (typeof scrape.articles.dates !== 'object' || Array.isArray(scrape.articles.dates))
+                        throw new Error("articles.dates must be a JSON object");
+
+                    if(typeof scrape.articles.dates.gmt !== 'undefined' && typeof scrape.articles.dates.gmt !== 'boolean')
+                        throw new Error("articles.dates.gmt must be a boolean");
+
+                    if(typeof scrape.articles.dates.fallback !== 'undefined' && typeof scrape.articles.dates.fallback !== 'boolean')
+                        throw new Error("articles.dates.fallback must be a boolean");
+                }
+
+                if(typeof scrape.articles.filter !== 'undefined') {
+                    if (typeof scrape.articles.filter !== 'object' || Array.isArray(scrape.articles.filter))
+                        throw new Error("articles.filter must be a JSON object");
+
+                    for (const v of ['search', 'author', 'authorExclude', 'after', 'before', 'slug', 'status', 'categories', 'categoriesExclude', 'tags', 'tagsExclude']) {
+                        if(scrape.articles.filter[v] && typeof scrape.articles.filter[v] !== 'string')
+                            throw new Error(`articles.filter.${v} must be a string`);
+                    }
+
+                    if(typeof scrape.articles.filter.sticky !== 'undefined' && typeof scrape.articles.filter.sticky !== 'boolean')
+                        throw new Error("articles.filter.sticky must be a boolean");
+                }
+
+                if(scrape.articles.thumbnail && typeof scrape.articles.thumbnail !== 'string')
+                    throw new Error("articles.thumbnail must be a string");
+            }
+        }
     }
 
     assignInstructions(instructions: Instructions, scrape?: SourceScrape): void {
         scrape = scrape as ScrapeWordPressV2;
 
-        for (let pair of instructions.url)
-            pair.url = `${pair.url}${pair.url.endsWith('/') ? '' : '/'}`
+        for (let pair of instructions.url) {
+            if(pair.url.endsWith('/'))
+                pair.url = pair.url.substring(0, pair.url.length - 1);
+        }
 
         scrape = scrape ?? {};
+
+        scrape.paths ??= {};
+        scrape.paths.posts ??= 'wp-json/wp/v2/posts';
+        scrape.paths.categories ??= 'wp-json/wp/v2/categories';
+
+        for (const v of ['posts', 'categories']) {
+            if(scrape.paths[v].startsWith('/'))
+                scrape.paths[v] = scrape.paths[v].substring(1);
+            if(scrape.paths[v].endsWith('/'))
+                scrape.paths[v] = scrape.paths[v].substring(0, scrape.paths[v].length - 1);
+        }
+
         scrape.articles ??= {};
 
         scrape.articles.include ??= [];
@@ -25,22 +92,22 @@ export class WordpressV2Parser extends ParserClass {
         scrape.articles.dates.fallback ??= false;
 
         scrape.articles.filter ??= {};
-        scrape.articles.filter.search ??= null;
-        scrape.articles.filter.author ??= null;
-        scrape.articles.filter.authorExclude ??= null;
+        scrape.articles.filter.search ??= undefined;
+        scrape.articles.filter.author ??= undefined;
+        scrape.articles.filter.authorExclude ??= undefined;
 
         // ISO8601 compliant date
-        scrape.articles.filter.after ??= null;
-        scrape.articles.filter.before ??= null;
+        scrape.articles.filter.after ??= undefined;
+        scrape.articles.filter.before ??= undefined;
 
-        scrape.articles.filter.slug ??= null;
+        scrape.articles.filter.slug ??= undefined;
         // offset: typeof articleOptions.filter?.offset === 'number' ? articleOptions.filter.offset : 0,
-        scrape.articles.filter.status ??= null;
-        scrape.articles.filter.categories ??= null;
-        scrape.articles.filter.categoriesExclude ??= null;
-        scrape.articles.filter.tags ??= null;
-        scrape.articles.filter.tagsExclude ??= null;
-        scrape.articles.filter.sticky ??= null;
+        scrape.articles.filter.status ??= undefined;
+        scrape.articles.filter.categories ??= undefined;
+        scrape.articles.filter.categoriesExclude ??= undefined;
+        scrape.articles.filter.tags ??= undefined;
+        scrape.articles.filter.tagsExclude ??= undefined;
+        scrape.articles.filter.sticky ??= undefined;
 
         scrape.articles.thumbnail ??= 'thumbnail';
 
@@ -50,8 +117,8 @@ export class WordpressV2Parser extends ParserClass {
     async parse(utils: Utils): Promise<Article[]> {
         let instructions = utils.source.instructions;
 
-        let categoriesUrl = `${utils.url}wp-json/wp/v2/categories/`;
-        let postsUrl = `${utils.url}wp-json/wp/v2/posts?_embed&per_page=${instructions.amount}`;
+        let categoriesUrl = `${utils.url}/${instructions.wp.paths!.categories}`;
+        let postsUrl = `${utils.url}/${instructions.wp.paths!.posts}?_embed&per_page=${instructions.amount}`;
 
         const filters = instructions.wp.articles!.filter!;
         if (filters.search) postsUrl += `&search=${encodeURIComponent(filters.search)}`;

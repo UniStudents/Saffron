@@ -13,7 +13,7 @@ export type ConfigType = {
         nodes: number | string[];
         requests: Partial<{
             timeout: number;
-            userAgent: string;
+            headers: {[key: string]: string | string[]};
             maxRedirects: number;
         }>;
         articles: Partial<{
@@ -49,7 +49,7 @@ export enum ConfigOptions {
     SOURCES_EXCLUDE = 3,
     MODE = 4,
     WORKER_NODES = 5,
-    USERAGENT = 6,
+    HEADERS = 6,
     TIMEOUT = 7,
     ARTICLE_AMOUNT = 8,
     JOB_INT = 9,
@@ -83,7 +83,7 @@ const defaultConfig: ConfigType = {
         nodes: 1, // Start one worker
         requests: {
             timeout: 10000,
-            userAgent: 'saffron',
+            headers: {},
             maxRedirects: 5
         },
         articles: {
@@ -147,8 +147,8 @@ export class Config {
 
             case ConfigOptions.WORKER_NODES:
                 return conf.workers?.nodes;
-            case ConfigOptions.USERAGENT:
-                return conf.workers?.requests?.userAgent;
+            case ConfigOptions.HEADERS:
+                return conf.workers?.requests?.headers;
             case ConfigOptions.TIMEOUT:
                 return conf.workers?.requests?.timeout;
             case ConfigOptions.MAX_REDIRECTS:

@@ -35,7 +35,9 @@ describe('Integration', function () {
                     nodes: 1,
                     requests: {
                         timeout: 2000,
-                        userAgent: 'User-Agent'
+                        headers: {
+                            userAgent: 'User-Agent'
+                        }
                     },
                     articles: {
                         amount: 5
@@ -121,8 +123,6 @@ describe('Integration', function () {
         expect(_events['scheduler.job.worker.replace']).to.be.undefined;
         expect(_events['scheduler.job.push'].length).to.equal(source_s);
     });
-
-    // TODO: Create tests to check that events are passing correct values
 
     after(function () {
         saffron.grid.node.close();

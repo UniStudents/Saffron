@@ -13,7 +13,7 @@ export class Instructions {
 
     declare timeout: number;
     declare maxRedirects: number;
-    declare userAgent: string;
+    declare headers: {[key: string]: string | string[]};
     declare ignoreCertificates: boolean;
 
     declare textDecoder: TextDecoder;

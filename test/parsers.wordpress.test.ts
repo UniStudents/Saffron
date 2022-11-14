@@ -7,7 +7,7 @@ describe("WordPress parser", function () {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases.length).to.equal(0);
-            expect(obj.url).to.equal('http://127.0.0.1:3000/wp1/');
+            expect(obj.url).to.equal('http://127.0.0.1:3000/wp1');
             expect(obj.articles.length).to.equal(30);
 
             for (const article of obj.articles) {
@@ -41,7 +41,7 @@ describe("WordPress parser", function () {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases.length).to.equal(0);
-            expect(obj.url).to.equal('http://127.0.0.1:3000/wp2/');
+            expect(obj.url).to.equal('http://127.0.0.1:3000/wp2');
             expect(obj.articles.length).to.equal(10);
 
             for (const article of obj.articles) {
