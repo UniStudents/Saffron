@@ -139,7 +139,7 @@ describe('Other', function () {
         ext.push({event: 'articles', callback: () => counter = 4});
         ext.push({event: 'article.format', callback: () => counter = 5});
 
-        let getExtPair = ext.startPairCount();
+        let getExtPair = ext.startPairCount('articles');
         let pair: any;
         let expectedValue = 1;
         while ((pair = getExtPair()) != null) {

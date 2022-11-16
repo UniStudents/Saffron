@@ -80,7 +80,7 @@ describe("HTML parser", function () {
             }
 
             const article = obj.articles[0];
-            expect(article.title).to.equal('Ηλεκτρονικη υποβολη διπλωματικων και ερευνητικων εργασιων στη Βιβλιοθηκη και το Αρχειο του ΤΑΜΠΠ, Οκτωβρίου - Νοεμβρίου 2022' + article.pubDate);
+            expect(article.title).to.equal('Ηλεκτρονικη υποβολη διπλωματικων και ερευνητικων εργασιων στη Βιβλιοθηκη και το Αρχειο του ΤΑΜΠΠ, Οκτωβρίου - Νοεμβρίου 2022' + ' - ' + article.pubDate);
             expect(article.content).to.equal('Η κατάθεση της Διπλωματικής και της Ερευνητικής Εργασίας στη Βιβλιοθήκη και το Αρχείο του Τμήματος Αρχιτ');
             expect(article.link).to.equal('/el/news/news/ilektroniki-ypovoli-diplomatikon-kai-ereynitikon-ergasion-sti-vivliothiki-kai-to-arheio-toy-tampp-6355.html');
             expect(article.pubDate).to.equal('31/10/2022');

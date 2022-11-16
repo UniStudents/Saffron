@@ -17,13 +17,17 @@
                 ],
                 "multiple": false
             },
+            "title": {
+                "class": "div > div > div > div > div > div.field.field-name-title-field.field-type-text.field-label-hidden > div > div > h2 > a",
+                "multiple": false
+            },
+            "title-sep": {
+                "parent": "title",
+                "static": " - "
+            },
             "pubDate": {
                 "parent": "title",
                 "class": "div > div > div > div > div > div.field.field-name-field-date-deppost.field-type-datetime.field-label-hidden > div > div > span",
-                "multiple": false
-            },
-            "title": {
-                "class": "div > div > div > div > div > div.field.field-name-title-field.field-type-text.field-label-hidden > div > div > h2 > a",
                 "multiple": false
             },
             "content": {

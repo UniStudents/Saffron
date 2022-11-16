@@ -18,13 +18,19 @@ export type HTMLAttribute = {
 export type ScrapeDynamic = () => Promise<Article[]>;
 export type ScrapeHTML = {
     container: string;
+    // TODO: Add endpoint
     article: {
         [field: 'title' | 'link' | 'content' | 'pubDate' | 'categories' | string]: {
-            parent?: string | null;
-            class?: string | null;
+            parent?: string;
+
+            class?: string;
             find?: string[];
             attributes?: string[];
             multiple?: boolean;
+
+            static?: string;
+
+            // TODO: Add doNotIterate at HTML (maybe if container is empty?)
         };
     }
 };

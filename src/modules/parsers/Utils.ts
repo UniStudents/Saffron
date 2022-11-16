@@ -318,7 +318,7 @@ export class Utils {
     public cleanupHTMLText(text: string, excessive: boolean): string {
         text = Utils.decode(text);
 
-        // Remove all consecutive \n, \t and \s
+        // Remove all consecutive \n, \t and spaces
         text = text.replace(/ +(?= )/g, '')
             .replace(/\t+(?=\t)/g, '')
             .replace(/\n+(?=\n)/gm, '')

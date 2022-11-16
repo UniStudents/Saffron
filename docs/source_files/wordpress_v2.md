@@ -49,16 +49,32 @@ For more information about these parameters consult the WordPress API documentat
 ### `thumbnail`
 Default value: `thumbnail`
 
-Takes as value the size of the image that is categorized as a thumbnail in the WordPres post.
+Takes as value the size of the image that is categorized as a thumbnail in the WordPres article.
 
 The available sizes can be found using the `_embedded` parameter in the query and navigating
 to the path `'_embedded'.'wp:featuredmedia'.0.'media_details'.'sizes'`
+
+## `paths`
+By default, WordPress has an open API to requests articles and categories.
+
+Some plugins (or the developer) may change this url to, for example, `.../wp-json/wp/v2/announcements`.
+To parse this cases you can change the path url for each request.
+
+### `posts`
+Default value: `/wp-json/wp/v2/posts`
+
+The path that will server the articles.
+
+### `categories`
+Default value: `/wp-json/wp/v2/categories`
+
+The path that will server the categories.
 
 ## Example
 
 Below is an example of the WordPress parser source file:
 
-```json
+```json5
 {
     "type": "wordpress-v2",
     // ...
@@ -73,6 +89,9 @@ Below is an example of the WordPress parser source file:
                 // ...
             },
             "thumbnail": "thumbnail"
+        },
+        "paths": {
+            // ...
         }
     }
 }

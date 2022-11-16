@@ -192,7 +192,7 @@ export class Grid {
 
         this.saffron.events.emit("middleware.before", articles);
 
-        let getExtPair = this.saffron.extensions.startPairCount();
+        let getExtPair = this.saffron.extensions.startPairCount('articles');
         let pair;
         while ((pair = getExtPair()) != null) {
             try {

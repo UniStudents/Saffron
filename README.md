@@ -89,10 +89,10 @@ There are four available parser types: `wordpress`, `rss`, `html` and `dynamic`.
 Parser type: `wordpress-v2`
 
 By default, [`WordPress`](https://wordpress.com/) based websites has an open API for news retrieval.
-We make use of that to get access on the posts and categories of the website.
+We make use of that to get access on the articles and categories of the website.
 
-To check if a website supports that API simply open your browser and type `<website-root-link>/wp-json/wp/v2/posts/`.
-If a valid JSON file is displayed on the browser (or downloaded on your computer) which contains the website's posts,
+To quickly check if a website supports the WordPress API simply open your browser and type `<website-root-link>/wp-json/wp/v2/posts/`.
+If a valid JSON file is displayed on the browser (or downloaded on your computer) which contains the website's articles,
 then you can safely use the `wordpress` parser.
 
 ### RSS
@@ -123,7 +123,7 @@ decided by the user.
 
 We recommend a specific order for using the available parsers.
 
-* If the desired website is based an [`WordPress`](https://wordpress.com/) and the WordPress Posts API is enabled, then
+* If the desired website is based an [`WordPress`](https://wordpress.com/) and the WordPress articles API is enabled, then
   choose the `wordpress-v2` parser.
 * If the desired website supports [`RSS`](https://en.wikipedia.org/wiki/RSS) feed. then choose the `rss` parser.
 * If the desired website has a structured form, the use the `html` parser.

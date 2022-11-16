@@ -183,13 +183,15 @@ export class Scheduler {
 
                 let acceptedFiles = new RegExp(/.+\.(json|js)/); // Both .js and .json
                 let rawSources = files.filter((file: any) => acceptedFiles.test(file))
+                if(rawSources.length == 0)  {
+                    resolve([]);
+                    return;
+                }
 
-                let sources = rawSources.map((file: string) => {
-                    return {
-                        filename: `${file.split("/").pop()}`,
-                        path: `${file}`,
-                    };
-                });
+                let sources = rawSources.map((file: string) => ({
+                    filename: `${file.split("/").pop()}`,
+                    path: `${file}`,
+                }));
 
                 const parsedSources: Source[] = [];
                 sources.forEach((sourceFile: any) => {

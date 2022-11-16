@@ -25,7 +25,7 @@ export class Saffron {
     /**
      * Get a source file and return an array of the parsed articles
      * @param obj The json object of the source file.
-     * @throws SourceException if there is a problem parsing the source file.
+     * @throws if there is a problem parsing or scraping.
      */
     static async parse(obj: SourceFile): Promise<ParserResult[]> {
         let source = Source.parseSourceFile(obj, null);

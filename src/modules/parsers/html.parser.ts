@@ -29,10 +29,10 @@ export class HTMLParser extends ParserClass {
         for (const key of Object.keys(scrape.article)) {
             const options = scrape.article[key];
 
-            if (typeof options.parent !== 'string' && options.parent != null)
+            if (typeof options.parent !== 'string' && options.parent !== undefined)
                 throw new Error(`article.${key}.parent must be string`);
 
-            if (typeof options.class !== 'string' && options.class != null)
+            if (typeof options.class !== 'string' && options.class !== undefined)
                 throw new Error(`article.${key}.class must be string`);
 
             if (!Array.isArray(options.find) && options.find !== undefined)
@@ -52,34 +52,33 @@ export class HTMLParser extends ParserClass {
             if (typeof options.multiple !== 'boolean' && options.multiple !== undefined)
                 throw new Error(`article.${key}.multiple must be boolean`);
 
-            if (options.class === undefined && options.find === undefined && options.attributes === undefined && options.multiple === undefined)
-                throw new Error(`article.${key} at least one option must not be null`);
+            if (typeof options.static !== 'string' && options.static !== undefined)
+                throw new Error(`article.${key}.static must be string`);
+
+            // If static exists, then except parent all fields must not be defined
+            if(options.static !== undefined) {
+                if(options.class !== undefined || options.find !== undefined || options.attributes !== undefined || options.multiple !== undefined)
+                    throw new Error(`article.${key}: when the static key is defined the keys class, find, attributes and multiple must not be defined`);
+            }
+            // At least one field must be mentioned // TODO: Can multiple alone do something?
+            else if(options.class === undefined && options.find === undefined && options.attributes === undefined && options.multiple === undefined)
+                throw new Error(`article.${key} at least one option must be defined`);
         }
     }
 
     assignInstructions(instructions: Instructions, scrape?: SourceScrape): void {
-        scrape = scrape as ScrapeHTML;
-
-        for (const options of Object.values(scrape.article)) {
-            options.parent ??= null;
-            options.class ??= null;
-            options.find ??= [];
-            options.attributes ??= [];
-            options.multiple ??= false;
-        }
-
-        instructions.html = scrape;
+        instructions.html = scrape as ScrapeHTML;
     }
 
     async parse(utils: Utils): Promise<Article[]> {
-        let instructions = utils.source.instructions;
+        const instructions = utils.source.instructions;
 
-        let response: AxiosResponse = await utils.get(utils.url, {
+        const response: AxiosResponse = await utils.get(utils.url, {
             responseType: 'arraybuffer', // This will be used to textDecoder below
             responseEncoding: 'binary'
         });
 
-        let parsedArticles: Article[] = [];
+        const parsedArticles: Article[] = [];
         const cheerioLoad: cheerio.Root = cheerio.load(instructions.textDecoder.decode(response.data));
         cheerioLoad(`${instructions.html.container}`).each((index, element) => {
             if (index >= instructions.amount) return;
@@ -87,18 +86,27 @@ export class HTMLParser extends ParserClass {
             // Exp. If you remove the title, then the title is going to be on the extra information of each article.
             let basicData = ["title", "pubDate", "content", "attachments", "link", "categories"];
 
-            let articleData: any = {};
+            let articleData: { [key: string]: any } = {};
             let options = instructions.html.article;
 
             // Get data for each option
             for (let item in options) {
-                if (options[item].find!.length == 0 && !options[item].multiple && options[item].attributes!.length == 0)
-                    articleData[item] = cheerioLoad(element).find(options[item].class!).text();
+                const opts = options[item];
+
+                if(opts.static !== undefined) {
+                    articleData[item] = opts.static;
+                    continue;
+                }
+
+                const _class = opts.class ?? undefined;
+                const find = opts.find ?? [];
+                const multiple = opts.multiple ?? false;
+                const attributes = opts.attributes ?? [];
+
+                if (find.length == 0 && !multiple && attributes.length == 0)
+                    articleData[item] = cheerioLoad(element).find(opts.class!).text();
                 else
-                    articleData[item] = this.getData(cheerioLoad, element,
-                        options[item].multiple!, options[item].attributes!,
-                        options[item].find!, options[item].class
-                    );
+                    articleData[item] = this.getData(cheerioLoad, element, multiple, attributes, find, _class);
             }
 
             // Utility to merge other items with the basic Data of the article
@@ -175,10 +183,10 @@ export class HTMLParser extends ParserClass {
 
     private getData(htmlContent: cheerio.Root, currArticle: cheerio.Element,
                     multiple: boolean, attributes: string[], find: string[],
-                    htmlClass?: string | null): (String | Object)[] | string {
+                    htmlClass?: string | null): (string | HTMLAttribute)[] | string {
 
         // Save the point where the data is stored.
-        let dataStoredAt: string = find.length > 0 ? find[find.length - 1] : "";
+        const dataStoredAt: string = find.length > 0 ? find[find.length - 1] : "";
 
         // Going deeper into the html content.
         let tmpElement = htmlContent(currArticle);
@@ -193,14 +201,14 @@ export class HTMLParser extends ParserClass {
             return finalLocation.text();
 
         if (multiple) {
-            const results: (string | object)[] = [];
+            const results: (string | HTMLAttribute)[] = [];
             finalLocation.each((index, element) => {
                 let location = htmlContent(element);
                 if (dataStoredAt.length != 0)
                     location = location.find(dataStoredAt);
 
                 if (attributes.length != 0) {
-                    this.attributes(location, attributes).forEach((object: Object) => results.push(object));
+                    this.attributes(location, attributes).forEach((object: HTMLAttribute) => results.push(object));
                     return;
                 }
 

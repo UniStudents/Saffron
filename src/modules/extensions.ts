@@ -7,24 +7,33 @@ type Pair = {
 
 export class Extensions {
 
-    private readonly pairs: Pair[];
+    private readonly articles: Pair[];
+    // private readonly sources: Pair[];
 
     constructor() {
-        this.pairs = [];
+        this.articles = [];
+        // this.sources = [];
     }
 
     push(p: Pair) {
-        if (!['articles', 'article.format'].includes(p.event))
-            throw new Error(`SaffronException ${p.event} is not valid.`);
-        this.pairs.push(p);
+        if (['articles', 'article.format'].includes(p.event))
+            this.articles.push(p);
+        // else if (['source.before', 'source.after'].includes(p.event))
+        //     this.sources.push(p);
+        else throw new Error(`SaffronException ${p.event} is not valid.`);
     }
 
-    startPairCount(): () => (Pair | null) {
+    startPairCount(what: 'articles' /*| 'sources'*/): () => (Pair | null) {
         let i = 0;
-        const self = this;
+        const it = this[what];
+        // let it: Pair[] = [];
+        // switch (what) {
+        //     case "articles": it = this.articles; break;
+        //     case "sources": it = this.sources; break;
+        // }
         return function getNextPair(): Pair | null {
-            if (i === self.pairs.length) return null;
-            return self.pairs[i++];
+            if (i === it.length) return null;
+            return it[i++];
         };
     }
 }
