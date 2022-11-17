@@ -42,7 +42,7 @@ export class Grid {
                 connectTimeout: 30 * 1000
             });
         } else {
-            let url = Config.getOption(ConfigOptions.USE_HTTPS, this.saffron.config) ? 'https://' : 'http://'
+            const url = Config.getOption(ConfigOptions.USE_HTTPS, this.saffron.config) ? 'https://' : 'http://'
                 + Config.getOption(ConfigOptions.HOST, this.saffron.config)
                 + `:${Config.getOption(ConfigOptions.PORT, this.saffron.config)}/`;
 
@@ -66,7 +66,7 @@ export class Grid {
 
         if (this.isMain) {
             if (eventName === 'scheduler.job.push') {
-                let job: Job = args[0];
+                const job: Job = args[0];
                 this.node.emit(eventName, pack(job));
             }
         } else {
@@ -99,7 +99,7 @@ export class Grid {
                 });
 
                 socket.on("grid.worker.destroyed", (workerId: string) => {
-                    let index = this.workers.findIndex(id => id === workerId);
+                    const index = this.workers.findIndex(id => id === workerId);
                     if (index !== -1) this.workers.splice(index, 1);
                 });
             });
@@ -130,7 +130,7 @@ export class Grid {
      * @param worker
      */
     destroyWorker(worker: Worker): void {
-        let index = this.workers.findIndex(id => id == worker.id);
+        const index = this.workers.findIndex(id => id == worker.id);
         this.workers.splice(index, 1);
         this.saffron.events.emit("grid.worker.destroyed", worker.id);
     }
@@ -142,7 +142,7 @@ export class Grid {
     fireWorker(workerId: string): void {
         if (!this.isMain) return;
 
-        let k = this.workers.findIndex(id => workerId == id);
+        const k = this.workers.findIndex(id => workerId == id);
         if (k != -1) this.workers.splice(k, 1);
     }
 
@@ -192,7 +192,7 @@ export class Grid {
 
         this.saffron.events.emit("middleware.before", articles);
 
-        let getExtPair = this.saffron.extensions.startPairCount('articles');
+        const getExtPair = this.saffron.extensions.startPairCount('articles');
         let pair;
         while ((pair = getExtPair()) != null) {
             try {

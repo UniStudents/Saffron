@@ -18,7 +18,7 @@ export type HTMLAttribute = {
 export type ScrapeDynamic = () => Promise<Article[]>;
 export type ScrapeHTML = {
     container: string;
-    // TODO: Add endpoint
+    endpoint?: string;
     article: {
         [field: 'title' | 'link' | 'content' | 'pubDate' | 'categories' | string]: {
             parent?: string;
@@ -30,7 +30,7 @@ export type ScrapeHTML = {
 
             static?: string;
 
-            // TODO: Add doNotIterate at HTML (maybe if container is empty?)
+            // TODO: Add doNotIterateContainer at HTML (maybe if container is empty?)
         };
     }
 };

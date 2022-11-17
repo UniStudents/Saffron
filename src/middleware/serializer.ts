@@ -23,7 +23,7 @@ export class Serializer {
     _serialize(object: any): object {
         if (!(object instanceof Object)) return object;
 
-        let i = this.types.findIndex(e => e.name == object.constructor.name);
+        const i = this.types.findIndex(e => e.name == object.constructor.name);
         if (i == -1) throw "Type '" + object.constructor.name + "' is not supported for serialization";
 
         return {

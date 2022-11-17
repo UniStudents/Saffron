@@ -275,7 +275,7 @@ export class Utils {
 
     private static decode(str: string = ""): string {
         if (!str) str = ""
-        for (let entity in this.htmlEntries)
+        for (const entity in this.htmlEntries)
             str = str.replace(new RegExp(entity, 'g'), this.htmlEntries[entity])
 
         return str
@@ -310,8 +310,8 @@ export class Utils {
     }
 
     async parse(sourceJson: SourceFile): Promise<ParserResult[]> {
-        let source = Source.parseSourceFile(sourceJson, null);
-        let job = new Job(source, '', 0, null);
+        const source = Source.parseSourceFile(sourceJson, null);
+        const job = new Job(source, '', 0, null);
         return await Worker.parse(job);
     }
 

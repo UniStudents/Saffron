@@ -8,7 +8,7 @@ import chalk from 'chalk'
  * @param data The message that will be logged
  */
 export function logger(type: LoggerTypes, data: any): void {
-    let time = chalk.bold(`${DateTime.now().toLocaleString({
+    const time = chalk.bold(`${DateTime.now().toLocaleString({
         day: '2-digit',
         month: '2-digit',
         year: "2-digit",

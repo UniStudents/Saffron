@@ -25,8 +25,8 @@ export class Scheduler {
     }
 
     issueJobForSource(source: Source, lasWorkerId: string = "", interval: number = -1): void {
-        let worker = Worker.electWorker(lasWorkerId, this.saffron.grid);
-        let nJob = new Job(source, worker, interval !== -1 ? interval : source.interval, this.saffron.config);
+        const worker = Worker.electWorker(lasWorkerId, this.saffron.grid);
+        const nJob = new Job(source, worker, interval !== -1 ? interval : source.interval, this.saffron.config);
 
         this.jobs.push(nJob);
         this.saffron.events.emit("scheduler.job.new", nJob);
@@ -48,7 +48,7 @@ export class Scheduler {
             checkingJobs = true;
             if (!this.running) return;
 
-            for (let job of this.jobs) {
+            for (const job of this.jobs) {
                 // Subtract the elapsed time
                 job.untilRetry -= this.checkInterval;
 
@@ -56,7 +56,7 @@ export class Scheduler {
                     this.saffron.events.emit("scheduler.job.finished", job);
 
                     // Delete job
-                    let index = this.jobs.findIndex((obj: Job) => obj.id === job.id);
+                    const index = this.jobs.findIndex((obj: Job) => obj.id === job.id);
                     if (index !== -1) this.jobs.splice(index, 1);
 
                     this.issueJobForSource(job.source, job.worker);
@@ -76,7 +76,7 @@ export class Scheduler {
                 } else if (job.status === JobStatus.PENDING && job.untilRetry <= 0) {
                     // Replace worker under conditions
                     if (job.untilRetry < -job.source.interval * noResponseThreshold || !job.worker.trim().length) {
-                        let oldWorker = job.worker;
+                        const oldWorker = job.worker;
                         this.saffron.grid.fireWorker(oldWorker);
 
                         job.worker = Worker.electWorker(oldWorker, this.saffron.grid);
@@ -114,11 +114,11 @@ export class Scheduler {
         if (jobInt < 5000) throw new Error('SaffronException scheduler.jobInterval must be at least 5000ms');
 
         // Create separation interval
-        let separationInterval = jobInt / this.sources.length;
+        const separationInterval = jobInt / this.sources.length;
 
-        let workersIds = this.saffron.grid.workers;
+        const workersIds = this.saffron.grid.workers;
         let sI = 0, wI = 0;
-        for (let source of this.sources) {
+        for (const source of this.sources) {
             this.issueJobForSource(source, workersIds[wI++], separationInterval * sI++);
             if (wI == workersIds.length) wI = 0;
         }
@@ -132,15 +132,15 @@ export class Scheduler {
             return;
         }
 
-        let includeOnly = Config.getOption(ConfigOptions.SOURCES_INCLUDE_ONLY, this.saffron.config);
-        let excluded = Config.getOption(ConfigOptions.SOURCES_EXCLUDE, this.saffron.config);
+        const includeOnly = Config.getOption(ConfigOptions.SOURCES_INCLUDE_ONLY, this.saffron.config);
+        const excluded = Config.getOption(ConfigOptions.SOURCES_EXCLUDE, this.saffron.config);
 
         if (!Array.isArray(includeOnly)) throw new Error("SaffronException sources.includeOnly is not an array.");
         if (!Array.isArray(excluded)) throw new Error("SaffronException sources.excluded is not an array.");
 
         // Include only
         if (includeOnly.length > 0) {
-            let tmpSources: Source[] = [];
+            const tmpSources: Source[] = [];
             parsedSources.forEach((source: Source) => {
                 if (includeOnly.includes(source.name))
                     tmpSources.push(source);
@@ -150,7 +150,7 @@ export class Scheduler {
 
         // Exclude sources
         excluded.forEach((ex_source: any) => {
-            let index = this.sources.findIndex((source: Source) => source.name === ex_source);
+            const index = this.sources.findIndex((source: Source) => source.name === ex_source);
             if (index !== -1)
                 parsedSources.splice(index, 1);
         });
@@ -162,13 +162,13 @@ export class Scheduler {
     }
 
     changeJobStatus(id: string, status: JobStatus) {
-        let job = this.jobs.find((obj: Job) => obj.id === id);
+        const job = this.jobs.find((obj: Job) => obj.id === id);
         if (job) job.status = status;
     }
 
     private scanSourceFiles(): Promise<Source[]> {
         return new Promise((resolve, reject) => {
-            let sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH, this.saffron.config);
+            const sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH, this.saffron.config);
             glob(`${path.join(process.cwd(), sourcesPath)}/**`, {}, (error: any, files: string[]) => {
                 if (error) {
                     this.saffron.events.emit('scheduler.sources.error', error);
@@ -181,14 +181,14 @@ export class Scheduler {
                     return;
                 }
 
-                let acceptedFiles = new RegExp(/.+\.(json|js)/); // Both .js and .json
-                let rawSources = files.filter((file: any) => acceptedFiles.test(file))
+                const acceptedFiles = new RegExp(/.+\.(json|js)/); // Both .js and .json
+                const rawSources = files.filter((file: any) => acceptedFiles.test(file))
                 if(rawSources.length == 0)  {
                     resolve([]);
                     return;
                 }
 
-                let sources = rawSources.map((file: string) => ({
+                const sources = rawSources.map((file: string) => ({
                     filename: `${file.split("/").pop()}`,
                     path: `${file}`,
                 }));

@@ -18,6 +18,9 @@ export class HTMLParser extends ParserClass {
         if (typeof scrape.container !== 'string')
             throw new Error("container must be a string");
 
+        if (typeof scrape.endpoint !== 'string' && scrape.endpoint !== undefined)
+            throw new Error("endpoint must be a string");
+
         if (typeof scrape.article !== 'object' || Array.isArray(scrape.article))
             throw new Error("article must be JSON object");
 
@@ -84,13 +87,13 @@ export class HTMLParser extends ParserClass {
             if (index >= instructions.amount) return;
 
             // Exp. If you remove the title, then the title is going to be on the extra information of each article.
-            let basicData = ["title", "pubDate", "content", "attachments", "link", "categories"];
+            const basicData = ["title", "pubDate", "content", "attachments", "link", "categories"];
 
-            let articleData: { [key: string]: any } = {};
-            let options = instructions.html.article;
+            const articleData: { [key: string]: any } = {};
+            const options = instructions.html.article;
 
             // Get data for each option
-            for (let item in options) {
+            for (const item in options) {
                 const opts = options[item];
 
                 if(opts.static !== undefined) {
@@ -110,7 +113,7 @@ export class HTMLParser extends ParserClass {
             }
 
             // Utility to merge other items with the basic Data of the article
-            for (let item in options) {
+            for (const item in options) {
                 const parent = options[item].parent;
                 if (!parent) continue;
 
@@ -133,10 +136,13 @@ export class HTMLParser extends ParserClass {
             }
 
             const article = new Article();
-            article.link = this.parseField(utils, articleData.link, false);
             article.title = this.parseField(utils, articleData.title, true);
-            article.pubDate = this.parseField(utils, articleData.pubDate, false);
             article.content = this.parseField(utils, articleData.content, false);
+            article.pubDate = this.parseField(utils, articleData.pubDate, false);
+
+            article.link = this.parseField(utils, articleData.link, false);
+            // if(article.link?.startsWith('/') == true)
+            //     article.link = instructions.html.endpoint + article.link;
 
             if (articleData.categories) {
                 if (Array.isArray(articleData.categories))

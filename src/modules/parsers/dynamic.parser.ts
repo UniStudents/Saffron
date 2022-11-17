@@ -16,8 +16,8 @@ export class DynamicParser extends ParserClass {
     }
 
     async parse(utils: Utils): Promise<Article[]> {
-        let instructions = utils.source.instructions;
-        let scrapeFunc = typeof instructions.dynamic === 'function'
+        const instructions = utils.source.instructions;
+        const scrapeFunc = typeof instructions.dynamic === 'function'
             ? instructions.dynamic
             : eval(instructions.dynamicFuncStr);
 

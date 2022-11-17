@@ -25,7 +25,7 @@ export class Events {
     }
 
     registerLogListeners(config: Config | null): void {
-        let logLevel = Config.getOption(ConfigOptions.LOG_LEVEL, config);
+        const logLevel = Config.getOption(ConfigOptions.LOG_LEVEL, config);
         if (logLevel === 'none') return;
 
         this.antennae.on('title', () =>

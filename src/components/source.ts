@@ -16,7 +16,7 @@ export class Source {
     static parseSourceFile(source: SourceFile, config: Config | null): Source {
         source.filename = source.filename ?? 'static file';
 
-        let ret = new Source();
+        const ret = new Source();
 
         // Source name
         if (source.name == null || source.name.length < 3)
@@ -67,8 +67,8 @@ export class Source {
         } else if (Array.isArray(source.url)) {
             for (const pair of source.url) {
                 if (Array.isArray(pair) && pair.length >= 2) {
-                    let aliases = pair.slice(0, pair.length - 1);
-                    let url = pair[pair.length - 1];
+                    const aliases = pair.slice(0, pair.length - 1);
+                    const url = pair[pair.length - 1];
 
                     aliases.forEach(alias => {
                         if (alias.trim() === '')
@@ -90,7 +90,7 @@ export class Source {
         } else
             throw new Error(`SourceException [${source.filename}] Field url is not valid, requirements(type = string | string[] | string[][]).`);
 
-        let parserType = ParserType.getFromString(source.type);
+        const parserType = ParserType.getFromString(source.type);
         if (parserType === ParserType.UNKNOWN)
             throw new Error(`SourceException [${source.filename}] Field type is not valid, requirements(equals html, rss, dynamic, wordpress-v1, wordpress-v2).`);
         instructions.parserType = parserType;

@@ -55,7 +55,7 @@ export class RssParser extends ParserClass {
             }
         });
 
-        let feed = await parser.parseURL(utils.url);
+        const feed = await parser.parseURL(utils.url);
 
         const parsedArticles: Article[] = [];
         let count = 0;
@@ -76,7 +76,7 @@ export class RssParser extends ParserClass {
             for (const customField in assignFields)
                 data[customField] = item[assignFields[customField]] ?? null;
 
-            let article = new Article();
+            const article = new Article();
 
             article.title = utils.cleanupHTMLText(data["title"] ?? "", true);
             article.content = utils.cleanupHTMLText(data["content"] ?? "", false);

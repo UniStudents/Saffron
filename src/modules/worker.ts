@@ -19,9 +19,9 @@ export class Worker {
     }
 
     static async parse(job: Job): Promise<ParserResult[]> {
-        let instructions = job.source.instructions;
+        const instructions = job.source.instructions;
 
-        let results: ParserResult[] = [];
+        const results: ParserResult[] = [];
         for (const pair of instructions.url) {
             const parser = ParserLoader.getParser(instructions.parserType)!!;
             const utils = new Utils();
@@ -53,7 +53,7 @@ export class Worker {
 
     static electWorker(lastWorkerId: string, grid: Grid): string {
         // Make a copy of the array
-        let workers = grid.workers.slice();
+        const workers = grid.workers.slice();
 
         // This is not supposed to be true
         if (workers.length === 0) return lastWorkerId;
@@ -62,7 +62,7 @@ export class Worker {
         if (workers.length === 1) return workers[0];
 
         // If more than one worker, delete the last used worker (if in array)
-        let index = workers.findIndex((id: string) => id === lastWorkerId);
+        const index = workers.findIndex((id: string) => id === lastWorkerId);
         if (index != -1) workers.splice(index, 1);
 
         // From the remaining worker select one

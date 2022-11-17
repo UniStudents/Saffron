@@ -28,8 +28,8 @@ export class Saffron {
      * @throws if there is a problem parsing or scraping.
      */
     static async parse(obj: SourceFile): Promise<ParserResult[]> {
-        let source = Source.parseSourceFile(obj, null);
-        let job = new Job(source, '', 0, null);
+        const source = Source.parseSourceFile(obj, null);
+        const job = new Job(source, '', 0, null);
         return await Worker.parse(job);
     }
 
@@ -57,7 +57,7 @@ export class Saffron {
             this.grid.connect();
 
         // Initialize worker
-        let nodes = Config.getOption(ConfigOptions.WORKER_NODES, this.config);
+        const nodes = Config.getOption(ConfigOptions.WORKER_NODES, this.config);
         this.workers = [];
         if (Array.isArray(nodes)) {
             if ((new Set(nodes)).size !== nodes.length)
@@ -90,27 +90,23 @@ export class Saffron {
         this.events.emit("start");
     }
 
-    /**
-     * Stops the saffron instance
-     * If mode equals 'main' then the scheduler will stop giving jobs to the worker.
-     * else if mode equals 'worker' then the worker will stop getting future jobs and disconnect from the main saffron instance.
-     */
+    /** Stops the saffron instance */
     stop() {
         if (Config.getOption(ConfigOptions.MODE, this.config) === 'main')
             this.scheduler.stop();
 
-        for (let worker of this.workers)
+        for (const worker of this.workers)
             worker.stop();
 
         this.events.emit("stop");
     }
 
-    /** Register a new event*/
+    /** Register a new event */
     on(event: string, cb: (...args: any[]) => void) {
         this.events.on(event, cb);
     }
 
-    /** Append a new middleware to the queue. */
+    /** Append a new middleware to the queue */
     use(event: PairEvent, callback: (...args: any[]) => any): void {
         this.extensions.push({event, callback});
     }

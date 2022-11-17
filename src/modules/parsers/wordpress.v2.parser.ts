@@ -65,7 +65,7 @@ export class WordpressV2Parser extends ParserClass {
     assignInstructions(instructions: Instructions, scrape?: SourceScrape): void {
         scrape = scrape as ScrapeWordPressV2;
 
-        for (let pair of instructions.url) {
+        for (const pair of instructions.url) {
             if(pair.url.endsWith('/'))
                 pair.url = pair.url.substring(0, pair.url.length - 1);
         }
@@ -115,9 +115,9 @@ export class WordpressV2Parser extends ParserClass {
     }
 
     async parse(utils: Utils): Promise<Article[]> {
-        let instructions = utils.source.instructions;
+        const instructions = utils.source.instructions;
 
-        let categoriesUrl = `${utils.url}/${instructions.wp.paths!.categories}`;
+        const categoriesUrl = `${utils.url}/${instructions.wp.paths!.categories}`;
         let postsUrl = `${utils.url}/${instructions.wp.paths!.posts}?_embed&per_page=${instructions.amount}`;
 
         const filters = instructions.wp.articles!.filter!;
@@ -135,7 +135,7 @@ export class WordpressV2Parser extends ParserClass {
         if (filters.tagsExclude) postsUrl += `&tags_exclude=${filters.tagsExclude}`;
         if (filters.sticky) postsUrl += `&_sticky`;
 
-        let config = {
+        const config = {
             responseType: 'arraybuffer',
             responseEncoding: 'binary'
         };
@@ -146,16 +146,16 @@ export class WordpressV2Parser extends ParserClass {
         const categories = JSON.parse(instructions.textDecoder.decode(catReq.data));
         const posts = JSON.parse(instructions.textDecoder.decode(postsReq.data));
 
-        let articles: Article[] = [];
+        const articles: Article[] = [];
 
         const parsedCategories = Array.isArray(categories) ?
             categories.map((category: any) => {
-                let links: string[] = [];
+                const links: string[] = [];
 
                 const linkCatsKeys = Object.keys(category._links);
 
                 for (const linkCat of linkCatsKeys) {
-                    for (let href of category._links[linkCat])
+                    for (const href of category._links[linkCat])
                         links.push(href.href);
                 }
 
@@ -168,7 +168,7 @@ export class WordpressV2Parser extends ParserClass {
             }) : [];
 
         let count = 0
-        for (let p of posts) {
+        for (const p of posts) {
             // WordPress will return the specified amount, but we double-check to be sure
             if (count >= instructions.amount) continue;
             count++;
@@ -188,13 +188,13 @@ export class WordpressV2Parser extends ParserClass {
             if (instructions.includeContentAttachments)
                 article.pushAttachments(utils.extractLinks(article.content));
 
-            for (let cId of p.categories) {
-                let cat = parsedCategories.find((c: any) => c.id == cId)
+            for (const cId of p.categories) {
+                const cat = parsedCategories.find((c: any) => c.id == cId)
                 if (cat) article.pushCategory(cat.name, cat.links);
             }
 
             // Thumbnail
-            let thumbnailSize = instructions.wp.articles!.thumbnail!;
+            const thumbnailSize = instructions.wp.articles!.thumbnail!;
             article.thumbnail = p._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes[thumbnailSize]?.source_url;
 
             let include: string[] = instructions.wp.articles!.include!;
