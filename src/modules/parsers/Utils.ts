@@ -1,19 +1,14 @@
 import cheerio from "cheerio";
-import {Attachment} from "../../components/article";
-import Instructions from "../../components/instructions";
+import type {Attachment} from "../../components/article";
 import https from "https";
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
-import {ParserResult} from "../../components/types";
-import Source from "../../components/source";
-import Job from "../../components/job";
-import Worker from "../workers";
-import Config from "../../components/config.js";
+import type {ParserResult, SourceFile} from "../../components/types";
+import {Source} from "../../components/source";
+import {Job} from "../../components/job";
+import {Worker} from "../worker";
+import striptags from "striptags";
 
-const striptags = require('striptags');
-
-const httpsAgent = new https.Agent({rejectUnauthorized: false})
-
-export default class Utils {
+export class Utils {
 
     private static htmlEntries: any = {
         '&apos;': "'",
@@ -272,35 +267,29 @@ export default class Utils {
         '&#34;': '"',
         '&#034;': '"'
     }
-    /**
-     * True if the previous scrape returned exception.
-     */
+
     public isScrapeAfterError = false;
-    /**
-     * The specified URL.
-     */
     public declare url: string;
     public declare aliases: string[];
-    public declare instructions: Instructions;
-    public declare amount: number;
+    public declare source: Source;
 
-    private static decode(str: String = "") {
+    private static decode(str: string = ""): string {
         if (!str) str = ""
-        for (let key in this.htmlEntries) {
-            let entity = key
-            let regex = new RegExp(entity, 'g')
-            str = str.replace(regex, this.htmlEntries[entity])
-        }
+        for (const entity in this.htmlEntries)
+            str = str.replace(new RegExp(entity, 'g'), this.htmlEntries[entity])
+
         return str
     }
 
     request(options: AxiosRequestConfig): Promise<AxiosResponse> {
-        if (this.instructions["ignoreCertificates"])
-            options.httpsAgent = httpsAgent;
+        if (this.source.instructions["ignoreCertificates"])
+            options.httpsAgent = new https.Agent({rejectUnauthorized: false});
 
-        if(!options.headers)
-            options.headers = {};
-        options.headers['User-Agent'] = <any>this.instructions.getSource().userAgent
+        options.headers ??= {};
+        options.headers = {...options.headers,  ...this.source.instructions.headers};
+
+        options.timeout ??= this.source.instructions.timeout
+        options.maxRedirects ??= this.source.instructions.maxRedirects
 
         return axios.request(options);
     }
@@ -320,42 +309,33 @@ export default class Utils {
         return this.request(options);
     }
 
-    /**
-     * Get a source file and return an array of the parsed articles
-     * @param sourceJson The json object of the source file.
-     * @throws SourceException if there is a problem parsing the source file.
-     */
-    async parse(sourceJson: object): Promise<ParserResult[]> {
-        let source: Source = Source.fileToSource(sourceJson);
-        source.instructions.getSource = (): Source => source;
-
-        let job = Job.createJob(source.getId(), '', 0);
-        job.getSource = (): Source => source;
-        job.getInstructions = (): Instructions => source.instructions;
-
+    async parse(sourceJson: SourceFile): Promise<ParserResult[]> {
+        const source = Source.parseSourceFile(sourceJson, null);
+        const job = new Job(source, '', 0, null);
         return await Worker.parse(job);
     }
 
-    public htmlStrip(text: any = "", stripTags: boolean = true): string {
-        if (stripTags) {
-            text = Utils.decode(text)
-            text = text.replace(/\n/g, '')
-                .replace(/\t/g, '')
-                .replace(/(<([^>]+)>)/gi, '')
-                .trim()
-            text = striptags(text)
-        } else {
-            text = Utils.decode(text)
-            text = text.replace(/\n/g, '')
-                .replace(/\t/g, '')
-                .trim()
+    public cleanupHTMLText(text: string, excessive: boolean): string {
+        text = Utils.decode(text);
+
+        // Remove all consecutive \n, \t and spaces
+        text = text.replace(/ +(?= )/g, '')
+            .replace(/\t+(?=\t)/g, '')
+            .replace(/\n+(?=\n)/gm, '')
+            .trim();
+
+        if (excessive) {
+            text = text.replace(/\t/g, '')
+                .replace(/\n/gm, '')
+                .replace(/(<([^>]+)>)/gi, '');
+            text = striptags(text);
         }
 
-        return text.toString()
+        return text;
     }
 
-    public extractLinks(html: string): Attachment[] {
-        if (!html || html == '') return [];
+    public extractLinks(html?: string | null): Attachment[] {
+        if (!html) return [];
 
         const $ = cheerio.load(html);
         const links: Attachment[] = [];
@@ -370,8 +350,8 @@ export default class Utils {
 
         $('img').each((index, element) => {
             links.push({
-                text: $(element).attr('alt'), // get the text
-                value: $(element).attr('src'), // get the href attribute
+                text: $(element).attr('alt'), // get the alt
+                value: $(element).attr('src'), // get the src attribute
                 attribute: 'src'
             });
         });
@@ -384,6 +364,6 @@ export default class Utils {
             });
         });
 
-        return links
+        return links;
     }
 }

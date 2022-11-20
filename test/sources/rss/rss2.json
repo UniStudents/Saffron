@@ -1,0 +1,5 @@
+{
+    "url": "http://127.0.0.1:3000/rss2",
+    "name": "rss2-source",
+    "type": "rss"
+}

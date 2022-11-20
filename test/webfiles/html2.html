@@ -1,0 +1,4629 @@
+<!DOCTYPE html>
+<html dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xml:lang="el" lang="el">
+<head>
+
+    <meta charset="utf-8">
+    <!--
+    \tbuild by sitepackagebuilder.com
+
+    \tThis website is powered by TYPO3 - inspiring people to share!
+    \tTYPO3 is a free open source Content Management Framework initially created by Kasper Skaarhoj and licensed under GNU/GPL.
+    \tTYPO3 is copyright 1998-2019 of Kasper Skaarhoj. Extensions are copyright of their respective owners.
+    \tInformation and contribution at https://typo3.org/
+    -->
+
+    <base href="https://www.law.uoa.gr">
+    <link rel="shortcut icon" href="/typo3conf/ext/uoa_website/Resources/Public/Images/favicon.png" type="image/png">
+
+    <meta name="generator" content="TYPO3 CMS">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="index,follow">
+    <meta name="google" content="{$page.meta.google}">
+    <meta name="apple-mobile-web-app-capable" content="no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta property="og:title" content="Ανακοινώσεις και εκδηλώσεις">
+    <meta property="og:site_name" content="Νομική Σχολή">
+    <meta property="og:image"
+          content="https://www.law.uoa.gr/fileadmin/_processed_/7/0/csm_LawSchool-banner-825X400_d5fd44d348.jpg">
+
+    <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css"
+          media="all">
+
+    <link rel="stylesheet" type="text/css" href="/typo3conf/ext/news/Resources/Public/Css/news-basic.css?1504697855"
+          media="all">
+    <link rel="stylesheet" type="text/css" href="/typo3temp/assets/css/d42b6e1bdf.css?1517852730" media="all">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=GFS+Didot&amp;subset=greek"
+          media="all">
+    <link rel="stylesheet" type="text/css"
+          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&amp;subset=greek,greek-ext"
+          media="all">
+    <link rel="stylesheet" type="text/css"
+          href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800&amp;subset=greek" media="all">
+    <link rel="stylesheet" type="text/css"
+          href="/typo3conf/ext/uoa_website/Resources/Public/Css/inc/jquery.fancybox.min.css?1508918275" media="all">
+    <link rel="stylesheet" type="text/css"
+          href="/typo3conf/ext/uoa_website/Resources/Public/Css/bootstrap.min.css?1508918244" media="all">
+    <link rel="stylesheet" type="text/css" href="/typo3conf/ext/uoa_website/Resources/Public/Css/fonts.css?1511800933"
+          media="all">
+    <link rel="stylesheet" type="text/css"
+          href="/typo3conf/ext/uoa_website/Resources/Public/Css/font-awesome.min.css?1509004688" media="all">
+    <link rel="stylesheet" type="text/css" href="/typo3conf/ext/uoa_website/Resources/Public/Css/animate.css?1508918222"
+          media="all">
+    <link rel="stylesheet" type="text/css"
+          href="/typo3conf/ext/uoa_website/Resources/Public/Css/jssocials.css?1509616808" media="all">
+    <link rel="stylesheet" type="text/css" href="/typo3conf/ext/uoa_website/Resources/Public/Css/style2.css?1531765092"
+          media="all">
+    <link rel="stylesheet" type="text/css" href="/typo3conf/ext/uoa_website/Resources/Public/Css/Red/red.css?1544449305"
+          media="all">
+    <link rel="stylesheet" type="text/css"
+          href="/typo3conf/ext/uoa_website/Resources/Public/Css/Red/style2.css?1526473709" media="all">
+    <link rel="stylesheet" type="text/css"
+          href="/typo3conf/ext/uoa_website/Resources/Public/Css/Navy/navy-siteA.css?1527672458" media="all">
+    <link rel="stylesheet" type="text/css" href="/typo3conf/ext/ke_search/res/ke_search_pi1.css?1557754640" media="all">
+
+
+    <script type="text/javascript">
+        /*<![CDATA[*/
+        /*_scriptCode*/
+
+        \t\t\t// decrypt helper function
+        \t\tfunction
+        decryptCharcode(n, start, end, offset)
+        {
+        \t\t\tn = n + offset;
+\t\t\tif(offset > 0 && n > end)
+            {
+            \t\t\t\tn = start + (n - end - 1);
+\t\t\t
+            }
+        else
+            if (offset < 0 && n < start) {
+            \t\t\t\tn = end - (start - n - 1);
+\t\t\t
+            }
+\t\t\treturn
+            String.fromCharCode(n);
+\t\t
+        }
+\t\t\t// decrypt string
+        \t\tfunction
+        decryptString(enc, offset)
+        {
+        \t\t\tvar
+            dec = "";
+\t\t\tvar
+            len = enc.length;
+\t\t\tfor(
+            var i = 0;
+            i < len;
+            i++
+        )
+            {
+            \t\t\t\tvar
+                n = enc.charCodeAt(i);
+\t\t\t\tif(n >= 0x2B && n <= 0x3A)
+                {
+                \t\t\t\t\tdec += decryptCharcode(n, 0x2B, 0x3A, offset);\t// 0-9 . , - + / :
+                \t\t\t\t
+                }
+            else
+                if (n >= 0x40 && n <= 0x5A) {
+                \t\t\t\t\tdec += decryptCharcode(n, 0x40, 0x5A, offset);\t// A-Z @
+                \t\t\t\t
+                } else if (n >= 0x61 && n <= 0x7A) {
+                \t\t\t\t\tdec += decryptCharcode(n, 0x61, 0x7A, offset);\t// a-z
+                \t\t\t\t
+                } else {
+                \t\t\t\t\tdec += enc.charAt(i);
+\t\t\t\t
+                }
+\t\t\t
+            }
+\t\t\treturn
+            dec;
+\t\t
+        }
+\t\t\t// decrypt spam-protected emails
+        \t\tfunction
+        linkTo_UnCryptMailto(s)
+        {
+        \t\t\tlocation.href = decryptString(s, 3);
+\t\t
+        }
+\t\t
+
+        /*]]>*/
+    </script>
+
+
+    \t\t\t\t
+    <link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="/anakoinoseis_kai_ekdiloseis/?type=9821"/>
+    \t\t\t
+    <link rel="next" href="/anakoinoseis_kai_ekdiloseis/page/2/"/>
+    <title>Ανακοινώσεις και εκδηλώσεις</title><title> | </title>
+
+</head>
+<body>
+
+<header>
+    <div class="top-cont default">
+        <div class="header__top">
+            <div class="row">
+                <div class="col-sm-5">
+                    <div class="header__top--left">
+
+                    </div>
+                </div>
+                <div class="col-sm-7">
+                    <div class="header__top--right">
+                        <ul class="lang_list">
+                            <li><a href="/">ΕΛΛΗΝΙΚΑ</a></li>
+                            <li><a href="https://en.law.uoa.gr/">ENGLISH</a></li>
+                        </ul>
+
+                        \t
+                        <form method="get" class="header__search searchform" name="form_kesearch_pi1"
+                              action="/anazitisi/">
+                            \t\t
+                            <fieldset class="kesearch_searchbox">
+                                \t\t\t
+                                \t\t\t\t<input type="hidden" name="id" value="10774"/>
+                                \t\t\t
+                                \t\t\t
+                                \t\t\t
+                                \t\t\t
+
+                                \t\t\t<!--<div class="kesearchbox">
+\t\t\t\t<input type="text" id="ke_search_sword" name="tx_kesearch_pi1[sword]" value="" placeholder="ΑΝΑΖΗΤΗΣΗ" />
+\t\t\t\t<div class="clearer">&nbsp;</div>
+\t\t\t</div>-->
+
+                                \t\t\t<input type="search" placeholder="ΑΝΑΖΗΤΗΣΗ" title="ΑΝΑΖΗΤΗΣΗ"
+                                             name="tx_kesearch_pi1[sword]" value="">
+                                \t\t\t
+                                <button>
+                                    \t\t\t\t
+                                    <svg
+                                            \t\t\t\t\t\txmlns="http://www.w3.org/2000/svg"
+                                            \t\t\t\t\t\txmlns:xlink="http://www.w3.org/1999/xlink"
+                                            \t\t\t\t\t\twidth="23px" height="19px">
+                                        \t\t\t\t\t
+                                        <path fill="rgb(255, 255, 255)"
+                                              \t\t\t\t\t\t\td="M22.670,18.178 C22.088,19.041 20.931,19.257 20.090,18.659 L12.467,13.255 C11.928,12.873 11.648,12.252 11.669,11.626 C10.687,12.705 9.398,13.430 7.953,13.699 C6.178,14.031 4.386,13.634 2.907,12.585 C1.427,11.537 0.434,9.960 0.111,8.142 C-0.213,6.324 0.173,4.488 1.198,2.971 C3.314,-0.161 7.523,-0.946 10.582,1.220 C13.358,3.190 14.245,6.927 12.802,9.942 C13.366,9.699 14.035,9.747 14.577,10.131 L22.201,15.535 C23.043,16.133 23.254,17.316 22.670,18.178 ZM11.370,6.041 C11.145,4.774 10.453,3.674 9.421,2.943 C7.289,1.430 4.353,1.977 2.876,4.161 C1.400,6.348 1.935,9.355 4.067,10.865 C6.199,12.377 9.135,11.830 10.611,9.646 C11.326,8.589 11.595,7.308 11.370,6.041 Z"/>
+                                        \t\t\t\t
+                                    </svg>
+                                    \t\t\t
+                                </button>
+
+                                <!--\t\t\t<input id="kesearchpagenumber" type="hidden" name="tx_kesearch_pi1[page]" value="1" />
+                                \t\t\t<input id="resetFilters" type="hidden" name="tx_kesearch_pi1[resetFilters]" value="0" />
+                                \t\t\t<input id="sortByField" type="hidden" name="tx_kesearch_pi1[sortByField]" value="" />
+                                \t\t\t<input id="sortByDir" type="hidden" name="tx_kesearch_pi1[sortByDir]" value="" />
+                                \t\t\t
+                                -->
+                                \t\t
+                            </fieldset>
+                            \t
+                        </form>
+
+
+                        <ul class="header__socials">
+                            <li><a href="http://www.facebook.com/uoa.official" title="Facebook"><span
+                                    class="fa fa-facebook" aria-hidden="true">&nbsp;</span></a></li>
+                            <li><a href="https://www.youtube.com/watch?v=m3HkLzBmcuY" title="Youtube"><span
+                                    class="fa fa-youtube" aria-hidden="true">&nbsp;</span></a></li>
+                            <li><a href="http://www.twitter.com" title="Twitter"><span class="fa fa-twitter"
+                                                                                       aria-hidden="true">&nbsp;</span></a>
+                            </li>
+                            <li><a href="https://www.linkedin.com/school/15094179/" title="Linkedin"><span
+                                    class="fa fa-linkedin" aria-hidden="true">&nbsp;</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="header__bottom">
+            <div class="row">
+                <div class="col-md-12 clearfix">
+                    <div class="header__bottom--inner">
+                        <div class="hamburger_icon">
+                            \t\t\t\t\t\t<span class="icon">
+\t\t\t\t\t\t\t<span></span>
+\t\t\t\t\t\t\t<span></span>
+\t\t\t\t\t\t\t<span></span>
+\t\t\t\t\t\t\t<span></span>
+\t\t\t\t\t\t</span>
+                            <span class="icon--title">Menu</span>
+                        </div>
+                        <div class="header--menu">
+                            <ul>
+
+                                <li>
+
+
+                                    <span class="fa fa-home" aria-hidden="true"></span>
+
+                                </li>
+
+                                <li class="menu-item-has-children current-menu-item">
+                                    <a href="/anakoinoseis_kai_ekdiloseis/" title="Ανακοινώσεις και εκδηλώσεις">
+                                        ΑΝΑΚΟΙΝΩΣΕΙΣ ΚΑΙ ΕΚΔΗΛΩΣΕΙΣ
+                                    </a>
+
+                                    <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                                    <ul class="sub-menu submenu is-dropdown-submenu">
+
+                                        <li class="">
+                                            <a href="/anakoinoseis_kai_ekdiloseis/epilegmena/" title="Επιλεγμένα">
+                                                ΕΠΙΛΕΓΜΕΝΑ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/anakoinoseis_kai_ekdiloseis/proptychiakes_spoydes/"
+                                               title="Προπτυχιακές σπουδές">
+                                                ΠΡΟΠΤΥΧΙΑΚΕΣ ΣΠΟΥΔΕΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/anakoinoseis_kai_ekdiloseis/metaptychiakes_spoydes/"
+                                               title="Μεταπτυχιακές σπουδές">
+                                                ΜΕΤΑΠΤΥΧΙΑΚΕΣ ΣΠΟΥΔΕΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/anakoinoseis_kai_ekdiloseis/didaktorikes_spoydes/"
+                                               title="Διδακτορικές Σπουδές">
+                                                ΔΙΔΑΚΤΟΡΙΚΕΣ ΣΠΟΥΔΕΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/anakoinoseis_kai_ekdiloseis/erasmus/" title="Erasmus">
+                                                ERASMUS
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/anakoinoseis_kai_ekdiloseis/civis/" title="CIVIS">
+                                                CIVIS
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/anakoinoseis_kai_ekdiloseis/european_law_school_network/"
+                                               title="EUROPEAN LAW SCHOOL NETWORK">
+                                                EUROPEAN LAW SCHOOL NETWORK
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/anakoinoseis_kai_ekdiloseis/prokiryxeis_exelixeis_melon_dep/"
+                                               title="Προκηρύξεις - Εξελίξεις Μελών ΔΕΠ">
+                                                ΠΡΟΚΗΡΥΞΕΙΣ - ΕΞΕΛΙΞΕΙΣ ΜΕΛΩΝ ΔΕΠ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/anakoinoseis_kai_ekdiloseis/ekdiloseis_simantika/"
+                                               title="Εκδηλώσεις - Σημαντικά">
+                                                ΕΚΔΗΛΩΣΕΙΣ - ΣΗΜΑΝΤΙΚΑ
+                                            </a>
+                                        </li>
+
+                                    </ul>
+
+                                </li>
+
+                                <li class="menu-item-has-children ">
+                                    <a href="/i_scholi/" title="Η Σχολή">
+                                        Η ΣΧΟΛΗ
+                                    </a>
+
+                                    <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                                    <ul class="sub-menu submenu is-dropdown-submenu">
+
+                                        <li class="">
+                                            <a href="/i_scholi/organosi_kai_dioikisi/" title="Οργάνωση και Διοίκηση">
+                                                ΟΡΓΑΝΩΣΗ ΚΑΙ ΔΙΟΙΚΗΣΗ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/i_scholi/egkatastaseis_kai_prosbasi/"
+                                               title="Εγκαταστάσεις και Πρόσβαση">
+                                                ΕΓΚΑΤΑΣΤΑΣΕΙΣ ΚΑΙ ΠΡΟΣΒΑΣΗ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/i_scholi/bibliothiki_nomikis_scholis/"
+                                               title="Βιβλιοθήκη Νομικής Σχολής">
+                                                ΒΙΒΛΙΟΘΗΚΗ ΝΟΜΙΚΗΣ ΣΧΟΛΗΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/i_scholi/ergastiria/" title="Εργαστήρια">
+                                                ΕΡΓΑΣΤΗΡΙΑ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/i_scholi/ypostirixi_foititon_me_anapiria_monada_prosbasimotitas_ekpa/"
+                                               title="Υποστήριξη φοιτητών με αναπηρία - Μονάδα Προσβασιμότητας ΕΚΠΑ">
+                                                ΥΠΟΣΤΗΡΙΞΗ ΦΟΙΤΗΤΩΝ ΜΕ ΑΝΑΠΗΡΙΑ - ΜΟΝΑΔΑ ΠΡΟΣΒΑΣΙΜΟΤΗΤΑΣ ΕΚΠΑ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/i_scholi/axiologisi/" title="Αξιολόγηση">
+                                                ΑΞΙΟΛΟΓΗΣΗ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/i_scholi/mitroa_nomikis_scholis/" title="Μητρώα Νομικής Σχολής">
+                                                ΜΗΤΡΩΑ ΝΟΜΙΚΗΣ ΣΧΟΛΗΣ
+                                            </a>
+                                        </li>
+
+                                    </ul>
+
+                                </li>
+
+                                <li class="menu-item-has-children ">
+                                    <a href="/tomeis/" title="Τομείς">
+                                        ΤΟΜΕΙΣ
+                                    </a>
+
+                                    <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                                    <ul class="sub-menu submenu is-dropdown-submenu">
+
+                                        <li class="">
+                                            <a href="/tomeis/a_idiotikoy_dikaioy/" title="Α&#039; Ιδιωτικού Δικαίου">
+                                                Α&#039; ΙΔΙΩΤΙΚΟΥ ΔΙΚΑΙΟΥ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/tomeis/b_idiotikoy_dikaioy/" title="Β&#039; Ιδιωτικού Δικαίου">
+                                                Β&#039; ΙΔΙΩΤΙΚΟΥ ΔΙΚΑΙΟΥ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/tomeis/dimosioy_dikaioy/" title="Δημοσίου Δικαίου">
+                                                ΔΗΜΟΣΙΟΥ ΔΙΚΑΙΟΥ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/tomeis/poinikon_epistimon/" title="Ποινικών Επιστημών">
+                                                ΠΟΙΝΙΚΩΝ ΕΠΙΣΤΗΜΩΝ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/tomeis/diethnon_spoydon/" title="Διεθνών Σπουδών">
+                                                ΔΙΕΘΝΩΝ ΣΠΟΥΔΩΝ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/tomeis/istorias_kai_theorias_toy_dikaioy/"
+                                               title="Ιστορίας και Θεωρίας του Δικαίου">
+                                                ΙΣΤΟΡΙΑΣ ΚΑΙ ΘΕΩΡΙΑΣ ΤΟΥ ΔΙΚΑΙΟΥ
+                                            </a>
+                                        </li>
+
+                                    </ul>
+
+                                </li>
+
+                                <li class="menu-item-has-children ">
+                                    <a href="/prosopiko/" title="Προσωπικό">
+                                        ΠΡΟΣΩΠΙΚΟ
+                                    </a>
+
+                                    <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                                    <ul class="sub-menu submenu is-dropdown-submenu">
+
+                                        <li class="">
+                                            <a href="/prosopiko/didaskontes_ana_tomea/" title="Διδάσκοντες ανά Τομέα">
+                                                ΔΙΔΑΣΚΟΝΤΕΣ ΑΝΑ ΤΟΜΕΑ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/prosopiko/didaskontes_alfabitika/" title="Διδάσκοντες αλφαβητικά">
+                                                ΔΙΔΑΣΚΟΝΤΕΣ ΑΛΦΑΒΗΤΙΚΑ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/prosopiko/omotimoi_kathigites/" title="Ομότιμοι Καθηγητές">
+                                                ΟΜΟΤΙΜΟΙ ΚΑΘΗΓΗΤΕΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/prosopiko/epitimoi_didaktores/" title="Επίτιμοι Διδάκτορες">
+                                                ΕΠΙΤΙΜΟΙ ΔΙΔΑΚΤΟΡΕΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/prosopiko/dioikitiko_kai_techniko_prosopiko/"
+                                               title="Διοικητικό και Τεχνικό Προσωπικό">
+                                                ΔΙΟΙΚΗΤΙΚΟ ΚΑΙ ΤΕΧΝΙΚΟ ΠΡΟΣΩΠΙΚΟ
+                                            </a>
+                                        </li>
+
+                                    </ul>
+
+                                </li>
+
+                                <li class="menu-item-has-children ">
+                                    <a href="/katataxi_ptychioychon_tritobathmias_ekpaideysis/"
+                                       title="Κατάταξη πτυχιούχων Τριτοβάθμιας Εκπαίδευσης">
+                                        ΚΑΤΑΤΑΞΗ ΠΤΥΧΙΟΥΧΩΝ ΤΡΙΤΟΒΑΘΜΙΑΣ ΕΚΠΑΙΔΕΥΣΗΣ
+                                    </a>
+
+                                    <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                                    <ul class="sub-menu submenu is-dropdown-submenu">
+
+                                        <li class="">
+                                            <a href="/katataxi_ptychioychon_tritobathmias_ekpaideysis/katataktiries_2019_2020/"
+                                               title="Κατατακτήριες 2019-2020">
+                                                ΚΑΤΑΤΑΚΤΗΡΙΕΣ 2019-2020
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/katataxi_ptychioychon_tritobathmias_ekpaideysis/katataktiries_2020_2021/"
+                                               title="Κατατακτήριες 2020-2021">
+                                                ΚΑΤΑΤΑΚΤΗΡΙΕΣ 2020-2021
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/katataxi_ptychioychon_tritobathmias_ekpaideysis/katataktiries_2021_2022/"
+                                               title="Κατατακτήριες 2021-2022">
+                                                ΚΑΤΑΤΑΚΤΗΡΙΕΣ 2021-2022
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/katataxi_ptychioychon_tritobathmias_ekpaideysis/katataktiries_2022_2023/"
+                                               title="Κατατακτήριες 2022-2023">
+                                                ΚΑΤΑΤΑΚΤΗΡΙΕΣ 2022-2023
+                                            </a>
+                                        </li>
+
+                                    </ul>
+
+                                </li>
+
+                                <li class="menu-item-has-children ">
+                                    <a href="/proptychiakes_spoydes/" title="Προπτυχιακές Σπουδές">
+                                        ΠΡΟΠΤΥΧΙΑΚΕΣ ΣΠΟΥΔΕΣ
+                                    </a>
+
+                                    <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                                    <ul class="sub-menu submenu is-dropdown-submenu">
+
+                                        <li class="">
+                                            <a href="/proptychiakes_spoydes/politiki_poiotitas/"
+                                               title="Πολιτική Ποιότητας">
+                                                ΠΟΛΙΤΙΚΗ ΠΟΙΟΤΗΤΑΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/proptychiakes_spoydes/kanonismos_programmatos_spoydon/"
+                                               title="Κανονισμός Προγράμματος Σπουδών">
+                                                ΚΑΝΟΝΙΣΜΟΣ ΠΡΟΓΡΑΜΜΑΤΟΣ ΣΠΟΥΔΩΝ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/proptychiakes_spoydes/programma_didaskalias/"
+                                               title="Πρόγραμμα Διδασκαλίας">
+                                                ΠΡΟΓΡΑΜΜΑ ΔΙΔΑΣΚΑΛΙΑΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/proptychiakes_spoydes/akadimaiko_imerologio/"
+                                               title="Ακαδημαϊκό Ημερολόγιο">
+                                                ΑΚΑΔΗΜΑΪΚΟ ΗΜΕΡΟΛΟΓΙΟ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/proptychiakes_spoydes/programma_exetaseon/"
+                                               title="Πρόγραμμα Εξετάσεων">
+                                                ΠΡΟΓΡΑΜΜΑ ΕΞΕΤΑΣΕΩΝ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/proptychiakes_spoydes/foititikes_ypiresies/"
+                                               title="Φοιτητικές Υπηρεσίες">
+                                                ΦΟΙΤΗΤΙΚΕΣ ΥΠΗΡΕΣΙΕΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/proptychiakes_spoydes/didaktika_syggrammata/"
+                                               title="Διδακτικά Συγγράμματα">
+                                                ΔΙΔΑΚΤΙΚΑ ΣΥΓΓΡΑΜΜΑΤΑ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/proptychiakes_spoydes/sitisi/" title="Σίτιση">
+                                                ΣΙΤΙΣΗ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/proptychiakes_spoydes/akadimaiki_taytotita/"
+                                               title="Ακαδημαϊκή Ταυτότητα">
+                                                ΑΚΑΔΗΜΑΪΚΗ ΤΑΥΤΟΤΗΤΑ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/proptychiakes_spoydes/imera_anoikton_pylon/"
+                                               title="Ημέρα ανοικτών πυλών">
+                                                ΗΜΕΡΑ ΑΝΟΙΚΤΩΝ ΠΥΛΩΝ
+                                            </a>
+                                        </li>
+
+                                    </ul>
+
+                                </li>
+
+                                <li class="menu-item-has-children ">
+                                    <a href="/metaptychiakes_spoydes/" title="Μεταπτυχιακές Σπουδές">
+                                        ΜΕΤΑΠΤΥΧΙΑΚΕΣ ΣΠΟΥΔΕΣ
+                                    </a>
+
+                                    <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                                    <ul class="sub-menu submenu is-dropdown-submenu">
+
+                                        <li class="">
+                                            <a href="/metaptychiakes_spoydes/programma_didaskalias_kai_programma_exetastikis/"
+                                               title="Πρόγραμμα διδασκαλίας και πρόγραμμα εξεταστικής">
+                                                ΠΡΟΓΡΑΜΜΑ ΔΙΔΑΣΚΑΛΙΑΣ ΚΑΙ ΠΡΟΓΡΑΜΜΑ ΕΞΕΤΑΣΤΙΚΗΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/metaptychiakes_spoydes/didaktiki_kai_exetastiki_periodos/"
+                                               title="Διδακτική και Εξεταστική περίοδος">
+                                                ΔΙΔΑΚΤΙΚΗ ΚΑΙ ΕΞΕΤΑΣΤΙΚΗ ΠΕΡΙΟΔΟΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/metaptychiakes_spoydes/chrisima_eggrafa/" title="Χρήσιμα έγγραφα">
+                                                ΧΡΗΣΙΜΑ ΕΓΓΡΑΦΑ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/metaptychiakes_spoydes/gkriza_bibliografia_pergamos/"
+                                               title="Γκρίζα Βιβλιογραφία - Πέργαμος">
+                                                ΓΚΡΙΖΑ ΒΙΒΛΙΟΓΡΑΦΙΑ - ΠΕΡΓΑΜΟΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/metaptychiakes_spoydes/akadimaiki_taytotita/"
+                                               title="Ακαδημαϊκή Ταυτότητα">
+                                                ΑΚΑΔΗΜΑΪΚΗ ΤΑΥΤΟΤΗΤΑ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/metaptychiakes_spoydes/sitisi/" title="Σίτιση">
+                                                ΣΙΤΙΣΗ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/metaptychiakes_spoydes/ilektronikes_ypiresies/"
+                                               title="Ηλεκτρονικές Υπηρεσίες">
+                                                ΗΛΕΚΤΡΟΝΙΚΕΣ ΥΠΗΡΕΣΙΕΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/metaptychiakes_spoydes/apallagi_apo_teli_foitisis/"
+                                               title="Απαλλαγή από τέλη φοίτησης">
+                                                ΑΠΑΛΛΑΓΗ ΑΠΟ ΤΕΛΗ ΦΟΙΤΗΣΗΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/metaptychiakes_spoydes/themata_diplomatikon_ergasion/"
+                                               title="Θέματα διπλωματικών εργασιών">
+                                                ΘΕΜΑΤΑ ΔΙΠΛΩΜΑΤΙΚΩΝ ΕΡΓΑΣΙΩΝ
+                                            </a>
+                                        </li>
+
+                                    </ul>
+
+                                </li>
+
+                                <li class="menu-item-has-children ">
+                                    <a href="/didaktorikes_spoydes/" title="Διδακτορικές Σπουδές">
+                                        ΔΙΔΑΚΤΟΡΙΚΕΣ ΣΠΟΥΔΕΣ
+                                    </a>
+
+                                    <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                                    <ul class="sub-menu submenu is-dropdown-submenu">
+
+                                        <li class="">
+                                            <a href="/didaktorikes_spoydes/gkriza_bibliografia_pergamos/"
+                                               title="Γκρίζα Βιβλιογραφία - Πέργαμος">
+                                                ΓΚΡΙΖΑ ΒΙΒΛΙΟΓΡΑΦΙΑ - ΠΕΡΓΑΜΟΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/didaktorikes_spoydes/akadimaiki_taytotita/"
+                                               title="Ακαδημαϊκή Ταυτότητα">
+                                                ΑΚΑΔΗΜΑΪΚΗ ΤΑΥΤΟΤΗΤΑ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/didaktorikes_spoydes/sitisi/" title="Σίτιση">
+                                                ΣΙΤΙΣΗ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/didaktorikes_spoydes/ilektronikes_ypiresies/"
+                                               title="Ηλεκτρονικές Υπηρεσίες">
+                                                ΗΛΕΚΤΡΟΝΙΚΕΣ ΥΠΗΡΕΣΙΕΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/didaktorikes_spoydes/metadidaktoriki_ereyna/"
+                                               title="Μεταδιδακτορική Έρευνα">
+                                                ΜΕΤΑΔΙΔΑΚΤΟΡΙΚΗ ΕΡΕΥΝΑ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/didaktorikes_spoydes/mitroo_didaktorikon_diatribon/"
+                                               title="Μητρώο Διδακτορικών Διατριβών">
+                                                ΜΗΤΡΩΟ ΔΙΔΑΚΤΟΡΙΚΩΝ ΔΙΑΤΡΙΒΩΝ
+                                            </a>
+                                        </li>
+
+                                    </ul>
+
+                                </li>
+
+                                <li class="menu-item-has-children ">
+                                    <a href="/erasmus_exerchomenoi_foitites_ekpa/"
+                                       title="Erasmus +: εξερχόμενοι φοιτητές ΕΚΠΑ">
+                                        ERASMUS +: ΕΞΕΡΧΟΜΕΝΟΙ ΦΟΙΤΗΤΕΣ ΕΚΠΑ
+                                    </a>
+
+                                    <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                                    <ul class="sub-menu submenu is-dropdown-submenu">
+
+                                        <li class="">
+                                            <a href="/erasmus_exerchomenoi_foitites_ekpa/anagnorisi_mathimaton_erasmus_exerchomenon_foititon_ekpa/"
+                                               title="Aναγνώριση μαθημάτων Erasmus+ εξερχόμενων φοιτητών ΕΚΠΑ">
+                                                AΝΑΓΝΩΡΙΣΗ ΜΑΘΗΜΑΤΩΝ ERASMUS+ ΕΞΕΡΧΟΜΕΝΩΝ ΦΟΙΤΗΤΩΝ ΕΚΠΑ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/erasmus_exerchomenoi_foitites_ekpa/civis/" title="CIVIS">
+                                                CIVIS
+                                            </a>
+                                        </li>
+
+                                    </ul>
+
+                                </li>
+
+                                <li class="menu-item-has-children ">
+                                    <a href="/diagonismoi/" title="Διαγωνισμοί">
+                                        ΔΙΑΓΩΝΙΣΜΟΙ
+                                    </a>
+
+                                    <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                                    <ul class="sub-menu submenu is-dropdown-submenu">
+
+                                        <li class="">
+                                            <a href="/diagonismoi/analytikos_katalogos_symmetochon_tis_nomikis_scholis_se_diethneis_diagonismoys/"
+                                               title="Αναλυτικός κατάλογος συμμετοχών της Νομικής Σχολής σε διεθνείς διαγωνισμούς">
+                                                ΑΝΑΛΥΤΙΚΟΣ ΚΑΤΑΛΟΓΟΣ ΣΥΜΜΕΤΟΧΩΝ ΤΗΣ ΝΟΜΙΚΗΣ ΣΧΟΛΗΣ ΣΕ ΔΙΕΘΝΕΙΣ
+                                                ΔΙΑΓΩΝΙΣΜΟΥΣ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/diagonismoi/anthropinon_dikaiomaton/"
+                                               title="Ανθρωπίνων Δικαιωμάτων">
+                                                ΑΝΘΡΩΠΙΝΩΝ ΔΙΚΑΙΩΜΑΤΩΝ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/diagonismoi/emporiki_diamesolabisi/"
+                                               title="Εμπορική Διαμεσολάβηση">
+                                                ΕΜΠΟΡΙΚΗ ΔΙΑΜΕΣΟΛΑΒΗΣΗ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/diagonismoi/emporiki_diaitisia/" title="Eμπορική Διαιτησία">
+                                                EΜΠΟΡΙΚΗ ΔΙΑΙΤΗΣΙΑ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/diagonismoi/romaiko_dikaio/" title="Ρωμαϊκό Δίκαιο">
+                                                ΡΩΜΑΪΚΟ ΔΙΚΑΙΟ
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/diagonismoi/europa_moot_court/" title="Europa Moot Court">
+                                                EUROPA MOOT COURT
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/diagonismoi/european_law_moot_court/"
+                                               title="European Law Moot Court">
+                                                EUROPEAN LAW MOOT COURT
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/diagonismoi/european_law_moot_court_competition/"
+                                               title="European Law Moot Court Competition">
+                                                EUROPEAN LAW MOOT COURT COMPETITION
+                                            </a>
+                                        </li>
+
+                                        <li class="">
+                                            <a href="/diagonismoi/philip_c_jessup_international_law_moot_court/"
+                                               title="Philip C. Jessup International Law Moot Court">
+                                                PHILIP C. JESSUP INTERNATIONAL LAW MOOT COURT
+                                            </a>
+                                        </li>
+
+                                    </ul>
+
+                                </li>
+
+                            </ul>
+                            <div class="header--menu_info">
+                                <ul class="simple_list">
+                                    <li><a href="https://en.uoa.gr/">ENGLISH</a></li>
+                                    <li><a href="https://www.uoa.gr/epikoinonia_kai_prosbasi/">ΕΠΙΚΟΙΝΩΝΙΑ ΚΑΙ
+                                        ΠΡΟΣΒΑΣΗ</a></li>
+                                    <li><a href="https://www.uoa.gr/anazitisi/">Αναζήτηση</a></li>
+                                </ul>
+                                <ul class="menu_social">
+                                    <li><a href="http://www.facebook.com/uoa.official" title="Facebook"><span
+                                            class="fa fa-facebook" aria-hidden="true">&nbsp;</span></a></li>
+                                    <li><a href="https://www.youtube.com/watch?v=m3HkLzBmcuY" title="Youtube"><span
+                                            class="fa fa-youtube" aria-hidden="true">&nbsp;</span></a></li>
+                                    <li><a href="http://www.twitter.com" title="Twitter"><span class="fa fa-twitter"
+                                                                                               aria-hidden="true">&nbsp;</span></a>
+                                    </li>
+                                    <li><a href="https://www.linkedin.com/school/15094179/" title="Linkedin"><span
+                                            class="fa fa-linkedin" aria-hidden="true">&nbsp;</span></a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</header>
+
+
+<section class="blog_section">
+    <div class="row">
+        <div class="col-md-9 col-sm-8 single_page col-md-push-3 col-sm-push-4">
+            <span class="banner_subtitle"></span>
+            <h1 class="banner_title">Νομική Σχολή</h1>
+            <div class="page_banner"
+                 style="background-image: url('fileadmin/user_upload/LawSchool-banner-825X400.jpg');"></div>
+            <ul class="breadcrumbs">
+                <LI><A HREF="/"><A HREF="/">ΑΡΧΙΚΗ</A></A></LI>
+                <LI><SPAN>»</SPAN></LI>
+                <li><a href="/anakoinoseis_kai_ekdiloseis/">Ανακοινώσεις και εκδηλώσεις</a></li>
+                <li><span>»</span></li>
+            </ul>
+
+            <h3 class="single_page--title">ΑΝΑΚΟΙΝΩΣΕΙΣ ΚΑΙ ΕΚΔΗΛΩΣΕΙΣ</h3>
+            <div class="single_page--content">
+
+                <!--<div id="c15106" class="frame frame-default frame-type-list frame-layout-0">-->
+                <!--TYPO3SEARCH_end--><!-- most recent top news --><!--
+\t\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t\t-->
+                <div class="article clearfix articletype-0 topnews" itemscope="itemscope"
+                     itemtype="http://schema.org/Article">
+                    <div class="article__image matchHeight"><a
+                            title="Έκτακτη Ανακοίνωση για την Ορκωμοσία πτυχιούχων Ιουνίου -Ιουλίου 2022 (κλιμ. Β 18-10-2022)"
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/ektakti_anakoinosi_gia_tin_orkomosia_ptychioychon_ioynioy_ioylioy_2022_klim_b_18_10_2022/"><img
+                            src="/fileadmin/_processed_/6/9/csm_LawSchool-banner-825X150_83f1d5cf2a.jpg" width="160"
+                            height="29" alt=""/></a></div>
+                    <div class="article__content matchHeight"><!-- header --><h3 class="article__title"><a
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/ektakti_anakoinosi_gia_tin_orkomosia_ptychioychon_ioynioy_ioylioy_2022_klim_b_18_10_2022/">
+                        \t\t\t\t\t\tΕΚΤΑΚΤΗ ΑΝΑΚΟΙΝΩΣΗ ΓΙΑ ΤΗΝ ΟΡΚΩΜΟΣΙΑ ΠΤΥΧΙΟΥΧΩΝ ΙΟΥΝΙΟΥ -ΙΟΥΛΙΟΥ 2022 (ΚΛΙΜ. Β
+                        18-10-2022)
+                        \t\t\t\t\t</a></h3>
+                        <div class="article__info"><span class="article__date"><time datetime="2022-10-14">
+\t\t\t\t\t14/10/2022 -
+\t\t\t\t\t<meta itemprop="datePublished" content="2022-10-14"/></time></span><a
+                                href="/anakoinoseis_kai_ekdiloseis/proptychiakes_spoydes/"><span
+                                class="article__category link">
+\t\t\t\tΠΡΟΠΤΥΧΙΑΚΕΣ ΣΠΟΥΔΕΣ</span></a></div><!-- teaser -->
+                        <div class="teaser-text" itemprop="description"><p><span style="font-size:12px"><span
+                                style="font-family:Verdana,Geneva,sans-serif">Εν όψει της ορκωμοσίας των πτυχιούχων Ιουνίου - Ιουλίου 2022 σας ενημερώνουμε ότι λόγω έκτακτης υποχρέωσης του Κοσμήτορα της Σχολής <strong>η ώρα έναρξης της τελετής της ορκωμοσίας του 2ου Κλιμακίου 18-10-2022 (ΕΠΩΝΥΜΑ: ΚΑΡΑΜΠ. - ΜΠΑΓ.) μεταφέρεται από τις 09.00 π.μ. για τις 09.45 π.μ.</strong></span></span>
+                        </p></div>
+                    </div>
+                </div><!--
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t\t
+\t\t\t\t
+\t\t\t\t-->
+                <div class="article clearfix articletype-0" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <div class="article__image matchHeight"><a
+                            title="Η Βιβλιοθήκη της Νομικής υποδέχτηκε τους πρωτοετείς φοιτητές"
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/i_bibliothiki_tis_nomikis_ypodechtike_toys_protoeteis_foitites/"><img
+                            src="/fileadmin/_processed_/7/0/csm_LawSchool-banner-825X400_26b210104c.jpg" width="160"
+                            height="78" alt=""/></a></div>
+                    <div class="article__content matchHeight"><!-- header --><h3 class="article__title"><a
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/i_bibliothiki_tis_nomikis_ypodechtike_toys_protoeteis_foitites/">
+                        \t\t\t\t\t\tΗ ΒΙΒΛΙΟΘΗΚΗ ΤΗΣ ΝΟΜΙΚΗΣ ΥΠΟΔΕΧΤΗΚΕ ΤΟΥΣ ΠΡΩΤΟΕΤΕΙΣ ΦΟΙΤΗΤΕΣ
+                        \t\t\t\t\t</a></h3>
+                        <div class="article__info"><span class="article__date"><time datetime="2022-10-14">
+\t\t\t\t\t14/10/2022 -
+\t\t\t\t\t<meta itemprop="datePublished" content="2022-10-14"/></time></span><a
+                                href="/anakoinoseis_kai_ekdiloseis/ekdiloseis_simantika/"><span
+                                class="article__category link">
+\t\t\t\tΕΚΔΗΛΩΣΕΙΣ - ΣΗΜΑΝΤΙΚΑ</span></a></div><!-- teaser -->
+                        <div class="teaser-text" itemprop="description"><p>Στις 13 Οκτωβρίου η καρδιά της Νομικής Σχολής
+                            χτύπησε στη βιβλιοθήκη της στο κτήριο του Παλαιού Χημείου, όπου το προσωπικό υποδέχτηκε και
+                            ξενάγησε τους πρωτοετείς<br/> προπτυχιακούς φοιτητές στις εγκαταστάσεις της. Γέμισαν οι
+                            χώροι νεανικά χαρούμενα πρόσωπα.Τα επόμενα βήματα έχουν ήδη σχεδιαστεί με το κάλεσμα
+                            συμμετοχής των φοιτητών στα<br/>...</p></div>
+                    </div>
+                </div>
+                <div class="article clearfix articletype-0 topnews" itemscope="itemscope"
+                     itemtype="http://schema.org/Article">
+                    <div class="article__image matchHeight"><a
+                            title="ΠΜΣ ΑΣΤΙΚΟ ΔΙΚΑΙΟ_ΠΡΟΚΗΡΥΞΗ ΥΠΟΤΡΟΦΙΩΝ ΝΟΜΙΚΩΝ ΣΠΟΥΔΩΝ"
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/pms_astiko_dikaio_prokiryxi_ypotrofion_nomikon_spoydon/"><img
+                            src="/fileadmin/_processed_/7/0/csm_LawSchool-banner-825X400_26b210104c.jpg" width="160"
+                            height="78" alt=""/></a></div>
+                    <div class="article__content matchHeight"><!-- header --><h3 class="article__title"><a
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/pms_astiko_dikaio_prokiryxi_ypotrofion_nomikon_spoydon/">
+                        \t\t\t\t\t\tΠΜΣ ΑΣΤΙΚΟ ΔΙΚΑΙΟ_ΠΡΟΚΗΡΥΞΗ ΥΠΟΤΡΟΦΙΩΝ ΝΟΜΙΚΩΝ ΣΠΟΥΔΩΝ
+                        \t\t\t\t\t</a></h3>
+                        <div class="article__info"><span class="article__date"><time datetime="2022-10-14">
+\t\t\t\t\t14/10/2022 -
+\t\t\t\t\t<meta itemprop="datePublished" content="2022-10-14"/></time></span><a
+                                href="/anakoinoseis_kai_ekdiloseis/metaptychiakes_spoydes/"><span
+                                class="article__category link">
+\t\t\t\tΜΕΤΑΠΤΥΧΙΑΚΕΣ ΣΠΟΥΔΕΣ</span></a></div><!-- teaser -->
+                        <div class="teaser-text" itemprop="description"><p><span style="font-size:12pt"><span
+                                style="font-family:&quot;Times New Roman&quot;,serif"><span
+                                style="font-family:&quot;Calibri&quot;,sans-serif">Η&nbsp;<strong>Δικηγορική εταιρεία Μιχαλοπούλου &amp; Συνεργάτες</strong>&nbsp;με την ευκαιρία συμπλήρωσης των 20 χρόνων λειτουργίας</span>&nbsp;<span
+                                style="font-family:&quot;Calibri&quot;,sans-serif">της προκηρύσσει σε συνεργασία με το</span>&nbsp;<strong><span
+                                style="font-family:&quot;Calibri&quot;,sans-serif">Εθνικό και Καποδιστριακό Πανεπιστήμιο Αθηνών&nbsp;δύο&nbsp;(</span></strong><strong><span
+                                style="font-family:&quot;Calibri&quot;,sans-serif">2) πλήρεις υποτροφίες&nbsp;διδάκτρων</span></strong><span
+                                style="font-family:&quot;Calibri&quot;,sans-serif"> για το ακαδημαϊκό έτος 2022-2023 που απευθύνονται σε φοιτητές του&nbsp;προγράμματος</span><strong>&nbsp;</strong><strong><span
+                                style="font-family:&quot;Calibri&quot;,sans-serif">Μεταπτυχιακών Σπουδών της Νομικής Σχολής του...</span></strong>
+                        </p></div>
+                    </div>
+                </div>
+                <div class="article clearfix articletype-0" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <div class="article__image matchHeight"><a
+                            title="ΔΙΕΘΝΗΣ ΔΙΑΓΩΝΙΣΜΟΣ INTERNATIONAL CRIMINAL COURT IBA ICCMCC 2023"
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/diethnis_diagonismos_international_criminal_court_iba_iccmcc_2023-2/"><img
+                            src="/fileadmin/_processed_/7/0/csm_LawSchool-banner-825X400_26b210104c.jpg" width="160"
+                            height="78" alt=""/></a></div>
+                    <div class="article__content matchHeight"><!-- header --><h3 class="article__title"><a
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/diethnis_diagonismos_international_criminal_court_iba_iccmcc_2023-2/">
+                        \t\t\t\t\t\tΔΙΕΘΝΗΣ ΔΙΑΓΩΝΙΣΜΟΣ INTERNATIONAL CRIMINAL COURT IBA ICCMCC 2023
+                        \t\t\t\t\t</a></h3>
+                        <div class="article__info"><span class="article__date"><time datetime="2022-10-14">
+\t\t\t\t\t14/10/2022 -
+\t\t\t\t\t<meta itemprop="datePublished" content="2022-10-14"/></time></span><a
+                                href="/anakoinoseis_kai_ekdiloseis/ekdiloseis_simantika/"><span
+                                class="article__category link">
+\t\t\t\tΕΚΔΗΛΩΣΕΙΣ - ΣΗΜΑΝΤΙΚΑ</span></a></div><!-- teaser -->
+                        <div class="teaser-text" itemprop="description"><p><span style="font-size:11px"><strong>Δρ. Ελένη Μίχα</strong></span>
+                        </p>
+                            <p><span style="font-size:11px"><strong>Ε.ΔΙ.Π. Νομικής Σχολής </strong></span></p>
+                            <p><span style="font-size:11px">Αθήνα, 14 Οκτωβρίου 2022</span></p>
+                            <p>&nbsp;</p>
+                            <p class="text-center"><span style="font-size:14px"><strong>ΔΙΕΘΝΗΣ ΔΙΑΓΩΝΙΣΜΟΣ INTERNATIONAL CRIMINAL COURT</strong></span>
+                            </p>
+                            <p class="text-center"><span style="font-size:14px"><strong>IBA ICCMCC 2023</strong></span>
+                            </p>
+                            <p>&nbsp;</p>
+                            <p><span style="font-size:14px">Όσοι φοιτητές και φοιτήτριες έχουν καταθέσει αίτηση συμμετοχής στο διαγωνισμό εικονικής δίκης ενώπιον του Διεθνούς Ποινικού Δικαστηρίου (IBA ICC Moot Court Competition 2023) καλούνται σε συνέντευξη τη <strong>Δευτέ...</strong></span>
+                            </p></div>
+                    </div>
+                </div>
+                <div class="article clearfix articletype-0" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <div class="article__image matchHeight"><a
+                            title="ΔΙΕΘΝΗΣ ΔΙΑΓΩΝΙΣΜΟΣ INTERNATIONAL CRIMINAL COURT IBA ICCMCC 2023"
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/diethnis_diagonismos_international_criminal_court_iba_iccmcc_2023-1/"><img
+                            src="/fileadmin/_processed_/7/0/csm_LawSchool-banner-825X400_26b210104c.jpg" width="160"
+                            height="78" alt=""/></a></div>
+                    <div class="article__content matchHeight"><!-- header --><h3 class="article__title"><a
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/diethnis_diagonismos_international_criminal_court_iba_iccmcc_2023-1/">
+                        \t\t\t\t\t\tΔΙΕΘΝΗΣ ΔΙΑΓΩΝΙΣΜΟΣ INTERNATIONAL CRIMINAL COURT IBA ICCMCC 2023
+                        \t\t\t\t\t</a></h3>
+                        <div class="article__info"><span class="article__date"><time datetime="2022-10-14">
+\t\t\t\t\t14/10/2022 -
+\t\t\t\t\t<meta itemprop="datePublished" content="2022-10-14"/></time></span><a
+                                href="/anakoinoseis_kai_ekdiloseis/proptychiakes_spoydes/proptychiako_tomea_diethnon_spoydon/"><span
+                                class="article__category link">
+\t\t\t\tΠΡΟΠΤΥΧΙΑΚΟ ΤΟΜΕΑ ΔΙΕΘΝΩΝ ΣΠΟΥΔΩΝ</span></a></div><!-- teaser -->
+                        <div class="teaser-text" itemprop="description"><p><span style="font-size:12px"><strong><span
+                                style="font-family:Calibri,sans-serif"><span
+                                style="font-family:&quot;Times New Roman&quot;,serif">Δρ. Ελένη Μίχα</span></span></strong></span>
+                        </p>
+                            <p><span style="font-size:12px"><strong><span style="font-family:Calibri,sans-serif"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">Ε.ΔΙ.Π. Νομικής Σχολής </span></span></strong></span>
+                            </p>
+                            <p><span style="font-size:12px"><span style="font-family:Calibri,sans-serif"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">Αθήνα, 14 Οκτωβρίου 2022</span></span></span>
+                            </p>
+                            <p>&nbsp;</p>
+                            <p class="text-center"><strong><span style="font-size:11pt"><span
+                                    style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">ΔΙΕΘΝΗΣ ΔΙΑΓΩΝΙΣΜΟΣ INTERNATIONAL</span></span><span
+                                    style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">CRIMINAL</span></span><span
+                                    style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">COURT</span></span></span></span></strong>
+                            </p>
+                            <p class="text-center"><strong><span style="font-size:11pt"><span
+                                    style="font-family:Calibri,sans-serif"><span style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">IBA</span></span><span
+                                    style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">ICCMCC 2023</span></span></span></span></strong>
+                            </p>
+                            <p>&nbsp;</p>
+                            <p><span style="font-size:11pt"><span style="font-family:Calibri,sans-serif"><span
+                                    style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">Όσοι φοιτητές και φοιτήτριες έχουν καταθέσει αίτηση συμμετοχής στο διαγωνισμό εικονικής δίκης ενώπιον του Διεθνούς Ποινικού Δικαστηρίου (</span></span><span
+                                    style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">IB</span></span><span
+                                    style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">A</span></span><span
+                                    style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">ICC</span></span><span
+                                    style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">Moot</span></span><span
+                                    style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">Court</span></span><span
+                                    style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif">Competition</span></span><span
+                                    style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Times New Roman&quot;,serif"> 2023) καλούνται σε συνέντευξη τη <strong>Δευτέ...</strong></span></span>
+                            </p></div>
+                    </div>
+                </div>
+                <div class="article clearfix articletype-0" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <div class="article__image matchHeight"><a
+                            title="Έναρξη προπονήσεων Ρητορικού Ομίλου Νομικής Σχολής"
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/enarxi_proponiseon_ritorikoy_omiloy_nomikis_scholis/"><img
+                            src="/fileadmin/_processed_/7/0/csm_LawSchool-banner-825X400_26b210104c.jpg" width="160"
+                            height="78" alt=""/></a></div>
+                    <div class="article__content matchHeight"><!-- header --><h3 class="article__title"><a
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/enarxi_proponiseon_ritorikoy_omiloy_nomikis_scholis/">
+                        \t\t\t\t\t\tΕΝΑΡΞΗ ΠΡΟΠΟΝΗΣΕΩΝ ΡΗΤΟΡΙΚΟΥ ΟΜΙΛΟΥ ΝΟΜΙΚΗΣ ΣΧΟΛΗΣ
+                        \t\t\t\t\t</a></h3>
+                        <div class="article__info"><span class="article__date"><time datetime="2022-10-14">
+\t\t\t\t\t14/10/2022 -
+\t\t\t\t\t<meta itemprop="datePublished" content="2022-10-14"/></time></span><a
+                                href="/anakoinoseis_kai_ekdiloseis/ekdiloseis_simantika/"><span
+                                class="article__category link">
+\t\t\t\tΕΚΔΗΛΩΣΕΙΣ - ΣΗΜΑΝΤΙΚΑ</span></a></div><!-- teaser -->
+                        <div class="teaser-text" itemprop="description"><p>Αγαπητοί και Αγαπητές,</p>
+                            <p>Ο <strong>Ρητορικός Όμιλος της Νομικής Σχολή</strong>ς επιστρέφει! Με χαρά σας
+                                ανακοινώνουμε ότι πρόκειται να πραγματοποιήσουμε την πρώτη μας προπόνηση για το φετινό
+                                ακαδημαϊκό έτος την <strong>Τετάρτη 19 Οκτωβρίου και ώρα 19:00-21:00 στην αίθουσα
+                                    5.</strong></p>
+                            <p>Για την καλύτερη οργάνωση της συνάντησης, σας ενθαρρύνουμε να συμπληρώσετε την
+                                φόρμα...</p></div>
+                    </div>
+                </div>
+                <div class="article clearfix articletype-0" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <div class="article__image matchHeight"><a
+                            title="ΕΚΛΕΚΤΟΡΙΚΟ ΣΩΜΑ-ΚΕΝΗ ΘΕΣΗ ΕΠΙΚΟΥΡΟΥ ΚΑΘΗΓΗΤΗ-ΑΣΤΙΚΟ ΔΙΚΑΙΟ-ΑΡΡ 28672"
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/eklektoriko_soma_keni_thesi_epikoyroy_kathigiti_astiko_dikaio_arr_28672/"><img
+                            src="/fileadmin/_processed_/7/0/csm_LawSchool-banner-825X400_26b210104c.jpg" width="160"
+                            height="78" alt=""/></a></div>
+                    <div class="article__content matchHeight"><!-- header --><h3 class="article__title"><a
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/eklektoriko_soma_keni_thesi_epikoyroy_kathigiti_astiko_dikaio_arr_28672/">
+                        \t\t\t\t\t\tΕΚΛΕΚΤΟΡΙΚΟ ΣΩΜΑ-ΚΕΝΗ ΘΕΣΗ ΕΠΙΚΟΥΡΟΥ ΚΑΘΗΓΗΤΗ-ΑΣΤΙΚΟ ΔΙΚΑΙΟ-ΑΡΡ 28672
+                        \t\t\t\t\t</a></h3>
+                        <div class="article__info"><span class="article__date"><time datetime="2022-10-13">
+\t\t\t\t\t13/10/2022 -
+\t\t\t\t\t<meta itemprop="datePublished" content="2022-10-13"/></time></span><a
+                                href="/anakoinoseis_kai_ekdiloseis/prokiryxeis_exelixeis_melon_dep/"><span
+                                class="article__category link">
+\t\t\t\tΠΡΟΚΗΡΥΞΕΙΣ - ΕΞΕΛΙΞΕΙΣ ΜΕΛΩΝ ΔΕΠ</span></a></div><!-- teaser -->
+                        <div class="teaser-text" itemprop="description"><p>Για περισσότερα πατήστε <a
+                                href="/fileadmin/depts/law.uoa.gr/www/uploads/News/Secr/13.10.22-SYGKROTISI_EKLEKTORIKOY_SOMATOS_-_ARR_28672.pdf">ΕΔΩ</a>
+                        </p></div>
+                    </div>
+                </div>
+                <div class="article clearfix articletype-0" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <div class="article__image matchHeight"><a title="Δηλώσεις μαθημάτων  ΠΜΣ  Α   εξαμήνου"
+                                                               href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/diloseis_mathimaton_pms_a_examinoy/"><img
+                            src="/fileadmin/_processed_/7/0/csm_LawSchool-banner-825X400_26b210104c.jpg" width="160"
+                            height="78" alt=""/></a></div>
+                    <div class="article__content matchHeight"><!-- header --><h3 class="article__title"><a
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/diloseis_mathimaton_pms_a_examinoy/">
+                        \t\t\t\t\t\tΔΗΛΩΣΕΙΣ ΜΑΘΗΜΑΤΩΝ ΠΜΣ Α ΕΞΑΜΗΝΟΥ
+                        \t\t\t\t\t</a></h3>
+                        <div class="article__info"><span class="article__date"><time datetime="2022-10-13">
+\t\t\t\t\t13/10/2022 -
+\t\t\t\t\t<meta itemprop="datePublished" content="2022-10-13"/></time></span><a
+                                href="/anakoinoseis_kai_ekdiloseis/metaptychiakes_spoydes/"><span
+                                class="article__category link">
+\t\t\t\tΜΕΤΑΠΤΥΧΙΑΚΕΣ ΣΠΟΥΔΕΣ</span></a></div><!-- teaser -->
+                        <div class="teaser-text" itemprop="description"><p><span style="font-size:11pt"><span
+                                style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</strong></span></span>
+                        </p>
+                            <p><span style="font-size:11pt"><span
+                                    style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;"><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;&nbsp; ΔΗΛΩΣΕΙΣ&nbsp; ΜΑΘΗΜΑΤΩΝ&nbsp; </strong></span></span>
+                            </p>
+                            <p><span style="font-size:11pt"><span
+                                    style="font-family:&quot;Calibri&quot;,&quot;sans-serif&quot;"><span
+                                    style="font-size:12.0pt"><span
+                                    style="font-family:&quot;Tahoma&quot;,&quot;sans-serif&quot;">Ανακοινώνεται στους μεταπτυχιακούς&nbsp; φοιτητές ότι&nbsp; κατά&nbsp;<strong></strong>το χρονικό διάστημα<strong>&nbsp; 14&nbsp; έως&nbsp; 17 Οκτωβρίου 2022&nbsp; </strong>θα πρέπει&nbsp; να πραγματοποιήσουν μέσω του ηλεκτρονικού συστήματος (<a
+                                    href="https://my-uni.uoa.gr" target="_blank">my-uni.uoa.gr</a><u>)</u> τη&nbsp; ΔΗΛΩΣΗ μαθημάτων α' εξαμήνου, ακαδ. έτους...</span></span></span></span>
+                            </p></div>
+                    </div>
+                </div>
+                <div class="article clearfix articletype-0" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <div class="article__image matchHeight"><a
+                            title="ΠΡΟΓΡΑΜΜΑ ΙΚΥ-ΕΥΔΑΠ ΓΙΑ ΧΟΡΗΓΗΣΗ ΥΠΟΤΡΟΦΙΩΝ ΣΕ ΥΠΟΨΗΦΙΟΥΣ ΔΙΔΑΚΤΟΡΕΣ ΤΩΝ ΕΛΛΗΝΙΚΩΝ ΑΕΙ"
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/programma_iky_eydap_gia_chorigisi_ypotrofion_se_ypopsifioys_didaktores_ton_ellinikon_aei-1/"><img
+                            src="/fileadmin/_processed_/7/0/csm_LawSchool-banner-825X400_26b210104c.jpg" width="160"
+                            height="78" alt=""/></a></div>
+                    <div class="article__content matchHeight"><!-- header --><h3 class="article__title"><a
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/programma_iky_eydap_gia_chorigisi_ypotrofion_se_ypopsifioys_didaktores_ton_ellinikon_aei-1/">
+                        \t\t\t\t\t\tΠΡΟΓΡΑΜΜΑ ΙΚΥ-ΕΥΔΑΠ ΓΙΑ ΧΟΡΗΓΗΣΗ ΥΠΟΤΡΟΦΙΩΝ ΣΕ ΥΠΟΨΗΦΙΟΥΣ ΔΙΔΑΚΤΟΡΕΣ ΤΩΝ ΕΛΛΗΝΙΚΩΝ
+                        ΑΕΙ
+                        \t\t\t\t\t</a></h3>
+                        <div class="article__info"><span class="article__date"><time datetime="2022-10-13">
+\t\t\t\t\t13/10/2022 -
+\t\t\t\t\t<meta itemprop="datePublished" content="2022-10-13"/></time></span><a
+                                href="/anakoinoseis_kai_ekdiloseis/didaktorikes_spoydes/"><span
+                                class="article__category link">
+\t\t\t\tΔΙΔΑΚΤΟΡΙΚΕΣ ΣΠΟΥΔΕΣ</span></a></div><!-- teaser -->
+                        <div class="teaser-text" itemprop="description"><p class="moz-quote-pre">Το Ίδρυμα Κρατικών
+                            Υποτροφιών,σε εφαρμογήτηςμε αριθμ. 91811/Ζ1/22-7-2022 Υπουργικής Απόφασης(ΦΕΚ
+                            αρ.3983/B’/27-7-2022),ανακοινώνει την προκήρυξη προγράμματος χορήγησης δύο<br/>
+                            (2)υποτροφιών τετραετούς διάρκειας, ύψους 1.000,00 ευρώ μηνιαίως, που χρηματοδοτούνται από
+                            την ΕΥΔΑΠ και αφορούν υποψήφιους/υποψήφιες που εκπονούν τη διδακτορική τους...</p></div>
+                    </div>
+                </div>
+                <div class="article clearfix articletype-0" itemscope="itemscope" itemtype="http://schema.org/Article">
+                    <div class="article__image matchHeight"><a
+                            title="ΣΕΜΙΝΑΡΙΟ ΠΟΛΙΤΙΚΗΣ ΔΙΚΟΝΟΜΙΑΣ/ ΕΚΤΑΚΤΗ ΑΛΛΑΓΗ ΑΙΘΟΥΣΑΣ (25.10.2022)"
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/seminario_politikis_dikonomias_ektakti_allagi_aithoysas_25102022/"><img
+                            src="/fileadmin/_processed_/7/0/csm_LawSchool-banner-825X400_26b210104c.jpg" width="160"
+                            height="78" alt=""/></a></div>
+                    <div class="article__content matchHeight"><!-- header --><h3 class="article__title"><a
+                            href="/anakoinoseis_kai_ekdiloseis/proboli_anakoinosis/seminario_politikis_dikonomias_ektakti_allagi_aithoysas_25102022/">
+                        \t\t\t\t\t\tΣΕΜΙΝΑΡΙΟ ΠΟΛΙΤΙΚΗΣ ΔΙΚΟΝΟΜΙΑΣ/ ΕΚΤΑΚΤΗ ΑΛΛΑΓΗ ΑΙΘΟΥΣΑΣ (25.10.2022)
+                        \t\t\t\t\t</a></h3>
+                        <div class="article__info"><span class="article__date"><time datetime="2022-10-13">
+\t\t\t\t\t13/10/2022 -
+\t\t\t\t\t<meta itemprop="datePublished" content="2022-10-13"/></time></span><a
+                                href="/anakoinoseis_kai_ekdiloseis/proptychiakes_spoydes/proptychiako_tomea_b_idiotikoy_dikaioy/"><span
+                                class="article__category link">
+\t\t\t\tΠΡΟΠΤΥΧΙΑΚΟ ΤΟΜΕΑ Β&#039; ΙΔΙΩΤΙΚΟΥ ΔΙΚΑΙΟΥ</span></a></div><!-- teaser -->
+                        <div class="teaser-text" itemprop="description"><p class="text-center">Σας ενημερώνουμε ότι την
+                            Τρίτη 25 Οκτωβρίου 2022 και ώρα 19:00 - 21:00</p>
+                            <p class="text-center">το Σεμινάριο Πολιτικής Δικονομίας θα διεξαχθεί
+                                <u><strong>εκτάκτως</strong></u> στην Αίθουσα 5 (Μ.Θ.Ε.)&nbsp;</p>
+                            <p>&nbsp;</p>
+                            <p>&nbsp;</p></div>
+                    </div>
+                </div>
+                <ul class="paginnation">
+                    <li><a href="/anakoinoseis_kai_ekdiloseis/">
+                        \t\t\t\t\t\t\tΠροηγούμενο
+                        \t\t\t\t\t\t\t<i class="fa fa-angle-left" aria-hidden="true"></i></a></li>
+                    <li class="current"><a href="#">1</a></li>
+                    <li><a href="/anakoinoseis_kai_ekdiloseis/page/2/">2</a></li>
+                    <li><a href="/anakoinoseis_kai_ekdiloseis/page/3/">3</a></li>
+                    <li>....</li>
+                    <li class="last"><a href="/anakoinoseis_kai_ekdiloseis/page/109/">109</a></li>
+                    <li class="last next"><a href="/anakoinoseis_kai_ekdiloseis/page/2/">
+                        \t\t\t\t\tΕπόμενο
+                        \t\t\t\t\t<i class="fa fa-angle-right" aria-hidden="true"></i></a></li>
+                </ul>
+                <div class="news-clear"></div><!--TYPO3SEARCH_begin--><!--</div>-->
+
+
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-4 sidebar right_sidebar col-md-pull-9 col-sm-pull-8">
+            <div class="sidebar_logo hide_for_tablet">
+
+                <!--<div id="c977" class="frame frame-default frame-type-image frame-layout-0">-->
+                <div class="ce-image ce-center ce-above">
+                    <div class="ce-gallery" data-ce-columns="1" data-ce-images="1">
+                        <div class="ce-outer">
+                            <div class="ce-inner">
+                                <div class="ce-row">
+                                    <div class="ce-column">
+                                        <figure class="image"><a href="https://www.uoa.gr">
+                                            <link rel="stylesheet"
+                                                  href="/typo3conf/ext/uoa_website/Resources/Public/Css/rte.css">
+                                            <img class="image-embed-item img-responsive"
+                                                 src="/fileadmin/user_upload/Banners/logos/uoa-logo-centered-greek-1.jpg"
+                                                 width="224" height="131" alt=""/></a></figure>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--</div>-->
+
+
+            </div>
+            <aside class="aside_main_menu hide_for_tablet">
+                <ul>
+
+                    <li class="current">
+                        <a href="/anakoinoseis_kai_ekdiloseis/" title="Ανακοινώσεις και εκδηλώσεις">
+                            Ανακοινώσεις και εκδηλώσεις
+                        </a>
+
+                        <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                        <ul>
+
+                            <li class="">
+                                <a href="/anakoinoseis_kai_ekdiloseis/epilegmena/" title="Επιλεγμένα">
+                                    Επιλεγμένα
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/anakoinoseis_kai_ekdiloseis/proptychiakes_spoydes/"
+                                   title="Προπτυχιακές σπουδές">
+                                    Προπτυχιακές σπουδές
+                                </a>
+
+                                <ul>
+
+                                    <li class="">
+                                        <a href="/anakoinoseis_kai_ekdiloseis/proptychiakes_spoydes/proptychiako_tomea_a_idiotikoy_dikaioy/"
+                                           title="Προπτυχιακό Τομέα Α&#039; Ιδιωτικού Δικαίου">
+                                            Προπτυχιακό Τομέα Α&#039; Ιδιωτικού Δικαίου
+                                        </a>
+                                    </li>
+
+                                    <li class="">
+                                        <a href="/anakoinoseis_kai_ekdiloseis/proptychiakes_spoydes/proptychiako_tomea_b_idiotikoy_dikaioy/"
+                                           title="Προπτυχιακό Τομέα Β&#039; Ιδιωτικού Δικαίου">
+                                            Προπτυχιακό Τομέα Β&#039; Ιδιωτικού Δικαίου
+                                        </a>
+                                    </li>
+
+                                    <li class="">
+                                        <a href="/anakoinoseis_kai_ekdiloseis/proptychiakes_spoydes/proptychiako_tomea_dimosioy_dikaioy/"
+                                           title="Προπτυχιακό Τομέα Δημοσίου Δικαίου">
+                                            Προπτυχιακό Τομέα Δημοσίου Δικαίου
+                                        </a>
+                                    </li>
+
+                                    <li class="">
+                                        <a href="/anakoinoseis_kai_ekdiloseis/proptychiakes_spoydes/proptychiako_tomea_poinikon_epistimon/"
+                                           title="Προπτυχιακό Τομέα Ποινικών Επιστημών">
+                                            Προπτυχιακό Τομέα Ποινικών Επιστημών
+                                        </a>
+                                    </li>
+
+                                    <li class="">
+                                        <a href="/anakoinoseis_kai_ekdiloseis/proptychiakes_spoydes/proptychiako_tomea_diethnon_spoydon/"
+                                           title="Προπτυχιακό Τομέα Διεθνών Σπουδών">
+                                            Προπτυχιακό Τομέα Διεθνών Σπουδών
+                                        </a>
+                                    </li>
+
+                                    <li class="">
+                                        <a href="/anakoinoseis_kai_ekdiloseis/proptychiakes_spoydes/proptychiako_tomea_istorias_kai_theorias_toy_dikaioy/"
+                                           title="Προπτυχιακό Τομέα Ιστορίας και Θεωρίας του Δικαίου">
+                                            Προπτυχιακό Τομέα Ιστορίας και Θεωρίας του Δικαίου
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/anakoinoseis_kai_ekdiloseis/metaptychiakes_spoydes/"
+                                   title="Μεταπτυχιακές σπουδές">
+                                    Μεταπτυχιακές σπουδές
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/anakoinoseis_kai_ekdiloseis/didaktorikes_spoydes/"
+                                   title="Διδακτορικές Σπουδές">
+                                    Διδακτορικές Σπουδές
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/anakoinoseis_kai_ekdiloseis/erasmus/" title="Erasmus">
+                                    Erasmus
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/anakoinoseis_kai_ekdiloseis/civis/" title="CIVIS">
+                                    CIVIS
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/anakoinoseis_kai_ekdiloseis/european_law_school_network/"
+                                   title="EUROPEAN LAW SCHOOL NETWORK">
+                                    EUROPEAN LAW SCHOOL NETWORK
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/anakoinoseis_kai_ekdiloseis/prokiryxeis_exelixeis_melon_dep/"
+                                   title="Προκηρύξεις - Εξελίξεις Μελών ΔΕΠ">
+                                    Προκηρύξεις - Εξελίξεις Μελών ΔΕΠ
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/anakoinoseis_kai_ekdiloseis/ekdiloseis_simantika/"
+                                   title="Εκδηλώσεις - Σημαντικά">
+                                    Εκδηλώσεις - Σημαντικά
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+                    <li class="">
+                        <a href="/i_scholi/" title="Η Σχολή">
+                            Η Σχολή
+                        </a>
+
+                        <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                        <ul>
+
+                            <li class="">
+                                <a href="/i_scholi/organosi_kai_dioikisi/" title="Οργάνωση και Διοίκηση">
+                                    Οργάνωση και Διοίκηση
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/i_scholi/egkatastaseis_kai_prosbasi/" title="Εγκαταστάσεις και Πρόσβαση">
+                                    Εγκαταστάσεις και Πρόσβαση
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/i_scholi/bibliothiki_nomikis_scholis/" title="Βιβλιοθήκη Νομικής Σχολής">
+                                    Βιβλιοθήκη Νομικής Σχολής
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/i_scholi/ergastiria/" title="Εργαστήρια">
+                                    Εργαστήρια
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/i_scholi/ypostirixi_foititon_me_anapiria_monada_prosbasimotitas_ekpa/"
+                                   title="Υποστήριξη φοιτητών με αναπηρία - Μονάδα Προσβασιμότητας ΕΚΠΑ">
+                                    Υποστήριξη φοιτητών με αναπηρία - Μονάδα Προσβασιμότητας ΕΚΠΑ
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/i_scholi/axiologisi/" title="Αξιολόγηση">
+                                    Αξιολόγηση
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/i_scholi/mitroa_nomikis_scholis/" title="Μητρώα Νομικής Σχολής">
+                                    Μητρώα Νομικής Σχολής
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+                    <li class="">
+                        <a href="/tomeis/" title="Τομείς">
+                            Τομείς
+                        </a>
+
+                        <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                        <ul>
+
+                            <li class="">
+                                <a href="/tomeis/a_idiotikoy_dikaioy/" title="Α&#039; Ιδιωτικού Δικαίου">
+                                    Α&#039; Ιδιωτικού Δικαίου
+                                </a>
+
+                                <ul>
+
+                                    <li class="">
+                                        <a href="/tomeis/a_idiotikoy_dikaioy/mathimata/" title="Μαθήματα">
+                                            Μαθήματα
+                                        </a>
+                                    </li>
+
+                                    <li class="">
+                                        <a href="/tomeis/a_idiotikoy_dikaioy/prosopiko_ores_akroasis/"
+                                           title="Προσωπικό – Ώρες ακρόασης">
+                                            Προσωπικό – Ώρες ακρόασης
+                                        </a>
+                                    </li>
+
+                                    <li class="">
+                                        <a href="/tomeis/a_idiotikoy_dikaioy/ergografies/" title="Εργογραφίες">
+                                            Εργογραφίες
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/tomeis/b_idiotikoy_dikaioy/" title="Β&#039; Ιδιωτικού Δικαίου">
+                                    Β&#039; Ιδιωτικού Δικαίου
+                                </a>
+
+                                <ul>
+
+                                    <li class="">
+                                        <a href="/tomeis/b_idiotikoy_dikaioy/mathimata/" title="Μαθήματα">
+                                            Μαθήματα
+                                        </a>
+                                    </li>
+
+                                    <li class="">
+                                        <a href="/tomeis/b_idiotikoy_dikaioy/prosopiko_ores_akroasis/"
+                                           title="Προσωπικό – Ώρες ακρόασης">
+                                            Προσωπικό – Ώρες ακρόασης
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/tomeis/dimosioy_dikaioy/" title="Δημοσίου Δικαίου">
+                                    Δημοσίου Δικαίου
+                                </a>
+
+                                <ul>
+
+                                    <li class="">
+                                        <a href="/tomeis/dimosioy_dikaioy/mathimata/" title="Μαθήματα">
+                                            Μαθήματα
+                                        </a>
+                                    </li>
+
+                                    <li class="">
+                                        <a href="/tomeis/dimosioy_dikaioy/prosopiko_ores_akroasis/"
+                                           title="Προσωπικό – Ώρες ακρόασης">
+                                            Προσωπικό – Ώρες ακρόασης
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/tomeis/poinikon_epistimon/" title="Ποινικών Επιστημών">
+                                    Ποινικών Επιστημών
+                                </a>
+
+                                <ul>
+
+                                    <li class="">
+                                        <a href="/tomeis/poinikon_epistimon/mathimata/" title="Μαθήματα">
+                                            Μαθήματα
+                                        </a>
+                                    </li>
+
+                                    <li class="">
+                                        <a href="/tomeis/poinikon_epistimon/prosopiko_ores_akroasis/"
+                                           title="Προσωπικό – Ώρες ακρόασης">
+                                            Προσωπικό – Ώρες ακρόασης
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/tomeis/diethnon_spoydon/" title="Διεθνών Σπουδών">
+                                    Διεθνών Σπουδών
+                                </a>
+
+                                <ul>
+
+                                    <li class="">
+                                        <a href="/tomeis/diethnon_spoydon/mathimata/" title="Μαθήματα">
+                                            Μαθήματα
+                                        </a>
+                                    </li>
+
+                                    <li class="">
+                                        <a href="/tomeis/diethnon_spoydon/prosopiko_ores_akroasis/"
+                                           title="Προσωπικό – Ώρες ακρόασης">
+                                            Προσωπικό – Ώρες ακρόασης
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/tomeis/istorias_kai_theorias_toy_dikaioy/"
+                                   title="Ιστορίας και Θεωρίας του Δικαίου">
+                                    Ιστορίας και Θεωρίας του Δικαίου
+                                </a>
+
+                                <ul>
+
+                                    <li class="">
+                                        <a href="/tomeis/istorias_kai_theorias_toy_dikaioy/mathimata/" title="Μαθήματα">
+                                            Μαθήματα
+                                        </a>
+                                    </li>
+
+                                    <li class="">
+                                        <a href="/tomeis/istorias_kai_theorias_toy_dikaioy/prosopiko_ores_akroasis/"
+                                           title="Προσωπικό – Ώρες ακρόασης">
+                                            Προσωπικό – Ώρες ακρόασης
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+                    <li class="">
+                        <a href="/prosopiko/" title="Προσωπικό">
+                            Προσωπικό
+                        </a>
+
+                        <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                        <ul>
+
+                            <li class="">
+                                <a href="/prosopiko/didaskontes_ana_tomea/" title="Διδάσκοντες ανά Τομέα">
+                                    Διδάσκοντες ανά Τομέα
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/prosopiko/didaskontes_alfabitika/" title="Διδάσκοντες αλφαβητικά">
+                                    Διδάσκοντες αλφαβητικά
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/prosopiko/omotimoi_kathigites/" title="Ομότιμοι Καθηγητές">
+                                    Ομότιμοι Καθηγητές
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/prosopiko/epitimoi_didaktores/" title="Επίτιμοι Διδάκτορες">
+                                    Επίτιμοι Διδάκτορες
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/prosopiko/dioikitiko_kai_techniko_prosopiko/"
+                                   title="Διοικητικό και Τεχνικό Προσωπικό">
+                                    Διοικητικό και Τεχνικό Προσωπικό
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+                    <li class="">
+                        <a href="/katataxi_ptychioychon_tritobathmias_ekpaideysis/"
+                           title="Κατάταξη πτυχιούχων Τριτοβάθμιας Εκπαίδευσης">
+                            Κατάταξη πτυχιούχων Τριτοβάθμιας Εκπαίδευσης
+                        </a>
+
+                        <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                        <ul>
+
+                            <li class="">
+                                <a href="/katataxi_ptychioychon_tritobathmias_ekpaideysis/katataktiries_2019_2020/"
+                                   title="Κατατακτήριες 2019-2020">
+                                    Κατατακτήριες 2019-2020
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/katataxi_ptychioychon_tritobathmias_ekpaideysis/katataktiries_2020_2021/"
+                                   title="Κατατακτήριες 2020-2021">
+                                    Κατατακτήριες 2020-2021
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/katataxi_ptychioychon_tritobathmias_ekpaideysis/katataktiries_2021_2022/"
+                                   title="Κατατακτήριες 2021-2022">
+                                    Κατατακτήριες 2021-2022
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/katataxi_ptychioychon_tritobathmias_ekpaideysis/katataktiries_2022_2023/"
+                                   title="Κατατακτήριες 2022-2023">
+                                    Κατατακτήριες 2022-2023
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+                    <li class="">
+                        <a href="/proptychiakes_spoydes/" title="Προπτυχιακές Σπουδές">
+                            Προπτυχιακές Σπουδές
+                        </a>
+
+                        <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                        <ul>
+
+                            <li class="">
+                                <a href="/proptychiakes_spoydes/politiki_poiotitas/" title="Πολιτική Ποιότητας">
+                                    Πολιτική Ποιότητας
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/proptychiakes_spoydes/kanonismos_programmatos_spoydon/"
+                                   title="Κανονισμός Προγράμματος Σπουδών">
+                                    Κανονισμός Προγράμματος Σπουδών
+                                </a>
+
+                                <ul>
+
+                                    <li class="">
+                                        <a href="/proptychiakes_spoydes/kanonismos_programmatos_spoydon/diloseis_mathimaton/"
+                                           title="Δηλώσεις μαθημάτων">
+                                            Δηλώσεις μαθημάτων
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/proptychiakes_spoydes/programma_didaskalias/" title="Πρόγραμμα Διδασκαλίας">
+                                    Πρόγραμμα Διδασκαλίας
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/proptychiakes_spoydes/akadimaiko_imerologio/" title="Ακαδημαϊκό Ημερολόγιο">
+                                    Ακαδημαϊκό Ημερολόγιο
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/proptychiakes_spoydes/programma_exetaseon/" title="Πρόγραμμα Εξετάσεων">
+                                    Πρόγραμμα Εξετάσεων
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/proptychiakes_spoydes/foititikes_ypiresies/" title="Φοιτητικές Υπηρεσίες">
+                                    Φοιτητικές Υπηρεσίες
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/proptychiakes_spoydes/didaktika_syggrammata/" title="Διδακτικά Συγγράμματα">
+                                    Διδακτικά Συγγράμματα
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/proptychiakes_spoydes/sitisi/" title="Σίτιση">
+                                    Σίτιση
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/proptychiakes_spoydes/akadimaiki_taytotita/" title="Ακαδημαϊκή Ταυτότητα">
+                                    Ακαδημαϊκή Ταυτότητα
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/proptychiakes_spoydes/imera_anoikton_pylon/" title="Ημέρα ανοικτών πυλών">
+                                    Ημέρα ανοικτών πυλών
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+                    <li class="">
+                        <a href="/metaptychiakes_spoydes/" title="Μεταπτυχιακές Σπουδές">
+                            Μεταπτυχιακές Σπουδές
+                        </a>
+
+                        <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                        <ul>
+
+                            <li class="">
+                                <a href="/metaptychiakes_spoydes/programma_didaskalias_kai_programma_exetastikis/"
+                                   title="Πρόγραμμα διδασκαλίας και πρόγραμμα εξεταστικής">
+                                    Πρόγραμμα διδασκαλίας και πρόγραμμα εξεταστικής
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/metaptychiakes_spoydes/didaktiki_kai_exetastiki_periodos/"
+                                   title="Διδακτική και Εξεταστική περίοδος">
+                                    Διδακτική και Εξεταστική περίοδος
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/metaptychiakes_spoydes/chrisima_eggrafa/" title="Χρήσιμα έγγραφα">
+                                    Χρήσιμα έγγραφα
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/metaptychiakes_spoydes/gkriza_bibliografia_pergamos/"
+                                   title="Γκρίζα Βιβλιογραφία - Πέργαμος">
+                                    Γκρίζα Βιβλιογραφία - Πέργαμος
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/metaptychiakes_spoydes/akadimaiki_taytotita/" title="Ακαδημαϊκή Ταυτότητα">
+                                    Ακαδημαϊκή Ταυτότητα
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/metaptychiakes_spoydes/sitisi/" title="Σίτιση">
+                                    Σίτιση
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/metaptychiakes_spoydes/ilektronikes_ypiresies/"
+                                   title="Ηλεκτρονικές Υπηρεσίες">
+                                    Ηλεκτρονικές Υπηρεσίες
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/metaptychiakes_spoydes/apallagi_apo_teli_foitisis/"
+                                   title="Απαλλαγή από τέλη φοίτησης">
+                                    Απαλλαγή από τέλη φοίτησης
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/metaptychiakes_spoydes/themata_diplomatikon_ergasion/"
+                                   title="Θέματα διπλωματικών εργασιών">
+                                    Θέματα διπλωματικών εργασιών
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+                    <li class="">
+                        <a href="/didaktorikes_spoydes/" title="Διδακτορικές Σπουδές">
+                            Διδακτορικές Σπουδές
+                        </a>
+
+                        <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                        <ul>
+
+                            <li class="">
+                                <a href="/didaktorikes_spoydes/gkriza_bibliografia_pergamos/"
+                                   title="Γκρίζα Βιβλιογραφία - Πέργαμος">
+                                    Γκρίζα Βιβλιογραφία - Πέργαμος
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/didaktorikes_spoydes/akadimaiki_taytotita/" title="Ακαδημαϊκή Ταυτότητα">
+                                    Ακαδημαϊκή Ταυτότητα
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/didaktorikes_spoydes/sitisi/" title="Σίτιση">
+                                    Σίτιση
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/didaktorikes_spoydes/ilektronikes_ypiresies/" title="Ηλεκτρονικές Υπηρεσίες">
+                                    Ηλεκτρονικές Υπηρεσίες
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/didaktorikes_spoydes/metadidaktoriki_ereyna/" title="Μεταδιδακτορική Έρευνα">
+                                    Μεταδιδακτορική Έρευνα
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/didaktorikes_spoydes/mitroo_didaktorikon_diatribon/"
+                                   title="Μητρώο Διδακτορικών Διατριβών">
+                                    Μητρώο Διδακτορικών Διατριβών
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+                    <li class="">
+                        <a href="/erasmus_exerchomenoi_foitites_ekpa/" title="Erasmus +: εξερχόμενοι φοιτητές ΕΚΠΑ">
+                            Erasmus +: εξερχόμενοι φοιτητές ΕΚΠΑ
+                        </a>
+
+                        <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                        <ul>
+
+                            <li class="">
+                                <a href="/erasmus_exerchomenoi_foitites_ekpa/anagnorisi_mathimaton_erasmus_exerchomenon_foititon_ekpa/"
+                                   title="Aναγνώριση μαθημάτων Erasmus+ εξερχόμενων φοιτητών ΕΚΠΑ">
+                                    Aναγνώριση μαθημάτων Erasmus+ εξερχόμενων φοιτητών ΕΚΠΑ
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/erasmus_exerchomenoi_foitites_ekpa/civis/" title="CIVIS">
+                                    CIVIS
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+                    <li class="">
+                        <a href="/diagonismoi/" title="Διαγωνισμοί">
+                            Διαγωνισμοί
+                        </a>
+
+                        <span class="sub_menu_icon">
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                                width="12px" height="7px">
+                                        <path fill-rule="evenodd" fill="rgb(255, 255, 255)"
+                                              d="M12.010,0.729 L6.726,6.116 L6.876,6.270 L6.150,7.010 L6.000,6.856 L5.849,7.010 L5.123,6.270 L5.274,6.116 L-0.010,0.729 L0.716,-0.011 L6.000,5.376 L11.284,-0.011 L12.010,0.729 Z"/>
+                                        </svg>
+                                    </span>
+                        <ul>
+
+                            <li class="">
+                                <a href="/diagonismoi/analytikos_katalogos_symmetochon_tis_nomikis_scholis_se_diethneis_diagonismoys/"
+                                   title="Αναλυτικός κατάλογος συμμετοχών της Νομικής Σχολής σε διεθνείς διαγωνισμούς">
+                                    Αναλυτικός κατάλογος συμμετοχών της Νομικής Σχολής σε διεθνείς διαγωνισμούς
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/diagonismoi/anthropinon_dikaiomaton/" title="Ανθρωπίνων Δικαιωμάτων">
+                                    Ανθρωπίνων Δικαιωμάτων
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/diagonismoi/emporiki_diamesolabisi/" title="Εμπορική Διαμεσολάβηση">
+                                    Εμπορική Διαμεσολάβηση
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/diagonismoi/emporiki_diaitisia/" title="Eμπορική Διαιτησία">
+                                    Eμπορική Διαιτησία
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/diagonismoi/romaiko_dikaio/" title="Ρωμαϊκό Δίκαιο">
+                                    Ρωμαϊκό Δίκαιο
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/diagonismoi/europa_moot_court/" title="Europa Moot Court">
+                                    Europa Moot Court
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/diagonismoi/european_law_moot_court/" title="European Law Moot Court">
+                                    European Law Moot Court
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/diagonismoi/european_law_moot_court_competition/"
+                                   title="European Law Moot Court Competition">
+                                    European Law Moot Court Competition
+                                </a>
+
+                            </li>
+
+                            <li class="">
+                                <a href="/diagonismoi/philip_c_jessup_international_law_moot_court/"
+                                   title="Philip C. Jessup International Law Moot Court">
+                                    Philip C. Jessup International Law Moot Court
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </li>
+
+                </ul>
+            </aside>
+
+            \t\t
+            <!-- <aside class="aside_widget_img"><a href="/"><img src="uploads/pics/aside_widget_img.png" alt=""></a></aside> -->
+        </div>
+    </div>
+</section>
+
+
+<footer class="footer">
+    <div class="footer__logos">
+        <div class="row footer__logos--container">
+            <div class="col-md-2 col-sm-4 col-xs-6 text-center">
+
+                <!--<div id="c54834" class="frame frame-default frame-type-image frame-layout-0">-->
+                <div class="ce-image ce-center ce-above">
+                    <div class="ce-gallery" data-ce-columns="1" data-ce-images="1">
+                        <div class="ce-outer">
+                            <div class="ce-inner">
+                                <div class="ce-row">
+                                    <div class="ce-column">
+                                        <figure class="image"><a
+                                                href="https://europa.eu/youreurope/citizens/index_el.htm">
+                                            <link rel="stylesheet"
+                                                  href="/typo3conf/ext/uoa_website/Resources/Public/Css/rte.css">
+                                            <img class="image-embed-item img-responsive"
+                                                 src="/fileadmin/user_upload/Banners/new/h_eyrwph_soy_logo_100_sq.png"
+                                                 width="100" height="100" alt=""/></a></figure>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--</div>-->
+
+
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 text-center">
+
+                <!--<div id="c54835" class="frame frame-default frame-type-image frame-layout-0">--><h2 class=""></h2>
+                <div class="ce-image ce-center ce-above">
+                    <div class="ce-gallery" data-ce-columns="1" data-ce-images="1">
+                        <div class="ce-outer">
+                            <div class="ce-inner">
+                                <div class="ce-row">
+                                    <div class="ce-column">
+                                        <figure class="image"><a
+                                                href="/fileadmin/depts/law.uoa.gr/www/uploads/law-ethaae-gr.PDF">
+                                            <link rel="stylesheet"
+                                                  href="/typo3conf/ext/uoa_website/Resources/Public/Css/rte.css">
+                                            <img class="image-embed-item img-responsive"
+                                                 src="/fileadmin/user_upload/thumbnails/Logo_ESDP_70x70.jpg" width="70"
+                                                 height="72" alt=""/></a></figure>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--</div>-->
+
+
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 text-center">
+
+                <!--<div id="c54838" class="frame frame-default frame-type-image frame-layout-0">-->
+                <div class="ce-image ce-center ce-above">
+                    <div class="ce-gallery" data-ce-columns="1" data-ce-images="1">
+                        <div class="ce-outer">
+                            <div class="ce-inner">
+                                <div class="ce-row">
+                                    <div class="ce-column">
+                                        <figure class="image"><a href="http://www.interel.uoa.gr/erasmus.html">
+                                            <link rel="stylesheet"
+                                                  href="/typo3conf/ext/uoa_website/Resources/Public/Css/rte.css">
+                                            <img class="image-embed-item img-responsive" alt="Erasmus+"
+                                                 src="/fileadmin/user_upload/footer_logo1.png" width="131" height="50"/></a>
+                                        </figure>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--</div>-->
+
+
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 text-center">
+
+                <!--<div id="c54840" class="frame frame-default frame-type-image frame-layout-0">-->
+                <div class="ce-image ce-center ce-above">
+                    <div class="ce-gallery" data-ce-columns="1" data-ce-images="1">
+                        <div class="ce-outer">
+                            <div class="ce-inner">
+                                <div class="ce-row">
+                                    <div class="ce-column">
+                                        <figure class="image"><a href="http://www.opencourses.gr/">
+                                            <link rel="stylesheet"
+                                                  href="/typo3conf/ext/uoa_website/Resources/Public/Css/rte.css">
+                                            <img class="image-embed-item img-responsive"
+                                                 src="/fileadmin/user_upload/footer_logo4.png" width="154" height="70"
+                                                 alt=""/></a></figure>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--</div>-->
+
+
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 text-center">
+
+                <!--<div id="c54841" class="frame frame-default frame-type-image frame-layout-0">-->
+                <div class="ce-image ce-center ce-above">
+                    <div class="ce-gallery" data-ce-columns="1" data-ce-images="1">
+                        <div class="ce-outer">
+                            <div class="ce-inner">
+                                <div class="ce-row">
+                                    <div class="ce-column">
+                                        <figure class="image"><a href="http://et.diavgeia.gov.gr/f/99203020">
+                                            <link rel="stylesheet"
+                                                  href="/typo3conf/ext/uoa_website/Resources/Public/Css/rte.css">
+                                            <img class="image-embed-item img-responsive"
+                                                 src="/fileadmin/user_upload/footer_logo5.png" width="131" height="51"
+                                                 alt=""/></a></figure>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--</div>-->
+
+
+            </div>
+            <div class="col-md-2 col-sm-4 col-xs-6 text-center">
+
+                <!--<div id="c54842" class="frame frame-default frame-type-image frame-layout-0">-->
+                <div class="ce-image ce-center ce-above">
+                    <div class="ce-gallery" data-ce-columns="1" data-ce-images="1">
+                        <div class="ce-outer">
+                            <div class="ce-inner">
+                                <div class="ce-row">
+                                    <div class="ce-column">
+                                        <figure class="image"><a href="http://www.athensculturenet.com/el/">
+                                            <link rel="stylesheet"
+                                                  href="/typo3conf/ext/uoa_website/Resources/Public/Css/rte.css">
+                                            <img class="image-embed-item img-responsive"
+                                                 src="/fileadmin/user_upload/footer_logo6.png" width="169" height="71"
+                                                 alt=""/></a></figure>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--</div>-->
+
+
+            </div>
+        </div>
+    </div>
+    <div class="footer__center">
+        <div class="row">
+            <div class="col-md-2 col-sm-3 col-xs-6 col-xxs-12 matchHeight footer__menu_col">
+                <h2 class="footer__title">ΣΧΕΤΙΚΑ:<span class="dropdown-toggle"><span
+                        class="fa fa-angle-down"></span></span></h2>
+                <ul>
+                    <li><a href="https://www.uoa.gr">Το Πανεπιστήμιο</a></li>
+                    <li><a href="/footer/schetika/dioikitikes_ypiresies/">Διοικητικές Υπηρεσίες</a></li>
+                    <li><a href="/prosopiko/">Προσωπικό</a></li>
+                    <li><a href="/anakoinoseis_kai_ekdiloseis/">Νέα και ανακοινώσεις</a></li>
+                </ul>
+            </div>
+            <div class="col-md-2 col-sm-3 col-xs-6 col-xxs-12 matchHeight footer__menu_col">
+                <h2 class="footer__title">ΕΚΠΑΙΔΕΥΣΗ:<span class="dropdown-toggle"><span
+                        class="fa fa-angle-down"></span></span></h2>
+                <ul>
+                    <li><a href="/proptychiakes_spoydes/">Σπουδές</a></li>
+                    <li><a href="/proptychiakes_spoydes/foititikes_ypiresies/">Φοιτητές</a></li>
+                    <li><a href="https://alumni.uoa.gr/">Απόφοιτοι</a></li>
+                </ul>
+            </div>
+            <div class="col-md-2 col-sm-3 col-xs-6 col-xxs-12 matchHeight footer__menu_col">
+                <h2 class="footer__title">ΥΠΗΡΕΣΙΕΣ:<span class="dropdown-toggle"><span class="fa fa-angle-down"></span></span>
+                </h2>
+                <ul>
+                    <li><a href="https://my-studies.uoa.gr/">My-Studies</a></li>
+                    <li><a href="https://eclass.uoa.gr">E-class</a></li>
+                    <li><a href="https://delos.uoa.gr/opendelos/">Delos</a></li>
+                    <li><a href="http://pergamos.lib.uoa.gr/uoa/dl/frontend/index.html">Pergamos</a></li>
+                    <li><a href="https://eprotocol.uoa.gr/">e-Protocol</a></li>
+                </ul>
+            </div>
+            <div class="col-md-2 col-sm-3 col-xs-6 col-xxs-12 matchHeight footer__menu_col">
+                <h2 class="footer__title">ΣΥΝΔΕΣΜΟΙ:<span class="dropdown-toggle"><span class="fa fa-angle-down"></span></span>
+                </h2>
+                <ul>
+                    <li><a href="/footer/syndesmoi/prokiryxeis/">Προκηρύξεις</a></li>
+                    <li><a href="/footer/syndesmoi/imerologio_ekdiloseon/">Ημερολόγιο Εκδηλώσεων</a></li>
+                    <li><a href="http://law.lib.uoa.gr/">Βιβλιοθήκη και Κέντρο Πληροφόρησης</a></li>
+                    <li><a href="/footer/syndesmoi/oloi_oi_syndesmoi/">Όλοι οι σύνδεσμοι...</a></li>
+                </ul>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-3 col-sm-12 clearfix footer__forms_column">
+
+                \t
+                <form method="get" class="header__search searchform" name="form_kesearch_pi1" action="/anazitisi/">
+                    \t\t
+                    <fieldset class="kesearch_searchbox">
+                        \t\t\t
+                        \t\t\t\t<input type="hidden" name="id" value="10774"/>
+                        \t\t\t
+                        \t\t\t
+                        \t\t\t
+                        \t\t\t
+
+                        \t\t\t<!--<div class="kesearchbox">
+\t\t\t\t<input type="text" id="ke_search_sword" name="tx_kesearch_pi1[sword]" value="" placeholder="ΑΝΑΖΗΤΗΣΗ" />
+\t\t\t\t<div class="clearer">&nbsp;</div>
+\t\t\t</div>-->
+
+                        \t\t\t<input type="search" placeholder="ΑΝΑΖΗΤΗΣΗ" title="ΑΝΑΖΗΤΗΣΗ"
+                                     name="tx_kesearch_pi1[sword]" value="">
+                        \t\t\t
+                        <button>
+                            \t\t\t\t
+                            <svg
+                                    \t\t\t\t\t\txmlns="http://www.w3.org/2000/svg"
+                                    \t\t\t\t\t\txmlns:xlink="http://www.w3.org/1999/xlink"
+                                    \t\t\t\t\t\twidth="23px" height="19px">
+                                \t\t\t\t\t
+                                <path fill="rgb(255, 255, 255)"
+                                      \t\t\t\t\t\t\td="M22.670,18.178 C22.088,19.041 20.931,19.257 20.090,18.659 L12.467,13.255 C11.928,12.873 11.648,12.252 11.669,11.626 C10.687,12.705 9.398,13.430 7.953,13.699 C6.178,14.031 4.386,13.634 2.907,12.585 C1.427,11.537 0.434,9.960 0.111,8.142 C-0.213,6.324 0.173,4.488 1.198,2.971 C3.314,-0.161 7.523,-0.946 10.582,1.220 C13.358,3.190 14.245,6.927 12.802,9.942 C13.366,9.699 14.035,9.747 14.577,10.131 L22.201,15.535 C23.043,16.133 23.254,17.316 22.670,18.178 ZM11.370,6.041 C11.145,4.774 10.453,3.674 9.421,2.943 C7.289,1.430 4.353,1.977 2.876,4.161 C1.400,6.348 1.935,9.355 4.067,10.865 C6.199,12.377 9.135,11.830 10.611,9.646 C11.326,8.589 11.595,7.308 11.370,6.041 Z"/>
+                                \t\t\t\t
+                            </svg>
+                            \t\t\t
+                        </button>
+
+                        <!--\t\t\t<input id="kesearchpagenumber" type="hidden" name="tx_kesearch_pi1[page]" value="1" />
+                        \t\t\t<input id="resetFilters" type="hidden" name="tx_kesearch_pi1[resetFilters]" value="0" />
+                        \t\t\t<input id="sortByField" type="hidden" name="tx_kesearch_pi1[sortByField]" value="" />
+                        \t\t\t<input id="sortByDir" type="hidden" name="tx_kesearch_pi1[sortByDir]" value="" />
+                        \t\t\t
+                        -->
+                        \t\t
+                    </fieldset>
+                    \t
+                </form>
+
+
+                <div class="footer__contact_info">
+                    <h6 class="footer__title">
+                        ΕΠΙΚΟΙΝΩΝΙΑ:
+                    </h6>
+
+                    <!--<div id="c15087" class="frame frame-default frame-type-text frame-layout-0">--><p>Ακαδημίας 47,&nbsp;106
+                    72,&nbsp;Αθήνα<br/> Τηλ: <a href="tel:2103688659">210 368 8659</a></p>
+                    <p><a href="/prosopiko/dioikitiko_kai_techniko_prosopiko/">Διοικητικό Προσωπικό</a></p><!--</div>-->
+
+
+                    <ul>
+                        <li><a href="http://www.facebook.com/uoa.official" title="Facebook"><span class="fa fa-facebook"
+                                                                                                  aria-hidden="true">&nbsp;</span></a>
+                        </li>
+                        <li><a href="https://www.youtube.com/watch?v=m3HkLzBmcuY" title="Youtube"><span
+                                class="fa fa-youtube" aria-hidden="true">&nbsp;</span></a></li>
+                        <li><a href="http://www.twitter.com" title="Twitter"><span class="fa fa-twitter"
+                                                                                   aria-hidden="true">&nbsp;</span></a>
+                        </li>
+                        <li><a href="https://www.linkedin.com/school/15094179/" title="Linkedin"><span
+                                class="fa fa-linkedin" aria-hidden="true">&nbsp;</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer__bottom">
+        <div class="row">
+            <div class="col-md-8 col-sm-7">
+                <div class="footer__copyright">
+                    <div class="footer__logo">
+                        <a href="https://www.uoa.gr/" title="Uoa"><img
+                                src="/typo3conf/ext/uoa_website/Resources/Public/Images/footer_logo.png" width="64"
+                                height="65" alt="Uoa" title="Uoa"></a>
+                    </div>
+                    <div class="footer__copyright--text">
+                        <p>
+                            Copyright © 2022 <br>
+                            Εθνικό και Καποδιστριακό Πανεπιστήμιο Αθηνών
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-3 col-sm-5">
+
+            </div>
+        </div>
+    </div>
+
+</footer>
+
+<script src="/typo3temp/assets/compressed/merged-3f956cf16af963a773670d53b9630467-a88799689b8c324ab2f5a94567c53372.js?1665735245"
+        type="text/javascript"></script>
+
+
+</body>
+</html>

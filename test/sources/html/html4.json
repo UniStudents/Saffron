@@ -1,0 +1,37 @@
+{
+    "url": [
+        ["Γενικές Ανακοινώσεις", "http://127.0.0.1:3000/html4"]
+    ],
+    "name": "html4-source",
+    "encoding": "iso-8859-7",
+    "type": "html",
+    "scrape": {
+        "container": "#page-content > .news_container",
+        "article": {
+            "link": {
+                "class": ".news_title",
+                "find": ["a"],
+                "attributes": ["href"],
+                "multiple": false
+            },
+            "pubDate": {
+                "class": ".news_date",
+                "multiple": false
+            },
+            "title": {
+                "class": ".news_title",
+                "multiple": false
+            },
+            "content": {
+                "class": ".news_main",
+                "multiple": false
+            },
+            "attachments": {
+                "class": ".news_main",
+                "find": ["a"],
+                "attributes": ["href"],
+                "multiple": true
+            }
+        }
+    }
+}

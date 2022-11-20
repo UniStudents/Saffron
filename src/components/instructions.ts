@@ -1,10 +1,5 @@
-import Source from "./source";
-import {ParserType} from "./ParserType";
-
-export type InstructionUrl = {
-    url: string;
-    aliases: string[];
-};
+import type {ParserType} from "./ParserClass";
+import type {InstructionUrl, ScrapeDynamic, ScrapeHTML, ScrapeRSS, ScrapeWordPressV2} from "./types";
 
 /**
  * The instructions class is used mainly by parsers.
@@ -12,24 +7,23 @@ export type InstructionUrl = {
  * parsers will work during the process of analyzing
  * a web page content.
  */
-export default class Instructions {
-    declare source: { id: string; };
+export class Instructions {
     declare url: InstructionUrl[];
     declare parserType: ParserType;
-    declare endPoint: string;
-    declare amount: number;
-    declare scrapeOptions: any;
-    declare elementSelector: string;
-    declare scrapeFunction: string;
-    declare textDecoder: TextDecoder;
-    declare ignoreCertificates: boolean;
-    declare extraFields: string[];
 
-    /**
-     * Return the source that variable source refers to.
-     * @return Source
-     */
-    getSource(): Source {
-        return Source.getSourceFrom(this);
-    }
+    declare timeout: number;
+    declare maxRedirects: number;
+    declare headers: {[key: string]: string | string[]};
+    declare ignoreCertificates: boolean;
+
+    declare textDecoder: TextDecoder;
+    declare includeContentAttachments: boolean;
+    declare amount: number;
+
+    declare html: ScrapeHTML;
+    declare rss: ScrapeRSS;
+    declare wp: ScrapeWordPressV2;
+
+    declare dynamic: ScrapeDynamic;
+    declare dynamicFuncStr: string;
 }

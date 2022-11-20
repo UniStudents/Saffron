@@ -1,0 +1,12 @@
+{
+    "url": "http://127.0.0.1:3000/rss3",
+    "name": "rss3-source",
+    "type": "rss",
+    "scrape": {
+        "extraFields": ["dc:creator"],
+        "assignFields": {
+            "title": "link",
+            "test": "title"
+        }
+    }
+}

@@ -1,37 +1,39 @@
+export type PairEvent = 'articles' | 'article.format'
+
 type Pair = {
-    event: string;
+    event: PairEvent;
     callback: (...args: any[]) => any;
 };
 
-export default class Extensions {
+export class Extensions {
 
-    private static instance: Extensions;
-    private declare readonly pairs: Pair[];
+    private readonly articles: Pair[];
+    // private readonly sources: Pair[];
 
-    private constructor() {
-        this.pairs = [];
+    constructor() {
+        this.articles = [];
+        // this.sources = [];
     }
 
-    static getInstance(): Extensions {
-        if (Extensions.instance == null)
-            this.instance = new Extensions();
-
-        return Extensions.instance;
+    push(p: Pair) {
+        if (['articles', 'article.format'].includes(p.event))
+            this.articles.push(p);
+        // else if (['source.before', 'source.after'].includes(p.event))
+        //     this.sources.push(p);
+        else throw new Error(`SaffronException ${p.event} is not valid.`);
     }
 
-    push(p: Pair): void {
-        if (!['articles', 'article.format'].includes(p.event))
-            throw new Error(`Event ${p.event} is not valid.`);
-        this.pairs.push(p);
-    }
-
-    startPairCount(): (() => Pair | null) {
+    startPairCount(what: 'articles' /*| 'sources'*/): () => (Pair | null) {
         let i = 0;
-        const self = this;
+        const it = this[what];
+        // let it: Pair[] = [];
+        // switch (what) {
+        //     case "articles": it = this.articles; break;
+        //     case "sources": it = this.sources; break;
+        // }
         return function getNextPair(): Pair | null {
-            if (i >= self.pairs.length)
-                return null;
-            return self.pairs[i++];
+            if (i === it.length) return null;
+            return it[i++];
         };
     }
 }

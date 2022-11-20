@@ -1,5 +1,5 @@
-import Source from "./source";
-import randomId from "../middleware/randomId"
+import type {Saffron} from "../index";
+import type {Source} from "./source";
 
 export type Attachment = {
     attribute: string;
@@ -12,58 +12,23 @@ export type Category = {
     links: string[];
 };
 
-export default class Article {
-    declare id: string;
-    declare title: string;
-    declare content: string;
-    declare link: string;
-    declare pubDate: string;
+export class Article {
+    declare title: string | null;
+    declare content: string | null;
+    declare link: string | null;
+    declare pubDate: string | null;
     declare timestamp: number;
     declare extras: { [key: string]: any };
-    declare source: {
-        id: string;
-        name: string;
-    };
+    declare source: string;
     declare attachments: Attachment[];
     declare categories: Category[];
-    declare thumbnail: string;
+    declare thumbnail: string | null;
 
     constructor() {
-        this.id = randomId("art")
     }
 
-    /**
-     * Return the source class where this article belongs
-     */
-    getSource(): Source {
-        return Source.getSourceFrom(this)
-    }
-
-    /**
-     * Generate and return the hash of the article
-     */
-    getHash() {
-        return `${this.link}:${this.title}`;
-    }
-
-    public setThumbnail(thumbnail: string) {
-        this.thumbnail = thumbnail;
-    }
-
-    public setTitle(title: string) {
-        this.title = title;
-    }
-
-    public setContent(content: string) {
-        this.content = content;
-    }
-
-    public setLink(link: string) {
-        this.link = link;
-    }
-
-    public setPubDate(pubDate: string) {
-        this.pubDate = pubDate;
+    public getSource(saffron: Saffron): Source {
+        return saffron.scheduler.sources.find(s => s.name = this.source)!;
     }
 
     public addExtra(key: string, value: any) {
@@ -71,10 +36,6 @@ export default class Article {
             this.extras = {};
 
         this.extras[key] = value;
-    }
-
-    public setSource(id: string, name: string) {
-        this.source = {id, name};
     }
 
     public pushAttachment(attachment: Attachment) {

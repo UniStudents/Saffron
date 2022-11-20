@@ -1,0 +1,39 @@
+{
+    "url": [
+        ["Νέα", "http://127.0.0.1:3000/html3"]
+    ],
+    "name": "html3-source",
+    "type": "html",
+    "scrape": {
+        "container": "#block-system-main > div > div.view-content > div > div > div.row > div.views-row",
+        "article": {
+            "link": {
+                "class": "div > div > div > div > div > div.field.field-name-title-field.field-type-text.field-label-hidden > div > div > h2",
+                "find": [
+                    "a"
+                ],
+                "attributes": [
+                    "href"
+                ],
+                "multiple": false
+            },
+            "title": {
+                "class": "div > div > div > div > div > div.field.field-name-title-field.field-type-text.field-label-hidden > div > div > h2 > a",
+                "multiple": false
+            },
+            "title-sep": {
+                "parent": "title",
+                "static": " - "
+            },
+            "pubDate": {
+                "parent": "title",
+                "class": "div > div > div > div > div > div.field.field-name-field-date-deppost.field-type-datetime.field-label-hidden > div > div > span",
+                "multiple": false
+            },
+            "content": {
+                "class": "div > div > div > div > div > div.field.field-name-body.field-type-text-with-summary.field-label-hidden > div > div > p",
+                "multiple": false
+            }
+        }
+    }
+}

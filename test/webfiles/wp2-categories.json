@@ -1,0 +1,412 @@
+[
+    {
+        "id": 76,
+        "count": 4,
+        "description": "",
+        "link": "https:\/\/financeclub.unipi.gr\/category\/cfa-en\/",
+        "name": "CFA Institute Research Challenge EN",
+        "slug": "cfa-en",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "yoast_head": "<!-- This site is optimized with the Yoast SEO plugin v14.0.4 - https:\/\/yoast.com\/wordpress\/plugins\/seo\/ -->\r\n<title>CFA Institute Research Challenge EN Archives - Finance Club UniPi<\/title>\r\n<meta name=\"robots\" content=\"index, follow\" \/>\r\n<meta name=\"googlebot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<meta name=\"bingbot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<link rel=\"canonical\" href=\"http:\/\/financeclub.unipi.gr\/category\/cfa-en\/\" \/>\r\n<meta property=\"og:locale\" content=\"en_US\" \/>\r\n<meta property=\"og:type\" content=\"article\" \/>\r\n<meta property=\"og:title\" content=\"CFA Institute Research Challenge EN Archives - Finance Club UniPi\" \/>\r\n<meta property=\"og:url\" content=\"http:\/\/financeclub.unipi.gr\/category\/cfa-en\/\" \/>\r\n<meta property=\"og:site_name\" content=\"Finance Club UniPi\" \/>\r\n<meta name=\"twitter:card\" content=\"summary_large_image\" \/>\r\n<script type=\"application\/ld+json\" class=\"yoast-schema-graph\">{\"@context\":\"https:\/\/schema.org\",\"@graph\":[{\"@type\":\"WebSite\",\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\",\"url\":\"https:\/\/financeclub.unipi.gr\/\",\"name\":\"Finance Club UniPi\",\"description\":\"\",\"potentialAction\":[{\"@type\":\"SearchAction\",\"target\":\"https:\/\/financeclub.unipi.gr\/?s={search_term_string}\",\"query-input\":\"required name=search_term_string\"}],\"inLanguage\":\"en-US\"},{\"@type\":\"CollectionPage\",\"@id\":\"http:\/\/financeclub.unipi.gr\/category\/cfa-en\/#webpage\",\"url\":\"http:\/\/financeclub.unipi.gr\/category\/cfa-en\/\",\"name\":\"CFA Institute Research Challenge EN Archives - Finance Club UniPi\",\"isPartOf\":{\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\"},\"inLanguage\":\"en-US\"}]}<\/script>\r\n<!-- \/ Yoast SEO plugin. -->",
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories\/76"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/posts?categories=76"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 78,
+        "count": 3,
+        "description": "",
+        "link": "https:\/\/financeclub.unipi.gr\/category\/cfa-gr\/",
+        "name": "CFA Institute Research Challenge GR",
+        "slug": "cfa-gr",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "yoast_head": "<!-- This site is optimized with the Yoast SEO plugin v14.0.4 - https:\/\/yoast.com\/wordpress\/plugins\/seo\/ -->\r\n<title>CFA Institute Research Challenge GR Archives - Finance Club UniPi<\/title>\r\n<meta name=\"robots\" content=\"index, follow\" \/>\r\n<meta name=\"googlebot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<meta name=\"bingbot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<link rel=\"canonical\" href=\"http:\/\/financeclub.unipi.gr\/category\/cfa-gr\/\" \/>\r\n<meta property=\"og:locale\" content=\"en_US\" \/>\r\n<meta property=\"og:type\" content=\"article\" \/>\r\n<meta property=\"og:title\" content=\"CFA Institute Research Challenge GR Archives - Finance Club UniPi\" \/>\r\n<meta property=\"og:url\" content=\"http:\/\/financeclub.unipi.gr\/category\/cfa-gr\/\" \/>\r\n<meta property=\"og:site_name\" content=\"Finance Club UniPi\" \/>\r\n<meta name=\"twitter:card\" content=\"summary_large_image\" \/>\r\n<script type=\"application\/ld+json\" class=\"yoast-schema-graph\">{\"@context\":\"https:\/\/schema.org\",\"@graph\":[{\"@type\":\"WebSite\",\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\",\"url\":\"https:\/\/financeclub.unipi.gr\/\",\"name\":\"Finance Club UniPi\",\"description\":\"\",\"potentialAction\":[{\"@type\":\"SearchAction\",\"target\":\"https:\/\/financeclub.unipi.gr\/?s={search_term_string}\",\"query-input\":\"required name=search_term_string\"}],\"inLanguage\":\"en-US\"},{\"@type\":\"CollectionPage\",\"@id\":\"http:\/\/financeclub.unipi.gr\/category\/cfa-gr\/#webpage\",\"url\":\"http:\/\/financeclub.unipi.gr\/category\/cfa-gr\/\",\"name\":\"CFA Institute Research Challenge GR Archives - Finance Club UniPi\",\"isPartOf\":{\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\"},\"inLanguage\":\"en-US\"}]}<\/script>\r\n<!-- \/ Yoast SEO plugin. -->",
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories\/78"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/posts?categories=78"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 1,
+        "count": 0,
+        "description": "",
+        "link": "https:\/\/financeclub.unipi.gr\/category\/cfa\/",
+        "name": "CFA Research Challenge",
+        "slug": "cfa",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "yoast_head": "<!-- This site is optimized with the Yoast SEO plugin v14.0.4 - https:\/\/yoast.com\/wordpress\/plugins\/seo\/ -->\r\n<title>CFA Research Challenge Archives - Finance Club UniPi<\/title>\r\n<meta name=\"robots\" content=\"index, follow\" \/>\r\n<meta name=\"googlebot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<meta name=\"bingbot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<link rel=\"canonical\" href=\"http:\/\/financeclub.unipi.gr\/category\/cfa\/\" \/>\r\n<meta property=\"og:locale\" content=\"en_US\" \/>\r\n<meta property=\"og:type\" content=\"article\" \/>\r\n<meta property=\"og:title\" content=\"CFA Research Challenge Archives - Finance Club UniPi\" \/>\r\n<meta property=\"og:url\" content=\"http:\/\/financeclub.unipi.gr\/category\/cfa\/\" \/>\r\n<meta property=\"og:site_name\" content=\"Finance Club UniPi\" \/>\r\n<meta name=\"twitter:card\" content=\"summary_large_image\" \/>\r\n<script type=\"application\/ld+json\" class=\"yoast-schema-graph\">{\"@context\":\"https:\/\/schema.org\",\"@graph\":[{\"@type\":\"WebSite\",\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\",\"url\":\"https:\/\/financeclub.unipi.gr\/\",\"name\":\"Finance Club UniPi\",\"description\":\"\",\"potentialAction\":[{\"@type\":\"SearchAction\",\"target\":\"https:\/\/financeclub.unipi.gr\/?s={search_term_string}\",\"query-input\":\"required name=search_term_string\"}],\"inLanguage\":\"en-US\"},{\"@type\":\"CollectionPage\",\"@id\":\"http:\/\/financeclub.unipi.gr\/category\/cfa\/#webpage\",\"url\":\"http:\/\/financeclub.unipi.gr\/category\/cfa\/\",\"name\":\"CFA Research Challenge Archives - Finance Club UniPi\",\"isPartOf\":{\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\"},\"inLanguage\":\"en-US\"}]}<\/script>\r\n<!-- \/ Yoast SEO plugin. -->",
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories\/1"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/posts?categories=1"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 101,
+        "count": 20,
+        "description": "",
+        "link": "https:\/\/financeclub.unipi.gr\/category\/corporate-finance\/",
+        "name": "Corporate Finance",
+        "slug": "corporate-finance",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "yoast_head": "<!-- This site is optimized with the Yoast SEO plugin v14.0.4 - https:\/\/yoast.com\/wordpress\/plugins\/seo\/ -->\r\n<title>Corporate Finance Archives - Finance Club UniPi<\/title>\r\n<meta name=\"robots\" content=\"index, follow\" \/>\r\n<meta name=\"googlebot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<meta name=\"bingbot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<link rel=\"canonical\" href=\"https:\/\/financeclub.unipi.gr\/category\/corporate-finance\/\" \/>\r\n<meta property=\"og:locale\" content=\"en_US\" \/>\r\n<meta property=\"og:type\" content=\"article\" \/>\r\n<meta property=\"og:title\" content=\"Corporate Finance Archives - Finance Club UniPi\" \/>\r\n<meta property=\"og:url\" content=\"https:\/\/financeclub.unipi.gr\/category\/corporate-finance\/\" \/>\r\n<meta property=\"og:site_name\" content=\"Finance Club UniPi\" \/>\r\n<meta name=\"twitter:card\" content=\"summary_large_image\" \/>\r\n<script type=\"application\/ld+json\" class=\"yoast-schema-graph\">{\"@context\":\"https:\/\/schema.org\",\"@graph\":[{\"@type\":\"WebSite\",\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\",\"url\":\"https:\/\/financeclub.unipi.gr\/\",\"name\":\"Finance Club UniPi\",\"description\":\"\",\"potentialAction\":[{\"@type\":\"SearchAction\",\"target\":\"https:\/\/financeclub.unipi.gr\/?s={search_term_string}\",\"query-input\":\"required name=search_term_string\"}],\"inLanguage\":\"en-US\"},{\"@type\":\"CollectionPage\",\"@id\":\"https:\/\/financeclub.unipi.gr\/category\/corporate-finance\/#webpage\",\"url\":\"https:\/\/financeclub.unipi.gr\/category\/corporate-finance\/\",\"name\":\"Corporate Finance Archives - Finance Club UniPi\",\"isPartOf\":{\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\"},\"inLanguage\":\"en-US\"}]}<\/script>\r\n<!-- \/ Yoast SEO plugin. -->",
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories\/101"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/posts?categories=101"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 74,
+        "count": 8,
+        "description": "",
+        "link": "https:\/\/financeclub.unipi.gr\/category\/events-en\/",
+        "name": "Events",
+        "slug": "events-en",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "yoast_head": "<!-- This site is optimized with the Yoast SEO plugin v14.0.4 - https:\/\/yoast.com\/wordpress\/plugins\/seo\/ -->\r\n<title>Events Archives - Finance Club UniPi<\/title>\r\n<meta name=\"robots\" content=\"index, follow\" \/>\r\n<meta name=\"googlebot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<meta name=\"bingbot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<link rel=\"canonical\" href=\"http:\/\/financeclub.unipi.gr\/category\/events-en\/\" \/>\r\n<meta property=\"og:locale\" content=\"en_US\" \/>\r\n<meta property=\"og:type\" content=\"article\" \/>\r\n<meta property=\"og:title\" content=\"Events Archives - Finance Club UniPi\" \/>\r\n<meta property=\"og:url\" content=\"http:\/\/financeclub.unipi.gr\/category\/events-en\/\" \/>\r\n<meta property=\"og:site_name\" content=\"Finance Club UniPi\" \/>\r\n<meta name=\"twitter:card\" content=\"summary_large_image\" \/>\r\n<script type=\"application\/ld+json\" class=\"yoast-schema-graph\">{\"@context\":\"https:\/\/schema.org\",\"@graph\":[{\"@type\":\"WebSite\",\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\",\"url\":\"https:\/\/financeclub.unipi.gr\/\",\"name\":\"Finance Club UniPi\",\"description\":\"\",\"potentialAction\":[{\"@type\":\"SearchAction\",\"target\":\"https:\/\/financeclub.unipi.gr\/?s={search_term_string}\",\"query-input\":\"required name=search_term_string\"}],\"inLanguage\":\"en-US\"},{\"@type\":\"CollectionPage\",\"@id\":\"http:\/\/financeclub.unipi.gr\/category\/events-en\/#webpage\",\"url\":\"http:\/\/financeclub.unipi.gr\/category\/events-en\/\",\"name\":\"Events Archives - Finance Club UniPi\",\"isPartOf\":{\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\"},\"inLanguage\":\"en-US\"}]}<\/script>\r\n<!-- \/ Yoast SEO plugin. -->",
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories\/74"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/posts?categories=74"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 84,
+        "count": 8,
+        "description": "",
+        "link": "https:\/\/financeclub.unipi.gr\/category\/grid-1\/",
+        "name": "post grid 1",
+        "slug": "grid-1",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "yoast_head": "<!-- This site is optimized with the Yoast SEO plugin v14.0.4 - https:\/\/yoast.com\/wordpress\/plugins\/seo\/ -->\r\n<title>post grid 1 Archives - Finance Club UniPi<\/title>\r\n<meta name=\"robots\" content=\"index, follow\" \/>\r\n<meta name=\"googlebot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<meta name=\"bingbot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<link rel=\"canonical\" href=\"http:\/\/financeclub.unipi.gr\/category\/grid-1\/\" \/>\r\n<meta property=\"og:locale\" content=\"en_US\" \/>\r\n<meta property=\"og:type\" content=\"article\" \/>\r\n<meta property=\"og:title\" content=\"post grid 1 Archives - Finance Club UniPi\" \/>\r\n<meta property=\"og:url\" content=\"http:\/\/financeclub.unipi.gr\/category\/grid-1\/\" \/>\r\n<meta property=\"og:site_name\" content=\"Finance Club UniPi\" \/>\r\n<meta name=\"twitter:card\" content=\"summary_large_image\" \/>\r\n<script type=\"application\/ld+json\" class=\"yoast-schema-graph\">{\"@context\":\"https:\/\/schema.org\",\"@graph\":[{\"@type\":\"WebSite\",\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\",\"url\":\"https:\/\/financeclub.unipi.gr\/\",\"name\":\"Finance Club UniPi\",\"description\":\"\",\"potentialAction\":[{\"@type\":\"SearchAction\",\"target\":\"https:\/\/financeclub.unipi.gr\/?s={search_term_string}\",\"query-input\":\"required name=search_term_string\"}],\"inLanguage\":\"en-US\"},{\"@type\":\"CollectionPage\",\"@id\":\"http:\/\/financeclub.unipi.gr\/category\/grid-1\/#webpage\",\"url\":\"http:\/\/financeclub.unipi.gr\/category\/grid-1\/\",\"name\":\"post grid 1 Archives - Finance Club UniPi\",\"isPartOf\":{\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\"},\"inLanguage\":\"en-US\"}]}<\/script>\r\n<!-- \/ Yoast SEO plugin. -->",
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories\/84"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/posts?categories=84"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 86,
+        "count": 6,
+        "description": "",
+        "link": "https:\/\/financeclub.unipi.gr\/category\/grid-1-en\/",
+        "name": "post grid 1 en",
+        "slug": "grid-1-en",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "yoast_head": "<!-- This site is optimized with the Yoast SEO plugin v14.0.4 - https:\/\/yoast.com\/wordpress\/plugins\/seo\/ -->\r\n<title>post grid 1 en Archives - Finance Club UniPi<\/title>\r\n<meta name=\"robots\" content=\"index, follow\" \/>\r\n<meta name=\"googlebot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<meta name=\"bingbot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<link rel=\"canonical\" href=\"http:\/\/financeclub.unipi.gr\/category\/grid-1-en\/\" \/>\r\n<meta property=\"og:locale\" content=\"en_US\" \/>\r\n<meta property=\"og:type\" content=\"article\" \/>\r\n<meta property=\"og:title\" content=\"post grid 1 en Archives - Finance Club UniPi\" \/>\r\n<meta property=\"og:url\" content=\"http:\/\/financeclub.unipi.gr\/category\/grid-1-en\/\" \/>\r\n<meta property=\"og:site_name\" content=\"Finance Club UniPi\" \/>\r\n<meta name=\"twitter:card\" content=\"summary_large_image\" \/>\r\n<script type=\"application\/ld+json\" class=\"yoast-schema-graph\">{\"@context\":\"https:\/\/schema.org\",\"@graph\":[{\"@type\":\"WebSite\",\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\",\"url\":\"https:\/\/financeclub.unipi.gr\/\",\"name\":\"Finance Club UniPi\",\"description\":\"\",\"potentialAction\":[{\"@type\":\"SearchAction\",\"target\":\"https:\/\/financeclub.unipi.gr\/?s={search_term_string}\",\"query-input\":\"required name=search_term_string\"}],\"inLanguage\":\"en-US\"},{\"@type\":\"CollectionPage\",\"@id\":\"http:\/\/financeclub.unipi.gr\/category\/grid-1-en\/#webpage\",\"url\":\"http:\/\/financeclub.unipi.gr\/category\/grid-1-en\/\",\"name\":\"post grid 1 en Archives - Finance Club UniPi\",\"isPartOf\":{\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\"},\"inLanguage\":\"en-US\"}]}<\/script>\r\n<!-- \/ Yoast SEO plugin. -->",
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories\/86"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/posts?categories=86"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 88,
+        "count": 3,
+        "description": "",
+        "link": "https:\/\/financeclub.unipi.gr\/category\/grid-2\/",
+        "name": "post grid 2",
+        "slug": "grid-2",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "yoast_head": "<!-- This site is optimized with the Yoast SEO plugin v14.0.4 - https:\/\/yoast.com\/wordpress\/plugins\/seo\/ -->\r\n<title>post grid 2 Archives - Finance Club UniPi<\/title>\r\n<meta name=\"robots\" content=\"index, follow\" \/>\r\n<meta name=\"googlebot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<meta name=\"bingbot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<link rel=\"canonical\" href=\"http:\/\/financeclub.unipi.gr\/category\/grid-2\/\" \/>\r\n<meta property=\"og:locale\" content=\"en_US\" \/>\r\n<meta property=\"og:type\" content=\"article\" \/>\r\n<meta property=\"og:title\" content=\"post grid 2 Archives - Finance Club UniPi\" \/>\r\n<meta property=\"og:url\" content=\"http:\/\/financeclub.unipi.gr\/category\/grid-2\/\" \/>\r\n<meta property=\"og:site_name\" content=\"Finance Club UniPi\" \/>\r\n<meta name=\"twitter:card\" content=\"summary_large_image\" \/>\r\n<script type=\"application\/ld+json\" class=\"yoast-schema-graph\">{\"@context\":\"https:\/\/schema.org\",\"@graph\":[{\"@type\":\"WebSite\",\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\",\"url\":\"https:\/\/financeclub.unipi.gr\/\",\"name\":\"Finance Club UniPi\",\"description\":\"\",\"potentialAction\":[{\"@type\":\"SearchAction\",\"target\":\"https:\/\/financeclub.unipi.gr\/?s={search_term_string}\",\"query-input\":\"required name=search_term_string\"}],\"inLanguage\":\"en-US\"},{\"@type\":\"CollectionPage\",\"@id\":\"http:\/\/financeclub.unipi.gr\/category\/grid-2\/#webpage\",\"url\":\"http:\/\/financeclub.unipi.gr\/category\/grid-2\/\",\"name\":\"post grid 2 Archives - Finance Club UniPi\",\"isPartOf\":{\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\"},\"inLanguage\":\"en-US\"}]}<\/script>\r\n<!-- \/ Yoast SEO plugin. -->",
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories\/88"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/posts?categories=88"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 90,
+        "count": 3,
+        "description": "",
+        "link": "https:\/\/financeclub.unipi.gr\/category\/grid-2-en\/",
+        "name": "post grid 2 en",
+        "slug": "grid-2-en",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "yoast_head": "<!-- This site is optimized with the Yoast SEO plugin v14.0.4 - https:\/\/yoast.com\/wordpress\/plugins\/seo\/ -->\r\n<title>post grid 2 en Archives - Finance Club UniPi<\/title>\r\n<meta name=\"robots\" content=\"index, follow\" \/>\r\n<meta name=\"googlebot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<meta name=\"bingbot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<link rel=\"canonical\" href=\"http:\/\/financeclub.unipi.gr\/category\/grid-2-en\/\" \/>\r\n<meta property=\"og:locale\" content=\"en_US\" \/>\r\n<meta property=\"og:type\" content=\"article\" \/>\r\n<meta property=\"og:title\" content=\"post grid 2 en Archives - Finance Club UniPi\" \/>\r\n<meta property=\"og:url\" content=\"http:\/\/financeclub.unipi.gr\/category\/grid-2-en\/\" \/>\r\n<meta property=\"og:site_name\" content=\"Finance Club UniPi\" \/>\r\n<meta name=\"twitter:card\" content=\"summary_large_image\" \/>\r\n<script type=\"application\/ld+json\" class=\"yoast-schema-graph\">{\"@context\":\"https:\/\/schema.org\",\"@graph\":[{\"@type\":\"WebSite\",\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\",\"url\":\"https:\/\/financeclub.unipi.gr\/\",\"name\":\"Finance Club UniPi\",\"description\":\"\",\"potentialAction\":[{\"@type\":\"SearchAction\",\"target\":\"https:\/\/financeclub.unipi.gr\/?s={search_term_string}\",\"query-input\":\"required name=search_term_string\"}],\"inLanguage\":\"en-US\"},{\"@type\":\"CollectionPage\",\"@id\":\"http:\/\/financeclub.unipi.gr\/category\/grid-2-en\/#webpage\",\"url\":\"http:\/\/financeclub.unipi.gr\/category\/grid-2-en\/\",\"name\":\"post grid 2 en Archives - Finance Club UniPi\",\"isPartOf\":{\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\"},\"inLanguage\":\"en-US\"}]}<\/script>\r\n<!-- \/ Yoast SEO plugin. -->",
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories\/90"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/posts?categories=90"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 92,
+        "count": 3,
+        "description": "",
+        "link": "https:\/\/financeclub.unipi.gr\/category\/grid-3\/",
+        "name": "post grid 3",
+        "slug": "grid-3",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "yoast_head": "<!-- This site is optimized with the Yoast SEO plugin v14.0.4 - https:\/\/yoast.com\/wordpress\/plugins\/seo\/ -->\r\n<title>post grid 3 Archives - Finance Club UniPi<\/title>\r\n<meta name=\"robots\" content=\"index, follow\" \/>\r\n<meta name=\"googlebot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<meta name=\"bingbot\" content=\"index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1\" \/>\r\n<link rel=\"canonical\" href=\"http:\/\/financeclub.unipi.gr\/category\/grid-3\/\" \/>\r\n<meta property=\"og:locale\" content=\"en_US\" \/>\r\n<meta property=\"og:type\" content=\"article\" \/>\r\n<meta property=\"og:title\" content=\"post grid 3 Archives - Finance Club UniPi\" \/>\r\n<meta property=\"og:url\" content=\"http:\/\/financeclub.unipi.gr\/category\/grid-3\/\" \/>\r\n<meta property=\"og:site_name\" content=\"Finance Club UniPi\" \/>\r\n<meta name=\"twitter:card\" content=\"summary_large_image\" \/>\r\n<script type=\"application\/ld+json\" class=\"yoast-schema-graph\">{\"@context\":\"https:\/\/schema.org\",\"@graph\":[{\"@type\":\"WebSite\",\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\",\"url\":\"https:\/\/financeclub.unipi.gr\/\",\"name\":\"Finance Club UniPi\",\"description\":\"\",\"potentialAction\":[{\"@type\":\"SearchAction\",\"target\":\"https:\/\/financeclub.unipi.gr\/?s={search_term_string}\",\"query-input\":\"required name=search_term_string\"}],\"inLanguage\":\"en-US\"},{\"@type\":\"CollectionPage\",\"@id\":\"http:\/\/financeclub.unipi.gr\/category\/grid-3\/#webpage\",\"url\":\"http:\/\/financeclub.unipi.gr\/category\/grid-3\/\",\"name\":\"post grid 3 Archives - Finance Club UniPi\",\"isPartOf\":{\"@id\":\"https:\/\/financeclub.unipi.gr\/#website\"},\"inLanguage\":\"en-US\"}]}<\/script>\r\n<!-- \/ Yoast SEO plugin. -->",
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories\/92"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/financeclub.unipi.gr\/wp-json\/wp\/v2\/posts?categories=92"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    }
+]

@@ -1,235 +1,233 @@
 import _ from "lodash"
-import Article from "./article";
+import type {Article} from "./article";
 
 export type ConfigType = {
     mode: 'main' | 'worker';
-    database?: {
-        pushArticles: (articles: Article[]) => Promise<void>;
-        getArticles: (opts: {
-            tableName: string;
-            count: number;
-        }) => Promise<Article[]>;
-    } | 'none';
-    sources: {
+    newArticles: ((tableName: string, articles: Article[]) => void) | ((tableName: string, articles: Article[]) => Promise<void>);
+    sources: Partial<{
         path: string;
-        includeOnly?: string[];
-        exclude?: string[];
-    };
-    workers: {
-        nodes?: number;
-        userAgent?: string;
-        jobs?: {
-            timeout?: number;
-        };
-        articles: {
-            amount?: number;
-        };
-    };
-    scheduler: {
-        jobsInterval?: number,
-        heavyJobFailureInterval?: number,
-        checksInterval?: number;
-        randomizeInterval?: () => number;
-    };
-    grid: {
-        distributed: false;
-    } | {
-        distributed: true;
-        useHTTP: false;
+        includeOnly: string[];
+        exclude: string[];
+    }>;
+    workers: Partial<{
+        nodes: number | string[];
+        requests: Partial<{
+            timeout: number;
+            headers: {[key: string]: string | string[]};
+            maxRedirects: number;
+        }>;
+        articles: Partial<{
+            amount: number;
+            includeContentAttachments: boolean;
+        }>;
+    }>;
+    scheduler: Partial<{
+        jobsInterval: number,
+        heavyJobFailureInterval: number,
+        noResponseThreshold: number;
+        randomizeInterval: () => number;
+    }>;
+    grid: Partial<{
+        distributed: boolean;
+        useHTTPS: boolean;
 
-        serverAddress: string;
-        serverPort?: number;
-        authToken: string;
-    } | {
-        distributed: true;
-        useHTTP: true;
-
-        serverAddress: string;
-        serverPort?: number;
+        serverHost: string;
+        serverPort: number;
         authToken: string;
         key: any;
         cert: any;
-    };
-    misc: {
-        log?: 'all' | 'info' | 'errors' | 'none';
-    };
+    }>;
+    misc: Partial<{
+        log: 'all' | 'info' | 'errors' | 'none';
+        eventDelay: number;
+    }>;
 }
 
 export enum ConfigOptions {
-    SOURCES_PATH = 'sources.path',
-    SOURCES_INCLUDE_ONLY = 'sources.includeOnly',
-    SOURCES_EXCLUDE = 'sources.exlude',
-    SAFFRON_MODE = 'mode',
-    WORKER_NODES = 'worker.nodes',
-    WORKER_USERAGENT = 'worker.useragent',
-    REQUEST_TIMEOUT = 'worker.request.timeout',
-    ARTICLE_AMOUNT = 'worker.article.amount',
-    SCHEDULER_JOB_INT = 'scheduler.job.interval',
-    SCHEDULER_JOB_HEAVY_INT = 'scheduler.job.heavyInterval',
-    SCHEDULER_CHECKS_INT = 'scheduler.job.checkInterval',
-    SCHEDULER_RANDOMIZER = 'scheduler.job.randomizer',
-    GRID_DISTRIBUTED = 'grid.distributed',
-    GRID_SERVER_ADDRESS = 'grid.server.address',
-    GRID_SERVER_PORT = 'grid.server.port',
-    GRID_AUTH = 'grid.auth',
-    GRID_USE_HTTP = 'grid.use_http',
-    GRID_HTTPS_KEY = 'grid.https.key',
-    GRID_HTTPS_CERT = 'grid.https.cert',
-    MISC_LOG_LEVEL = 'misc.log',
-    DB_IS_INITIALIZED = 'db.initialized',
-    DB_PUSH_ARTICLES = 'db.articles.push',
-    DB_GET_ARTICLES = 'db.articles.get'
+    SOURCES_PATH = 0,
+    SOURCES_INCLUDE_ONLY = 1,
+    SOURCES_EXCLUDE = 3,
+    MODE = 4,
+    WORKER_NODES = 5,
+    HEADERS = 6,
+    TIMEOUT = 7,
+    ARTICLE_AMOUNT = 8,
+    JOB_INT = 9,
+    JOB_HEAVY_INT = 10,
+    NO_RESPONSE_THR = 11,
+    INT_RANDOMIZER = 12,
+    DISTRIBUTED = 13,
+    HOST = 14,
+    PORT = 15,
+    AUTH_TOKEN = 16,
+    USE_HTTPS = 17,
+    HTTPS_KEY = 18,
+    HTTPS_CERT = 19,
+    LOG_LEVEL = 20,
+    EVENT_DELAY = 21,
+    NEW_ARTICLES = 22,
+    INCLUDE_CNT_ATTACHMENTS = 23,
+    MAX_REDIRECTS = 23
 }
 
-export default class Config {
-    private static instance: Config
-    _config: ConfigType = {
-        mode: "main",
-        database: 'none',
-        sources: {
-            path: "../../../sources",
-            includeOnly: [],
-            exclude: []
+const defaultConfig: ConfigType = {
+    mode: "main",
+    newArticles: (tableName, articles) => {
+    },
+    sources: {
+        path: "./sources",
+        includeOnly: [],
+        exclude: []
+    },
+    workers: {
+        nodes: 1, // Start one worker
+        requests: {
+            timeout: 10000,
+            headers: {},
+            maxRedirects: 5
         },
-        workers: {
-            nodes: 1, // Start one worker
-            jobs: {
-                timeout: 10000
-            },
-            articles: {
-                amount: 10
-            }
-        },
-        scheduler: {
-            jobsInterval: 3600000,
-            heavyJobFailureInterval: 86400000,
-            checksInterval: 120000,
-            randomizeInterval: () => {
-                if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
-                    return 0;
+        articles: {
+            amount: 30,
+            includeContentAttachments: true
+        }
+    },
+    scheduler: {
+        jobsInterval: 3600000,
+        heavyJobFailureInterval: 86400000,
+        noResponseThreshold: 2,
+        randomizeInterval: () => {
+            if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'testing')
+                return 0;
 
-                const high = 300;
-                const low = 0;
+            const high = 300;
+            const low = 0;
 
-                const random = Math.floor(Math.random() * (high - low) + low) * 1000;
-                return Math.random() >= 0.5 ? random : -random;
-            }
-        },
-        grid: {
-            distributed: false,
-            useHTTP: false,
-            serverPort: 3000
-        },
-        misc: {
-            log: "all"
+            const random = Math.floor(Math.random() * (high - low) + low) * 1000;
+            return Math.random() >= 0.5 ? random : -random;
+        }
+    },
+    grid: {
+        distributed: false,
+        useHTTPS: false,
+        serverHost: '127.0.0.1',
+        serverPort: 3000
+    },
+    misc: {
+        log: "all",
+        eventDelay: 0
+    }
+};
+
+export class Config {
+    config: ConfigType = _.cloneDeep(defaultConfig);
+
+    constructor(config?: Partial<ConfigType> & {
+        production?: Partial<ConfigType>;
+    } & {
+        development?: Partial<ConfigType>;
+    } & {
+        testing?: Partial<ConfigType>;
+    }) {
+        this.initializeConfig(config);
+    }
+
+    static getOption(option: ConfigOptions, config: Config | null): any {
+        const conf = config?.config ?? defaultConfig;
+        
+        switch (option) {
+            case ConfigOptions.MODE:
+                return conf.mode;
+
+            case ConfigOptions.SOURCES_PATH:
+                return conf.sources?.path;
+            case ConfigOptions.SOURCES_INCLUDE_ONLY:
+                return conf.sources?.includeOnly;
+            case ConfigOptions.SOURCES_EXCLUDE:
+                return conf.sources?.exclude;
+
+            case ConfigOptions.WORKER_NODES:
+                return conf.workers?.nodes;
+            case ConfigOptions.HEADERS:
+                return conf.workers?.requests?.headers;
+            case ConfigOptions.TIMEOUT:
+                return conf.workers?.requests?.timeout;
+            case ConfigOptions.MAX_REDIRECTS:
+                return conf.workers?.requests?.maxRedirects;
+
+            case ConfigOptions.ARTICLE_AMOUNT:
+                return conf.workers?.articles?.amount;
+            case ConfigOptions.INCLUDE_CNT_ATTACHMENTS:
+                return conf.workers?.articles?.includeContentAttachments;
+
+            case ConfigOptions.JOB_INT:
+                return conf.scheduler?.jobsInterval;
+            case ConfigOptions.JOB_HEAVY_INT:
+                return conf.scheduler?.heavyJobFailureInterval;
+            case ConfigOptions.INT_RANDOMIZER:
+                return conf.scheduler?.randomizeInterval;
+            case ConfigOptions.NO_RESPONSE_THR:
+                return conf.scheduler?.noResponseThreshold;
+
+            case ConfigOptions.DISTRIBUTED:
+                return conf.grid?.distributed;
+            case ConfigOptions.HOST:
+                return conf.grid?.serverHost;
+            case ConfigOptions.PORT:
+                return conf.grid?.serverPort;
+            case ConfigOptions.AUTH_TOKEN:
+                return conf.grid?.authToken;
+            case ConfigOptions.USE_HTTPS:
+                return conf.grid?.useHTTPS;
+            case ConfigOptions.HTTPS_KEY:
+                return conf.grid?.key;
+            case ConfigOptions.HTTPS_CERT:
+                return conf.grid?.cert;
+
+            case ConfigOptions.LOG_LEVEL:
+                return conf.misc?.log;
+            case ConfigOptions.EVENT_DELAY:
+                return conf.misc?.eventDelay;
+            case ConfigOptions.NEW_ARTICLES:
+                return conf.newArticles;
         }
     }
 
-    private constructor(config?: Partial<ConfigType> | {
-        production: Partial<ConfigType>;
-    } | {
-        development: Partial<ConfigType>;
-    } | {
-        testing: Partial<ConfigType>;
+    initializeConfig(config?: Partial<ConfigType> & {
+        production?: Partial<ConfigType>;
+    } & {
+        development?: Partial<ConfigType>;
+    } & {
+        testing?: Partial<ConfigType>;
     }) {
-        this._config = this.mergeObject(config, this._config);
+        // To avoid overriding user's object
+        config = _.cloneDeep(config);
+
+        this.config = this.mergeObject(config, this.config);
 
         switch (process.env.NODE_ENV) {
             case "production":
                 if ((config as any).production)
-                    this._config = this.mergeObject((config as any).production, this._config);
+                    this.config = this.mergeObject(config!.production, this.config);
                 break;
             case "development":
                 if ((config as any).development)
-                    this._config = this.mergeObject((config as any).development, this._config);
+                    this.config = this.mergeObject(config!.development, this.config);
                 break;
             case "testing":
                 if ((config as any).testing)
-                    this._config = this.mergeObject((config as any).testing, this._config);
+                    this.config = this.mergeObject(config!.testing, this.config);
                 break;
-            default:
         }
 
         if (process.env.SAFFRON_MODE && ["main", "worker"].includes(process.env.SAFFRON_MODE))
-            this._config.mode = process.env.SAFFRON_MODE as any;
-    }
-
-    /**
-     * Loads an external configuration object and merges the parameters with the default ones.
-     */
-    static load(config?: Partial<ConfigType>): any {
-        if (!this.instance)
-            this.instance = new Config(config)
-
-        return this.instance._config
-    }
-
-    static getOption(option: ConfigOptions): any {
-        let isStatic: boolean = this.instance == null;
-
-        switch (option) {
-            case ConfigOptions.SAFFRON_MODE:
-                return !isStatic ? Config.load().mode : "main";
-
-            case ConfigOptions.SOURCES_PATH:
-                return !isStatic ? Config.load().sources.path : '../../../sources';
-            case ConfigOptions.SOURCES_INCLUDE_ONLY:
-                return !isStatic ? Config.load().sources.includeOnly : [];
-            case ConfigOptions.SOURCES_EXCLUDE:
-                return !isStatic ? Config.load().sources.exclude : [];
-
-            case ConfigOptions.WORKER_NODES:
-                return !isStatic ? Config.load().workers.nodes : 1;
-            case ConfigOptions.WORKER_USERAGENT:
-                return !isStatic ? Config.load().workers.userAgent : undefined;
-            case ConfigOptions.REQUEST_TIMEOUT:
-                return !isStatic ? Config.load().workers.jobs.timeout : 10000;
-            case ConfigOptions.ARTICLE_AMOUNT:
-                return !isStatic ? Config.load().workers.articles.amount : 10;
-
-            case ConfigOptions.SCHEDULER_JOB_INT:
-                return !isStatic ? Config.load().scheduler.jobsInterval : 3600000;
-            case ConfigOptions.SCHEDULER_JOB_HEAVY_INT:
-                return !isStatic ? Config.load().scheduler.heavyJobFailureInterval : 86400000;
-            case ConfigOptions.SCHEDULER_CHECKS_INT:
-                return !isStatic ? Config.load().scheduler.checksInterval : 120000;
-            case ConfigOptions.SCHEDULER_RANDOMIZER:
-                return !isStatic ? Config.load().scheduler.randomizeInterval : () => 0;
-
-            case ConfigOptions.GRID_DISTRIBUTED:
-                return !isStatic ? Config.load().grid.distributed : false;
-            case ConfigOptions.GRID_SERVER_ADDRESS:
-                return !isStatic ? Config.load().grid.serverAddress : 'localhost';
-            case ConfigOptions.GRID_SERVER_PORT:
-                return !isStatic ? Config.load().grid.serverPort : 3000;
-            case ConfigOptions.GRID_AUTH:
-                return !isStatic ? Config.load().grid.authToken : undefined;
-            case ConfigOptions.GRID_USE_HTTP:
-                return !isStatic ? Config.load().grid.useHTTP : false;
-            case ConfigOptions.GRID_HTTPS_KEY:
-                return !isStatic ? Config.load().grid.key : undefined;
-            case ConfigOptions.GRID_HTTPS_CERT:
-                return !isStatic ? Config.load().grid.cert : undefined;
-
-            case ConfigOptions.MISC_LOG_LEVEL:
-                return !isStatic ? Config.load().misc.log : "all";
-
-            case ConfigOptions.DB_IS_INITIALIZED:
-                return !isStatic ? Config.load().database != undefined && Config.load().database !== 'none' : false;
-            case ConfigOptions.DB_PUSH_ARTICLES:
-                return !isStatic ? Config.load().database.pushArticles : (articles: Article[]) => undefined;
-            case ConfigOptions.DB_GET_ARTICLES:
-                return !isStatic ? Config.load().database?.getArticles : (opts: any) => [];
-        }
+            this.config.mode = <any>process.env.SAFFRON_MODE;
     }
 
     private mergeObject(src: any, original: object): any {
         return _.mergeWith({}, original, src, (o, s) => {
-            if (Array.isArray(o))
-                return s ? s : o
-            else if (typeof o == 'object')
-                return this.mergeObject(s, o)
-            return s ? s : o
-        })
+            if (typeof o == 'object' && !Array.isArray(o))
+                return this.mergeObject(s, o);
+            return s != null ? s : o;
+        });
     }
 }
