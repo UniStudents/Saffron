@@ -153,7 +153,6 @@ describe('Other', function () {
         expect(ParserType.getFromString('rss')).to.equal(ParserType.RSS)
         expect(ParserType.getFromString('dynamic')).to.equal(ParserType.DYNAMIC)
         expect(ParserType.getFromString('wordpress-v2')).to.equal(ParserType.WORDPRESS_V2)
-        expect(ParserType.getFromString('wordpress')).to.equal(ParserType.WORDPRESS_V2)
         expect(ParserType.getFromString('failed')).to.equal(ParserType.UNKNOWN)
     });
 
