@@ -14,7 +14,9 @@ describe('Sources', function () {
             amount: 100,
             ignoreCertificates: true,
             encoding: 'iso-8859-7',
-            headers: 'user-agent',
+            headers: {
+                test: 'user-agent'
+            },
             url: [
                 ['Category 1', 'https://example.com'],
                 ['Category 2', 'Category 3', 'https://example2.com']
@@ -30,7 +32,7 @@ describe('Sources', function () {
         expect(source.extra).to.deep.equal(['random', 'data']);
         expect(source.instructions.timeout).to.equal(20000);
         expect(source.instructions.amount).to.equal(100);
-        expect(source.instructions.headers).to.equal('user-agent');
+        expect(source.instructions.headers.test).to.equal('user-agent');
         expect(source.instructions.ignoreCertificates).to.equal(true);
         expect(source.instructions.textDecoder.encoding).to.equal('iso-8859-7');
 

@@ -18,9 +18,6 @@ export class HTMLParser extends ParserClass {
         if (typeof scrape.container !== 'string')
             throw new Error("container must be a string");
 
-        if (typeof scrape.endpoint !== 'string' && scrape.endpoint !== undefined)
-            throw new Error("endpoint must be a string");
-
         if (typeof scrape.article !== 'object' || Array.isArray(scrape.article))
             throw new Error("article must be JSON object");
 

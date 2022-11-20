@@ -18,7 +18,6 @@ export type HTMLAttribute = {
 export type ScrapeDynamic = () => Promise<Article[]>;
 export type ScrapeHTML = {
     container: string;
-    endpoint?: string;
     article: {
         [field: 'title' | 'link' | 'content' | 'pubDate' | 'categories' | string]: {
             parent?: string;
@@ -29,8 +28,6 @@ export type ScrapeHTML = {
             multiple?: boolean;
 
             static?: string;
-
-            // TODO: Add doNotIterateContainer at HTML (maybe if container is empty?)
         };
     }
 };
@@ -81,8 +78,9 @@ export type SourceFile = {
 
     timeout?: number;
     maxRedirects?: number;
-    headers?: string;
+    headers?: {[key: string]: string | string[]};
     ignoreCertificates?: boolean;
+    // TODO: Add cookieJar - https://github.com/3846masa/axios-cookiejar-support/blob/09cb8b06eb8b5cc6e6524d3aa72ec5ad107899b1/example/simple.js
 
     amount?: number;
     encoding?: string;

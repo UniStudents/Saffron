@@ -34,7 +34,6 @@ export namespace ParserType {
                 return ParserType.RSS
             case "dynamic":
                 return ParserType.DYNAMIC
-            case "wordpress":
             case "wordpress-v2":
                 return ParserType.WORDPRESS_V2
             default:
