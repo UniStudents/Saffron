@@ -28,7 +28,7 @@ export class Article {
     }
 
     public getSource(saffron: Saffron): Source {
-        return saffron.scheduler.sources.find(s => s.name = this.source)!;
+        return saffron.scheduler.sources.find(s => s.name === this.source)!;
     }
 
     public addExtra(key: string, value: any) {
