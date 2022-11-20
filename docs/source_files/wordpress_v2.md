@@ -63,12 +63,12 @@ To parse this cases you can change the path url for each request.
 ### `posts`
 Default value: `/wp-json/wp/v2/posts`
 
-The path that will server the articles.
+The path that will serve the articles.
 
 ### `categories`
 Default value: `/wp-json/wp/v2/categories`
 
-The path that will server the categories.
+The path that will serve the categories.
 
 ## Example
 

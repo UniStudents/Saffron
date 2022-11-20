@@ -188,7 +188,7 @@ export class WordpressV2Parser extends ParserClass {
             if (instructions.includeContentAttachments)
                 article.pushAttachments(utils.extractLinks(article.content));
 
-            for (const cId of p.categories) {
+            for (const cId of p.categories ?? []) {
                 const cat = parsedCategories.find((c: any) => c.id == cId)
                 if (cat) article.pushCategory(cat.name, cat.links);
             }
