@@ -183,7 +183,7 @@ export class Scheduler {
 
                 const acceptedFiles = new RegExp(/.+\.(json|js)/); // Both .js and .json
                 const rawSources = files.filter((file: any) => acceptedFiles.test(file))
-                if(rawSources.length == 0)  {
+                if (rawSources.length == 0) {
                     resolve([]);
                     return;
                 }

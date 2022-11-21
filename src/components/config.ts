@@ -13,7 +13,7 @@ export type ConfigType = {
         nodes: number | string[];
         requests: Partial<{
             timeout: number;
-            headers: {[key: string]: string | string[]};
+            headers: { [key: string]: string | string[] };
             maxRedirects: number;
         }>;
         articles: Partial<{
@@ -133,7 +133,7 @@ export class Config {
 
     static getOption(option: ConfigOptions, config: Config | null): any {
         const conf = config?.config ?? defaultConfig;
-        
+
         switch (option) {
             case ConfigOptions.MODE:
                 return conf.mode;

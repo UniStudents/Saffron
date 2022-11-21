@@ -26,8 +26,7 @@
 * [Collaborators](#collaborators)
 
 ## What is Saffron?
-
-* Saffron stands for **S**imple **A**bstract **F**ramework **F**or the **R**etrieval **O**f **N**ews
+Saffron stands for **S**imple **A**bstract **F**ramework **F**or the **R**etrieval **O**f **N**ews
 
 As said saffron is a framework. It is an abstraction engine that helps you collect news and
 announcements from websites in a uniform way.

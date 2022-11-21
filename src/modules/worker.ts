@@ -69,6 +69,19 @@ export class Worker {
         return workers[Math.abs(hashCode(lastWorkerId)) % workers.length];
     }
 
+    start() {
+        this.saffron.grid.announceWorker(this);
+        this.isRunning = true;
+
+        // start listening for new jobs
+        this.saffron.events.on("scheduler.job.push", this.acceptJob.bind(this));
+    }
+
+    stop() {
+        this.isRunning = false;
+        this.saffron.grid.destroyWorker(this);
+    }
+
     private async acceptJob(job: Job) {
         if (!this.isRunning || this.id !== job.worker) return;
 
@@ -87,18 +100,5 @@ export class Worker {
 
         await this.saffron.grid.mergeArticles(job.source, result);
         await this.saffron.grid.finishedJob(job);
-    }
-
-    start() {
-        this.saffron.grid.announceWorker(this);
-        this.isRunning = true;
-
-        // start listening for new jobs
-        this.saffron.events.on("scheduler.job.push", this.acceptJob.bind(this));
-    }
-
-    stop() {
-        this.isRunning = false;
-        this.saffron.grid.destroyWorker(this);
     }
 }

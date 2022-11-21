@@ -11,7 +11,7 @@ export class RssParser extends ParserClass {
         // This exists only for typescript, it is not valid and will not run at runtime.
         scrape = scrape as ScrapeRSS;
 
-        if(typeof scrape !== 'undefined') {
+        if (typeof scrape !== 'undefined') {
             if (typeof scrape !== 'object' || Array.isArray(scrape))
                 throw new Error("must be a JSON object");
 

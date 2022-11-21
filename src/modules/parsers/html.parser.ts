@@ -56,12 +56,12 @@ export class HTMLParser extends ParserClass {
                 throw new Error(`article.${key}.static must be string`);
 
             // If static exists, then except parent all fields must not be defined
-            if(options.static !== undefined) {
-                if(options.class !== undefined || options.find !== undefined || options.attributes !== undefined || options.multiple !== undefined)
+            if (options.static !== undefined) {
+                if (options.class !== undefined || options.find !== undefined || options.attributes !== undefined || options.multiple !== undefined)
                     throw new Error(`article.${key}: when the static key is defined the keys class, find, attributes and multiple must not be defined`);
             }
             // At least one field must be mentioned // TODO: Can multiple alone do something?
-            else if(options.class === undefined && options.find === undefined && options.attributes === undefined && options.multiple === undefined)
+            else if (options.class === undefined && options.find === undefined && options.attributes === undefined && options.multiple === undefined)
                 throw new Error(`article.${key} at least one option must be defined`);
         }
     }
@@ -93,7 +93,7 @@ export class HTMLParser extends ParserClass {
             for (const item in options) {
                 const opts = options[item];
 
-                if(opts.static !== undefined) {
+                if (opts.static !== undefined) {
                     articleData[item] = opts.static;
                     continue;
                 }

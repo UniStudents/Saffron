@@ -10,53 +10,53 @@ export class WordpressV2Parser extends ParserClass {
         // This exists only for typescript, it is not valid and will not run at runtime.
         scrape = scrape as ScrapeWordPressV2;
 
-        if(typeof scrape !== 'undefined') {
+        if (typeof scrape !== 'undefined') {
             if (typeof scrape !== 'object' || Array.isArray(scrape))
                 throw new Error("must be a JSON object");
 
-            if(typeof scrape.paths !== 'undefined') {
+            if (typeof scrape.paths !== 'undefined') {
                 if (typeof scrape.paths !== 'object' || Array.isArray(scrape.paths))
                     throw new Error("paths must be a JSON object");
 
-                if(typeof scrape.paths.posts !== 'undefined' && typeof scrape.paths.posts !== 'string')
+                if (typeof scrape.paths.posts !== 'undefined' && typeof scrape.paths.posts !== 'string')
                     throw new Error(`articles.paths.posts must be a string`);
 
-                if(typeof scrape.paths.categories !== 'undefined' && typeof scrape.paths.categories !== 'string')
+                if (typeof scrape.paths.categories !== 'undefined' && typeof scrape.paths.categories !== 'string')
                     throw new Error(`articles.paths.categories must be a string`);
             }
 
-            if(typeof scrape.articles !== 'undefined') {
+            if (typeof scrape.articles !== 'undefined') {
                 if (typeof scrape.articles !== 'object' || Array.isArray(scrape.articles))
                     throw new Error("articles must be a JSON object");
 
-                if(scrape.articles.include && !Array.isArray(scrape.articles.include))
+                if (scrape.articles.include && !Array.isArray(scrape.articles.include))
                     throw new Error("articles.include must be an array of strings");
 
-                if(typeof scrape.articles.dates !== 'undefined') {
+                if (typeof scrape.articles.dates !== 'undefined') {
                     if (typeof scrape.articles.dates !== 'object' || Array.isArray(scrape.articles.dates))
                         throw new Error("articles.dates must be a JSON object");
 
-                    if(typeof scrape.articles.dates.gmt !== 'undefined' && typeof scrape.articles.dates.gmt !== 'boolean')
+                    if (typeof scrape.articles.dates.gmt !== 'undefined' && typeof scrape.articles.dates.gmt !== 'boolean')
                         throw new Error("articles.dates.gmt must be a boolean");
 
-                    if(typeof scrape.articles.dates.fallback !== 'undefined' && typeof scrape.articles.dates.fallback !== 'boolean')
+                    if (typeof scrape.articles.dates.fallback !== 'undefined' && typeof scrape.articles.dates.fallback !== 'boolean')
                         throw new Error("articles.dates.fallback must be a boolean");
                 }
 
-                if(typeof scrape.articles.filter !== 'undefined') {
+                if (typeof scrape.articles.filter !== 'undefined') {
                     if (typeof scrape.articles.filter !== 'object' || Array.isArray(scrape.articles.filter))
                         throw new Error("articles.filter must be a JSON object");
 
                     for (const v of ['search', 'author', 'authorExclude', 'after', 'before', 'slug', 'status', 'categories', 'categoriesExclude', 'tags', 'tagsExclude']) {
-                        if(scrape.articles.filter[v] && typeof scrape.articles.filter[v] !== 'string')
+                        if (scrape.articles.filter[v] && typeof scrape.articles.filter[v] !== 'string')
                             throw new Error(`articles.filter.${v} must be a string`);
                     }
 
-                    if(typeof scrape.articles.filter.sticky !== 'undefined' && typeof scrape.articles.filter.sticky !== 'boolean')
+                    if (typeof scrape.articles.filter.sticky !== 'undefined' && typeof scrape.articles.filter.sticky !== 'boolean')
                         throw new Error("articles.filter.sticky must be a boolean");
                 }
 
-                if(scrape.articles.thumbnail && typeof scrape.articles.thumbnail !== 'string')
+                if (scrape.articles.thumbnail && typeof scrape.articles.thumbnail !== 'string')
                     throw new Error("articles.thumbnail must be a string");
             }
         }
@@ -66,7 +66,7 @@ export class WordpressV2Parser extends ParserClass {
         scrape = scrape as ScrapeWordPressV2;
 
         for (const pair of instructions.url) {
-            if(pair.url.endsWith('/'))
+            if (pair.url.endsWith('/'))
                 pair.url = pair.url.substring(0, pair.url.length - 1);
         }
 
@@ -77,9 +77,9 @@ export class WordpressV2Parser extends ParserClass {
         scrape.paths.categories ??= 'wp-json/wp/v2/categories';
 
         for (const v of ['posts', 'categories']) {
-            if(scrape.paths[v].startsWith('/'))
+            if (scrape.paths[v].startsWith('/'))
                 scrape.paths[v] = scrape.paths[v].substring(1);
-            if(scrape.paths[v].endsWith('/'))
+            if (scrape.paths[v].endsWith('/'))
                 scrape.paths[v] = scrape.paths[v].substring(0, scrape.paths[v].length - 1);
         }
 
