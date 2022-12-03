@@ -15,5 +15,7 @@ describe('Jobs', function () {
         expect(job.emitAttempts).to.equal(0);
         expect(job.untilRetry).to.be.greaterThanOrEqual(0);
         expect(job.status).to.equal(JobStatus.PENDING);
+        expect(job.isLocked).to.equal(false);
+        expect(job.errorStack).to.deep.equal([]);
     });
 });

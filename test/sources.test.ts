@@ -46,4 +46,4 @@ describe('Sources', function () {
 
         expect(source.instructions.parserType).to.equal(ParserType.WORDPRESS_V2);
     });
-})
+});

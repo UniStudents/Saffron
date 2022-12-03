@@ -163,9 +163,11 @@ export class Grid {
      * <h1>Worker</h1>
      * Flags the job as failed and update the grid
      * @param job
+     * @param e
      */
-    async failedJob(job: Job): Promise<void> {
+    async failedJob(job: Job, e: Error): Promise<void> {
         job.status = JobStatus.FAILED;
+        job.errorStack.unshift(e);
         if (this.isMain)
             this.saffron.events.emit("worker.job.failed", job.id);
         else

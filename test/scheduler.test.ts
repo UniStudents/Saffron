@@ -1,20 +1,18 @@
 import {expect} from "chai";
-import {Saffron} from "../src/index";
+import {Job, Saffron, Source} from "../src/index";
 import {JobStatus} from "../src/components/job";
 
 describe('Scheduler', function () {
     const SOURCES_SIZE = 10;
 
     const saffron = new Saffron();
-    before(function () {
+    it('Initialization', function () {
         saffron.initialize({
             mode: 'main',
-            workers: {nodes: 1},
+            workers: {nodes: ['worker1']},
             misc: {log: 'none'}
         });
-    });
 
-    it('Initialization', function () {
         // Scheduler has not started, so expect 0 jobs and sources
         expect(saffron.scheduler.isRunning).to.equal(false);
         expect(saffron.scheduler.sources.length).to.equal(0);
@@ -159,6 +157,53 @@ describe('Scheduler', function () {
 
                     resolve(true);
                 }, 2500);
+            }, 1000);
+        });
+    });
+
+    it('Lock/Unlock job', function () {
+        this.timeout(5000);
+        return new Promise(async (resolve, reject) => {
+            saffron.initialize({
+                scheduler: {
+                    jobsInterval: 1000,
+                    randomizeInterval: () => 0,
+                    noResponseThreshold: 2,
+                    heavyJobFailureInterval: 5000
+                }
+            });
+
+            const source = Source.parseSourceFile({
+                name: 'test',
+                url: 'https://example.com',
+                type: 'dynamic',
+                scrape: async (utils: any, Article: any) => {throw new Error('Error1')}
+            }, null);
+
+            saffron.scheduler.sources.push(source);
+            saffron.scheduler.jobs.push(new Job(source, 'worker1', 1000, saffron.config));
+
+            await saffron.start(false);
+
+            setTimeout(() => {
+                const job = saffron.scheduler.jobs[0];
+                expect(job.status).to.equal(JobStatus.FAILED);
+                expect(job.attempts).to.equal(0);
+                expect(job.errorStack.length).to.equal(1);
+                expect(job.errorStack[0].message).to.includes('Error1');
+
+                job.lock();
+
+                setTimeout(() => {
+                    expect(job.attempts).to.equal(0);
+                    job.unlock();
+
+                    setTimeout(() => {
+                        expect(job.attempts).to.equal(1);
+                        saffron.stop();
+                        resolve(true);
+                    }, 1000);
+                }, 1000);
             }, 1000);
         });
     });

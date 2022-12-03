@@ -49,6 +49,9 @@ export class Scheduler {
             if (!this.running) return;
 
             for (const job of this.jobs) {
+                // Skip locked jobs
+                if(job.isLocked) continue;
+
                 // Subtract the elapsed time
                 job.untilRetry -= this.checkInterval;
 
