@@ -1,4 +1,5 @@
 import type {Article} from "./article";
+import type {Utils} from "../modules/parsers/Utils";
 
 export type InstructionUrl = {
     aliases: string[];
@@ -15,7 +16,7 @@ export type HTMLAttribute = {
     text: string;
 };
 
-export type ScrapeDynamic = () => Promise<Article[]>;
+export type ScrapeDynamic = (utils: Utils, Article: any) => Promise<Article[]>;
 export type ScrapeHTML = {
     container: string;
     article: {
@@ -89,10 +90,10 @@ export type SourceFile = {
     extra?: any;
 } & ({
     type: 'dynamic'
-    scrape?: ScrapeDynamic;
+    scrape: ScrapeDynamic;
 } | {
     type: 'html'
-    scrape?: ScrapeHTML;
+    scrape: ScrapeHTML;
 } | {
     type: 'rss'
     scrape?: ScrapeRSS;

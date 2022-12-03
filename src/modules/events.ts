@@ -120,7 +120,7 @@ class Antennae {
 
     public emit(eventName: string, ...args: any[]) {
         const _emit = () => {
-            // Will not be initialized when emitting 'title' event
+            // Grid will not be initialized when emitting 'title' event
             this.saffron.grid?.emit(eventName, ...args);
 
             // Call specified callback
