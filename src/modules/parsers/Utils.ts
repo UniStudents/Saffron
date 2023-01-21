@@ -287,9 +287,9 @@ export class Utils {
                 rejectUnauthorized: false
             });
 
-        options.headers ??= {};
+        options.headers ??= <any>{};
         for(const [key, value] of Object.entries(this.source.instructions.headers)) {
-            options.headers[key] = value;
+            (<any>options.headers)[key] = value;
         }
 
         options.timeout ??= this.source.instructions.timeout;
