@@ -287,7 +287,6 @@ export class Utils {
                 rejectUnauthorized: false
             });
 
-        // @ts-ignore
         options.headers ??= {};
         for(const [key, value] of Object.entries(this.source.instructions.headers)) {
             options.headers[key] = value;
@@ -300,20 +299,18 @@ export class Utils {
     }
 
     get(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse> {
-        // @ts-ignore
         if (options === undefined) options = {};
-        options.url = url;
-        options.method = "GET";
-        return this.request(options);
+        options!.url = url;
+        options!.method = "GET";
+        return this.request(options!);
     }
 
     post(url: string, data: any, options?: AxiosRequestConfig): Promise<AxiosResponse> {
-        // @ts-ignore
         if (options === undefined) options = {};
-        options.url = url;
-        options.method = "POST";
-        options.data = data;
-        return this.request(options);
+        options!.url = url;
+        options!.method = "POST";
+        options!.data = data;
+        return this.request(options!);
     }
 
     async parse(sourceJson: SourceFile): Promise<ParserResult[]> {
