@@ -286,11 +286,10 @@ export class Utils {
             options.httpsAgent = new https.Agent({
                 rejectUnauthorized: false
             });
-
-        if(options.headers === undefined)
-            options.headers = {};
+        
+        options.headers ??= {};
         for(const [key, value] of Object.entries(this.source.instructions.headers)) {
-            options.headers![key] = value;
+            options.headers[key] = value;
         }
 
         options.timeout ??= this.source.instructions.timeout;
