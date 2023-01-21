@@ -1,7 +1,7 @@
 import cheerio from "cheerio";
 import type {Attachment} from "../../components/article";
 import https from "https";
-import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
+import axios, {AxiosHeaders, AxiosRequestConfig, AxiosResponse} from "axios";
 import type {ParserResult, SourceFile} from "../../components/types";
 import {Source} from "../../components/source";
 import {Job} from "../../components/job";
@@ -287,9 +287,10 @@ export class Utils {
                 rejectUnauthorized: false
             });
 
-        (<any>options.headers) ??= <any>{};
+        if(options.headers === undefined)
+            options.headers = {};
         for(const [key, value] of Object.entries(this.source.instructions.headers)) {
-            (<any>options.headers)[key] = value;
+            options.headers![key] = value;
         }
 
         options.timeout ??= this.source.instructions.timeout;
