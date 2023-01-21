@@ -8,6 +8,7 @@ import type {ParserResult} from "../components/types";
 import {Utils} from "./parsers/Utils";
 import type {Saffron} from "../index";
 
+const sleep = ms => new Promise( res => setTimeout(res, ms));
 
 export class Worker {
 
@@ -22,7 +23,9 @@ export class Worker {
         const instructions = job.source.instructions;
 
         const results: ParserResult[] = [];
-        for (const pair of instructions.url) {
+        for (let i = 0; i < instructions.url.length; i++) {
+            const pair = instructions.url[i];
+
             const parser = ParserLoader.getParser(instructions.parserType)!!;
             const utils = new Utils();
             utils.url = pair.url;
@@ -30,11 +33,19 @@ export class Worker {
             utils.isScrapeAfterError = job.attempts !== 0;
             utils.source = job.source;
 
+            const delayBetweenRequests = utils.source.instructions.delayBetweenRequests;
+            if(i !== 0 && delayBetweenRequests !== 0) {
+                await sleep(delayBetweenRequests);
+            }
+
             // Will throw error in case of fail (catch in call function).
             const articles = await parser.parse(utils);
-            articles.forEach(article => {
-                article.pushCategories(utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]})));
-            });
+            if(!Array.isArray(articles))
+                throw new Error('did not return an array of articles');
+
+            const categoriesFromAliases = utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]}));
+            articles.forEach(article => article.pushCategories(categoriesFromAliases));
+
             results.push({
                 aliases: pair.aliases,
                 url: pair.url,

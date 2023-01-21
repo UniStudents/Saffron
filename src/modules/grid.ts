@@ -25,9 +25,6 @@ export class Grid {
 
         if (!Config.getOption(ConfigOptions.DISTRIBUTED, this.saffron.config)) return;
 
-        if (Config.getOption(ConfigOptions.AUTH_TOKEN, this.saffron.config) == null)
-            throw new Error('SaffronException The field grid.authToken must be supplied');
-
         if (this.isMain) {
             if (Config.getOption(ConfigOptions.USE_HTTPS, this.saffron.config))
                 this.http_server = https.createServer({

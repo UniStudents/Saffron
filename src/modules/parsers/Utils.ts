@@ -283,13 +283,17 @@ export class Utils {
 
     request(options: AxiosRequestConfig): Promise<AxiosResponse> {
         if (this.source.instructions["ignoreCertificates"])
-            options.httpsAgent = new https.Agent({rejectUnauthorized: false});
+            options.httpsAgent = new https.Agent({
+                rejectUnauthorized: false
+            });
 
         options.headers ??= {};
-        options.headers = {...options.headers, ...this.source.instructions.headers};
+        for(const [key, value] of Object.entries(this.source.instructions.headers)) {
+            options.headers[key] = value;
+        }
 
-        options.timeout ??= this.source.instructions.timeout
-        options.maxRedirects ??= this.source.instructions.maxRedirects
+        options.timeout ??= this.source.instructions.timeout;
+        options.maxRedirects ??= this.source.instructions.maxRedirects;
 
         return axios.request(options);
     }

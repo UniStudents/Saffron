@@ -13,6 +13,7 @@ describe('Configuration', function () {
         expect(c.sources?.includeOnly).to.deep.equal([]);
         expect(c.sources?.exclude).to.deep.equal([]);
         expect(c.workers?.nodes).to.equal(1);
+        expect(c.workers.delayBetweenRequests).to.equal(0);
         expect(c.workers?.requests?.headers).to.deep.equal({});
         expect(c.workers?.requests?.timeout).to.equal(10000);
         expect(c.workers?.requests?.maxRedirects).to.equal(5);
@@ -45,6 +46,7 @@ describe('Configuration', function () {
         },
         workers: {
             nodes: 10,
+            delayBetweenRequests: 10,
             requests: {
                 timeout: 25500,
                 headers: {
@@ -87,6 +89,7 @@ describe('Configuration', function () {
         expect(c.sources?.includeOnly).to.deep.equal(ec.sources.includeOnly);
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect(c.workers?.nodes).to.equal(ec.workers.nodes);
+        expect(c.workers.delayBetweenRequests).to.equal(10);
         expect(c.workers?.requests?.headers).to.deep.equal(ec.workers.requests?.headers);
         expect(c.workers?.requests?.timeout).to.equal(ec.workers.requests?.timeout);
         expect(c.workers?.requests?.maxRedirects).to.equal(ec.workers.requests?.maxRedirects);
@@ -165,6 +168,7 @@ describe('Configuration', function () {
         expect(c.sources?.includeOnly).to.deep.equal(ec.sources.includeOnly);
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect((<string[]>c.workers?.nodes)).to.deep.equal(['Ailly', 'Billy', 'Cilly', 'Dilly', 'Eilly']);
+        expect(c.workers.delayBetweenRequests).to.equal(10);
         expect(c.workers?.requests?.headers).to.deep.equal(ec.workers.requests?.headers);
         expect(c.workers?.requests?.timeout).to.equal(ec.workers.requests?.timeout);
         expect(c.workers?.requests?.maxRedirects).to.equal(ec.workers.requests?.maxRedirects);
@@ -198,6 +202,7 @@ describe('Configuration', function () {
         expect(c.sources?.includeOnly).to.deep.equal(ec.sources.includeOnly);
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect(c.workers?.nodes).to.equal(1);
+        expect(c.workers.delayBetweenRequests).to.equal(10);
         expect(c.workers?.requests?.headers).to.deep.equal(ec.workers.requests?.headers);
         expect(c.workers?.requests?.timeout).to.equal(100);
         expect(c.workers?.requests?.maxRedirects).to.equal(ec.workers.requests?.maxRedirects);
@@ -230,6 +235,7 @@ describe('Configuration', function () {
         expect(c.sources?.includeOnly).to.deep.equal(ec.sources.includeOnly);
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect(c.workers?.nodes).to.equal(ec.workers.nodes);
+        expect(c.workers.delayBetweenRequests).to.equal(10);
         expect(c.workers?.requests?.headers).to.deep.equal(ec.workers.requests?.headers);
         expect(c.workers?.requests?.timeout).to.equal(ec.workers.requests?.timeout);
         expect(c.workers?.requests?.maxRedirects).to.equal(ec.workers.requests?.maxRedirects);

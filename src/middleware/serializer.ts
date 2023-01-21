@@ -23,14 +23,13 @@ export class Serializer {
     _serialize(object: any): object {
         if (!(object instanceof Object)) return object;
 
-        const i = this.types.findIndex(e => e.name == object.constructor.name);
-        if (i == -1) throw "Type '" + object.constructor.name + "' is not supported for serialization";
+        const index = this.types.findIndex(e => e.name == object.constructor.name);
+        if (index == -1)
+            throw new Error(`SerializerException Type '${object.constructor.name}' is not supported for serialization`);
 
         return {
-            index: i,
-            entries: Object.entries(object).map(entry => {
-                return [entry[0], this._serialize(entry[1])];
-            })
+            index,
+            entries: Object.entries(object).map(([key, value]) => ([key, this._serialize(value)]))
         };
     }
 

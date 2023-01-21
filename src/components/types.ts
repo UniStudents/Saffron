@@ -81,7 +81,7 @@ export type SourceFile = {
     maxRedirects?: number;
     headers?: { [key: string]: string | string[] };
     ignoreCertificates?: boolean;
-    // TODO: Add cookieJar - https://github.com/3846masa/axios-cookiejar-support/blob/09cb8b06eb8b5cc6e6524d3aa72ec5ad107899b1/example/simple.js
+    delayBetweenRequests?: number;
 
     amount?: number;
     encoding?: string;

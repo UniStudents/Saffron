@@ -15,6 +15,7 @@ export class Instructions {
     declare maxRedirects: number;
     declare headers: { [key: string]: string | string[] };
     declare ignoreCertificates: boolean;
+    declare delayBetweenRequests: number;
 
     declare textDecoder: TextDecoder;
     declare includeContentAttachments: boolean;

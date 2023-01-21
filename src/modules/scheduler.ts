@@ -114,7 +114,6 @@ export class Scheduler {
         if (this.sources.length == 0) return;
 
         const jobInt: number = Config.getOption(ConfigOptions.JOB_INT, this.saffron.config);
-        if (jobInt < 5000) throw new Error('SaffronException scheduler.jobInterval must be at least 5000ms');
 
         // Create separation interval
         const separationInterval = jobInt / this.sources.length;
@@ -137,9 +136,6 @@ export class Scheduler {
 
         const includeOnly = Config.getOption(ConfigOptions.SOURCES_INCLUDE_ONLY, this.saffron.config);
         const excluded = Config.getOption(ConfigOptions.SOURCES_EXCLUDE, this.saffron.config);
-
-        if (!Array.isArray(includeOnly)) throw new Error("SaffronException sources.includeOnly is not an array.");
-        if (!Array.isArray(excluded)) throw new Error("SaffronException sources.excluded is not an array.");
 
         // Include only
         if (includeOnly.length > 0) {

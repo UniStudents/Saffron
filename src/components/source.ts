@@ -41,6 +41,10 @@ export class Source {
         const instructions = new Instructions();
         ret.instructions = instructions;
 
+        if (source.delayBetweenRequests != null && (source.delayBetweenRequests < 0))
+            throw new Error(`SourceException [${source.filename}] Field delayBetweenRequests is not valid, requirements(type = number, positive or zero).`);
+        instructions.delayBetweenRequests = source.delayBetweenRequests ?? Config.getOption(ConfigOptions.DELAY_BETWEEN_REQUESTS, config);
+
         if (source.timeout != null && (source.timeout < 0))
             throw new Error(`SourceException [${source.filename}] Field timeout is not valid, requirements(type = number, positive or zero).`);
         instructions.timeout = source.timeout ?? Config.getOption(ConfigOptions.TIMEOUT, config);
@@ -57,7 +61,7 @@ export class Source {
         instructions.ignoreCertificates = source.ignoreCertificates ?? false;
 
         instructions.includeContentAttachments = source.includeContentAttachments ?? Config.getOption(ConfigOptions.INCLUDE_CNT_ATTACHMENTS, config);
-        instructions.textDecoder = source.encoding ? new TextDecoder(`${source.encoding}`) : new TextDecoder();
+        instructions.textDecoder = source.encoding ? new TextDecoder(source.encoding) : new TextDecoder();
 
         instructions.url = [];
         if (typeof source.url === 'string') {
