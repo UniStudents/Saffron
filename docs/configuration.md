@@ -62,6 +62,15 @@ If you want to run saffron in different processes check out about [`Grid`](#grid
 If you want to assign a name to each worker, you can replace the number with
 an array of names (strings), like: `nodes: ['Worker 1', 'Worker 2', 'Billy']`.
 
+### `delayBetweenRequests`
+Default value: `0`
+
+There is a case where a website may rate limit the requests it accepts, so a source
+file with multiple urls may fail due to this limit.
+
+Increasing the option `delayBetweenRequests` (in milliseconds) will put a distance
+between the request that belong in the same source file.
+
 ### `requests.headers`
 The headers that will accompany the requests made by saffron.
 

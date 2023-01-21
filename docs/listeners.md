@@ -1,16 +1,16 @@
 # Listeners
 
-## `start`
+### `start`
 Called when starting saffron.
 
-## `stop`
+### `stop`
 Called when stopping saffron.
 
-## `scheduler.sources.new`
+### `scheduler.sources.new`
 Called when all the sources are loaded.
 Passes one argument, which is the source's names.
 
-## `scheduler.job.new`
+### `scheduler.job.new`
 Called when the scheduler pushes a new source scrapping job at the stack.
 Passes one argument, which is the job instance.
 

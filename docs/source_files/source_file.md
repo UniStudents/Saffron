@@ -21,8 +21,6 @@ This is useful in case of multiple source files want to save at the same place.
 
 If it is not defined it will fall back to the [`name`](#name) field.
 
-
-
 ### `url`
 This field contains the website's url(s) where the news are displayed.
 It can be a string or an array:
@@ -88,6 +86,15 @@ Default value: `false`
 
 If is set to `true` it will ignore all TLS certificates. It is useful in cases where a website
 did not update their certificates.
+
+### `delayBetweenRequests`
+Default value: `0`
+
+There is a case where a website may rate limit the requests it accepts, so a source
+file with multiple urls may fail due to this limit.
+
+Increasing the option `delayBetweenRequests` (in milliseconds) will put a distance
+between the request.
 
 ### `amount`
 Default value: `workers.articles.amount`
