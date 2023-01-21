@@ -287,7 +287,7 @@ export class Utils {
                 rejectUnauthorized: false
             });
 
-        options.headers ??= <any>{};
+        (<any>options.headers) ??= <any>{};
         for(const [key, value] of Object.entries(this.source.instructions.headers)) {
             (<any>options.headers)[key] = value;
         }
