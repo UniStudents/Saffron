@@ -299,14 +299,14 @@ export class Utils {
     }
 
     get(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse> {
-        if (!options) options = {};
+        if (options === undefined) options = {};
         options.url = url;
         options.method = "GET";
         return this.request(options);
     }
 
     post(url: string, data: any, options?: AxiosRequestConfig): Promise<AxiosResponse> {
-        if (!options) options = {};
+        if (options === undefined) options = {};
         options.url = url;
         options.method = "POST";
         options.data = data;
