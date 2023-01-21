@@ -270,7 +270,7 @@ export class Config {
 
         if (typeof this.config.scheduler !== 'object' || Array.isArray(this.config.scheduler))
             throw new Error('ConfigurationException Option block scheduler is not valid, requirements(type = object)');
-        if (typeof this.config.scheduler.jobsInterval !== 'number' || this.config.scheduler.jobsInterval < 5000)
+        if (typeof this.config.scheduler.jobsInterval !== 'number')
             throw new Error('ConfigurationException Option scheduler.jobsInterval is not valid, requirements(type = number, >= 5000)');
         if (typeof this.config.scheduler.heavyJobFailureInterval !== 'number' || this.config.scheduler.heavyJobFailureInterval <= 0)
             throw new Error('ConfigurationException Option scheduler.heavyJobFailureInterval is not valid, requirements(type = number, positive)');

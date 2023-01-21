@@ -108,7 +108,7 @@ a specific timeframe. This will help to ease your machine by not executing all t
 source scraping jobs together.
 
 A lower value for this interval means a heavier load on the websites that are scraped.
-This field has a minimum value of `5000ms`.
+This field has a recommended minimum value of `5000ms`.
 
 ### `heavyJobFailureInterval`
 Default value: `86400000` (24 hours)
