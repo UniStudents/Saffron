@@ -60,7 +60,7 @@ export class HTMLParser extends ParserClass {
                 if (options.class !== undefined || options.find !== undefined || options.attributes !== undefined || options.multiple !== undefined)
                     throw new Error(`article.${key}: when the static key is defined the keys class, find, attributes and multiple must not be defined`);
             }
-            // At least one field must be mentioned // TODO: Can multiple alone do something?
+            // At least one field must be mentioned
             else if (options.class === undefined && options.find === undefined && options.attributes === undefined && options.multiple === undefined)
                 throw new Error(`article.${key} at least one option must be defined`);
         }

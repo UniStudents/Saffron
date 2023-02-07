@@ -1,7 +1,7 @@
 import cheerio from "cheerio";
 import type {Attachment} from "../../components/article";
 import https from "https";
-import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
+import axios, {AxiosHeaders, AxiosRequestConfig, AxiosResponse} from "axios";
 import type {ParserResult, SourceFile} from "../../components/types";
 import {Source} from "../../components/source";
 import {Job} from "../../components/job";
@@ -283,30 +283,34 @@ export class Utils {
 
     request(options: AxiosRequestConfig): Promise<AxiosResponse> {
         if (this.source.instructions["ignoreCertificates"])
-            options.httpsAgent = new https.Agent({rejectUnauthorized: false});
-
+            options.httpsAgent = new https.Agent({
+                rejectUnauthorized: false
+            });
+        
         options.headers ??= {};
-        options.headers = {...options.headers, ...this.source.instructions.headers};
+        for(const [key, value] of Object.entries(this.source.instructions.headers)) {
+            options.headers[key] = value;
+        }
 
-        options.timeout ??= this.source.instructions.timeout
-        options.maxRedirects ??= this.source.instructions.maxRedirects
+        options.timeout ??= this.source.instructions.timeout;
+        options.maxRedirects ??= this.source.instructions.maxRedirects;
 
         return axios.request(options);
     }
 
     get(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse> {
-        if (!options) options = {};
-        options.url = url;
-        options.method = "GET";
-        return this.request(options);
+        if (options === undefined) options = {};
+        options!.url = url;
+        options!.method = "GET";
+        return this.request(options!);
     }
 
     post(url: string, data: any, options?: AxiosRequestConfig): Promise<AxiosResponse> {
-        if (!options) options = {};
-        options.url = url;
-        options.method = "POST";
-        options.data = data;
-        return this.request(options);
+        if (options === undefined) options = {};
+        options!.url = url;
+        options!.method = "POST";
+        options!.data = data;
+        return this.request(options!);
     }
 
     async parse(sourceJson: SourceFile): Promise<ParserResult[]> {

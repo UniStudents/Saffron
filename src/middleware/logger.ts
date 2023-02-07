@@ -36,7 +36,7 @@ export function logger(type: LoggerTypes, data: any): void {
             console.log(chalk.white(`${chalk.blue(" ⦿ ")} ${time}: ${data}`));
             return;
         default:
-            console.log(chalk.black(`${chalk.bgGreen(" saffron ")}`), chalk.white(chalk.white(data)));
+            console.log(chalk.black(`${chalk.bgGreen(" Saffron ")}`), chalk.white(chalk.white(data)));
             return;
     }
 }

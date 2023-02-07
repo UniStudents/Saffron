@@ -49,7 +49,6 @@ export class Saffron {
         else this.config.initializeConfig(config);
 
         this.events.registerLogListeners(this.config);
-        this.events.emit('title');
 
         // Initialize and start grid
         this.grid = new Grid(this);
@@ -60,9 +59,6 @@ export class Saffron {
         const nodes = Config.getOption(ConfigOptions.WORKER_NODES, this.config);
         this.workers = [];
         if (Array.isArray(nodes)) {
-            if ((new Set(nodes)).size !== nodes.length)
-                throw new Error("worker.nodes cannot have duplicates names");
-
             for (const n of nodes)
                 this.workers.push(new Worker(this, n));
         } else {
@@ -76,11 +72,12 @@ export class Saffron {
     }
 
     /**
-     * Starts a Saffron instance.
-     * If reset is set to false, it will not read source folder and no new jobs will not be generated.
+     * Starts the Saffron instance.
+     * If reset is set to false, it will not read sources folder and jobs will not be reset.
      * @param reset Defaults to true
      */
     async start(reset: boolean = true) {
+        this.events.emit('title');
         for (const worker of this.workers)
             worker.start();
 
@@ -101,12 +98,12 @@ export class Saffron {
         this.events.emit("stop");
     }
 
-    /** Register a new event */
+    /** Register a new listener for a specific event */
     on(event: string, cb: (...args: any[]) => void) {
         this.events.on(event, cb);
     }
 
-    /** Append a new middleware to the queue */
+    /** Append a new extension to the queue */
     use(event: PairEvent, callback: (...args: any[]) => any): void {
         this.extensions.push({event, callback});
     }

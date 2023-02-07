@@ -5,3 +5,4 @@ export {Job} from "./components/job"
 export {Source} from "./components/source"
 export {Instructions} from "./components/instructions";
 export {Saffron} from "./saffron";
+export {Serializer, pack, unpack} from "./middleware/serializer";

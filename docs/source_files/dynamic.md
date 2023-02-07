@@ -20,7 +20,7 @@ module.exports = {
         // ...
         
         if(error)
-            throw new Error('Failed for csd.uoc.gr!');
+            throw new Error('Failed for source file [name]!');
         
         // Return an array of all the articles you want to be added
         return articles;
