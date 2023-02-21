@@ -2,29 +2,27 @@
 
 ## Table of Contents
 
-- [Saffron | News \& announcements aggregation framework.](#saffron--news--announcements-aggregation-framework)
-  - [Table of Contents](#table-of-contents)
-  - [What is Saffron?](#what-is-saffron)
-  - [Architecture](#architecture)
-  - [Installation](#installation)
-  - [Initialization](#initialization)
-  - [Configuration](#configuration)
-  - [Parsers](#parsers)
+- [What is Saffron?](#what-is-saffron)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [Initialization](#initialization)
+- [Configuration](#configuration)
+- [Parsers](#parsers)
     - [WordPress V2](#wordpress-v2)
     - [RSS](#rss)
     - [HTML](#html)
     - [Dynamic](#dynamic)
     - [Which to choose](#which-to-choose)
-  - [Article](#article)
-  - [Source files](#source-files)
+- [Article](#article)
+- [Source files](#source-files)
     - [What is a source file?](#what-is-a-source-file)
     - [Creating a source file](#creating-a-source-file)
-  - [Middleware](#middleware)
+- [Middleware](#middleware)
     - [Register a middleware](#register-a-middleware)
     - [Format article](#format-article)
     - [Articles](#articles)
-  - [Listeners](#listeners)
-  - [Standalone](#standalone)
+- [Listeners](#listeners)
+- [Standalone](#standalone)
 
 ## What is Saffron?
 
@@ -70,9 +68,7 @@ import Saffron from "@unistudents/saffron";
 const saffron = new Saffron();
 
 // Initialize saffron
-saffron.initialize({
-  /* configuration */
-});
+saffron.initialize({/* configuration */});
 
 // Start sheduler and workers.
 saffron.start();
@@ -94,7 +90,8 @@ Parser type: `wordpress-v2`
 By default, [`WordPress`](https://wordpress.com/) based websites has an open API for news retrieval.
 We make use of that to get access on the articles and categories of the website.
 
-To quickly check if a website supports the WordPress API simply open your browser and type `<website-root-link>/wp-json/wp/v2/posts/`.
+To quickly check if a website supports the WordPress API simply open your browser and
+type `<website-root-link>/wp-json/wp/v2/posts/`.
 If a valid JSON file is displayed on the browser (or downloaded on your computer) which contains the website's articles,
 then you can safely use the `wordpress` parser.
 
@@ -126,11 +123,12 @@ decided by the user.
 
 We recommend a specific order for using the available parsers.
 
-- If the desired website is based an [`WordPress`](https://wordpress.com/) and the WordPress articles API is enabled, then
+* If the desired website is based an [`WordPress`](https://wordpress.com/) and the WordPress articles API is enabled,
+  then
   choose the `wordpress-v2` parser.
-- If the desired website supports [`RSS`](https://en.wikipedia.org/wiki/RSS) feed. then choose the `rss` parser.
-- If the desired website has a structured form, the use the `html` parser.
-- If none of the above is possible (bad html or custom API) then the `dynamic` parser is our last choice.
+* If the desired website supports [`RSS`](https://en.wikipedia.org/wiki/RSS) feed. then choose the `rss` parser.
+* If the desired website has a structured form, the use the `html` parser.
+* If none of the above is possible (bad html or custom API) then the `dynamic` parser is our last choice.
 
 ## Article
 
@@ -167,7 +165,7 @@ Each middleware function can be called more than once.
 
 ```typescript
 saffron.use("name", (...args: any) => {
-  //...
+    //...
 });
 ```
 
@@ -178,15 +176,15 @@ It gets as parameter every article that was found from the parsers and must retu
 
 ```javascript
 saffron.use("article.format", (article: Article) => {
-  // If possible set pubDate with milliseconds.
-  let ms = new Date(article.pubDate).getTime();
-  if (!isNaN(ms)) article.pubDate = ms;
+    // If possible set pubDate with milliseconds.
+    let ms = new Date(article.pubDate).getTime();
+    if (!isNaN(ms)) article.pubDate = ms;
 
-  // Append source name before title for every article
-  article.title = `[${article.getSource(saffron).name}] ${article.title}`;
+    // Append source name before title for every article
+    article.title = `[${article.getSource(saffron).name}] ${article.title}`;
 
-  // Return the changed article.
-  return article;
+    // Return the changed article.
+    return article;
 });
 ```
 
@@ -200,10 +198,10 @@ The only requirement is to return an array (empty or not) of articles.
 
 ```js
 saffron.use("articles", (articles: Article[]) => {
-  sort(articles);
-  return articles.filter(
-    (article) => article.title != null && article.title !== ""
-  );
+    sort(articles);
+    return articles.filter(
+        (article) => article.title != null && article.title !== ""
+    );
 });
 ```
 
@@ -218,21 +216,21 @@ Read the [listeners](./docs/listeners.md) file for more information.
 Saffron supports immediate parsing using the static function `parse`.
 
 ```ts
-import { Saffron } from "@unistudents/saffron";
+import {Saffron} from "@unistudents/saffron";
 
 try {
-  const result = Saffron.parse({
-    name: "source-name",
-    url: ["Category 1", "https://example.com"],
-    // ...
-    scrape: {
-      // ...
-    },
-  });
+    const result = Saffron.parse({
+        name: "source-name",
+        url: ["Category 1", "https://example.com"],
+        // ...
+        scrape: {
+            // ...
+        },
+    });
 
-  console.log("Articles retrieved:", result);
+    console.log("Articles retrieved:", result);
 } catch (e) {
-  console.log("Encountered an error during parsing:", e);
+    console.log("Encountered an error during parsing:", e);
 }
 ```
 
@@ -240,17 +238,10 @@ The result of the `parse` function is an array of objects for each url passed in
 
 ```ts
 [
-  {
-    url: "https://example.com",
-    aliases: ["Category 1"],
-    articles: [
-      ,
-      ,
-      ,/*Article*/
-      /*Article*/
-      /*Article*/
-      /*...*/
-    ],
-  },
+    {
+        url: "https://example.com",
+        aliases: ["Category 1"],
+        articles: [/*Article*/, /*Article*/, /*Article*/, /*...*/]
+    },
 ];
 ```
