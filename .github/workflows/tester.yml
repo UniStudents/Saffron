@@ -4,8 +4,6 @@
 name: Check for runtime errors
 
 on:
-  push:
-    branches: [ feature-development, bug-fixing ]
   pull_request:
     branches: [ main ]
 
