@@ -1,49 +1,49 @@
 {
-  "name": "@unistudents/saffron",
-  "version": "4.2.0",
-  "description": "A fairly intuitive & powerful framework that enables you to collect & save articles and news from all over the web. ",
-  "license": "MIT",
-  "homepage": "https://github.com/unistudents/saffron#readme",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/unistudents/saffron.git"
-  },
-  "bugs": {
-    "url": "https://github.com/unistudents/saffron/issues"
-  },
-  "scripts": {
-    "test": "mocha --exit --bail --forbid-only --require ts-node/register test/index.test.ts",
-    "clean": "rm -rf dist",
-    "build": "tsc -d"
-  },
-  "dependencies": {
-    "axios": "^1.2.2",
-    "chalk": "^4.1.2",
-    "cheerio": "^1.0.0-rc.12",
-    "glob": "^8.0.3",
-    "lodash": "^4.17.21",
-    "luxon": "^3.2.1",
-    "nanoid": "^3.3.4",
-    "rss-parser": "^3.12.0",
-    "socket.io": "^4.5.4",
-    "socket.io-client": "4.5.4",
-    "striptags": "^3.2.0"
-  },
-  "devDependencies": {
-    "@types/chai": "^4.3.4",
-    "@types/cheerio": "^0.22.31",
-    "@types/express": "^4.17.15",
-    "@types/glob": "^8.0.0",
-    "@types/lodash": "^4.14.191",
-    "@types/luxon": "^3.2.0",
-    "@types/mocha": "^10.0.1",
-    "@types/xml2js": "^0.4.11",
-    "chai": "^4.3.7",
-    "express": "^4.18.2",
-    "mocha": "^10.2.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.9.4"
-  }
+    "name": "@unistudents/saffron",
+    "version": "4.2.0",
+    "description": "A fairly intuitive & powerful framework that enables you to collect & save articles and news from all over the web. ",
+    "license": "MIT",
+    "homepage": "https://github.com/unistudents/saffron#readme",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/unistudents/saffron.git"
+    },
+    "bugs": {
+        "url": "https://github.com/unistudents/saffron/issues"
+    },
+    "scripts": {
+        "test": "mocha --exit --bail --forbid-only --require ts-node/register test/index.test.ts",
+        "clean": "rm -rf dist",
+        "build": "tsc -d"
+    },
+    "dependencies": {
+        "axios": "^1.2.2",
+        "chalk": "^4.1.2",
+        "cheerio": "^1.0.0-rc.12",
+        "glob": "^8.0.3",
+        "lodash": "^4.17.21",
+        "luxon": "^3.2.1",
+        "nanoid": "^3.3.4",
+        "rss-parser": "^3.12.0",
+        "socket.io": "^4.5.4",
+        "socket.io-client": "4.5.4",
+        "striptags": "^3.2.0"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.3.4",
+        "@types/cheerio": "^0.22.31",
+        "@types/express": "^4.17.15",
+        "@types/glob": "^8.0.0",
+        "@types/lodash": "^4.14.191",
+        "@types/luxon": "^3.2.0",
+        "@types/mocha": "^10.0.1",
+        "@types/xml2js": "^0.4.11",
+        "chai": "^4.3.7",
+        "express": "^4.18.2",
+        "mocha": "^10.2.0",
+        "ts-node": "^10.9.1",
+        "typescript": "^4.9.4"
+    }
 }
