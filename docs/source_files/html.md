@@ -42,7 +42,7 @@ The fields and their options are in a key-value relationship.
 ```
 
 The following standard keys will be assigned as the root fields in the article:
-`title`, `content`, `pubDate`, `link`, `attachments` and `categories`.
+`title`, `content`, `pubDate`, `link`, `attachments`, `categories` and `thumbnail`.
 All the other fields mentioned here will be moved to the `extras` field in a key-value
 relationship.
 
