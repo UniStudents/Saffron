@@ -84,7 +84,7 @@ export class HTMLParser extends ParserClass {
             if (index >= instructions.amount) return;
 
             // Exp. If you remove the title, then the title is going to be on the extra information of each article.
-            const basicData = ["title", "pubDate", "content", "attachments", "link", "categories"];
+            const basicData = ["title", "pubDate", "content", "attachments", "link", "categories", "thumbnail"];
 
             const articleData: { [key: string]: any } = {};
             const options = instructions.html.article;
@@ -136,6 +136,7 @@ export class HTMLParser extends ParserClass {
             article.title = this.parseField(utils, articleData.title, true);
             article.content = this.parseField(utils, articleData.content, false);
             article.pubDate = this.parseField(utils, articleData.pubDate, false);
+            article.thumbnail = this.parseField(utils, articleData.thumbnail, false);
 
             article.link = this.parseField(utils, articleData.link, false);
             // if(article.link?.startsWith('/') == true)
