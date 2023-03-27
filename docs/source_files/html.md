@@ -12,7 +12,7 @@ accurately.
 
 ## `container`
 The identifier of the articles' container in the HTML code.
-It can be a `class`, `css selector`, `x-path` or a `js path`.
+It can be a `class`, a `css selector`, a `x-path` or a `js path`.
 
 The selected element will then be iterated for each child element and execute the
 options inside [`article`](#article).
@@ -48,7 +48,7 @@ relationship.
 
 ### `class`
 The identifier of the article in the HTML code.
-It can be a `class`, `css selector`, `x-path` or a `js path`.
+It can be a `class`, a `css selector`, a `x-path` or a `js path`.
 
 If the HTML tag cannot be identified by the above, this field can be omitted.
 
@@ -63,7 +63,7 @@ For example, for this HTML code the class for the title will be `.title.title2`.
 
 ### `find`
 How deep to go in the HTML code step by step.
-It can be a `class`, `css selector`, `x-path` or a `js path`.
+It can be a `class`, a `css selector`, a `x-path` or a `js path`.
 
 When [`multiple`](#multiple) is set to `true`, it will take the last item in the list
 and iterate the elements.
@@ -163,3 +163,75 @@ will have the following options:
 
 ### `static`
 Assign a static string to the specified field. All the other options are omitted.
+
+## `skip`
+When it is needed to skip an element inside `container` that matches some criteria.
+
+You can skip an element based on:
+1) the position of that element inside the document
+2) a selector that matches that element
+3) that element's text
+4) both cases `2` and `3`
+
+### Based on position
+Position always starts from **zero**.
+```json5
+{
+    // ...
+    "skip": [
+        {
+            "position": 3 // skip the fourth element
+        }
+    ]
+}
+```
+
+### Based on selector
+The selector can be a `class`, a `css selector`, a `x-path` or a `js path`
+
+```json5
+{
+    // ...
+    "skip": [
+        {
+            "selector": "div.class1 > div.class2"
+        }
+    ]
+}
+```
+
+### Based on text
+The element's text will undergo a sanitization based on these rules:
+* Html decoding (`&amp;gt;` will tranform to `>`)
+* Remove all consecutive `\n`, `\t` and spaces.
+```json5
+{
+    // ...
+    "skip": [
+        {
+            "text": "Text to skip",
+            "type": "exact" // or "contains"
+        }
+    ]
+}
+```
+
+### Based on selector and text
+This is used to match the text of a specific child element inside the element.
+
+The element's text will undergo a sanitization based on these rules:
+* Html decoding (`&amp;gt;` will tranform to `>`)
+* Remove all consecutive `\n`, `\t` and spaces.
+```json5
+{
+    // ...
+    "skip": [
+        {
+            // Skip all articles that have in their title the text "Discovery on Mars"
+            "selector": "div.title",
+            "text": "Discovery on Mars",
+            "type": "contains"
+        }
+    ]
+}
+```

@@ -114,4 +114,76 @@ describe("HTML parser", function () {
             expect(article.thumbnail).to.be.undefined;
         });
     });
+
+    it('Test 5', function () {
+        // TODO: When we add another source file test move this to a file
+        return Saffron.parse({
+            "url": "http://127.0.0.1:3000/html4",
+            "name": "html5-source",
+            "type": "html",
+            "encoding": "iso-8859-7",
+            "scrape": {
+                "container": "#page-content > .news_container",
+                "skip": [
+                    {"position": 1},
+                    {
+                        "text": "Υποδοχή Πρωτοετών ΕΜΠ - με μουσική και χορό - 24/10/2022",
+                        "type": "contains"
+                    },
+                    {
+                        "selector": "div.news_title_container > div.news_date",
+                        "text": "Tuesday, 25 Οκτωβρίου 2022 - Ανακοινώσεις Προπτυχιακών",
+                        "type": "exact"
+                    },
+                    {
+                        "selector": "div.news_title_container > div.news_title",
+                        "text": "μαθήματος Μηχανουργικές Κατεργασίες",
+                        "type": "contains"
+                    }
+                ],
+                "article": {
+                    "link": {
+                        "class": ".news_title",
+                        "find": ["a"],
+                        "attributes": ["href"],
+                        "multiple": false
+                    },
+                    "pubDate": {
+                        "class": ".news_date",
+                        "multiple": false
+                    },
+                    "title": {
+                        "class": ".news_title",
+                        "multiple": false
+                    },
+                    "content": {
+                        "class": ".news_main",
+                        "multiple": false
+                    },
+                    "attachments": {
+                        "class": ".news_main",
+                        "find": ["a"],
+                        "attributes": ["href"],
+                        "multiple": true
+                    }
+                }
+            }
+        }).then(result => {
+            expect(result.length).to.equal(1);
+            const obj = result[0];
+            expect(obj.aliases.length).to.equal(0);
+            expect(obj.url).to.equal('http://127.0.0.1:3000/html4');
+            expect(obj.articles.length).to.equal(6);
+
+            for (const article of obj.articles) {
+                expect(article.source).to.equal('html5-source');
+                expect(article.categories.length).to.equal(0);
+
+                expect(article.title).to.not.equal('Μουσική, τραγούδι και χορός στην υποδοχή των πρωτοετών στο ΕΜΠ');
+                expect(article.title).to.not.equal("Υποδοχή Πρωτοετών ΕΜΠ - με μουσική και χορό - 24/10/2022");
+                expect(article.pubDate).to.not.equal("Tuesday, 25 Οκτωβρίου 2022 - Ανακοινώσεις Προπτυχιακών");
+                expect(article.title).to.not.equal("Αναπληρώσεις του μαθήματος Μηχανουργικές Κατεργασίες");
+            }
+        });
+    });
 });

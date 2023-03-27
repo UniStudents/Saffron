@@ -21,6 +21,36 @@ export class HTMLParser extends ParserClass {
         if (typeof scrape.article !== 'object' || Array.isArray(scrape.article))
             throw new Error("article must be JSON object");
 
+        if (scrape.skip !== undefined && !Array.isArray(scrape.skip))
+            throw new Error("skip must be an array");
+        for (const index in scrape.skip ?? []) {
+            const item = scrape.skip![index];
+            if (typeof item !== 'object')
+                throw new Error(`skip.${index} must be an object`);
+            const keys = Object.keys(item);
+            const {
+                selector, text, type,
+                position
+            } = (<any>item);
+
+            if (keys.includes('selector') || keys.includes('text')) {
+                if(keys.includes('position'))
+                    throw new Error(`skip.${index}.position cannot be together with "selector" or "text"`);
+
+                if (selector !== undefined && typeof selector !== 'string')
+                    throw new Error(`skip.${index}.selector must be a string`);
+                if (text !== undefined && typeof text !== 'string')
+                    throw new Error(`skip.${index}.text must be a string`);
+
+                if (keys.includes('type') && type !== 'exact' && type !== 'contains')
+                    throw new Error(`skip.${index}.type must be a "exact" or "contains"`);
+            } else if (keys.includes('position')) {
+                if(typeof position !== 'number' || position < 0)
+                    throw new Error(`skip.${index}.position must be a zero or positive number`);
+            } else
+                throw new Error(`skip.${index} contains illegal fields`);
+        }
+
         const articleKeys = Object.keys(scrape.article);
 
         if ((new Set(articleKeys)).size !== articleKeys.length)
@@ -81,7 +111,8 @@ export class HTMLParser extends ParserClass {
         const parsedArticles: Article[] = [];
         const cheerioLoad: cheerio.Root = cheerio.load(instructions.textDecoder.decode(response.data));
         cheerioLoad(`${instructions.html.container}`).each((index, element) => {
-            if (index >= instructions.amount) return;
+            if (parsedArticles.length >= instructions.amount) return;
+            if (this.isSkipped(utils, instructions, cheerioLoad, element, index)) return;
 
             // Exp. If you remove the title, then the title is going to be on the extra information of each article.
             const basicData = ["title", "pubDate", "content", "attachments", "link", "categories", "thumbnail"];
@@ -163,6 +194,48 @@ export class HTMLParser extends ParserClass {
         });
 
         return parsedArticles;
+    }
+
+    private isSkippedOne(utils: Utils, s: any, load: cheerio.Cheerio, index: number): boolean {
+        const {
+            selector, text, type,
+            position
+        } = s;
+
+        if (selector !== undefined) {
+            const child = load.find(selector);
+            if (child.html() == null) return false;
+
+            if (text !== undefined) {
+                if (type === undefined || type === 'exact')
+                    return utils.cleanupHTMLText(child.text(), false) === text;
+                else if (type === 'contains')
+                    return child.text().includes(text);
+            }
+
+            return true;
+        } else if (text !== undefined) {
+            // text exists and selector does not exist
+            if (type === undefined || type === 'exact')
+                return utils.cleanupHTMLText(load.text(), false) === text;
+            else if (type === 'contains')
+                return load.text().includes(text);
+        } else if (position !== undefined)
+            return index === position;
+        return false;
+    }
+
+    private isSkipped(utils: Utils, instructions: Instructions, cheerioLoad: cheerio.Root, element: cheerio.Element, index: number): boolean {
+        const skip = instructions.html.skip;
+        if (!skip) return false;
+
+        const load = cheerioLoad(element);
+        for (const s of skip) {
+            if (this.isSkippedOne(utils, s, load, index))
+                return true;
+        }
+
+        return false;
     }
 
     private parseField(utils: Utils, data: string | any[], excessive: boolean): string | null {
