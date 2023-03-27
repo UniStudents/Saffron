@@ -17,8 +17,16 @@ export type HTMLAttribute = {
 };
 
 export type ScrapeDynamic = (utils: Utils, Article: any) => Promise<Article[]>;
+
 export type ScrapeHTML = {
     container: string;
+    skip?: ({
+        selector?: string;
+        text?: string;
+        type?: 'exact' | 'contains'; // Default is 'exact'
+    } | {
+        position: number;
+    })[];
     article: {
         [field: 'title' | 'link' | 'content' | 'pubDate' | 'categories' | string]: {
             parent?: string;
@@ -30,12 +38,14 @@ export type ScrapeHTML = {
 
             static?: string;
         };
-    }
+    };
 };
+
 export type ScrapeRSS = {
     extraFields: string[];
     assignFields: { [assign: string]: string };
 };
+
 export type ScrapeWordPressV2 = {
     paths?: {
         posts?: string;
