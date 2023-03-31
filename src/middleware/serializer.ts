@@ -3,7 +3,7 @@ import {Source} from "../components/source";
 import {Job} from "../components/job";
 import {Instructions} from "../components/instructions";
 
-const types = [Article, Source, Job, Instructions, TextDecoder, Object, Array, Function];
+const types = [Article, Source, Job, Instructions, TextDecoder, Object, Array, Function, Error];
 
 export class Serializer {
     declare types: any[];
