@@ -1,6 +1,7 @@
 import _ from "lodash"
 import type {Article} from "./article";
 import type {AxiosRequestConfig} from "axios";
+import type {Source} from "./source";
 
 export type ConfigType = {
     mode: 'main' | 'worker';
@@ -13,15 +14,15 @@ export type ConfigType = {
     }>;
     workers: Partial<{
         nodes: number | string[];
-        delayBetweenRequests?: number; // TODO: Support builder function for delayBetweenRequests
+        delayBetweenRequests?: number;
         requests: Partial<{
-            timeout: number; // TODO: Support builder function for timeout
-            headers: { [key: string]: string | string[] }; // TODO: Support builder function for headers
-            maxRedirects: number;  // TODO: Support builder function for maxRedirects
-            axios: AxiosRequestConfig; // TODO: Support builder function for axios config
+            timeout: number;
+            headers: { [key: string]: string | string[] };
+            maxRedirects: number;
+            axios: AxiosRequestConfig | ((source: Source) => AxiosRequestConfig); // TODO: Make it async
         }>;
         articles: Partial<{
-            amount: number; // TODO: Support builder function for amount
+            amount: number;
             includeContentAttachments: boolean;
         }>;
     }>;

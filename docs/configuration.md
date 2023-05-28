@@ -83,6 +83,16 @@ It can be used to set `User-Agent` and other fields.
 
 ### `requests.axios`
 Axios' configuration that will be applied to the requests made by saffron.
+It supports synchronous callback like:
+
+```typescript
+axios: (source: Source) => {
+    return {
+        tiemout: 3000
+    };
+}
+```
+
 It will override previous options.
 
 Currently only for `html`, `wordpress` and `dynamic` source types.

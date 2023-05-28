@@ -55,11 +55,10 @@ export class Source {
 
         if (source.amount != null && (source.amount <= 0))
             throw new Error(`SourceException [${source.filename}] Field amount is not valid, requirements(type = number, positive).`);
-        instructions.amount = source.amount ?? Config.getOption(ConfigOptions.ARTICLE_AMOUNT, config);
 
+        instructions.amount = source.amount ?? Config.getOption(ConfigOptions.ARTICLE_AMOUNT, config);
         instructions.headers = source.headers ?? Config.getOption(ConfigOptions.HEADERS, config);
         instructions.ignoreCertificates = source.ignoreCertificates ?? false;
-        instructions.axios = source.axios ?? Config.getOption(ConfigOptions.AXIOS_REQUEST_CONFIG, config);
 
         instructions.includeContentAttachments = source.includeContentAttachments ?? Config.getOption(ConfigOptions.INCLUDE_CNT_ATTACHMENTS, config);
         instructions.textDecoder = source.encoding ? new TextDecoder(source.encoding) : new TextDecoder();
@@ -108,6 +107,10 @@ export class Source {
         }
 
         ParserLoader.assignScrapeInstructions(parserType, ret.instructions, source.scrape);
+
+        // Run at the end, so we can have access to all data defined above
+        const axiosConfig = Config.getOption(ConfigOptions.AXIOS_REQUEST_CONFIG, config);
+        instructions.axios = source.axios ?? (typeof axiosConfig === 'function' ? axiosConfig(source) : axiosConfig);
 
         return ret;
     }
