@@ -46,7 +46,7 @@ export class RssParser extends ParserClass {
         const parser = new Parser({
             timeout: utils.source.instructions.timeout,
             maxRedirects: utils.source.instructions.maxRedirects,
-            headers: utils.source.instructions.headers,
+            headers: utils.source.instructions.headers as any,
             requestOptions: {
                 rejectUnauthorized: !utils.source.instructions.ignoreCertificates
             },

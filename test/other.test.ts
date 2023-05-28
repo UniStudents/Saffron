@@ -165,6 +165,7 @@ describe('Other', function () {
     });
 
     it('Proxy - Enabled', function () {
+        // Read with fs, because require will cache the file and the changes will be moved to the other tests
         const sourceFile = JSON.parse(fs.readFileSync(path.join(__dirname, './sources/html/html1.json'), 'utf8'));
         sourceFile.url[0][1] = "http://127.0.0.1:3000/html2"; // Proxy should return the file for html1
         sourceFile.axios = {
@@ -183,6 +184,7 @@ describe('Other', function () {
     });
 
     it('Proxy - Disabled', function () {
+        // Read with fs, because require will cache the file and the changes will be moved to the other tests
         const sourceFile = JSON.parse(fs.readFileSync(path.join(__dirname, './sources/html/html1.json'), 'utf8'));
         sourceFile.url[0][1] = "http://127.0.0.1:3000/html2"; // Web server should return the file for html2
         // Proxy is disabled, so it should fail parsing
