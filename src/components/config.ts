@@ -1,29 +1,33 @@
 import _ from "lodash"
 import type {Article} from "./article";
+import type {AxiosRequestConfig} from "axios";
 
 export type ConfigType = {
     mode: 'main' | 'worker';
     newArticles: ((tableName: string, articles: Article[]) => void) | ((tableName: string, articles: Article[]) => Promise<void>);
     sources: Partial<{
         path: string;
+        scanSubFolders: boolean;
         includeOnly: string[];
         exclude: string[];
     }>;
     workers: Partial<{
         nodes: number | string[];
-        delayBetweenRequests?: number;
+        delayBetweenRequests?: number; // TODO: Support builder function for delayBetweenRequests
         requests: Partial<{
-            timeout: number;
-            headers: { [key: string]: string | string[] };
-            maxRedirects: number;
+            timeout: number; // TODO: Support builder function for timeout
+            headers: { [key: string]: string | string[] }; // TODO: Support builder function for headers
+            maxRedirects: number;  // TODO: Support builder function for maxRedirects
+            axios: AxiosRequestConfig; // TODO: Support builder function for axios config
         }>;
         articles: Partial<{
-            amount: number;
+            amount: number; // TODO: Support builder function for amount
             includeContentAttachments: boolean;
         }>;
     }>;
     scheduler: Partial<{
         jobsInterval: number,
+        // TODO: Add function to calculate retry interval
         heavyJobFailureInterval: number,
         noResponseThreshold: number;
         randomizeInterval: () => number;
@@ -69,7 +73,9 @@ export enum ConfigOptions {
     NEW_ARTICLES = 22,
     INCLUDE_CNT_ATTACHMENTS = 23,
     MAX_REDIRECTS = 23,
-    DELAY_BETWEEN_REQUESTS
+    DELAY_BETWEEN_REQUESTS = 24,
+    AXIOS_REQUEST_CONFIG = 25,
+    SCAN_SUB_FOLDERS = 26,
 }
 
 const defaultConfig: ConfigType = {
@@ -78,6 +84,7 @@ const defaultConfig: ConfigType = {
     },
     sources: {
         path: "./sources",
+        scanSubFolders: true,
         includeOnly: [],
         exclude: []
     },
@@ -143,6 +150,8 @@ export class Config {
 
             case ConfigOptions.SOURCES_PATH:
                 return conf.sources?.path;
+            case ConfigOptions.SCAN_SUB_FOLDERS:
+                return conf.sources?.scanSubFolders;
             case ConfigOptions.SOURCES_INCLUDE_ONLY:
                 return conf.sources?.includeOnly;
             case ConfigOptions.SOURCES_EXCLUDE:
@@ -154,6 +163,8 @@ export class Config {
                 return conf.workers?.delayBetweenRequests;
             case ConfigOptions.HEADERS:
                 return conf.workers?.requests?.headers;
+            case ConfigOptions.AXIOS_REQUEST_CONFIG:
+                return conf.workers?.requests?.axios
             case ConfigOptions.TIMEOUT:
                 return conf.workers?.requests?.timeout;
             case ConfigOptions.MAX_REDIRECTS:
@@ -237,6 +248,8 @@ export class Config {
             throw new Error('ConfigurationException Option block sources is not valid, requirements(type = object)');
         if (typeof this.config.sources.path !== 'string')
             throw new Error('ConfigurationException Option sources.path is not valid, requirements(type = string)');
+        if (typeof this.config.sources.scanSubFolders !== 'boolean')
+            throw new Error('ConfigurationException Option sources.scanSubFolders is not valid, requirements(type = boolean)');
         if (!Array.isArray(this.config.sources.includeOnly))
             throw new Error('ConfigurationException Option sources.includeOnly is not valid, requirements(type = string-array)');
         if (!Array.isArray(this.config.sources.exclude))

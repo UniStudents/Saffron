@@ -103,13 +103,10 @@ export class HTMLParser extends ParserClass {
     async parse(utils: Utils): Promise<Article[]> {
         const instructions = utils.source.instructions;
 
-        const response: AxiosResponse = await utils.get(utils.url, {
-            responseType: 'arraybuffer', // This will be used to textDecoder below
-            responseEncoding: 'binary'
-        });
+        const response: AxiosResponse = await utils.get(utils.url);
 
         const parsedArticles: Article[] = [];
-        const cheerioLoad: cheerio.Root = cheerio.load(instructions.textDecoder.decode(response.data));
+        const cheerioLoad: cheerio.Root = cheerio.load(response.data);
         cheerioLoad(`${instructions.html.container}`).each((index, element) => {
             if (parsedArticles.length >= instructions.amount) return;
             if (this.isSkipped(utils, instructions, cheerioLoad, element, index)) return;

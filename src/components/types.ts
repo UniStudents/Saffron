@@ -1,5 +1,6 @@
 import type {Article} from "./article";
 import type {Utils} from "../modules/parsers/Utils";
+import type {AxiosRequestConfig} from "axios";
 
 export type InstructionUrl = {
     aliases: string[];
@@ -92,6 +93,7 @@ export type SourceFile = {
     headers?: { [key: string]: string | string[] };
     ignoreCertificates?: boolean;
     delayBetweenRequests?: number;
+    axios?: AxiosRequestConfig;
 
     amount?: number;
     encoding?: string;

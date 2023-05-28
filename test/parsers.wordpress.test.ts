@@ -1,4 +1,4 @@
-import {Saffron} from "../src/index";
+import {Saffron} from "../src";
 import {expect} from "chai";
 
 describe("WordPress parser", function () {

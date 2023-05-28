@@ -59,7 +59,7 @@ The time the between the jobs that are issued for this source file.
 For example, if it is scrapped at `4 AM` then the next job will be issued for `5 AM`.
 Make note that saffron may add an offset to avoid fixed intervals.
 
-This option will override the configuration option [`scheduler.jobsInterval`](../configuration#jobsInterval)
+This option will override the configuration option [`scheduler.jobsInterval`](../configuration#jobsInterval).
 
 ### `retryInterval`
 Default value: `scheduler.jobsInterval / 2`
@@ -71,15 +71,30 @@ Default value: `workers.jobs.timeout`
 
 The timeframe where Saffron will wait to get a response from an url.
 
+This option will override the configuration option [`requests.timeout`](../configuration#requeststimeout).
+
 ### `headers`
 The headers that will accompany the requests made by saffron.
 
 It can be used to set `User-Agent` and other fields.
 
+This option will override the configuration option [`requests.headers`](../configuration#requestsheaders).
+
+### `axios`
+Axios' configuration that will be applied to the requests made by saffron.
+It will override previous options.
+
+Currently only for `html`, `wordpress` and `dynamic` source types.
+For `rss` you have to manually set the proxy in the url option.
+
+This option will override the configuration option [`requests.axios`](../configuration#requestsaxios).
+
 ### `maxRedirects`
 Default value: `10`
 
 The maximum redirects that are allowed during a request.
+
+This option will override the configuration option [`requests.maxRedirects`](../configuration#requestsmaxRedirects).
 
 ### `ignoreCertificates`
 Default value: `false`
@@ -96,15 +111,21 @@ file with multiple urls may fail due to this limit.
 Increasing the option `delayBetweenRequests` (in milliseconds) will put a distance
 between the request.
 
+This option will override the configuration option [`workers.delayBetweenRequests`](../configuration#delayBetweenRequests).
+
 ### `amount`
 Default value: `workers.articles.amount`
 
 The maximum amount of articles that saffron will return for this source for each scraping job.
 
+This option will override the configuration option [`articles.amount`](../configuration#articlesamount).
+
 ### `includeContentAttachments`
 Default value: `true`
 
 If the generated article's attachments will contain the extracted urls from article's content.
+
+This option will override the configuration option [`articles.includeContentAttachments`](../configuration#articlesincludeContentAttachments).
 
 ### `enconding`
 The encoding of the website.

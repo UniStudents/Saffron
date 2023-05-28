@@ -59,6 +59,7 @@ export class Source {
 
         instructions.headers = source.headers ?? Config.getOption(ConfigOptions.HEADERS, config);
         instructions.ignoreCertificates = source.ignoreCertificates ?? false;
+        instructions.axios = source.axios ?? Config.getOption(ConfigOptions.AXIOS_REQUEST_CONFIG, config);
 
         instructions.includeContentAttachments = source.includeContentAttachments ?? Config.getOption(ConfigOptions.INCLUDE_CNT_ATTACHMENTS, config);
         instructions.textDecoder = source.encoding ? new TextDecoder(source.encoding) : new TextDecoder();

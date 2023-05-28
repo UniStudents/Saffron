@@ -10,6 +10,7 @@ import * as https from "https";
 import type {ParserResult} from "../components/types";
 import {pack, unpack} from "../middleware/serializer";
 import type {Saffron} from "../index";
+import type {ExtensionPair} from "./extensions";
 
 export class Grid {
 
@@ -192,7 +193,7 @@ export class Grid {
         this.saffron.events.emit("middleware.before", articles);
 
         const getExtPair = this.saffron.extensions.startPairCount('articles');
-        let pair;
+        let pair: ExtensionPair | null;
         while ((pair = getExtPair()) != null) {
             try {
                 switch (pair.event) {
