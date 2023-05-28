@@ -1,4 +1,4 @@
-import {Source} from "../src/index";
+import {Source} from "../src";
 import {ParserType} from "../src/components/ParserClass";
 import {expect} from "chai";
 

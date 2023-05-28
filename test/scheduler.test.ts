@@ -207,4 +207,21 @@ describe('Scheduler', function () {
             }, 1000);
         });
     });
+
+    it('Do not scan sub folders', function () {
+        return new Promise(async (resolve) => {
+            saffron.initialize({
+                mode: 'main',
+                sources: {
+                    path: './test/sources',
+                    scanSubFolders: false
+                }
+            });
+
+            await saffron.scheduler.resetSources();
+            expect(saffron.scheduler.sources.length).to.equal(0);
+            expect(saffron.scheduler.jobs.length).to.equal(0);
+            resolve(undefined);
+        });
+    });
 });

@@ -168,7 +168,16 @@ export class Scheduler {
     private scanSourceFiles(): Promise<Source[]> {
         return new Promise((resolve, reject) => {
             const sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH, this.saffron.config);
-            glob(`${path.join(process.cwd(), sourcesPath)}/**`, {}, (error: any, files: string[]) => {
+            const scanSubFolders = Config.getOption(ConfigOptions.SCAN_SUB_FOLDERS, this.saffron.config);
+
+            let _path: string;
+            if(scanSubFolders) {
+                _path = `${path.join(process.cwd(), sourcesPath)}/**`;
+            } else {
+                _path = path.join(process.cwd(), sourcesPath);
+            }
+
+            glob(_path, {}, (error: any, files: string[]) => {
                 if (error) {
                     this.saffron.events.emit('scheduler.sources.error', error);
                     reject(error);

@@ -1,8 +1,7 @@
 import {hashCode} from "../src/middleware/hashCode";
-import {pack, unpack} from "../src/middleware/serializer";
+import {pack, Saffron, Source, unpack, Utils} from "../src";
 import {Job, JobStatus} from "../src/components/job";
 import {expect} from "chai";
-import {Source, Utils} from "../src/index";
 import {ParserType} from "../src/components/ParserClass";
 import {Extensions} from "../src/modules/extensions";
 import {ParserLoader} from "../src/modules/parsers/ParserLoader";
@@ -10,6 +9,8 @@ import {HTMLParser} from "../src/modules/parsers/html.parser";
 import {RssParser} from "../src/modules/parsers/rss.parser";
 import {WordpressV2Parser} from "../src/modules/parsers/wordpress.v2.parser";
 import {DynamicParser} from "../src/modules/parsers/dynamic.parser";
+import * as path from "node:path";
+import * as fs from "node:fs";
 
 const randStr = (myLength: number) => {
     const chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
@@ -161,5 +162,36 @@ describe('Other', function () {
         expect(ParserLoader.getParser(ParserType.RSS)).to.be.instanceof(RssParser);
         expect(ParserLoader.getParser(ParserType.WORDPRESS_V2)).to.be.instanceof(WordpressV2Parser);
         expect(ParserLoader.getParser(ParserType.DYNAMIC)).to.be.instanceof(DynamicParser);
+    });
+
+    it('Proxy - Enabled', function () {
+        const sourceFile = JSON.parse(fs.readFileSync(path.join(__dirname, './sources/html/html1.json'), 'utf8'));
+        sourceFile.url[0][1] = "http://127.0.0.1:3000/html2"; // Proxy should return the file for html1
+        sourceFile.axios = {
+            proxy: {
+                host: '127.0.0.1',
+                port: 4000
+            }
+        };
+        return Saffron.parse(sourceFile).then(result => {
+            expect(result.length).to.equal(1);
+            const obj = result[0];
+            expect(obj.aliases).to.deep.equal(['Γενικές Ανακοινώσεις']);
+            expect(obj.url).to.equal('http://127.0.0.1:3000/html2');
+            expect(obj.articles.length).to.equal(10);
+        });
+    });
+
+    it('Proxy - Disabled', function () {
+        const sourceFile = JSON.parse(fs.readFileSync(path.join(__dirname, './sources/html/html1.json'), 'utf8'));
+        sourceFile.url[0][1] = "http://127.0.0.1:3000/html2"; // Web server should return the file for html2
+        // Proxy is disabled, so it should fail parsing
+        return Saffron.parse(sourceFile).then(result => {
+            expect(result.length).to.equal(1);
+            const obj = result[0];
+            expect(obj.aliases).to.deep.equal(['Γενικές Ανακοινώσεις']);
+            expect(obj.url).to.equal('http://127.0.0.1:3000/html2');
+            expect(obj.articles.length).to.equal(0);
+        });
     });
 });

@@ -42,6 +42,7 @@ export class RssParser extends ParserClass {
         // Default fields & extra fields
         const requestFields: string[] = ["title", "link", "content", "pubDate", "categories", ...extraFields];
 
+        // TODO: Replace request with axios, and library will do the parsing
         const parser = new Parser({
             timeout: utils.source.instructions.timeout,
             maxRedirects: utils.source.instructions.maxRedirects,

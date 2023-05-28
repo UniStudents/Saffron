@@ -135,16 +135,11 @@ export class WordpressV2Parser extends ParserClass {
         if (filters.tagsExclude) postsUrl += `&tags_exclude=${filters.tagsExclude}`;
         if (filters.sticky) postsUrl += `&_sticky`;
 
-        const config = {
-            responseType: 'arraybuffer',
-            responseEncoding: 'binary'
-        };
+        const catReq = await utils.get(categoriesUrl);
+        const postsReq = await utils.get(postsUrl);
 
-        const catReq = await utils.get(categoriesUrl, config as any);
-        const postsReq = await utils.get(postsUrl, config as any);
-
-        const categories = JSON.parse(instructions.textDecoder.decode(catReq.data));
-        const posts = JSON.parse(instructions.textDecoder.decode(postsReq.data));
+        const categories = JSON.parse(catReq.data);
+        const posts = JSON.parse(postsReq.data);
 
         const articles: Article[] = [];
 

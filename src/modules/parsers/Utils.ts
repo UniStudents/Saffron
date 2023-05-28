@@ -1,7 +1,7 @@
 import cheerio from "cheerio";
 import type {Attachment} from "../../components/article";
 import https from "https";
-import axios, {AxiosHeaders, AxiosRequestConfig, AxiosResponse} from "axios";
+import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
 import type {ParserResult, SourceFile} from "../../components/types";
 import {Source} from "../../components/source";
 import {Job} from "../../components/job";
@@ -281,8 +281,8 @@ export class Utils {
         return str
     }
 
-    request(options: AxiosRequestConfig): Promise<AxiosResponse> {
-        if (this.source.instructions["ignoreCertificates"])
+    async request(options: AxiosRequestConfig): Promise<AxiosResponse> {
+        if (this.source.instructions.ignoreCertificates)
             options.httpsAgent = new https.Agent({
                 rejectUnauthorized: false
             });
@@ -295,7 +295,16 @@ export class Utils {
         options.timeout ??= this.source.instructions.timeout;
         options.maxRedirects ??= this.source.instructions.maxRedirects;
 
-        return axios.request(options);
+        if(this.source.instructions.axios) {
+            options = {...options, ...this.source.instructions.axios} as AxiosRequestConfig
+        }
+
+        options.responseType = 'arraybuffer';
+        options.responseEncoding = 'binary';
+
+        const response = await axios.request(options);
+        response.data = this.source.instructions.textDecoder.decode(response.data);
+        return response;
     }
 
     get(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse> {

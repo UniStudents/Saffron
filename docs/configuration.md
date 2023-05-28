@@ -29,6 +29,11 @@ The directory where the source file are located.
 
 All `.js` and `.json` files will be treated as source files (including subdirectories)
 
+### `scanSubFolders`
+Default value: `true`
+
+If `true` the Saffron will scan all the sub directories inside the `path` directory.
+
 ### `includeOnly`
 Default value: `[]`
 
@@ -75,6 +80,12 @@ between the request that belong in the same source file.
 The headers that will accompany the requests made by saffron.
 
 It can be used to set `User-Agent` and other fields.
+
+### `requests.axios`
+Axios' configuration that will be applied to the requests made by saffron.
+It will override previous options.
+
+Currently only for `html`, `wordpress` and `dynamic` source types.
 
 ### `requests.timeout`
 Default value: `10000`

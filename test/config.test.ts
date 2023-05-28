@@ -10,11 +10,13 @@ describe('Configuration', function () {
         expect(c.mode).to.equal('main');
         expect(c.newArticles).to.be.a('function');
         expect(c.sources?.path).to.equal('./sources');
+        expect(c.sources?.scanSubFolders).to.deep.equal(true);
         expect(c.sources?.includeOnly).to.deep.equal([]);
         expect(c.sources?.exclude).to.deep.equal([]);
         expect(c.workers?.nodes).to.equal(1);
         expect(c.workers.delayBetweenRequests).to.equal(0);
         expect(c.workers?.requests?.headers).to.deep.equal({});
+        expect(c.workers?.requests?.axios).to.deep.equal(undefined);
         expect(c.workers?.requests?.timeout).to.equal(10000);
         expect(c.workers?.requests?.maxRedirects).to.equal(5);
         expect(c.workers?.articles?.amount).to.equal(30);
