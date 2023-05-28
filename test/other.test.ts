@@ -11,6 +11,7 @@ import {WordpressV2Parser} from "../src/modules/parsers/wordpress.v2.parser";
 import {DynamicParser} from "../src/modules/parsers/dynamic.parser";
 import * as path from "node:path";
 import * as fs from "node:fs";
+import {Config} from "../src/components/config";
 
 const randStr = (myLength: number) => {
     const chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
@@ -194,6 +195,23 @@ describe('Other', function () {
             expect(obj.aliases).to.deep.equal(['Γενικές Ανακοινώσεις']);
             expect(obj.url).to.equal('http://127.0.0.1:3000/html2');
             expect(obj.articles.length).to.equal(0);
+        });
+    });
+
+    it('Config - Axios builder', function () {
+        process.env.NODE_ENV = undefined;
+
+        const sourceFile = JSON.parse(fs.readFileSync(path.join(__dirname, './sources/html/html1.json'), 'utf8'));
+        const c = new Config();
+        c.config.workers.requests!.axios = (source: Source) => ({
+            timeout: 12345,
+            maxRedirects: 1000
+        });
+
+        const source = Source.parseSourceFile(sourceFile, c);
+        expect(source.instructions.axios).to.deep.equal({
+            timeout: 12345,
+            maxRedirects: 1000
         });
     });
 });
