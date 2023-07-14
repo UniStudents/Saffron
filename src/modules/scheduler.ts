@@ -4,6 +4,7 @@ import {Source} from "../components/source";
 import {Worker} from "./worker";
 import glob from "glob";
 import * as path from "path";
+import * as fs from "fs";
 import type {Saffron} from "../index";
 
 export class Scheduler {
@@ -177,7 +178,7 @@ export class Scheduler {
                 _path = path.join(process.cwd(), sourcesPath);
             }
 
-            glob(_path, {}, (error: any, files: string[]) => {
+            glob(_path, {}, async (error: any, files: string[]) => {
                 if (error) {
                     this.saffron.events.emit('scheduler.sources.error', error);
                     reject(error);
@@ -202,24 +203,41 @@ export class Scheduler {
                 }));
 
                 const parsedSources: Source[] = [];
-                sources.forEach((sourceFile: any) => {
+                for (const sourceFile of sources) {
+                    let data: any;
+                    if (sourceFile.filename.endsWith(".json")) {
+                        data = JSON.parse(fs.readFileSync(sourceFile.path, 'utf-8'));
+                    } else {
+                        try {
+                            data = await import(sourceFile.path);
+                        } catch (e: any) {
+                            try {
+                                data = require(sourceFile.path);
+                            } catch (e: any) {
+                                this.saffron.events.emit("scheduler.sources.error", sourceFile, e);
+                                continue;
+                            }
+                        }
+                    }
+
+                    let parsed: any;
                     try {
-                        sourceFile = {
+                        parsed = {
                             ...sourceFile,
-                            ...require(`${sourceFile.path}`)
+                            ...data
                         };
                     } catch (e) {
                         this.saffron.events.emit("scheduler.sources.error", sourceFile, e);
-                        return;
+                        continue;
                     }
 
                     try {
-                        const newSource = Source.parseSourceFile(sourceFile, this.saffron.config);
+                        const newSource = Source.parseSourceFile(parsed, this.saffron.config);
                         parsedSources.push(newSource);
                     } catch (e) {
                         this.saffron.events.emit("scheduler.sources.error", sourceFile, e);
                     }
-                });
+                }
 
                 resolve(parsedSources);
             });
