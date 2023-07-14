@@ -4,7 +4,6 @@ import {Source} from "../components/source";
 import {Worker} from "./worker";
 import glob from "glob";
 import * as path from "path";
-import * as fs from "fs";
 import type {Saffron} from "../index";
 
 export class Scheduler {
@@ -202,26 +201,13 @@ export class Scheduler {
                     path: `${file}`,
                 }));
 
+                const loader = Config.getOption(ConfigOptions.SOURCE_LOADER, this.saffron.config);
+
                 const parsedSources: Source[] = [];
                 for (const sourceFile of sources) {
-                    let data: any;
-                    if (sourceFile.filename.endsWith(".json")) {
-                        data = JSON.parse(fs.readFileSync(sourceFile.path, 'utf-8'));
-                    } else {
-                        try {
-                            data = await import(sourceFile.path);
-                        } catch (e: any) {
-                            try {
-                                data = require(sourceFile.path);
-                            } catch (e: any) {
-                                this.saffron.events.emit("scheduler.sources.error", sourceFile, e);
-                                continue;
-                            }
-                        }
-                    }
-
                     let parsed: any;
                     try {
+                        const data = await loader(sourceFile.path);
                         parsed = {
                             ...sourceFile,
                             ...data

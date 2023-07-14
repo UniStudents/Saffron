@@ -2,6 +2,7 @@ import _ from "lodash"
 import type {Article} from "./article";
 import type {AxiosRequestConfig} from "axios";
 import type {Source} from "./source";
+import fs from "fs";
 
 export type ConfigType = {
     mode: 'main' | 'worker';
@@ -9,6 +10,7 @@ export type ConfigType = {
     sources: Partial<{
         path: string;
         scanSubFolders: boolean;
+        loader: (filepath: string) => Promise<any>
         includeOnly: string[];
         exclude: string[];
     }>;
@@ -77,6 +79,7 @@ export enum ConfigOptions {
     DELAY_BETWEEN_REQUESTS = 24,
     AXIOS_REQUEST_CONFIG = 25,
     SCAN_SUB_FOLDERS = 26,
+    SOURCE_LOADER = 27,
 }
 
 const defaultConfig: ConfigType = {
@@ -86,6 +89,24 @@ const defaultConfig: ConfigType = {
     sources: {
         path: "./sources",
         scanSubFolders: true,
+        loader: async (filepath: string) => {
+            let data: any;
+            if (filepath.endsWith(".json")) {
+                data = JSON.parse(fs.readFileSync(filepath, 'utf-8'));
+            } else {
+                try {
+                    data = await import(filepath);
+                } catch (e: any) {
+                    try {
+                        data = require(filepath);
+                    } catch (e: any) {
+                        throw e;
+                    }
+                }
+            }
+
+            return data;
+        },
         includeOnly: [],
         exclude: []
     },
@@ -157,6 +178,8 @@ export class Config {
                 return conf.sources?.includeOnly;
             case ConfigOptions.SOURCES_EXCLUDE:
                 return conf.sources?.exclude;
+                case ConfigOptions.SOURCE_LOADER:
+                return conf.sources?.loader;
 
             case ConfigOptions.WORKER_NODES:
                 return conf.workers?.nodes;
