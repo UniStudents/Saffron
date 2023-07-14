@@ -34,6 +34,16 @@ Default value: `true`
 
 If `true` the Saffron will scan all the sub directories inside the `path` directory.
 
+### `loader`
+Default value (for json files): `JSON.parse(fs.readFileSync)`\
+Default value (for js files): `import (fallback require)`
+
+Will receive the filepath of the source file and expect the contents of that file
+as a js object.
+
+This is useful as Saffron does not have been converted to ES6 yet and the compiler
+throws errors when importing dynamic source files (js files).
+
 ### `includeOnly`
 Default value: `[]`
 
