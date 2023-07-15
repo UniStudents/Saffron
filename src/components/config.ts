@@ -96,6 +96,7 @@ const defaultConfig: ConfigType = {
             } else {
                 try {
                     data = await import(filepath);
+                    data = {...data.default};
                 } catch (e: any) {
                     try {
                         data = require(filepath);

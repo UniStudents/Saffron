@@ -1,6 +1,6 @@
 import type {Instructions} from "./instructions";
 import type {Article} from "./article";
-import type {Utils} from "../modules/parsers/Utils";
+import type {Utils} from "./Utils";
 
 export abstract class ParserClass {
 

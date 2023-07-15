@@ -1,5 +1,5 @@
 import type {Article} from "./article";
-import type {Utils} from "../modules/parsers/Utils";
+import type {Utils} from "./Utils";
 import type {AxiosRequestConfig} from "axios";
 
 export type InstructionUrl = {
@@ -21,6 +21,7 @@ export type ScrapeDynamic = (utils: Utils, Article: any) => Promise<Article[]>;
 
 export type ScrapeHTML = {
     container: string;
+    scriptingEnabled?: boolean;
     skip?: ({
         selector?: string;
         text?: string;
@@ -29,7 +30,8 @@ export type ScrapeHTML = {
         position: number;
     })[];
     article: {
-        [field: 'title' | 'link' | 'content' | 'pubDate' | 'categories' | string]: {
+        // TODO: Only for categories add link field, to store directly in the categories links array
+        [field: 'title' | 'link' | 'content' | 'pubDate' | 'categories' | 'attachments' | 'thumbnail' | string]: {
             parent?: string;
 
             class?: string;

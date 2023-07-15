@@ -44,6 +44,22 @@ as a js object.
 This is useful as Saffron does not have been converted to ES6 yet and the compiler
 throws errors when importing dynamic source files (js files).
 
+```typescript
+loader: async (filepath: string) => {
+    let data: any;
+    if (filepath.endsWith(".json")) {
+        data = JSON.parse(fs.readFileSync(filepath, 'utf-8'));
+    } else {
+        data = await import(filepath);
+        data = {...data.default};
+    }
+
+    return data;
+}
+```
+
+It can also be used to modify the file's content before Saffron can parse them.
+
 ### `includeOnly`
 Default value: `[]`
 

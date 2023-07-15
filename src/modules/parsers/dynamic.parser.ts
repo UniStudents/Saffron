@@ -1,7 +1,7 @@
 import {ParserClass} from "../../components/ParserClass";
 import type {Instructions} from "../../components/instructions";
 import {Article} from "../../components/article";
-import type {Utils} from "./Utils";
+import type {Utils} from "../../components/Utils";
 import type {ScrapeDynamic, SourceScrape} from "../../components/types";
 
 export class DynamicParser extends ParserClass {
