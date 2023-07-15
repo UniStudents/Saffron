@@ -5,7 +5,7 @@ import type {Article} from "../components/article";
 import {ParserLoader} from "./parsers/ParserLoader";
 import {hashCode} from "../middleware/hashCode";
 import type {ParserResult} from "../components/types";
-import {Utils} from "./parsers/Utils";
+import {Utils} from "../components/Utils";
 import type {Saffron} from "../index";
 
 const sleep = ms => new Promise( res => setTimeout(res, ms));

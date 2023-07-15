@@ -3,10 +3,13 @@ import type {Instructions} from "../../components/instructions";
 import {Article} from "../../components/article";
 import type {AxiosResponse} from "axios";
 import cheerio from "cheerio";
-import type {Utils} from "./Utils";
+import type {Utils} from "../../components/Utils";
 import type {HTMLAttribute, ScrapeHTML, SourceScrape} from "../../components/types";
 
 export class HTMLParser extends ParserClass {
+
+    // Exp. If you remove the title, then the title is going to be on the extra information of each article.
+    private static readonly BASIC_DATA = ["title", "pubDate", "content", "attachments", "link", "categories", "thumbnail"];
 
     validateScrape(scrape?: SourceScrape): void {
         // This exists only for typescript, it is not valid and will not run at runtime.
@@ -17,6 +20,9 @@ export class HTMLParser extends ParserClass {
 
         if (typeof scrape.container !== 'string')
             throw new Error("container must be a string");
+
+        if (typeof scrape.scriptingEnabled !== 'undefined' && typeof scrape.scriptingEnabled !== 'boolean')
+            throw new Error("scriptingEnabled must be a boolean");
 
         if (typeof scrape.article !== 'object' || Array.isArray(scrape.article))
             throw new Error("article must be JSON object");
@@ -34,7 +40,7 @@ export class HTMLParser extends ParserClass {
             } = (<any>item);
 
             if (keys.includes('selector') || keys.includes('text')) {
-                if(keys.includes('position'))
+                if (keys.includes('position'))
                     throw new Error(`skip.${index}.position cannot be together with "selector" or "text"`);
 
                 if (selector !== undefined && typeof selector !== 'string')
@@ -45,7 +51,7 @@ export class HTMLParser extends ParserClass {
                 if (keys.includes('type') && type !== 'exact' && type !== 'contains')
                     throw new Error(`skip.${index}.type must be a "exact" or "contains"`);
             } else if (keys.includes('position')) {
-                if(typeof position !== 'number' || position < 0)
+                if (typeof position !== 'number' || position < 0)
                     throw new Error(`skip.${index}.position must be a zero or positive number`);
             } else
                 throw new Error(`skip.${index} contains illegal fields`);
@@ -106,13 +112,13 @@ export class HTMLParser extends ParserClass {
         const response: AxiosResponse = await utils.get(utils.url);
 
         const parsedArticles: Article[] = [];
-        const cheerioLoad: cheerio.Root = cheerio.load(response.data);
+        const cheerioLoad: cheerio.Root = cheerio.load(response.data, {
+            // @ts-ignore
+            scriptingEnabled: instructions.html.scriptingEnabled
+        });
         cheerioLoad(`${instructions.html.container}`).each((index, element) => {
             if (parsedArticles.length >= instructions.amount) return;
             if (this.isSkipped(utils, instructions, cheerioLoad, element, index)) return;
-
-            // Exp. If you remove the title, then the title is going to be on the extra information of each article.
-            const basicData = ["title", "pubDate", "content", "attachments", "link", "categories", "thumbnail"];
 
             const articleData: { [key: string]: any } = {};
             const options = instructions.html.article;
@@ -183,7 +189,7 @@ export class HTMLParser extends ParserClass {
 
             // for each extra data. Data that are not described in the baseData variable.
             Object.entries(articleData).forEach(extra => {
-                if (basicData.includes(extra[0]) || !extra[1]) return;
+                if (HTMLParser.BASIC_DATA.includes(extra[0]) || !extra[1]) return;
                 article.addExtra(extra[0], extra[1]);
             });
 

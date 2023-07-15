@@ -28,6 +28,11 @@ For example, for this HTML code the container will be `.the-container >`.
 </div>
 ```
 
+## `scriptingEnabled`
+Default: `true`
+
+From Cheerio documentation, If set to true, noscript element content will be parsed as text.
+
 ## `article`
 It will contain all the configuration needed to fill each article field.
 

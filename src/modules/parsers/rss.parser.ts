@@ -2,8 +2,9 @@ import {ParserClass} from "../../components/ParserClass";
 import type {Instructions} from "../../components/instructions";
 import {Article} from "../../components/article";
 import Parser from "rss-parser";
-import type {Utils} from "./Utils";
+import type {Utils} from "../../components/Utils";
 import type {ScrapeRSS, SourceScrape} from "../../components/types";
+import type {AxiosResponse} from "axios";
 
 export class RssParser extends ParserClass {
 
@@ -42,21 +43,16 @@ export class RssParser extends ParserClass {
         // Default fields & extra fields
         const requestFields: string[] = ["title", "link", "content", "pubDate", "categories", ...extraFields];
 
-        // TODO: Replace request with axios, and library will do the parsing
+        const response: AxiosResponse = await utils.get(utils.url);
+
         const parser = new Parser({
-            timeout: utils.source.instructions.timeout,
-            maxRedirects: utils.source.instructions.maxRedirects,
-            headers: utils.source.instructions.headers as any,
-            requestOptions: {
-                rejectUnauthorized: !utils.source.instructions.ignoreCertificates
-            },
             customFields: {
                 // Make sure to request all the mentioned fields
                 item: requestFields
             }
         });
 
-        const feed = await parser.parseURL(utils.url);
+        const feed = await parser.parseString(response.data);
 
         const parsedArticles: Article[] = [];
         let count = 0;

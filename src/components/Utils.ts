@@ -1,11 +1,11 @@
 import cheerio from "cheerio";
-import type {Attachment} from "../../components/article";
+import type {Attachment} from "./article";
 import https from "https";
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
-import type {ParserResult, SourceFile} from "../../components/types";
-import {Source} from "../../components/source";
-import {Job} from "../../components/job";
-import {Worker} from "../worker";
+import type {ParserResult, SourceFile} from "./types";
+import {Source} from "./source";
+import {Job} from "./job";
+import {Worker} from "../modules/worker";
 import striptags from "striptags";
 
 export class Utils {
