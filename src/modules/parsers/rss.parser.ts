@@ -46,12 +46,6 @@ export class RssParser extends ParserClass {
         const response: AxiosResponse = await utils.get(utils.url);
 
         const parser = new Parser({
-            timeout: utils.source.instructions.timeout,
-            maxRedirects: utils.source.instructions.maxRedirects,
-            headers: utils.source.instructions.headers as any,
-            requestOptions: {
-                rejectUnauthorized: !utils.source.instructions.ignoreCertificates
-            },
             customFields: {
                 // Make sure to request all the mentioned fields
                 item: requestFields
