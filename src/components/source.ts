@@ -61,7 +61,6 @@ export class Source {
         instructions.ignoreCertificates = source.ignoreCertificates ?? false;
 
         instructions.includeContentAttachments = source.includeContentAttachments ?? Config.getOption(ConfigOptions.INCLUDE_CNT_ATTACHMENTS, config);
-        instructions.includeContentAttachments = source.includeContentAttachments ?? Config.getOption(ConfigOptions.INCLUDE_CNT_ATTACHMENTS, config);
         instructions.textDecoder = source.encoding ? new TextDecoder(source.encoding) : new TextDecoder();
 
         instructions.url = [];
