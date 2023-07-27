@@ -13,9 +13,13 @@ describe("HTML parser", function () {
             for (const article of obj.articles) {
                 expect(article.source).to.equal('html1-source');
 
-                const cat = article.categories.find(cat => cat.name === 'Γενικές Ανακοινώσεις');
-                expect(cat).to.not.be.undefined;
-                expect(cat!.links).to.deep.equal(['http://127.0.0.1:3000/html1']);
+                const invCat = article.categories?.find(cat => cat.name === 'Γενικές Ανακοινώσεις');
+                expect(invCat).to.be.undefined;
+
+                expect(article.extras['__url_categories']).to.not.be.undefined.not;
+                const cat = article.extras['__url_categories'].find(cat => cat.name === 'Γενικές Ανακοινώσεις');
+                expect(cat).to.not.be.undefined.not;
+                expect(cat.links).to.deep.equal(['http://127.0.0.1:3000/html1']);
             }
 
             const article = obj.articles[0];

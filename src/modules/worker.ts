@@ -43,8 +43,16 @@ export class Worker {
             if(!Array.isArray(articles))
                 throw new Error('did not return an array of articles');
 
+            const includeCategoryUrlsIn = utils.source.instructions.includeCategoryUrlsIn;
             const categoriesFromAliases = utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]}));
-            articles.forEach(article => article.pushCategories(categoriesFromAliases));
+            switch (includeCategoryUrlsIn) {
+                case "categories":
+                    articles.forEach(article => article.pushCategories(categoriesFromAliases));
+                    break;
+                case "extras":
+                    articles.forEach(articles => articles.addExtra('__url_categories', categoriesFromAliases));
+                    break;
+            }
 
             results.push({
                 aliases: pair.aliases,

@@ -21,6 +21,7 @@ export class Instructions {
 
     declare textDecoder: TextDecoder;
     declare includeContentAttachments: boolean;
+    declare includeCategoryUrlsIn: 'categories' | 'extras';
     declare amount: number;
 
     declare html: ScrapeHTML;

@@ -61,6 +61,11 @@ export class Source {
         instructions.ignoreCertificates = source.ignoreCertificates ?? false;
 
         instructions.includeContentAttachments = source.includeContentAttachments ?? Config.getOption(ConfigOptions.INCLUDE_CNT_ATTACHMENTS, config);
+
+        if (source.includeCategoryUrlsIn != undefined && source.includeCategoryUrlsIn !== 'categories' && source.includeCategoryUrlsIn !== 'extras')
+            throw new Error('SourceException [${source.filename}] Field includeCategoryUrlsIn is not valid, requirements(type = string, =categories, =extras)');
+        instructions.includeCategoryUrlsIn = source.includeCategoryUrlsIn ?? Config.getOption(ConfigOptions.INCLUDE_CAT_URL, config);
+
         instructions.textDecoder = source.encoding ? new TextDecoder(source.encoding) : new TextDecoder();
 
         instructions.url = [];

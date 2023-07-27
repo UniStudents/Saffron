@@ -127,6 +127,14 @@ If the generated article's attachments will contain the extracted urls from arti
 
 This option will override the configuration option [`articles.includeContentAttachments`](../configuration#articlesincludeContentAttachments).
 
+### `includeCategoryUrlsIn`
+Default value: `categories`
+
+Accepted values are `categories` or `extras`.
+THis field will specify where to store the categories mentioned in the [`url`](#url) field of the source file.
+
+This option will override the configuration option [`articles.includeCategoryUrlsIn`](../configuration#articlesincludeCategoryUrlsIn).
+
 ### `enconding`
 The encoding of the website.
 
