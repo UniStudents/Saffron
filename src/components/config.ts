@@ -26,6 +26,7 @@ export type ConfigType = {
         articles: Partial<{
             amount: number;
             includeContentAttachments: boolean;
+            includeCategoryUrlsIn: 'categories' | 'extras';
         }>;
     }>;
     scheduler: Partial<{
@@ -75,11 +76,12 @@ export enum ConfigOptions {
     EVENT_DELAY = 21,
     NEW_ARTICLES = 22,
     INCLUDE_CNT_ATTACHMENTS = 23,
-    MAX_REDIRECTS = 23,
-    DELAY_BETWEEN_REQUESTS = 24,
+    INCLUDE_CAT_URL = 24,
     AXIOS_REQUEST_CONFIG = 25,
     SCAN_SUB_FOLDERS = 26,
     SOURCE_LOADER = 27,
+    MAX_REDIRECTS = 28,
+    DELAY_BETWEEN_REQUESTS = 29,
 }
 
 const defaultConfig: ConfigType = {
@@ -121,7 +123,8 @@ const defaultConfig: ConfigType = {
         },
         articles: {
             amount: 30,
-            includeContentAttachments: true
+            includeContentAttachments: true,
+            includeCategoryUrlsIn: 'categories'
         }
     },
     scheduler: {
@@ -179,7 +182,7 @@ export class Config {
                 return conf.sources?.includeOnly;
             case ConfigOptions.SOURCES_EXCLUDE:
                 return conf.sources?.exclude;
-                case ConfigOptions.SOURCE_LOADER:
+            case ConfigOptions.SOURCE_LOADER:
                 return conf.sources?.loader;
 
             case ConfigOptions.WORKER_NODES:
@@ -199,6 +202,8 @@ export class Config {
                 return conf.workers?.articles?.amount;
             case ConfigOptions.INCLUDE_CNT_ATTACHMENTS:
                 return conf.workers?.articles?.includeContentAttachments;
+            case ConfigOptions.INCLUDE_CAT_URL:
+                return conf.workers?.articles?.includeCategoryUrlsIn;
 
             case ConfigOptions.JOB_INT:
                 return conf.scheduler?.jobsInterval;
@@ -305,6 +310,11 @@ export class Config {
             throw new Error('ConfigurationException Option workers.articles.amount is not valid, requirements(type = number, positive)');
         if (typeof this.config.workers.articles.includeContentAttachments !== 'boolean')
             throw new Error('ConfigurationException Option workers.articles.includeContentAttachments is not valid, requirements(type = boolean)');
+        if (typeof this.config.workers.articles.includeCategoryUrlsIn !== 'undefined'
+            && this.config.workers.articles.includeCategoryUrlsIn !== 'categories'
+            && this.config.workers.articles.includeCategoryUrlsIn !== 'extras'
+        )
+            throw new Error('ConfigurationException Option workers.articles.includeCategoryUrlsIn is not valid, requirements(type = string, =categories, =extras)');
 
         if (typeof this.config.scheduler !== 'object' || Array.isArray(this.config.scheduler))
             throw new Error('ConfigurationException Option block scheduler is not valid, requirements(type = object)');

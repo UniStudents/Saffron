@@ -5,6 +5,7 @@
     "name": "html1-source",
     "type": "html",
     "ignoreCertificates": true,
+    "includeCategoryUrlsIn": "extras",
     "scrape": {
         "container": ".catItemView",
         "endPoint": "unipi.gr",

@@ -100,6 +100,7 @@ export type SourceFile = {
     amount?: number;
     encoding?: string;
     includeContentAttachments?: boolean;
+    includeCategoryUrlsIn?: 'categories' | 'extras';
 
     extra?: any;
 } & ({

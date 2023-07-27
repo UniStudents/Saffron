@@ -143,6 +143,12 @@ Default value: `true`
 
 If the generated article's attachments will contain the extracted urls from article's content.
 
+### `articles.includeCategoryUrlsIn`
+Default value: `categories`
+
+Accepted values are `categories` or `extras`.
+THis field will specify where to store the categories mentioned in the [`url`](./source_files/source_file.md#url) field of the source file.
+
 ## `scheduler`
 
 ### `jobsInterval`

@@ -21,6 +21,7 @@ describe('Configuration', function () {
         expect(c.workers?.requests?.maxRedirects).to.equal(5);
         expect(c.workers?.articles?.amount).to.equal(30);
         expect(c.workers?.articles?.includeContentAttachments).to.equal(true);
+        expect(c.workers?.articles?.includeCategoryUrlsIn).to.equal('categories');
         expect(c.scheduler?.jobsInterval).to.equal(3600000);
         expect(c.scheduler?.heavyJobFailureInterval).to.equal(86400000);
         expect(c.scheduler?.noResponseThreshold).to.equal(2);

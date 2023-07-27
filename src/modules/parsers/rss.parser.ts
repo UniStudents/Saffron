@@ -41,7 +41,7 @@ export class RssParser extends ParserClass {
         const extraFields = instructions.rss.extraFields;
 
         // Default fields & extra fields
-        const requestFields: string[] = ["title", "link", "content", "pubDate", "categories", ...extraFields];
+        const requestFields: string[] = ["title", "link", "content", "pubDate", "categories", "media:thumbnail", 'media:content', ...extraFields];
 
         const response: AxiosResponse = await utils.get(utils.url);
 
@@ -65,13 +65,14 @@ export class RssParser extends ParserClass {
 
             // Copy all requested fields except the ones inside the assignFields keys
             for (const field of requestFields) {
-                if (!Object.keys(assignFields).includes(field))
-                    data[field] = item[field] ?? null;
+                if (!Object.keys(assignFields).includes(field) && item[field] !== undefined)
+                    data[field] = item[field];
             }
 
             // Assign all renamed fields to data object
-            for (const customField in assignFields)
-                data[customField] = item[assignFields[customField]] ?? null;
+            for (const customField in assignFields) {
+                data[customField] = item[assignFields[customField]];
+            }
 
             const article = new Article();
 
@@ -79,6 +80,10 @@ export class RssParser extends ParserClass {
             article.content = utils.cleanupHTMLText(data["content"] ?? "", false);
             article.pubDate = utils.cleanupHTMLText(data["pubDate"] ?? "", false);
             article.link = utils.cleanupHTMLText(data["link"] ?? "", false);
+            article.thumbnail = data["thumbnail"]
+                ?? this.getUrlFromMedia(data, 'media:thumbnail')
+                ?? this.getUrlFromMedia(data, 'media:content');
+
             data.categories?.forEach((c: string) => article.pushCategory(c, []));
 
             if (utils.source.instructions.includeContentAttachments)
@@ -94,5 +99,9 @@ export class RssParser extends ParserClass {
         }
 
         return parsedArticles;
+    }
+
+    private getUrlFromMedia(data: any, key: string): string | null {
+        return data[key]?.['$']?.['url'];
     }
 }
