@@ -33,7 +33,6 @@ export type ScrapeHTML = {
         position: number;
     })[];
     article: {
-        // TODO: Only for categories add link field, to store directly in the categories links array
         [field: 'title' | 'link' | 'content' | 'pubDate' | 'categories' | 'attachments' | 'thumbnail' | string]: {
             parent?: string;
 
