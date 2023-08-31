@@ -39,7 +39,8 @@ export class Worker {
             }
 
             // Will throw error in case of fail (catch in call function).
-            const articles = await parser.parse(utils);
+            const response = await parser.request(utils);
+            const articles = await parser.parse(response, utils);
             if(!Array.isArray(articles))
                 throw new Error('did not return an array of articles');
 

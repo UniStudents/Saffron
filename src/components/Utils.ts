@@ -286,14 +286,6 @@ export class Utils {
             options.httpsAgent = new https.Agent({
                 rejectUnauthorized: false
             });
-        
-        options.headers ??= {};
-        for(const [key, value] of Object.entries(this.source.instructions.headers)) {
-            options.headers[key] = value;
-        }
-
-        options.timeout ??= this.source.instructions.timeout;
-        options.maxRedirects ??= this.source.instructions.maxRedirects;
 
         if(this.source.instructions.axios) {
             options = {...options, ...this.source.instructions.axios} as AxiosRequestConfig

@@ -1,6 +1,7 @@
 import type {Article} from "./article";
 import type {Utils} from "./Utils";
 import type {AxiosRequestConfig} from "axios";
+import type {AxiosResponse} from "axios";
 
 export type InstructionUrl = {
     aliases: string[];
@@ -8,6 +9,8 @@ export type InstructionUrl = {
 };
 
 export type ParserResult = InstructionUrl & { articles: Article[]; };
+
+export type ParserRequestResult = AxiosResponse | AxiosResponse[];
 
 export type CallbackVoid = (...args: any[]) => void;
 
@@ -90,9 +93,6 @@ export type SourceFile = {
     interval?: number;
     retryInterval?: number;
 
-    timeout?: number;
-    maxRedirects?: number;
-    headers?: { [key: string]: string | string[] };
     ignoreCertificates?: boolean;
     delayBetweenRequests?: number;
     axios?: AxiosRequestConfig;

@@ -33,7 +33,7 @@ describe('Integration', function () {
                 },
                 workers: {
                     nodes: 1,
-                    requests: {
+                    axios: {
                         timeout: 2000,
                         headers: {
                             userAgent: 'User-Agent'

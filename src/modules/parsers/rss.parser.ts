@@ -3,7 +3,7 @@ import type {Instructions} from "../../components/instructions";
 import {Article} from "../../components/article";
 import Parser from "rss-parser";
 import type {Utils} from "../../components/Utils";
-import type {ScrapeRSS, SourceScrape} from "../../components/types";
+import type {ParserRequestResult, ScrapeRSS, SourceScrape} from "../../components/types";
 import type {AxiosResponse} from "axios";
 
 export class RssParser extends ParserClass {
@@ -34,7 +34,11 @@ export class RssParser extends ParserClass {
         instructions.rss = scrape;
     }
 
-    async parse(utils: Utils): Promise<Article[]> {
+    request(utils: Utils): Promise<ParserRequestResult> {
+        return utils.get(utils.url);
+    }
+
+    async parse(response: ParserRequestResult, utils: Utils): Promise<Article[]> {
         const instructions = utils.source.instructions;
 
         const assignFields = instructions.rss.assignFields;
@@ -42,9 +46,6 @@ export class RssParser extends ParserClass {
 
         // Default fields & extra fields
         const requestFields: string[] = ["title", "link", "content", "pubDate", "categories", "media:thumbnail", 'media:content', ...extraFields];
-
-        const response: AxiosResponse = await utils.get(utils.url);
-
         const parser = new Parser({
             customFields: {
                 // Make sure to request all the mentioned fields
@@ -52,7 +53,7 @@ export class RssParser extends ParserClass {
             }
         });
 
-        const feed = await parser.parseString(response.data);
+        const feed = await parser.parseString((response as AxiosResponse).data);
 
         const parsedArticles: Article[] = [];
         let count = 0;

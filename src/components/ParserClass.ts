@@ -1,6 +1,8 @@
 import type {Instructions} from "./instructions";
 import type {Article} from "./article";
 import type {Utils} from "./Utils";
+import type {AxiosResponse} from "axios";
+import type {ParserRequestResult} from "./types";
 
 export abstract class ParserClass {
 
@@ -14,7 +16,9 @@ export abstract class ParserClass {
      */
     abstract assignInstructions(instructions: Instructions, sourceJson: object): void
 
-    abstract parse(utils: Utils): Promise<Article[]>
+    abstract request(utils: Utils): Promise<ParserRequestResult>
+
+    abstract parse(result: ParserRequestResult, utils: Utils): Promise<Article[]>
 }
 
 export enum ParserType {

@@ -2,7 +2,7 @@ import {ParserClass} from "../../components/ParserClass";
 import type {Instructions} from "../../components/instructions";
 import {Article} from "../../components/article";
 import type {Utils} from "../../components/Utils";
-import type {ScrapeDynamic, SourceScrape} from "../../components/types";
+import type {ParserRequestResult, ScrapeDynamic, SourceScrape} from "../../components/types";
 
 export class DynamicParser extends ParserClass {
     validateScrape(scrape?: SourceScrape): void {
@@ -15,7 +15,11 @@ export class DynamicParser extends ParserClass {
         instructions.dynamicFuncStr = instructions.dynamic.toString();
     }
 
-    async parse(utils: Utils): Promise<Article[]> {
+    async request(utils: Utils): Promise<ParserRequestResult> {
+        return [];
+    }
+
+    async parse(response: ParserRequestResult, utils: Utils): Promise<Article[]> {
         const instructions = utils.source.instructions;
         const scrapeFunc = typeof instructions.dynamic === 'function'
             ? instructions.dynamic

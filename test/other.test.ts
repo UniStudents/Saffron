@@ -36,7 +36,9 @@ describe('Other', function () {
             tableName: 'table-name',
             interval: 10000,
             retryInterval: 5000,
-            timeout: 20000,
+            axios: {
+                timeout: 20000,
+            },
             extra: ['random', 'data'],
             amount: 100,
             ignoreCertificates: true,
@@ -67,7 +69,7 @@ describe('Other', function () {
         expect(source.interval).to.equal(10000);
         expect(source.retryInterval).to.equal(5000);
         expect(source.extra).to.deep.equal(['random', 'data']);
-        expect(source.instructions.timeout).to.equal(20000);
+        expect(source.instructions.axios.timeout).to.equal(20000);
         expect(source.instructions.amount).to.equal(100);
         expect(source.instructions.ignoreCertificates).to.equal(true);
 
@@ -203,7 +205,7 @@ describe('Other', function () {
 
         const sourceFile = JSON.parse(fs.readFileSync(path.join(__dirname, './sources/html/html1.json'), 'utf8'));
         const c = new Config();
-        c.config.workers.requests!.axios = (source: Source) => ({
+        c.config.workers.axios = (source: Source) => ({
             timeout: 12345,
             maxRedirects: 1000
         });
