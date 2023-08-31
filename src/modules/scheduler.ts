@@ -208,20 +208,34 @@ export class Scheduler {
                     let parsed: any;
                     try {
                         const data = await loader(sourceFile.path);
-                        parsed = {
-                            ...sourceFile,
-                            ...data
-                        };
+                        if(Array.isArray(data)) {
+                            for(const i in data) {
+                                data[i] = {
+                                    ...sourceFile,
+                                    ...data[i]
+                                }
+                            }
+
+                            parsed = data;
+                        } else {
+                            parsed = {
+                                ...sourceFile,
+                                ...data
+                            };
+                        }
                     } catch (e) {
                         this.saffron.events.emit("scheduler.sources.error", sourceFile, e);
                         continue;
                     }
 
-                    try {
-                        const newSource = Source.parseSourceFile(parsed, this.saffron.config);
-                        parsedSources.push(newSource);
-                    } catch (e) {
-                        this.saffron.events.emit("scheduler.sources.error", sourceFile, e);
+                    const toParse: any[] = Array.isArray(parsed) ? parsed : [parsed];
+                    for(const p of toParse) {
+                        try {
+                            const newSource = await Source.parseSourceFile(p, this.saffron.config);
+                            parsedSources.push(newSource);
+                        } catch (e) {
+                            this.saffron.events.emit("scheduler.sources.error", sourceFile, e);
+                        }
                     }
                 }
 

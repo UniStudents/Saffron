@@ -13,7 +13,7 @@ export class Source {
     declare instructions: Instructions;
     declare extra: any;
 
-    static parseSourceFile(source: SourceFile, config: Config | null): Source {
+    static async parseSourceFile(source: SourceFile, config: Config | null): Promise<Source> {
         source.filename = source.filename ?? 'static file';
 
         const ret = new Source();
@@ -57,6 +57,8 @@ export class Source {
         instructions.includeCategoryUrlsIn = source.includeCategoryUrlsIn ?? Config.getOption(ConfigOptions.INCLUDE_CAT_URL, config);
 
         instructions.textDecoder = source.encoding ? new TextDecoder(source.encoding) : new TextDecoder();
+
+        instructions.preprocessor = Config.getOption(ConfigOptions.PREPROCESSOR, config);
 
         instructions.url = [];
         if (typeof source.url === 'string') {
@@ -105,7 +107,7 @@ export class Source {
 
         // Run at the end, so we can have access to all data defined above
         const axiosConfig = Config.getOption(ConfigOptions.AXIOS_REQUEST_CONFIG, config);
-        instructions.axios = source.axios ?? (typeof axiosConfig === 'function' ? axiosConfig(source) : axiosConfig);
+        instructions.axios = source.axios ?? (typeof axiosConfig === 'function' ? await axiosConfig(source) : axiosConfig);
 
         return ret;
     }

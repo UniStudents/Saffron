@@ -4,7 +4,7 @@ import {Article} from "../../components/article";
 import type {AxiosResponse} from "axios";
 import cheerio from "cheerio";
 import type {Utils} from "../../components/Utils";
-import type {HTMLAttribute, ParserRequestResult, ScrapeHTML, SourceScrape} from "../../components/types";
+import type {HTMLAttribute, RequestsResult, ScrapeHTML, SourceScrape} from "../../components/types";
 
 export class HTMLParser extends ParserClass {
 
@@ -106,11 +106,11 @@ export class HTMLParser extends ParserClass {
         instructions.html = scrape as ScrapeHTML;
     }
 
-    request(utils: Utils): Promise<ParserRequestResult> {
+    request(utils: Utils): Promise<RequestsResult> {
         return utils.get(utils.url);
     }
 
-    async parse(response: ParserRequestResult, utils: Utils): Promise<Article[]> {
+    async parse(response: RequestsResult, utils: Utils): Promise<Article[]> {
         const instructions = utils.source.instructions;
 
         const parsedArticles: Article[] = [];

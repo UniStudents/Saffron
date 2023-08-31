@@ -66,35 +66,10 @@ Default value: `scheduler.jobsInterval / 2`
 
 The interval where a source scrapping job will be reissued in case of failure.
 
-### `timeout`
-Default value: `workers.jobs.timeout`
-
-The timeframe where Saffron will wait to get a response from an url.
-
-This option will override the configuration option [`requests.timeout`](../configuration#requeststimeout).
-
-### `headers`
-The headers that will accompany the requests made by saffron.
-
-It can be used to set `User-Agent` and other fields.
-
-This option will override the configuration option [`requests.headers`](../configuration#requestsheaders).
-
 ### `axios`
 Axios' configuration that will be applied to the requests made by saffron.
-It will override previous options.
-
-Currently only for `html`, `wordpress` and `dynamic` source types.
-For `rss` you have to manually set the proxy in the url option.
 
 This option will override the configuration option [`requests.axios`](../configuration#requestsaxios).
-
-### `maxRedirects`
-Default value: `10`
-
-The maximum redirects that are allowed during a request.
-
-This option will override the configuration option [`requests.maxRedirects`](../configuration#requestsmaxRedirects).
 
 ### `ignoreCertificates`
 Default value: `false`

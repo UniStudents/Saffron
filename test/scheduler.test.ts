@@ -173,7 +173,7 @@ describe('Scheduler', function () {
                 }
             });
 
-            const source = Source.parseSourceFile({
+            const source = await Source.parseSourceFile({
                 name: 'test',
                 url: 'https://example.com',
                 type: 'dynamic',

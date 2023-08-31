@@ -12,6 +12,7 @@ import {DynamicParser} from "../src/modules/parsers/dynamic.parser";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import {Config} from "../src/components/config";
+import type {AxiosResponse} from "axios";
 
 const randStr = (myLength: number) => {
     const chars = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890";
@@ -31,7 +32,7 @@ describe('Other', function () {
     });
 
     it('Serializer', function () {
-        const jobSource = Source.parseSourceFile({
+        return Source.parseSourceFile({
             name: 'source-name',
             tableName: 'table-name',
             interval: 10000,
@@ -49,39 +50,39 @@ describe('Other', function () {
             ],
             type: 'wordpress-v2',
             scrape: {articles: {}}
-        }, null);
+        }, null).then(jobSource => {
+            const job = new Job(jobSource, 'worker-id', 25000, null);
 
-        const job = new Job(jobSource, 'worker-id', 25000, null);
+            const packed = pack(job);
+            const unpacked: Job = unpack(packed);
 
-        const packed = pack(job);
-        const unpacked: Job = unpack(packed);
+            expect(job.source.name).to.equal('source-name');
+            expect(job.worker).to.equal('worker-id');
+            expect(job.attempts).to.equal(0);
+            expect(job.emitAttempts).to.equal(0);
+            expect(job.untilRetry).to.be.greaterThanOrEqual(0);
+            expect(job.status).to.equal(JobStatus.PENDING);
 
-        expect(job.source.name).to.equal('source-name');
-        expect(job.worker).to.equal('worker-id');
-        expect(job.attempts).to.equal(0);
-        expect(job.emitAttempts).to.equal(0);
-        expect(job.untilRetry).to.be.greaterThanOrEqual(0);
-        expect(job.status).to.equal(JobStatus.PENDING);
+            const source = unpacked.source;
+            expect(source.name).to.equal('source-name');
+            expect(source.tableName).to.equal('table-name');
+            expect(source.interval).to.equal(10000);
+            expect(source.retryInterval).to.equal(5000);
+            expect(source.extra).to.deep.equal(['random', 'data']);
+            expect(source.instructions.axios.timeout).to.equal(20000);
+            expect(source.instructions.amount).to.equal(100);
+            expect(source.instructions.ignoreCertificates).to.equal(true);
 
-        const source = unpacked.source;
-        expect(source.name).to.equal('source-name');
-        expect(source.tableName).to.equal('table-name');
-        expect(source.interval).to.equal(10000);
-        expect(source.retryInterval).to.equal(5000);
-        expect(source.extra).to.deep.equal(['random', 'data']);
-        expect(source.instructions.axios.timeout).to.equal(20000);
-        expect(source.instructions.amount).to.equal(100);
-        expect(source.instructions.ignoreCertificates).to.equal(true);
+            expect(source.instructions.url.length).to.equal(2);
+            for (const p of source.instructions.url) {
+                if (p.url === 'https://example.com')
+                    expect(p.aliases).to.deep.equal(['Category 1']);
+                else if (p.url === 'https://example2.com')
+                    expect(p.aliases).to.deep.equal(['Category 2', 'Category 3']);
+            }
 
-        expect(source.instructions.url.length).to.equal(2);
-        for (const p of source.instructions.url) {
-            if (p.url === 'https://example.com')
-                expect(p.aliases).to.deep.equal(['Category 1']);
-            else if (p.url === 'https://example2.com')
-                expect(p.aliases).to.deep.equal(['Category 2', 'Category 3']);
-        }
-
-        expect(source.instructions.parserType).to.equal(ParserType.WORDPRESS_V2);
+            expect(source.instructions.parserType).to.equal(ParserType.WORDPRESS_V2);
+        });
     });
 
     it('Utils - Extract links', function () {
@@ -177,7 +178,7 @@ describe('Other', function () {
                 port: 4000
             }
         };
-        return Saffron.parse(sourceFile).then(result => {
+        return Saffron.parse(sourceFile, null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases).to.deep.equal(['Γενικές Ανακοινώσεις']);
@@ -191,7 +192,7 @@ describe('Other', function () {
         const sourceFile = JSON.parse(fs.readFileSync(path.join(__dirname, './sources/html/html1.json'), 'utf8'));
         sourceFile.url[0][1] = "http://127.0.0.1:3000/html2"; // Web server should return the file for html2
         // Proxy is disabled, so it should fail parsing
-        return Saffron.parse(sourceFile).then(result => {
+        return Saffron.parse(sourceFile, null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases).to.deep.equal(['Γενικές Ανακοινώσεις']);
@@ -205,15 +206,38 @@ describe('Other', function () {
 
         const sourceFile = JSON.parse(fs.readFileSync(path.join(__dirname, './sources/html/html1.json'), 'utf8'));
         const c = new Config();
-        c.config.workers.axios = (source: Source) => ({
+        c.config.workers.axios = async (source: Source) => ({
             timeout: 12345,
             maxRedirects: 1000
         });
 
-        const source = Source.parseSourceFile(sourceFile, c);
-        expect(source.instructions.axios).to.deep.equal({
-            timeout: 12345,
-            maxRedirects: 1000
+        return Source.parseSourceFile(sourceFile, c).then(source => {
+            expect(source.instructions.axios).to.deep.equal({
+                timeout: 12345,
+                maxRedirects: 1000
+            });
+        });
+    });
+
+    it('Config - Preprocessor', function () {
+        process.env.NODE_ENV = undefined;
+
+        const sourceFile = JSON.parse(fs.readFileSync(path.join(__dirname, './sources/html/html1.json'), 'utf8'));
+        const c = new Config();
+        c.config.workers.preprocessor = async (r, s) => {
+            // Set response to html2 file
+            (r as AxiosResponse).data = (r as AxiosResponse).data.replace('Εις μνήμην Χρυσούλας Τόμπρου', 'saffron-test');
+            return r;
+        }
+
+        return Saffron.parse(sourceFile, c).then(result => {
+            const article = result[0].articles[0];
+            expect(article.title).to.equal('saffron-test');
+            expect(article.content).to.equal('Στις 26 Αυγούστου έφυγε από κοντά μας,\n ύστερα από πολύμηνη ασθένεια, το εξαίρετο μέλος ΕΕΠ και εκλεκτή\n συνάδελφος Χρυσούλα Τόμπρου αφήνοντας ένα μεγάλο και δυσαναπλήρωτο κενό\n τόσο στον τομέα Ξένων Γλωσσών του Πανεπιστημίου μας, το οποίο με ζήλο\n υπηρέτησε για 36 συναπτά έτη, όσο και σε εμάς τις συναδέλφους της. Έφυγε\n αθόρυβα όπως αθόρυβη και διακριτική υπήρξε σε όλη της τη ζωή.\n \n Ως καθηγήτρια υπήρξε πάντοτε συνεπής και\n αφοσιωμένη στο καθήκον της με γνήσιο ενδιαφέρον για την επιστήμη της και\n βαθιά αγάπη για τον άνθρωπο. Ανήσυχο και δημιουργικό πνεύμα, πάντα\n ενημερωμένο γύρω από τις τελευταίες εξελίξεις. Ήταν άριστη παιδαγωγός,\n με υψηλό αίσθημα ευθύνης, δεκτική και ανοιχτή σε όλους με ιδιαίτερη\n ευαισθησία σε φοιτητές με δυσκολίες ή προβλήματα.\n \n Ως συνάδελφος ήταν αληθινή, ανιδιοτελής και\n δοτική. Αναλάμβανε αγόγγυστα μεγάλο φόρτο εργασίας πάντα σκεπτόμενη την\n διευκόλυνση του έργου των άλλων. Θα της είμαστε πάντα ευγνώμονες για την\n καθοδήγηση και ενθάρρυνση όλων μας στα πρώτα μας βήματα στο χώρο της\n τριτοβάθμιας εκπαίδευσης. Την ευχαριστούμε για την κατανόησή της, τις\n πολύτιμες συμβουλές και τη συμπαράστασή της στις δύσκολες στιγμές μας ως\n γνήσια φίλη, συνάδελφος και έμπειρη μητέρα. Υπήρξαμε τυχεροί που\n συνεργαστήκαμε μαζί της για πολλά χρόνια.\n \n Θα έχει πάντα τη θέση της στο Γραφείο Ξένων\n Γλωσσών και στην καρδιά μας. Την αποχαιρετούμε με θλίψη, πόνο και\n συγκίνηση αλλά και με την υπόσχεση ότι θα συνεχίσουμε το έργο της και θα\n αξιοποιήσουμε την ανεκτίμητη κληρονομιά που άφησε σε όλους μας.\n \n Στους οικείους της εκφράζουμε τα ειλικρινή\n μας συλλυπητήρια και τη συμμετοχή μας στο βαρύ πένθος τους. Να τη\n θυμούνται πάντα με αγάπη και υπερηφάνεια.\n \n Μέλη ΕΕΠ Γραφείου Ξένων Γλωσσών\n Όσοι επιθυμούν να προσφέρουν κάτι στη μνήμη της, μπορούν να καταθέσουν\n χρήματα στην Κιβωτό του Κόσμου. Παραθέτουμε τους λογαριασμού της\n Κιβωτού.\n \n EUROBANK: 0026 0178 870100 872073 IBAN : GR3702601780000870100872073\n SWIFT / BIC: ERBKGRAA (ΓΙΑ ΕΞΩΤΕΡΙΚΟ)\n ΤΡΑΠΕΖΑ ΠΕΙΡΑΙΩΣ: 5023 – 032595 - 870 IBAN:GR3801720230005023032595870\n \n ΕΘΝΙΚΗ ΤΡΑΠΕΖΑ: 100/296102-42 IBAN: GR6201101000000010029610242\n ALPHA BANK: 183002002003534 IBAN: GR4801401830183002002003534\n \n \n Σημείωση\n \n : Κατά την κατάθεση, στην αιτιολογία να συμπληρώσετε (υποχρεωτικά) ότι η\n δωρεά γίνεται εις μνήμην της ΧΡΥΣΟΥΛΑΣ ΤΟΜΠΡΟΥ.\n \n Μετά τη δωρεά σας, παρακαλούμε να επικοινωνήσετε με την Κιβωτό\n προκειμένου να κρατήσουμε τα στοιχεία της απόδειξης.\n \n Τηλ. Επικοινωνίας: 210 5141953 - 210 5141935');
+            expect(article.link).to.equal('/unipi/el/ανακοινώσεις/item/13591-εις-μνήμην-χρυσούλας-τόμπρου.html');
+            expect(article.pubDate).to.equal('Τετάρτη, 14 Σεπτεμβρίου 2022 12:15');
+            expect(article.attachments.length).to.equal(0);
+            expect(article.thumbnail).to.be.undefined;
         });
     });
 });

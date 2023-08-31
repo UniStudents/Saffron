@@ -315,7 +315,7 @@ export class Utils {
     }
 
     async parse(sourceJson: SourceFile): Promise<ParserResult[]> {
-        const source = Source.parseSourceFile(sourceJson, null);
+        const source = await Source.parseSourceFile(sourceJson, null);
         const job = new Job(source, '', 0, null);
         return await Worker.parse(job);
     }

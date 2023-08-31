@@ -226,9 +226,9 @@ try {
         scrape: {
             // ...
         },
-    });
+    }, null); // or pass a config
 
-    console.log("Articles retrieved:", result);
+    console.log("Result:", result);
 } catch (e) {
     console.log("Encountered an error during parsing:", e);
 }

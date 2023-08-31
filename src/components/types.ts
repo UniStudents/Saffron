@@ -10,7 +10,7 @@ export type InstructionUrl = {
 
 export type ParserResult = InstructionUrl & { articles: Article[]; };
 
-export type ParserRequestResult = AxiosResponse | AxiosResponse[];
+export type RequestsResult = AxiosResponse | AxiosResponse[];
 
 export type CallbackVoid = (...args: any[]) => void;
 

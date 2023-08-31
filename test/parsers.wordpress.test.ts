@@ -3,7 +3,7 @@ import {expect} from "chai";
 
 describe("WordPress parser", function () {
     it('Test 1', function () {
-        return Saffron.parse(require('./sources/wordpress-v2/wordpress1.json')).then(result => {
+        return Saffron.parse(require('./sources/wordpress-v2/wordpress1.json'), null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases.length).to.equal(0);
@@ -37,7 +37,7 @@ describe("WordPress parser", function () {
     });
 
     it('Test 2', function () {
-        return Saffron.parse(require('./sources/wordpress-v2/wordpress2.json')).then(result => {
+        return Saffron.parse(require('./sources/wordpress-v2/wordpress2.json'), null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases.length).to.equal(0);

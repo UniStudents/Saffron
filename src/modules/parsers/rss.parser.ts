@@ -3,7 +3,7 @@ import type {Instructions} from "../../components/instructions";
 import {Article} from "../../components/article";
 import Parser from "rss-parser";
 import type {Utils} from "../../components/Utils";
-import type {ParserRequestResult, ScrapeRSS, SourceScrape} from "../../components/types";
+import type {RequestsResult, ScrapeRSS, SourceScrape} from "../../components/types";
 import type {AxiosResponse} from "axios";
 
 export class RssParser extends ParserClass {
@@ -34,11 +34,11 @@ export class RssParser extends ParserClass {
         instructions.rss = scrape;
     }
 
-    request(utils: Utils): Promise<ParserRequestResult> {
+    request(utils: Utils): Promise<RequestsResult> {
         return utils.get(utils.url);
     }
 
-    async parse(response: ParserRequestResult, utils: Utils): Promise<Article[]> {
+    async parse(response: RequestsResult, utils: Utils): Promise<Article[]> {
         const instructions = utils.source.instructions;
 
         const assignFields = instructions.rss.assignFields;

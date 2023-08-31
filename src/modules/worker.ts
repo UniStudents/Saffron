@@ -8,7 +8,7 @@ import type {ParserResult} from "../components/types";
 import {Utils} from "../components/Utils";
 import type {Saffron} from "../index";
 
-const sleep = ms => new Promise( res => setTimeout(res, ms));
+const sleep = (ms: number) => new Promise( res => setTimeout(res, ms));
 
 export class Worker {
 
@@ -39,10 +39,11 @@ export class Worker {
             }
 
             // Will throw error in case of fail (catch in call function).
-            const response = await parser.request(utils);
+            const response = await instructions.preprocessor(await parser.request(utils), utils.source);
             const articles = await parser.parse(response, utils);
-            if(!Array.isArray(articles))
+            if(!Array.isArray(articles)) {
                 throw new Error('did not return an array of articles');
+            }
 
             const includeCategoryUrlsIn = utils.source.instructions.includeCategoryUrlsIn;
             const categoriesFromAliases = utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]}));
