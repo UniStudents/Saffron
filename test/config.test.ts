@@ -15,10 +15,10 @@ describe('Configuration', function () {
         expect(c.sources?.exclude).to.deep.equal([]);
         expect(c.workers?.nodes).to.equal(1);
         expect(c.workers.delayBetweenRequests).to.equal(0);
-        expect(c.workers?.requests?.headers).to.deep.equal({});
-        expect(c.workers?.requests?.axios).to.deep.equal(undefined);
-        expect(c.workers?.requests?.timeout).to.equal(10000);
-        expect(c.workers?.requests?.maxRedirects).to.equal(5);
+        expect((c.workers?.axios as any)?.timeout).to.equal(10000);
+        expect((c.workers?.axios as any)?.maxRedirects).to.equal(5);
+        expect((c.workers?.axios as any)?.headers).to.deep.equal({});
+        expect(c.workers?.preprocessor).to.be.a('function');
         expect(c.workers?.articles?.amount).to.equal(30);
         expect(c.workers?.articles?.includeContentAttachments).to.equal(true);
         expect(c.workers?.articles?.includeCategoryUrlsIn).to.equal('categories');
@@ -50,13 +50,14 @@ describe('Configuration', function () {
         workers: {
             nodes: 10,
             delayBetweenRequests: 10,
-            requests: {
+            axios: {
                 timeout: 25500,
                 headers: {
                     'User-Agent': 'saffron-'
                 },
                 maxRedirects: 5
             },
+            preprocessor: async (r, s) => r,
             articles: {
                 amount: 150,
                 includeContentAttachments: true
@@ -93,9 +94,10 @@ describe('Configuration', function () {
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect(c.workers?.nodes).to.equal(ec.workers.nodes);
         expect(c.workers.delayBetweenRequests).to.equal(10);
-        expect(c.workers?.requests?.headers).to.deep.equal(ec.workers.requests?.headers);
-        expect(c.workers?.requests?.timeout).to.equal(ec.workers.requests?.timeout);
-        expect(c.workers?.requests?.maxRedirects).to.equal(ec.workers.requests?.maxRedirects);
+        expect((c.workers?.axios as any)?.timeout).to.equal((ec.workers?.axios as any)?.timeout);
+        expect((c.workers?.axios as any)?.maxRedirects).to.equal((ec.workers?.axios as any)?.maxRedirects);
+        expect((c.workers?.axios as any)?.headers).to.deep.equal((ec.workers?.axios as any)?.headers);
+        expect(c.workers?.preprocessor).to.equal(ec.workers?.preprocessor);
         expect(c.workers?.articles?.amount).to.equal(ec.workers.articles?.amount);
         expect(c.workers?.articles?.includeContentAttachments).to.equal(ec.workers.articles?.includeContentAttachments);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);
@@ -127,7 +129,6 @@ describe('Configuration', function () {
             },
             workers: {
                 nodes: ['Ailly', 'Billy', 'Cilly', 'Dilly', 'Eilly'],
-                requests: {},
                 articles: {
                     amount: 100
                 }
@@ -138,9 +139,9 @@ describe('Configuration', function () {
             },
             workers: {
                 nodes: 1,
-                requests: {
-                    timeout: 100,
-                }
+                axios: {
+                    timeout: 100
+                },
             },
             sources: {
                 path: './../sources'
@@ -172,9 +173,10 @@ describe('Configuration', function () {
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect((<string[]>c.workers?.nodes)).to.deep.equal(['Ailly', 'Billy', 'Cilly', 'Dilly', 'Eilly']);
         expect(c.workers.delayBetweenRequests).to.equal(10);
-        expect(c.workers?.requests?.headers).to.deep.equal(ec.workers.requests?.headers);
-        expect(c.workers?.requests?.timeout).to.equal(ec.workers.requests?.timeout);
-        expect(c.workers?.requests?.maxRedirects).to.equal(ec.workers.requests?.maxRedirects);
+        expect((c.workers?.axios as any)?.timeout).to.equal((ec.workers?.axios as any)?.timeout);
+        expect((c.workers?.axios as any)?.maxRedirects).to.equal((ec.workers?.axios as any)?.maxRedirects);
+        expect((c.workers?.axios as any)?.headers).to.deep.equal((ec.workers?.axios as any)?.headers);
+        expect(c.workers?.preprocessor).to.equal(ec.workers?.preprocessor);
         expect(c.workers?.articles?.amount).to.equal(100);
         expect(c.workers?.articles?.includeContentAttachments).to.equal(ec.workers.articles?.includeContentAttachments);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);
@@ -206,9 +208,10 @@ describe('Configuration', function () {
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect(c.workers?.nodes).to.equal(1);
         expect(c.workers.delayBetweenRequests).to.equal(10);
-        expect(c.workers?.requests?.headers).to.deep.equal(ec.workers.requests?.headers);
-        expect(c.workers?.requests?.timeout).to.equal(100);
-        expect(c.workers?.requests?.maxRedirects).to.equal(ec.workers.requests?.maxRedirects);
+        expect((c.workers?.axios as any)?.timeout).to.equal(100);
+        expect((c.workers?.axios as any)?.maxRedirects).to.equal((ec.workers?.axios as any)?.maxRedirects);
+        expect((c.workers?.axios as any)?.headers).to.deep.equal((ec.workers?.axios as any)?.headers);
+        expect(c.workers?.preprocessor).to.equal(ec.workers?.preprocessor);
         expect(c.workers?.articles?.amount).to.equal(ec.workers?.articles?.amount);
         expect(c.workers?.articles?.includeContentAttachments).to.equal(ec.workers.articles?.includeContentAttachments);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);
@@ -239,9 +242,10 @@ describe('Configuration', function () {
         expect(c.sources?.exclude).to.deep.equal(ec.sources.exclude);
         expect(c.workers?.nodes).to.equal(ec.workers.nodes);
         expect(c.workers.delayBetweenRequests).to.equal(10);
-        expect(c.workers?.requests?.headers).to.deep.equal(ec.workers.requests?.headers);
-        expect(c.workers?.requests?.timeout).to.equal(ec.workers.requests?.timeout);
-        expect(c.workers?.requests?.maxRedirects).to.equal(ec.workers.requests?.maxRedirects);
+        expect((c.workers?.axios as any)?.timeout).to.equal((ec.workers?.axios as any)?.timeout);
+        expect((c.workers?.axios as any)?.maxRedirects).to.equal((ec.workers?.axios as any)?.maxRedirects);
+        expect((c.workers?.axios as any)?.headers).to.deep.equal((ec.workers?.axios as any)?.headers);
+        expect(c.workers?.preprocessor).to.equal(ec.workers?.preprocessor);
         expect(c.workers?.articles?.amount).to.equal(ec.workers.articles?.amount);
         expect(c.workers?.articles?.includeContentAttachments).to.equal(ec.workers.articles?.includeContentAttachments);
         expect(c.scheduler?.jobsInterval).to.equal(ec.scheduler.jobsInterval);

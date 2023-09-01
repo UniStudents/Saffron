@@ -3,7 +3,7 @@ import {expect} from "chai";
 
 describe("Dynamic parser", function () {
     it('Test 1', function () {
-        return Saffron.parse(require('./sources/dynamic/dynamic1')).then(result => {
+        return Saffron.parse(require('./sources/dynamic/dynamic1'), null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases).to.deep.equal(['General']);

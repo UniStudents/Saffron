@@ -2,7 +2,7 @@ import {Config, ConfigOptions} from "../components/config";
 import {Job, JobStatus} from "../components/job";
 import {Source} from "../components/source";
 import {Worker} from "./worker";
-import glob from "glob";
+import {glob} from "glob";
 import * as path from "path";
 import type {Saffron} from "../index";
 
@@ -50,7 +50,7 @@ export class Scheduler {
 
             for (const job of this.jobs) {
                 // Skip locked jobs
-                if(job.isLocked) continue;
+                if (job.isLocked) continue;
 
                 // Subtract the elapsed time
                 job.untilRetry -= this.checkInterval;
@@ -165,68 +165,78 @@ export class Scheduler {
         if (job) job.status = status;
     }
 
-    private scanSourceFiles(): Promise<Source[]> {
-        return new Promise((resolve, reject) => {
-            const sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH, this.saffron.config);
-            const scanSubFolders = Config.getOption(ConfigOptions.SCAN_SUB_FOLDERS, this.saffron.config);
+    private async scanSourceFiles(): Promise<Source[]> {
+        const sourcesPath = Config.getOption(ConfigOptions.SOURCES_PATH, this.saffron.config);
+        const scanSubFolders = Config.getOption(ConfigOptions.SCAN_SUB_FOLDERS, this.saffron.config);
 
-            let _path: string;
-            if(scanSubFolders) {
-                _path = `${path.join(process.cwd(), sourcesPath)}/**`;
-            } else {
-                _path = path.join(process.cwd(), sourcesPath);
+        let _path: string;
+        if (scanSubFolders) {
+            _path = `${path.join(process.cwd(), sourcesPath)}/**`;
+        } else {
+            _path = path.join(process.cwd(), sourcesPath);
+        }
+
+        let files: string[];
+        try {
+            files = await glob(_path, {})
+        } catch (e: any) {
+            this.saffron.events.emit('scheduler.sources.error', e);
+            throw e;
+        }
+
+        if (!files || files.length == 0) {
+            return [];
+        }
+
+        const acceptedFiles = new RegExp(/.+\.(json|js)/); // Both .js and .json
+        const rawSources = files.filter((file: any) => acceptedFiles.test(file))
+        if (rawSources.length == 0) {
+            return [];
+        }
+
+        const sources = rawSources.map((file: string) => ({
+            filename: `${file.split("/").pop()}`,
+            path: `${file}`,
+        }));
+
+        const loader = Config.getOption(ConfigOptions.SOURCE_LOADER, this.saffron.config);
+
+        const parsedSources: Source[] = [];
+        for (const sourceFile of sources) {
+            let parsed: any;
+            try {
+                const data = await loader(sourceFile.path);
+                if (Array.isArray(data)) {
+                    for (const i in data) {
+                        data[i] = {
+                            ...sourceFile,
+                            ...data[i]
+                        }
+                    }
+
+                    parsed = data;
+                } else {
+                    parsed = {
+                        ...sourceFile,
+                        ...data
+                    };
+                }
+            } catch (e) {
+                this.saffron.events.emit("scheduler.sources.error", sourceFile, e);
+                continue;
             }
 
-            glob(_path, {}, async (error: any, files: string[]) => {
-                if (error) {
-                    this.saffron.events.emit('scheduler.sources.error', error);
-                    reject(error);
-                    return;
+            const toParse: any[] = Array.isArray(parsed) ? parsed : [parsed];
+            for (const p of toParse) {
+                try {
+                    const newSource = await Source.parseSourceFile(p, this.saffron.config);
+                    parsedSources.push(newSource);
+                } catch (e) {
+                    this.saffron.events.emit("scheduler.sources.error", sourceFile, e);
                 }
+            }
+        }
 
-                if (!files || files.length == 0) {
-                    resolve([]);
-                    return;
-                }
-
-                const acceptedFiles = new RegExp(/.+\.(json|js)/); // Both .js and .json
-                const rawSources = files.filter((file: any) => acceptedFiles.test(file))
-                if (rawSources.length == 0) {
-                    resolve([]);
-                    return;
-                }
-
-                const sources = rawSources.map((file: string) => ({
-                    filename: `${file.split("/").pop()}`,
-                    path: `${file}`,
-                }));
-
-                const loader = Config.getOption(ConfigOptions.SOURCE_LOADER, this.saffron.config);
-
-                const parsedSources: Source[] = [];
-                for (const sourceFile of sources) {
-                    let parsed: any;
-                    try {
-                        const data = await loader(sourceFile.path);
-                        parsed = {
-                            ...sourceFile,
-                            ...data
-                        };
-                    } catch (e) {
-                        this.saffron.events.emit("scheduler.sources.error", sourceFile, e);
-                        continue;
-                    }
-
-                    try {
-                        const newSource = Source.parseSourceFile(parsed, this.saffron.config);
-                        parsedSources.push(newSource);
-                    } catch (e) {
-                        this.saffron.events.emit("scheduler.sources.error", sourceFile, e);
-                    }
-                }
-
-                resolve(parsedSources);
-            });
-        });
+        return parsedSources;
     }
 }

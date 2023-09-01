@@ -2,7 +2,8 @@ import {ParserClass} from "../../components/ParserClass";
 import type {Instructions} from "../../components/instructions";
 import {Article} from "../../components/article";
 import type {Utils} from "../../components/Utils";
-import type {ScrapeWordPressV2, SourceScrape} from "../../components/types";
+import type {RequestsResult, ScrapeWordPressV2, SourceScrape} from "../../components/types";
+import type {AxiosResponse} from "axios";
 
 export class WordpressV2Parser extends ParserClass {
 
@@ -114,7 +115,7 @@ export class WordpressV2Parser extends ParserClass {
         instructions.wp = scrape;
     }
 
-    async parse(utils: Utils): Promise<Article[]> {
+    async request(utils: Utils): Promise<RequestsResult> {
         const instructions = utils.source.instructions;
 
         const categoriesUrl = `${utils.url}/${instructions.wp.paths!.categories}`;
@@ -137,6 +138,14 @@ export class WordpressV2Parser extends ParserClass {
 
         const catReq = await utils.get(categoriesUrl);
         const postsReq = await utils.get(postsUrl);
+
+        return [catReq, postsReq];
+    }
+
+    async parse(response: RequestsResult, utils: Utils): Promise<Article[]> {
+        const [catReq, postsReq] = response as AxiosResponse[];
+
+        const instructions = utils.source.instructions;
 
         const categories = JSON.parse(catReq.data);
         const posts = JSON.parse(postsReq.data);

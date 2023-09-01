@@ -3,7 +3,7 @@ import {expect} from "chai";
 
 describe("HTML parser", function () {
     it('Test 1', function () {
-        return Saffron.parse(require('./sources/html/html1.json')).then(result => {
+        return Saffron.parse(require('./sources/html/html1.json'), null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases).to.deep.equal(['Γενικές Ανακοινώσεις']);
@@ -33,7 +33,7 @@ describe("HTML parser", function () {
     });
 
     it('Test 2', function () {
-        return Saffron.parse(require('./sources/html/html2.json')).then(result => {
+        return Saffron.parse(require('./sources/html/html2.json'), null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases.length).to.equal(0);
@@ -68,7 +68,7 @@ describe("HTML parser", function () {
     });
 
     it('Test 3', function () {
-        return Saffron.parse(require('./sources/html/html3.json')).then(result => {
+        return Saffron.parse(require('./sources/html/html3.json'), null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases).to.deep.equal(['Νέα']);
@@ -94,7 +94,7 @@ describe("HTML parser", function () {
     });
 
     it('Test 4', function () {
-        return Saffron.parse(require('./sources/html/html4.json')).then(result => {
+        return Saffron.parse(require('./sources/html/html4.json'), null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases).to.deep.equal(['Γενικές Ανακοινώσεις']);
@@ -172,7 +172,7 @@ describe("HTML parser", function () {
                     }
                 }
             }
-        }).then(result => {
+        }, null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases.length).to.equal(0);

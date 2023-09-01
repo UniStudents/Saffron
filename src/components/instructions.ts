@@ -1,6 +1,8 @@
 import type {ParserType} from "./ParserClass";
 import type {InstructionUrl, ScrapeDynamic, ScrapeHTML, ScrapeRSS, ScrapeWordPressV2} from "./types";
-import type {AxiosRequestConfig} from "axios/index";
+import type {AxiosRequestConfig} from "axios";
+import type {RequestsResult} from "./types";
+import type {Source} from "./source";
 
 /**
  * The instructions class is used mainly by parsers.
@@ -12,10 +14,8 @@ export class Instructions {
     declare url: InstructionUrl[];
     declare parserType: ParserType;
 
-    declare timeout: number;
-    declare maxRedirects: number;
-    declare headers: { [key: string]: string | string[] };
     declare axios: AxiosRequestConfig;
+    declare preprocessor: (responses: RequestsResult, source: Source) => Promise<RequestsResult>;
     declare ignoreCertificates: boolean;
     declare delayBetweenRequests: number;
 

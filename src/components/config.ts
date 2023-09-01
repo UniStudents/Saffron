@@ -3,9 +3,10 @@ import type {Article} from "./article";
 import type {AxiosRequestConfig} from "axios";
 import type {Source} from "./source";
 import fs from "fs";
+import type {RequestsResult} from "./types";
 
 export type ConfigType = {
-    mode: 'main' | 'worker';
+    mode: 'main' | 'worker'; // TODO: Add mode debug - Will act as main, and will verbose a lot of data
     newArticles: ((tableName: string, articles: Article[]) => void) | ((tableName: string, articles: Article[]) => Promise<void>);
     sources: Partial<{
         path: string;
@@ -17,12 +18,8 @@ export type ConfigType = {
     workers: Partial<{
         nodes: number | string[];
         delayBetweenRequests?: number;
-        requests: Partial<{
-            timeout: number;
-            headers: { [key: string]: string | string[] };
-            maxRedirects: number;
-            axios: AxiosRequestConfig | ((source: Source) => AxiosRequestConfig); // TODO: Make it async
-        }>;
+        axios: AxiosRequestConfig | ((source: Source) => Promise<AxiosRequestConfig>);
+        preprocessor: (responses: RequestsResult, source: Source) => Promise<RequestsResult>;
         articles: Partial<{
             amount: number;
             includeContentAttachments: boolean;
@@ -55,16 +52,15 @@ export type ConfigType = {
 export enum ConfigOptions {
     SOURCES_PATH = 0,
     SOURCES_INCLUDE_ONLY = 1,
-    SOURCES_EXCLUDE = 3,
-    MODE = 4,
-    WORKER_NODES = 5,
-    HEADERS = 6,
-    TIMEOUT = 7,
-    ARTICLE_AMOUNT = 8,
-    JOB_INT = 9,
-    JOB_HEAVY_INT = 10,
-    NO_RESPONSE_THR = 11,
-    INT_RANDOMIZER = 12,
+    SOURCES_EXCLUDE = 2,
+    MODE = 3,
+    WORKER_NODES = 4,
+    ARTICLE_AMOUNT = 5,
+    JOB_INT = 6,
+    JOB_HEAVY_INT = 7,
+    NO_RESPONSE_THR = 8,
+    INT_RANDOMIZER = 9,
+    PREPROCESSOR = 10,
     DISTRIBUTED = 13,
     HOST = 14,
     PORT = 15,
@@ -80,7 +76,6 @@ export enum ConfigOptions {
     AXIOS_REQUEST_CONFIG = 25,
     SCAN_SUB_FOLDERS = 26,
     SOURCE_LOADER = 27,
-    MAX_REDIRECTS = 28,
     DELAY_BETWEEN_REQUESTS = 29,
 }
 
@@ -116,11 +111,12 @@ const defaultConfig: ConfigType = {
     workers: {
         nodes: 1, // Start one worker
         delayBetweenRequests: 0,
-        requests: {
+        axios: {
             timeout: 10000,
             headers: {},
-            maxRedirects: 5,
+            maxRedirects: 5
         },
+        preprocessor: async (r, s) => r,
         articles: {
             amount: 30,
             includeContentAttachments: true,
@@ -189,14 +185,10 @@ export class Config {
                 return conf.workers?.nodes;
             case ConfigOptions.DELAY_BETWEEN_REQUESTS:
                 return conf.workers?.delayBetweenRequests;
-            case ConfigOptions.HEADERS:
-                return conf.workers?.requests?.headers;
             case ConfigOptions.AXIOS_REQUEST_CONFIG:
-                return conf.workers?.requests?.axios
-            case ConfigOptions.TIMEOUT:
-                return conf.workers?.requests?.timeout;
-            case ConfigOptions.MAX_REDIRECTS:
-                return conf.workers?.requests?.maxRedirects;
+                return conf.workers?.axios
+            case ConfigOptions.PREPROCESSOR:
+                return conf.workers?.preprocessor
 
             case ConfigOptions.ARTICLE_AMOUNT:
                 return conf.workers?.articles?.amount;
@@ -298,12 +290,6 @@ export class Config {
             throw new Error('ConfigurationException Option workers.nodes is not valid, requirements(type = string-array or number)');
         if (typeof this.config.workers.delayBetweenRequests !== 'number' || this.config.workers.delayBetweenRequests < 0)
             throw new Error('ConfigurationException Option workers.delayBetweenRequests is not valid, requirements(type = number, positive or zero)');
-        if (typeof this.config.workers.requests !== 'object' || Array.isArray(this.config.workers.requests))
-            throw new Error('ConfigurationException Option block workers.requests is not valid, requirements(type = object)');
-        if (typeof this.config.workers.requests.timeout !== 'number' || this.config.workers.requests.timeout <= 0)
-            throw new Error('ConfigurationException Option workers.requests.timeout is not valid, requirements(type = number, positive)');
-        if (typeof this.config.workers.requests.maxRedirects !== 'number' || this.config.workers.requests.maxRedirects <= 0)
-            throw new Error('ConfigurationException Option workers.requests.maxRedirects is not valid, requirements(type = number, positive)');
         if (typeof this.config.workers.articles !== 'object' || Array.isArray(this.config.workers.articles))
             throw new Error('ConfigurationException Option block workers.articles is not valid, requirements(type = object)');
         if (typeof this.config.workers.articles.amount !== 'number' || this.config.workers.articles.amount <= 0)

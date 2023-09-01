@@ -7,6 +7,6 @@ export {Instructions} from "./components/instructions";
 export {Saffron} from "./saffron";
 export {Serializer, pack, unpack} from "./middleware/serializer";
 
-// TODO: Add source file templates?
+// TODO: Add source file templates
 //   A template folder, where a source file can extend to. Will contain the same fields
-//   as a source file, but it will not check if the fields exist.
+//   as a source file, but not all fields are required.

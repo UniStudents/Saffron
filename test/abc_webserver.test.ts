@@ -81,7 +81,6 @@ proxyApp.listen(4000, () => {
     console.log('Proxy server started at port 4000');
 });
 
-
 process.on('unhandledRejection', function onUncaught(err) {
     console.log(err);
     process.exit(1);

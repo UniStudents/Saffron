@@ -3,7 +3,7 @@ import {expect} from "chai";
 
 describe("RSS parser", function () {
     it('Test 1', function () {
-        return Saffron.parse(require("./sources/rss/rss1.json")).then(result => {
+        return Saffron.parse(require("./sources/rss/rss1.json"), null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases.length).to.equal(0);
@@ -26,7 +26,7 @@ describe("RSS parser", function () {
     });
 
     it('Test 2', function () {
-        return Saffron.parse(require("./sources/rss/rss2.json")).then(result => {
+        return Saffron.parse(require("./sources/rss/rss2.json"), null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases.length).to.equal(0);
@@ -50,7 +50,7 @@ describe("RSS parser", function () {
     });
 
     it('Test 3', function () {
-        return Saffron.parse(require("./sources/rss/rss3.json")).then(result => {
+        return Saffron.parse(require("./sources/rss/rss3.json"), null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases.length).to.equal(0);

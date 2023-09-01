@@ -102,36 +102,37 @@ file with multiple urls may fail due to this limit.
 Increasing the option `delayBetweenRequests` (in milliseconds) will put a distance
 between the request that belong in the same source file.
 
-### `requests.headers`
-The headers that will accompany the requests made by saffron.
-
-It can be used to set `User-Agent` and other fields.
-
-### `requests.axios`
+### `axios`
 Axios' configuration that will be applied to the requests made by saffron.
 It supports synchronous callback like:
 
 ```typescript
-axios: (source: Source) => {
+axios: async (source: Source) => {
     return {
-        tiemout: 3000
+        timeout: 3000
     };
 }
 ```
 
-It will override previous options.
+### `preprocessor`
+A function that will edit the response of the http request before
+passing it to the parser.
 
-Currently only for `html`, `wordpress` and `dynamic` source types.
+It is helpful in many cases where modifications are needed to the document
+before parsing, for example an RSS file which contains the character `&`
+instead of the encoded representation `&amp;`.
 
-### `requests.timeout`
-Default value: `10000`
+It supports synchronous callback like:
 
-The timeout of a request when scraping data.
+```typescript
+// type RequestsResult = AxiosResponse | AxiosResponse[];
+axios: async (responses: RequestsResult, source: Source) => {
+    // ...
+    return responses;
+}
+```
 
-### `requests.maxRedirects`
-Default value: `10`
-
-The maximum redirects that are allowed during a request.
+This function does apply to the `dynamic` parser.
 
 ### `articles.amount`
 Default value: `30`

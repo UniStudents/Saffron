@@ -25,11 +25,12 @@ export class Saffron {
     /**
      * Get a source file and return an array of the parsed articles
      * @param obj The json object of the source file.
+     * @param config A configuration that may be applied to the source file
      * @throws if there is a problem parsing or scraping.
      */
-    static async parse(obj: SourceFile): Promise<ParserResult[]> {
-        const source = Source.parseSourceFile(obj, null);
-        const job = new Job(source, '', 0, null);
+    static async parse(obj: SourceFile, config: Config | null): Promise<ParserResult[]> {
+        const source = await Source.parseSourceFile(obj, config);
+        const job = new Job(source, '', 0, config);
         return await Worker.parse(job);
     }
 
