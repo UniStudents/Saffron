@@ -123,8 +123,8 @@ and CSS are not structured will be very difficult to scrape.
 
 Parser type: `dynamic`
 
-Unlike the other parsers, this parser uses javascript code to parse a website. All the logic for the scraping is
-decided by the user.
+Unlike the other parsers, this parser uses javascript/typescript code to parse a website. All the logic for the scraping is
+decided by the user by extending the class `DynamicSourceFile`.
 
 ### Which to choose
 

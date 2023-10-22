@@ -1,12 +1,15 @@
 import type {Job} from "../components/job";
-import {randomId} from "../middleware/randomId";
+import {randomId} from "../utils/randomId.util";
 import type {Grid} from "./grid";
 import type {Article} from "../components/article";
 import {ParserLoader} from "../components/ParserLoader";
-import {hashCode} from "../middleware/hashCode";
+import {hashCodeUtil} from "../utils/hashCode.util";
 import type {ParserResult} from "../components/types";
 import {Utils} from "../components/Utils";
 import type {Saffron} from "../index";
+import type {DynamicSourceFile} from "../components/DynamicSourceFile";
+import {Config, ConfigOptions} from "../components/config";
+import {ParserType} from "../components/Parser";
 
 const sleep = (ms: number) => new Promise( res => setTimeout(res, ms));
 
@@ -19,7 +22,7 @@ export class Worker {
         this.id = id ?? randomId("wkr");
     }
 
-    static async parse(job: Job): Promise<ParserResult[]> {
+    static async parse(job: Job, dynamicSourceFiles: DynamicSourceFile[]): Promise<ParserResult[]> {
         const instructions = job.source.instructions;
 
         const results: ParserResult[] = [];
@@ -33,7 +36,17 @@ export class Worker {
             utils.isScrapeAfterError = job.attempts !== 0;
             utils.source = job.source;
 
-            const delayBetweenRequests = utils.source.instructions.delayBetweenRequests;
+            if (instructions.parserType === ParserType.DYNAMIC) {
+                const impName = instructions.dynamic.implementation;
+                const dsf = dynamicSourceFiles.find(dsf => dsf.name() === impName);
+                if(!dsf) {
+                    throw new Error(`could not find any implementation with name ${impName}`);
+                }
+
+                utils.dynamicSourceFile = dsf;
+            }
+
+            const delayBetweenRequests = instructions.delayBetweenRequests;
             if(i !== 0 && delayBetweenRequests !== 0) {
                 await sleep(delayBetweenRequests);
             }
@@ -45,7 +58,7 @@ export class Worker {
                 throw new Error('did not return an array of articles');
             }
 
-            const includeCategoryUrlsIn = utils.source.instructions.includeCategoryUrlsIn;
+            const includeCategoryUrlsIn = instructions.includeCategoryUrlsIn;
             const categoriesFromAliases = utils.aliases.map((alias: string) => ({name: alias, links: [utils.url]}));
             switch (includeCategoryUrlsIn) {
                 case "categories":
@@ -87,7 +100,7 @@ export class Worker {
         if (index != -1) workers.splice(index, 1);
 
         // From the remaining worker select one
-        return workers[Math.abs(hashCode(lastWorkerId)) % workers.length];
+        return workers[Math.abs(hashCodeUtil(lastWorkerId)) % workers.length];
     }
 
     start() {
@@ -108,7 +121,7 @@ export class Worker {
 
         let result: ParserResult[];
         try {
-            result = await Worker.parse(job);
+            result = await Worker.parse(job, Config.getOption(ConfigOptions.DYNAMIC_SOURCE_FILES, this.saffron.config));
         } catch (e: any) {
             e.message = `${job.source.instructions.parserType.toUpperCase()}ParserException failed ${job.source.name}: ${e.message}`;
 

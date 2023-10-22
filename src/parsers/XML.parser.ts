@@ -6,7 +6,6 @@ import {Article} from "../components/article";
 import type {ScrapeXML} from "../components/parser.type";
 import type {AxiosResponse} from "axios";
 import {XMLParser as xmlParser} from "fast-xml-parser";
-import * as util from "util";
 
 export class XMLParser extends Parser {
     validateScrape(s?: SourceScrape): void {
@@ -115,8 +114,6 @@ export class XMLParser extends Parser {
             trimValues: true,
             // unpairedTags: instructions.xml.unpairedTags // Like <br>
         }).parse(response.data);
-
-        console.log(util.inspect(data, true, null, true))
 
         let root = data;
         for (const key of instructions.xml.container) {

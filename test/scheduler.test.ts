@@ -1,6 +1,8 @@
 import {expect} from "chai";
 import {Job, Saffron, Source} from "../src/index";
 import {JobStatus} from "../src/components/job";
+import {Config} from "../src/components/config";
+import {Dynamic2} from "./abc_dynamics";
 
 describe('Scheduler', function () {
     const SOURCES_SIZE = 12;
@@ -165,6 +167,9 @@ describe('Scheduler', function () {
         this.timeout(5000);
         return new Promise(async (resolve, reject) => {
             saffron.initialize({
+                sources: {
+                    dynamicSourceFiles: [new Dynamic2()]
+                },
                 scheduler: {
                     jobsInterval: 1000,
                     randomizeInterval: () => 0,
@@ -177,8 +182,10 @@ describe('Scheduler', function () {
                 name: 'test',
                 url: 'https://example.com',
                 type: 'dynamic',
-                scrape: async (utils: any, Article: any) => {throw new Error('Error1')}
-            }, null);
+                scrape: {
+                    implementation: 'dynamic-2'
+                }
+            }, saffron.config);
 
             saffron.scheduler.sources.push(source);
             saffron.scheduler.jobs.push(new Job(source, 'worker1', 1000, saffron.config));

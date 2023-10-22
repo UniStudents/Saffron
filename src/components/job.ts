@@ -1,5 +1,5 @@
 import type {Source} from "./source";
-import {randomId} from "../middleware/randomId"
+import {randomId} from "../utils/randomId.util"
 import {Config, ConfigOptions} from "./config";
 
 export enum JobStatus {

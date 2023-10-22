@@ -7,6 +7,7 @@ import {Source} from "./source";
 import {Job} from "./job";
 import {Worker} from "../modules/worker";
 import striptags from "striptags";
+import type {DynamicSourceFile} from "./DynamicSourceFile";
 
 export class Utils {
 
@@ -273,6 +274,8 @@ export class Utils {
     public declare aliases: string[];
     public declare source: Source;
 
+    public declare dynamicSourceFile: DynamicSourceFile;
+
     private static decode(str: string = ""): string {
         if (!str) str = ""
         for (const entity in this.htmlEntries)
@@ -314,10 +317,14 @@ export class Utils {
         return this.request(options!);
     }
 
+    /**
+     * Call one of the existing parsers. It is prohibited to call other dynamic parsers.
+     * @param sourceJson
+     */
     async parse(sourceJson: SourceFile): Promise<ParserResult[]> {
         const source = await Source.parseSourceFile(sourceJson, null);
         const job = new Job(source, '', 0, null);
-        return await Worker.parse(job);
+        return await Worker.parse(job, []);
     }
 
     public cleanupHTMLText(text: string, excessive: boolean): string {

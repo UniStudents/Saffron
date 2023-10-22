@@ -30,7 +30,5 @@ export class Instructions {
     declare wp: ScrapeWordPressV2;
     declare json: ScrapeJSON;
     declare xml: ScrapeXML;
-
     declare dynamic: ScrapeDynamic;
-    declare dynamicFuncStr: string;
 }

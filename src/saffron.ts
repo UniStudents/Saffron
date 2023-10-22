@@ -1,4 +1,4 @@
-import {Config, ConfigOptions, ConfigType} from "./components/config"
+import {Config, ConfigOptions} from "./components/config"
 import {Scheduler} from "./modules/scheduler";
 import {Grid} from "./modules/grid";
 import {Events} from "./modules/events";
@@ -6,7 +6,7 @@ import {Worker} from "./modules/worker";
 import {Job} from "./components/job"
 import {Source} from "./components/source"
 import {Extensions, PairEvent} from "./modules/extensions";
-import type {ParserResult, SourceFile} from "./components/types";
+import type {MergedConfig, ParserResult, SourceFile} from "./components/types";
 
 export class Saffron {
     declare config: Config;
@@ -28,10 +28,12 @@ export class Saffron {
      * @param config A configuration that may be applied to the source file
      * @throws if there is a problem parsing or scraping.
      */
-    static async parse(obj: SourceFile, config: Config | null): Promise<ParserResult[]> {
-        const source = await Source.parseSourceFile(obj, config);
-        const job = new Job(source, '', 0, config);
-        return await Worker.parse(job);
+    static async parse(obj: SourceFile, config: MergedConfig | null): Promise<ParserResult[]> {
+        const _config = config != null ? new Config(config) : null;
+
+        const source = await Source.parseSourceFile(obj, _config);
+        const job = new Job(source, '', 0, _config);
+        return await Worker.parse(job, Config.getOption(ConfigOptions.DYNAMIC_SOURCE_FILES, _config));
     }
 
     /**
@@ -40,10 +42,7 @@ export class Saffron {
      * @param config The config file path or object
      * @param discardOldConfig
      */
-    initialize(config?: Partial<ConfigType>
-        & { production?: Partial<ConfigType> }
-        & { development?: Partial<ConfigType> }
-        & { testing?: Partial<ConfigType> }, discardOldConfig: boolean = false) {
+    initialize(config?: MergedConfig, discardOldConfig: boolean = false) {
         // Load config file
         if (this.config == null || discardOldConfig)
             this.config = new Config(config);

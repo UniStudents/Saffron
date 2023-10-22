@@ -4,42 +4,7 @@ import * as util from "util";
 
 describe("XML parser", function () {
     it('Test 1', function () {
-        return Saffron.parse({
-            "url": "http://127.0.0.1:3000/rss1",
-            "name": "xml1-source",
-            "type": "xml",
-            "scrape": {
-                "container": ["rss", "channel", "item"],
-                "skip": [
-                    {"position": 1},
-                    {
-                        "find": ["title"],
-                        "text": "ΣΧΕΤΙΚΑ ΜΕ ΤΙΣ ΒΑΘΜΟΛΟΓΙΕΣ ΣΕΠΤΕΜΒΡΙΟΥ 2021-2",
-                        "type": "exact"
-                    }
-                ],
-                "article": {
-                    "title": {
-                        "find": ["title"]
-                    },
-                    "link": {
-                        "find": ["link"]
-                    },
-                    "pubDate": {
-                        "find": ["pubDate"]
-                    },
-                    "content": {
-                        "find": ["description"]
-                    },
-                    "guid": {
-                        "find": ["guid", "__text"]
-                    },
-                    "guid-permalink": {
-                        "find": ["guid", "isPermaLink"]
-                    }
-                }
-            }
-        }, null).then(result => {
+        return Saffron.parse(require('./sources/xml/xml1.json'), null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases.length).to.equal(0);

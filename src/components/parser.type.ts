@@ -1,6 +1,3 @@
-import type {Utils} from "./Utils";
-import type {Article} from "./article";
-
 type ArticleFields = 'title' | 'content' | 'link' | 'pubDate' | 'categories' | 'attachments' | 'thumbnail' | string;
 type HtmlSkipOptions = {
     selector?: string;
@@ -17,7 +14,9 @@ type JsonSkipOptions = {
     position: number;
 };
 
-export type ScrapeDynamic = (utils: Utils, Article: any) => Promise<Article[]>;
+export type ScrapeDynamic = {
+    implementation: string;
+};
 
 export type ScrapeHTML = {
     container: string;

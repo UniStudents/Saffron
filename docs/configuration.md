@@ -34,6 +34,9 @@ Default value: `true`
 
 If `true` the Saffron will scan all the sub directories inside the `path` directory.
 
+### `dynamicSourceFiles`
+An array containing all the implementations for the dynamic source files.
+
 ### `loader`
 Default value (for json files): `JSON.parse(fs.readFileSync)`\
 Default value (for js files): `import (fallback require)`
