@@ -38,30 +38,21 @@ If `true` the Saffron will scan all the sub directories inside the `path` direct
 An array containing all the implementations for the dynamic source files.
 
 ### `loader`
-Default value (for json files): `JSON.parse(fs.readFileSync)`\
-Default value (for js files): `import (fallback require)`
+Default value: `JSON.parse(fs.readFileSync(filepath))`
 
-Will receive the filepath of the source file and expect the contents of that file
-as a js object.
+A custom loader that will allow to manually load each file to Saffron.
 
-This is useful as Saffron does not have been converted to ES6 yet and the compiler
-throws errors when importing dynamic source files (js files).
+It was created to allow ES6 projects to load javascript files for the old dynamic parser.
+Now it can be used to preprocess the files before passing them to Saffron.
 
 ```typescript
 loader: async (filepath: string) => {
-    let data: any;
-    if (filepath.endsWith(".json")) {
-        data = JSON.parse(fs.readFileSync(filepath, 'utf-8'));
-    } else {
-        data = await import(filepath);
-        data = {...data.default};
-    }
-
+    let data = JSON.parse(fs.readFileSync(filepath, 'utf-8'));
+    // Proccess the content of the source file
+    // ...
     return data;
 }
 ```
-
-It can also be used to modify the file's content before Saffron can parse them.
 
 ### `includeOnly`
 Default value: `[]`
