@@ -1,8 +1,8 @@
 import {Instructions} from "./instructions";
-import {ParserType} from "./ParserClass";
+import {ParserType} from "./Parser";
 import {Config, ConfigOptions} from "./config";
-import {ParserLoader} from "../modules/parsers/ParserLoader";
 import type {SourceFile} from "./types";
+import {ParserLoader} from "./ParserLoader";
 
 export class Source {
 
@@ -93,7 +93,7 @@ export class Source {
 
         const parserType = ParserType.getFromString(source.type);
         if (parserType === ParserType.UNKNOWN)
-            throw new Error(`SourceException [${source.filename}] Field type is not valid, requirements(equals html, rss, dynamic, wordpress-v1, wordpress-v2).`);
+            throw new Error(`SourceException [${source.filename}] Field type is not valid, requirements(equals html, rss, dynamic, wordpress-v2, api).`);
         instructions.parserType = parserType;
 
         try {

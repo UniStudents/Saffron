@@ -1,120 +1,282 @@
-[{
-    "id": 15,
-    "count": 25,
-    "description": "\u038c\u03bb\u03b5\u03c2 \u03bf\u03b9 \u03c3\u03b7\u03bc\u03b1\u03bd\u03c4\u03b9\u03ba\u03ad\u03c2 \u03b4\u03b9\u03b1\u03ba\u03c1\u03af\u03c3\u03b5\u03b9\u03c2 \u03c4\u03bf\u03c5 \u03a4\u03bc\u03ae\u03bc\u03b1\u03c4\u03bf\u03c2.",
-    "link": "https:\/\/www.ds.unipi.gr\/category\/recent-news\/",
-    "name": "Highlights",
-    "slug": "recent-news",
-    "taxonomy": "category",
-    "parent": 0,
-    "meta": [],
-    "_links": {
-        "self": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/15"}],
-        "collection": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"}],
-        "about": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"}],
-        "wp:post_type": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=15"}],
-        "curies": [{"name": "wp", "href": "https:\/\/api.w.org\/{rel}", "templated": true}]
+[
+    {
+        "id": 15,
+        "count": 25,
+        "description": "\u038c\u03bb\u03b5\u03c2 \u03bf\u03b9 \u03c3\u03b7\u03bc\u03b1\u03bd\u03c4\u03b9\u03ba\u03ad\u03c2 \u03b4\u03b9\u03b1\u03ba\u03c1\u03af\u03c3\u03b5\u03b9\u03c2 \u03c4\u03bf\u03c5 \u03a4\u03bc\u03ae\u03bc\u03b1\u03c4\u03bf\u03c2.",
+        "link": "https:\/\/www.ds.unipi.gr\/category\/recent-news\/",
+        "name": "Highlights",
+        "slug": "recent-news",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/15"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=15"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 348,
+        "count": 4,
+        "description": "",
+        "link": "https:\/\/www.ds.unipi.gr\/en\/category\/recent-news-en\/",
+        "name": "Highlights (en)",
+        "slug": "recent-news-en",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/348"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=348"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 318,
+        "count": 61,
+        "description": "",
+        "link": "https:\/\/www.ds.unipi.gr\/en\/category\/announcements-jobs-en\/",
+        "name": "Job Opportunities",
+        "slug": "announcements-jobs-en",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/318"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=318"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 43,
+        "count": 21,
+        "description": "",
+        "link": "https:\/\/www.ds.unipi.gr\/en\/category\/announcements-en\/",
+        "name": "News and Announcements",
+        "slug": "announcements-en",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/43"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=43"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 3,
+        "count": 1582,
+        "description": "\u038c\u03bb\u03b5\u03c2 \u03bf\u03b9 \u03b1\u03bd\u03b1\u03ba\u03bf\u03b9\u03bd\u03ce\u03c3\u03b5\u03b9\u03c2 \u03ba\u03b1\u03b9 \u03bf\u03b9 \u03b5\u03c0\u03b5\u03c1\u03c7\u03cc\u03bc\u03b5\u03bd\u03b5\u03c2 \u03b5\u03ba\u03b4\u03b7\u03bb\u03ce\u03c3\u03b5\u03b9\u03c2 \u03c4\u03bf\u03c5 \u03a4\u03bc\u03ae\u03bc\u03b1\u03c4\u03bf\u03c2.",
+        "link": "https:\/\/www.ds.unipi.gr\/category\/announcements\/",
+        "name": "\u0391\u03bd\u03b1\u03ba\u03bf\u03b9\u03bd\u03ce\u03c3\u03b5\u03b9\u03c2 \u03ba\u03b1\u03b9 \u0395\u03ba\u03b4\u03b7\u03bb\u03ce\u03c3\u03b5\u03b9\u03c2",
+        "slug": "announcements",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/3"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=3"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 320,
+        "count": 19,
+        "description": "",
+        "link": "https:\/\/www.ds.unipi.gr\/category\/notifications\/",
+        "name": "\u0395\u03b9\u03b4\u03bf\u03c0\u03bf\u03b9\u03ae\u03c3\u03b5\u03b9\u03c2",
+        "slug": "notifications",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/320"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=320"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    },
+    {
+        "id": 63,
+        "count": 52,
+        "description": "\u038c\u03bb\u03b1 \u03bf\u03b9 \u03b1\u03bd\u03b1\u03ba\u03bf\u03b9\u03bd\u03ce\u03c3\u03b5\u03b9\u03c2 \u03c3\u03c7\u03b5\u03c4\u03b9\u03ba\u03ac \u03bc\u03b5 \u03c0\u03c1\u03bf\u03bf\u03c0\u03c4\u03b9\u03ba\u03ad\u03c2 \u03b5\u03c1\u03b3\u03b1\u03c3\u03af\u03b1\u03c2.",
+        "link": "https:\/\/www.ds.unipi.gr\/category\/announcements-jobs\/",
+        "name": "\u03a0\u03c1\u03bf\u03bf\u03c0\u03c4\u03b9\u03ba\u03ad\u03c2 \u0395\u03c1\u03b3\u03b1\u03c3\u03af\u03b1\u03c2",
+        "slug": "announcements-jobs",
+        "taxonomy": "category",
+        "parent": 0,
+        "meta": [],
+        "_links": {
+            "self": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/63"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"
+                }
+            ],
+            "wp:post_type": [
+                {
+                    "href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=63"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https:\/\/api.w.org\/{rel}",
+                    "templated": true
+                }
+            ]
+        }
     }
-}, {
-    "id": 348,
-    "count": 4,
-    "description": "",
-    "link": "https:\/\/www.ds.unipi.gr\/en\/category\/recent-news-en\/",
-    "name": "Highlights (en)",
-    "slug": "recent-news-en",
-    "taxonomy": "category",
-    "parent": 0,
-    "meta": [],
-    "_links": {
-        "self": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/348"}],
-        "collection": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"}],
-        "about": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"}],
-        "wp:post_type": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=348"}],
-        "curies": [{"name": "wp", "href": "https:\/\/api.w.org\/{rel}", "templated": true}]
-    }
-}, {
-    "id": 318,
-    "count": 61,
-    "description": "",
-    "link": "https:\/\/www.ds.unipi.gr\/en\/category\/announcements-jobs-en\/",
-    "name": "Job Opportunities",
-    "slug": "announcements-jobs-en",
-    "taxonomy": "category",
-    "parent": 0,
-    "meta": [],
-    "_links": {
-        "self": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/318"}],
-        "collection": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"}],
-        "about": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"}],
-        "wp:post_type": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=318"}],
-        "curies": [{"name": "wp", "href": "https:\/\/api.w.org\/{rel}", "templated": true}]
-    }
-}, {
-    "id": 43,
-    "count": 21,
-    "description": "",
-    "link": "https:\/\/www.ds.unipi.gr\/en\/category\/announcements-en\/",
-    "name": "News and Announcements",
-    "slug": "announcements-en",
-    "taxonomy": "category",
-    "parent": 0,
-    "meta": [],
-    "_links": {
-        "self": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/43"}],
-        "collection": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"}],
-        "about": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"}],
-        "wp:post_type": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=43"}],
-        "curies": [{"name": "wp", "href": "https:\/\/api.w.org\/{rel}", "templated": true}]
-    }
-}, {
-    "id": 3,
-    "count": 1582,
-    "description": "\u038c\u03bb\u03b5\u03c2 \u03bf\u03b9 \u03b1\u03bd\u03b1\u03ba\u03bf\u03b9\u03bd\u03ce\u03c3\u03b5\u03b9\u03c2 \u03ba\u03b1\u03b9 \u03bf\u03b9 \u03b5\u03c0\u03b5\u03c1\u03c7\u03cc\u03bc\u03b5\u03bd\u03b5\u03c2 \u03b5\u03ba\u03b4\u03b7\u03bb\u03ce\u03c3\u03b5\u03b9\u03c2 \u03c4\u03bf\u03c5 \u03a4\u03bc\u03ae\u03bc\u03b1\u03c4\u03bf\u03c2.",
-    "link": "https:\/\/www.ds.unipi.gr\/category\/announcements\/",
-    "name": "\u0391\u03bd\u03b1\u03ba\u03bf\u03b9\u03bd\u03ce\u03c3\u03b5\u03b9\u03c2 \u03ba\u03b1\u03b9 \u0395\u03ba\u03b4\u03b7\u03bb\u03ce\u03c3\u03b5\u03b9\u03c2",
-    "slug": "announcements",
-    "taxonomy": "category",
-    "parent": 0,
-    "meta": [],
-    "_links": {
-        "self": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/3"}],
-        "collection": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"}],
-        "about": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"}],
-        "wp:post_type": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=3"}],
-        "curies": [{"name": "wp", "href": "https:\/\/api.w.org\/{rel}", "templated": true}]
-    }
-}, {
-    "id": 320,
-    "count": 19,
-    "description": "",
-    "link": "https:\/\/www.ds.unipi.gr\/category\/notifications\/",
-    "name": "\u0395\u03b9\u03b4\u03bf\u03c0\u03bf\u03b9\u03ae\u03c3\u03b5\u03b9\u03c2",
-    "slug": "notifications",
-    "taxonomy": "category",
-    "parent": 0,
-    "meta": [],
-    "_links": {
-        "self": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/320"}],
-        "collection": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"}],
-        "about": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"}],
-        "wp:post_type": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=320"}],
-        "curies": [{"name": "wp", "href": "https:\/\/api.w.org\/{rel}", "templated": true}]
-    }
-}, {
-    "id": 63,
-    "count": 52,
-    "description": "\u038c\u03bb\u03b1 \u03bf\u03b9 \u03b1\u03bd\u03b1\u03ba\u03bf\u03b9\u03bd\u03ce\u03c3\u03b5\u03b9\u03c2 \u03c3\u03c7\u03b5\u03c4\u03b9\u03ba\u03ac \u03bc\u03b5 \u03c0\u03c1\u03bf\u03bf\u03c0\u03c4\u03b9\u03ba\u03ad\u03c2 \u03b5\u03c1\u03b3\u03b1\u03c3\u03af\u03b1\u03c2.",
-    "link": "https:\/\/www.ds.unipi.gr\/category\/announcements-jobs\/",
-    "name": "\u03a0\u03c1\u03bf\u03bf\u03c0\u03c4\u03b9\u03ba\u03ad\u03c2 \u0395\u03c1\u03b3\u03b1\u03c3\u03af\u03b1\u03c2",
-    "slug": "announcements-jobs",
-    "taxonomy": "category",
-    "parent": 0,
-    "meta": [],
-    "_links": {
-        "self": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories\/63"}],
-        "collection": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/categories"}],
-        "about": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/taxonomies\/category"}],
-        "wp:post_type": [{"href": "https:\/\/www.ds.unipi.gr\/wp-json\/wp\/v2\/posts?categories=63"}],
-        "curies": [{"name": "wp", "href": "https:\/\/api.w.org\/{rel}", "templated": true}]
-    }
-}]
+]

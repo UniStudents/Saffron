@@ -1,9 +1,9 @@
-import _ from "lodash"
 import type {Article} from "./article";
 import type {AxiosRequestConfig} from "axios";
 import type {Source} from "./source";
 import fs from "fs";
 import type {RequestsResult} from "./types";
+import _ from "lodash"
 
 export type ConfigType = {
     mode: 'main' | 'worker'; // TODO: Add mode debug - Will act as main, and will verbose a lot of data

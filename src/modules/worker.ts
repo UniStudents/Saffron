@@ -2,7 +2,7 @@ import type {Job} from "../components/job";
 import {randomId} from "../middleware/randomId";
 import type {Grid} from "./grid";
 import type {Article} from "../components/article";
-import {ParserLoader} from "./parsers/ParserLoader";
+import {ParserLoader} from "../components/ParserLoader";
 import {hashCode} from "../middleware/hashCode";
 import type {ParserResult} from "../components/types";
 import {Utils} from "../components/Utils";
@@ -110,7 +110,7 @@ export class Worker {
         try {
             result = await Worker.parse(job);
         } catch (e: any) {
-            e.message = `${job.source.instructions.parserType.toUpperCase()}ParserException failed [${job.source.name}] job: ${e.message}`;
+            e.message = `${job.source.instructions.parserType.toUpperCase()}ParserException failed ${job.source.name}: ${e.message}`;
 
             this.saffron.events.emit("worker.parsers.error", e);
             await this.saffron.grid.failedJob(job, e);

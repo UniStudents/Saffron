@@ -1,15 +1,13 @@
-import {ParserClass} from "../../components/ParserClass";
-import type {Instructions} from "../../components/instructions";
-import {Article} from "../../components/article";
+import {Parser} from "../components/Parser";
+import type {Instructions} from "../components/instructions";
+import {Article} from "../components/article";
 import type {AxiosResponse} from "axios";
 import cheerio from "cheerio";
-import type {Utils} from "../../components/Utils";
-import type {HTMLAttribute, RequestsResult, ScrapeHTML, SourceScrape} from "../../components/types";
+import type {Utils} from "../components/Utils";
+import type {HTMLAttribute, RequestsResult, SourceScrape} from "../components/types";
+import type {ScrapeHTML} from "../components/parser.type";
 
-export class HTMLParser extends ParserClass {
-
-    // Exp. If you remove the title, then the title is going to be on the extra information of each article.
-    private static readonly BASIC_DATA = ["title", "pubDate", "content", "attachments", "link", "categories", "thumbnail"];
+export class HTMLParser extends Parser {
 
     validateScrape(scrape?: SourceScrape): void {
         // This exists only for typescript, it is not valid and will not run at runtime.
@@ -71,19 +69,11 @@ export class HTMLParser extends ParserClass {
             if (typeof options.class !== 'string' && options.class !== undefined)
                 throw new Error(`article.${key}.class must be string`);
 
-            if (!Array.isArray(options.find) && options.find !== undefined)
+            if (options.find !== undefined && (!Array.isArray(options.find) || options.find.some(a => typeof a !== 'string')))
                 throw new Error(`article.${key}.find must be string array`);
-            for (const item of options.find ?? []) {
-                if (typeof item !== 'string')
-                    throw new Error(`article.${key}.find.${item} must be type string`);
-            }
 
-            if (!Array.isArray(options.attributes) && options.attributes !== undefined)
+            if (options.attributes !== undefined && (!Array.isArray(options.attributes) || options.attributes.some(a => typeof a !== 'string')))
                 throw new Error(`article.${key}.attributes must be string array`);
-            for (const item of options.attributes ?? []) {
-                if (typeof item !== 'string')
-                    throw new Error(`article.${key}.attributes.${item} must be type string`);
-            }
 
             if (typeof options.multiple !== 'boolean' && options.multiple !== undefined)
                 throw new Error(`article.${key}.multiple must be boolean`);
@@ -120,9 +110,9 @@ export class HTMLParser extends ParserClass {
         });
         cheerioLoad(`${instructions.html.container}`).each((index, element) => {
             if (parsedArticles.length >= instructions.amount) return;
-            if (this.isSkipped(utils, instructions, cheerioLoad, element, index)) return;
+            if (this.isSkippedHTMLNode(utils, instructions, cheerioLoad, element, index)) return;
 
-            const articleData: { [key: string]: any } = {};
+            const articleData: Record<string, any> = {};
             const options = instructions.html.article;
 
             // Get data for each option
@@ -145,7 +135,7 @@ export class HTMLParser extends ParserClass {
                     articleData[item] = this.getData(cheerioLoad, element, multiple, attributes, find, _class);
             }
 
-            // Utility to merge other items with the basic Data of the article
+            // Utility to merge fields with parent
             for (const item in options) {
                 const parent = options[item].parent;
                 if (!parent) continue;
@@ -169,14 +159,11 @@ export class HTMLParser extends ParserClass {
             }
 
             const article = new Article();
-            article.title = this.parseField(utils, articleData.title, true);
-            article.content = this.parseField(utils, articleData.content, false);
-            article.pubDate = this.parseField(utils, articleData.pubDate, false);
-            article.thumbnail = this.parseField(utils, articleData.thumbnail, false);
-
-            article.link = this.parseField(utils, articleData.link, false);
-            // if(article.link?.startsWith('/') == true)
-            //     article.link = instructions.html.endpoint + article.link;
+            article.title = this.parseHTMLField(utils, articleData.title, true);
+            article.content = this.parseHTMLField(utils, articleData.content, false);
+            article.pubDate = this.parseHTMLField(utils, articleData.pubDate, false);
+            article.thumbnail = this.parseHTMLField(utils, articleData.thumbnail, false);
+            article.link = this.parseHTMLField(utils, articleData.link, false);
 
             if (articleData.categories) {
                 if (Array.isArray(articleData.categories))
@@ -189,7 +176,7 @@ export class HTMLParser extends ParserClass {
             if (instructions.includeContentAttachments)
                 article.pushAttachments(utils.extractLinks(article.content))
 
-            // for each extra data. Data that are not described in the baseData variable.
+            // For each extra data. Data that are not described in the baseData variable.
             Object.entries(articleData).forEach(extra => {
                 if (HTMLParser.BASIC_DATA.includes(extra[0]) || !extra[1]) return;
                 article.addExtra(extra[0], extra[1]);
@@ -199,57 +186,6 @@ export class HTMLParser extends ParserClass {
         });
 
         return parsedArticles;
-    }
-
-    private isSkippedOne(utils: Utils, s: any, load: cheerio.Cheerio, index: number): boolean {
-        const {
-            selector, text, type,
-            position
-        } = s;
-
-        if (selector !== undefined) {
-            const child = load.find(selector);
-            if (child.html() == null) return false;
-
-            if (text !== undefined) {
-                if (type === undefined || type === 'exact')
-                    return utils.cleanupHTMLText(child.text(), false) === text;
-                else if (type === 'contains')
-                    return child.text().includes(text);
-            }
-
-            return true;
-        } else if (text !== undefined) {
-            // text exists and selector does not exist
-            if (type === undefined || type === 'exact')
-                return utils.cleanupHTMLText(load.text(), false) === text;
-            else if (type === 'contains')
-                return load.text().includes(text);
-        } else if (position !== undefined)
-            return index === position;
-        return false;
-    }
-
-    private isSkipped(utils: Utils, instructions: Instructions, cheerioLoad: cheerio.Root, element: cheerio.Element, index: number): boolean {
-        const skip = instructions.html.skip;
-        if (!skip) return false;
-
-        const load = cheerioLoad(element);
-        for (const s of skip) {
-            if (this.isSkippedOne(utils, s, load, index))
-                return true;
-        }
-
-        return false;
-    }
-
-    private parseField(utils: Utils, data: string | any[], excessive: boolean): string | null {
-        let ret;
-        if (Array.isArray(data) && data[0]?.value)
-            ret = data[0].value;
-        else if (typeof data === 'string')
-            ret = data;
-        return ret ? utils.cleanupHTMLText(ret, excessive) : ret;
     }
 
     private attributes(location: cheerio.Cheerio, attributesArr: string[]): HTMLAttribute[] {

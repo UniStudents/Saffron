@@ -11,6 +11,7 @@
     - [WordPress V2](#wordpress-v2)
     - [RSS](#rss)
     - [HTML](#html)
+    - [JSON / XML](#json--xml)
     - [Dynamic](#dynamic)
     - [Which to choose](#which-to-choose)
 - [Article](#article)
@@ -81,7 +82,7 @@ Read the [configuration](./docs/configuration.md) file for more information.
 ## Parsers
 
 To retrieve the desired information from the websites we use parsers.
-There are four available parser types: `wordpress`, `rss`, `html` and `dynamic`.
+There are four available parser types: `wordpress`, `rss`, `html`, `api` and `dynamic`.
 
 ### WordPress V2
 
@@ -99,10 +100,16 @@ then you can safely use the `wordpress` parser.
 
 Parser type: `rss`
 
-Many websites support [`RSS`](https://en.wikipedia.org/wiki/RSS) feed. RSS allows users and applications to access
-updates
+Many websites support [`RSS`](https://en.wikipedia.org/wiki/RSS) feed. RSS allows users and applications to access updates
 to websites in a standardized, computer-readable format. You can check if a website supports RSS if you can see this
-icon <img src="/img/rss.png" width="20" height="20" />.
+icon <img src="docs/rss.png" width="15" height="15" />.
+
+### JSON / XML
+
+Parser type: `json` (or `xml`)
+
+This parser is best to be used when it comes to pages that are loading data using API requests (e.g. lazy loading).
+The only prerequisite for this parser is that the response of the API requests is in a structured JSON or XML format.
 
 ### HTML
 
@@ -123,10 +130,9 @@ decided by the user.
 
 We recommend a specific order for using the available parsers.
 
-* If the desired website is based an [`WordPress`](https://wordpress.com/) and the WordPress articles API is enabled,
-  then
-  choose the `wordpress-v2` parser.
+* If the desired website is based an [`WordPress`](https://wordpress.com/) and the WordPress articles API is enabled, then choose the `wordpress-v2` parser.
 * If the desired website supports [`RSS`](https://en.wikipedia.org/wiki/RSS) feed. then choose the `rss` parser.
+* If the desired website is loading data using API requests with structured responses (e.g. lazy loading), then choose the `json` or `xml` parser.
 * If the desired website has a structured form, the use the `html` parser.
 * If none of the above is possible (bad html or custom API) then the `dynamic` parser is our last choice.
 
@@ -145,13 +151,8 @@ These files are generated from the user and guide Saffron on how to parse a webs
 
 ### Creating a source file
 
-Read the [source](./docs/source_files/source_file.md) file for the common options
-or the parsers files
-[WordPress V2](./docs/source_files/wordpress_v2.md),
-[RSS](./docs/source_files/rss.md),
-[HTML](./docs/source_files/html.md) or
-[Dynamic](./docs/source_files/dynamic.md)
-for the scrape options.
+Read the [source](./docs/source_files/source_file.md) file for the common options or the parsers files
+[WordPress V2](./docs/source_files/wordpress_v2.md), [RSS](./docs/source_files/rss.md), [API](./docs/source_files/json.md), [HTML](./docs/source_files/html.md) or [Dynamic](./docs/source_files/dynamic.md) for the scrape options.
 
 ## Middleware
 
@@ -222,6 +223,7 @@ try {
     const result = Saffron.parse({
         name: "source-name",
         url: ["Category 1", "https://example.com"],
+        type: "html",
         // ...
         scrape: {
             // ...

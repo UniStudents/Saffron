@@ -1,7 +1,7 @@
 import type {Article} from "./article";
-import type {Utils} from "./Utils";
-import type {AxiosRequestConfig} from "axios";
-import type {AxiosResponse} from "axios";
+import type {AxiosRequestConfig, AxiosResponse} from "axios";
+import type {ScrapeDynamic, ScrapeHTML, ScrapeRSS, ScrapeWordPressV2, ScrapeXML} from "./parser.type";
+import type {ScrapeJSON} from "./parser.type";
 
 export type InstructionUrl = {
     aliases: string[];
@@ -20,67 +20,7 @@ export type HTMLAttribute = {
     text: string;
 };
 
-export type ScrapeDynamic = (utils: Utils, Article: any) => Promise<Article[]>;
-
-export type ScrapeHTML = {
-    container: string;
-    scriptingEnabled?: boolean;
-    skip?: ({
-        selector?: string;
-        text?: string;
-        type?: 'exact' | 'contains'; // Default is 'exact'
-    } | {
-        position: number;
-    })[];
-    article: {
-        [field: 'title' | 'link' | 'content' | 'pubDate' | 'categories' | 'attachments' | 'thumbnail' | string]: {
-            parent?: string;
-
-            class?: string;
-            find?: string[];
-            attributes?: string[];
-            multiple?: boolean;
-
-            static?: string;
-        };
-    };
-};
-
-export type ScrapeRSS = {
-    extraFields: string[];
-    assignFields: { [assign: string]: string };
-};
-
-export type ScrapeWordPressV2 = {
-    paths?: {
-        posts?: string;
-        categories?: string;
-    };
-    articles?: {
-        include?: string[];
-        dates?: {
-            gmt?: boolean;
-            fallback?: boolean;
-        };
-        filter?: {
-            search?: string;
-            author?: string;
-            authorExclude?: string;
-            after?: string;
-            before?: string;
-            slug?: string;
-            status?: string;
-            categories?: string;
-            categoriesExclude?: string;
-            tags?: string;
-            tagsExclude?: string;
-            sticky?: boolean;
-        };
-        thumbnail?: string;
-    };
-};
-
-export type SourceScrape = ScrapeDynamic | ScrapeHTML | ScrapeRSS | ScrapeWordPressV2 | undefined;
+export type SourceScrape = ScrapeDynamic | ScrapeHTML | ScrapeRSS | ScrapeWordPressV2 | ScrapeJSON | ScrapeXML | undefined;
 
 export type SourceFile = {
     filename?: string;
@@ -114,4 +54,10 @@ export type SourceFile = {
 } | {
     type: 'wordpress-v2'
     scrape?: ScrapeWordPressV2;
+} | {
+    type: 'json'
+    scrape?: ScrapeJSON;
+} | {
+    type: 'xml'
+    scrape?: ScrapeXML;
 });

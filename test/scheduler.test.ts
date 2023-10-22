@@ -3,7 +3,7 @@ import {Job, Saffron, Source} from "../src/index";
 import {JobStatus} from "../src/components/job";
 
 describe('Scheduler', function () {
-    const SOURCES_SIZE = 10;
+    const SOURCES_SIZE = 12;
 
     const saffron = new Saffron();
     it('Initialization', function () {
@@ -105,10 +105,10 @@ describe('Scheduler', function () {
         return new Promise(async resolve => {
             saffron.initialize({
                 scheduler: {
-                    jobsInterval: 10000,
+                    jobsInterval: SOURCES_SIZE * 1000,
                     randomizeInterval: () => 0,
                     noResponseThreshold: 2,
-                    heavyJobFailureInterval: 20000
+                    heavyJobFailureInterval: SOURCES_SIZE * 1000 * 2
                 }
             });
 

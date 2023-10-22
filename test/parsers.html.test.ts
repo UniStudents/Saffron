@@ -119,60 +119,8 @@ describe("HTML parser", function () {
         });
     });
 
-    it('Test 5', function () {
-        // TODO: When we add another source file test move this to a file
-        return Saffron.parse({
-            "url": "http://127.0.0.1:3000/html4",
-            "name": "html5-source",
-            "type": "html",
-            "encoding": "iso-8859-7",
-            "scrape": {
-                "container": "#page-content > .news_container",
-                "skip": [
-                    {"position": 1},
-                    {
-                        "text": "Υποδοχή Πρωτοετών ΕΜΠ - με μουσική και χορό - 24/10/2022",
-                        "type": "contains"
-                    },
-                    {
-                        "selector": "div.news_title_container > div.news_date",
-                        "text": "Tuesday, 25 Οκτωβρίου 2022 - Ανακοινώσεις Προπτυχιακών",
-                        "type": "exact"
-                    },
-                    {
-                        "selector": "div.news_title_container > div.news_title",
-                        "text": "μαθήματος Μηχανουργικές Κατεργασίες",
-                        "type": "contains"
-                    }
-                ],
-                "article": {
-                    "link": {
-                        "class": ".news_title",
-                        "find": ["a"],
-                        "attributes": ["href"],
-                        "multiple": false
-                    },
-                    "pubDate": {
-                        "class": ".news_date",
-                        "multiple": false
-                    },
-                    "title": {
-                        "class": ".news_title",
-                        "multiple": false
-                    },
-                    "content": {
-                        "class": ".news_main",
-                        "multiple": false
-                    },
-                    "attachments": {
-                        "class": ".news_main",
-                        "find": ["a"],
-                        "attributes": ["href"],
-                        "multiple": true
-                    }
-                }
-            }
-        }, null).then(result => {
+    it('Option: skip', function () {
+        return Saffron.parse(require('./sources/html/html5.json'), null).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
             expect(obj.aliases.length).to.equal(0);

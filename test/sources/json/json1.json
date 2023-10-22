@@ -1,0 +1,33 @@
+{
+    "url": "http://127.0.0.1:3000/wp2/wp-json/wp/v2/articles",
+    "name": "json1-source",
+    "type": "json",
+    "scrape": {
+        "container": [],
+        "skip": [
+            {"position": 5},
+            {
+                "find": ["title", "rendered"],
+                "text": "Viohalco ESG Report (en)",
+                "type": "exact"
+            }
+        ],
+        "article": {
+            "title": {
+                "find": ["title", "rendered"]
+            },
+            "link": {
+                "find": ["link"]
+            },
+            "pubDate": {
+                "find": ["date_gmt"]
+            },
+            "content": {
+                "find": ["content", "rendered"]
+            },
+            "thumbnail": {
+                "find": ["_embedded", "wp:featuredmedia", 0, "media_details", "sizes", "thumbnail", "source_url"]
+            }
+        }
+    }
+}

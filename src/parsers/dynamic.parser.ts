@@ -1,10 +1,11 @@
-import {ParserClass} from "../../components/ParserClass";
-import type {Instructions} from "../../components/instructions";
-import {Article} from "../../components/article";
-import type {Utils} from "../../components/Utils";
-import type {RequestsResult, ScrapeDynamic, SourceScrape} from "../../components/types";
+import {Parser} from "../components/Parser";
+import type {Instructions} from "../components/instructions";
+import {Article} from "../components/article";
+import type {Utils} from "../components/Utils";
+import type {RequestsResult, SourceScrape} from "../components/types";
+import type {ScrapeDynamic} from "../components/parser.type";
 
-export class DynamicParser extends ParserClass {
+export class DynamicParser extends Parser {
     validateScrape(scrape?: SourceScrape): void {
         if (typeof scrape !== 'function')
             throw new Error("must be a function");

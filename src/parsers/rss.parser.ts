@@ -1,12 +1,13 @@
-import {ParserClass} from "../../components/ParserClass";
-import type {Instructions} from "../../components/instructions";
-import {Article} from "../../components/article";
-import Parser from "rss-parser";
-import type {Utils} from "../../components/Utils";
-import type {RequestsResult, ScrapeRSS, SourceScrape} from "../../components/types";
+import {Parser} from "../components/Parser";
+import type {Instructions} from "../components/instructions";
+import {Article} from "../components/article";
+import rssParser  from "rss-parser";
+import type {Utils} from "../components/Utils";
+import type {RequestsResult, SourceScrape} from "../components/types";
 import type {AxiosResponse} from "axios";
+import type {ScrapeRSS} from "../components/parser.type";
 
-export class RssParser extends ParserClass {
+export class RssParser extends Parser {
 
     validateScrape(scrape?: SourceScrape): void {
         // This exists only for typescript, it is not valid and will not run at runtime.
@@ -46,7 +47,7 @@ export class RssParser extends ParserClass {
 
         // Default fields & extra fields
         const requestFields: string[] = ["title", "link", "content", "pubDate", "categories", "media:thumbnail", 'media:content', ...extraFields];
-        const parser = new Parser({
+        const parser = new rssParser({
             customFields: {
                 // Make sure to request all the mentioned fields
                 item: requestFields

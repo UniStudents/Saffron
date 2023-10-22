@@ -1,11 +1,12 @@
-import {ParserClass} from "../../components/ParserClass";
-import type {Instructions} from "../../components/instructions";
-import {Article} from "../../components/article";
-import type {Utils} from "../../components/Utils";
-import type {RequestsResult, ScrapeWordPressV2, SourceScrape} from "../../components/types";
+import {Parser} from "../components/Parser";
+import type {Instructions} from "../components/instructions";
+import {Article} from "../components/article";
+import type {Utils} from "../components/Utils";
+import type {RequestsResult, SourceScrape} from "../components/types";
 import type {AxiosResponse} from "axios";
+import type {ScrapeWordPressV2} from "../components/parser.type";
 
-export class WordpressV2Parser extends ParserClass {
+export class WordpressV2Parser extends Parser {
 
     validateScrape(scrape?: SourceScrape): void {
         // This exists only for typescript, it is not valid and will not run at runtime.

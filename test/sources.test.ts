@@ -1,5 +1,5 @@
 import {Source} from "../src";
-import {ParserType} from "../src/components/ParserClass";
+import {ParserType} from "../src/components/Parser";
 import {expect} from "chai";
 
 describe('Sources', function () {

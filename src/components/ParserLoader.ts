@@ -1,11 +1,12 @@
-import type {ParserClass} from "../../components/ParserClass";
-import {ParserType} from "../../components/ParserClass";
-import {HTMLParser} from "./html.parser";
-import {RssParser} from "./rss.parser";
-import {WordpressV2Parser} from "./wordpress.v2.parser";
-import {DynamicParser} from "./dynamic.parser";
-import type {Instructions} from "../../components/instructions";
-import type {SourceScrape} from "../../components/types";
+import {type Parser, ParserType} from "./Parser";
+import {HTMLParser} from "../parsers/html.parser";
+import {RssParser} from "../parsers/rss.parser";
+import {WordpressV2Parser} from "../parsers/wordpress.v2.parser";
+import {DynamicParser} from "../parsers/dynamic.parser";
+import type {Instructions} from "./instructions";
+import type {SourceScrape} from "./types";
+import {JSONParser} from "../parsers/JSON.parser";
+import {XMLParser} from "../parsers/XML.parser";
 
 export class ParserLoader {
 
@@ -22,6 +23,12 @@ export class ParserLoader {
                 break;
             case ParserType.DYNAMIC:
                 new DynamicParser().validateScrape(scrapeOptions);
+                break;
+            case ParserType.JSON:
+                new JSONParser().validateScrape(scrapeOptions);
+                break;
+            case ParserType.XML:
+                new XMLParser().validateScrape(scrapeOptions);
                 break;
         }
     }
@@ -40,10 +47,16 @@ export class ParserLoader {
             case ParserType.DYNAMIC:
                 new DynamicParser().assignInstructions(instructions, scrape);
                 break
+            case ParserType.JSON:
+                new JSONParser().assignInstructions(instructions, scrape);
+                break;
+            case ParserType.XML:
+                new XMLParser().assignInstructions(instructions, scrape);
+                break;
         }
     }
 
-    static getParser(parserType: ParserType): ParserClass | undefined {
+    static getParser(parserType: ParserType): Parser | undefined {
         switch (parserType) {
             case ParserType.HTML:
                 return new HTMLParser();
@@ -53,6 +66,10 @@ export class ParserLoader {
                 return new WordpressV2Parser();
             case ParserType.DYNAMIC:
                 return new DynamicParser();
+            case ParserType.JSON:
+                return new JSONParser();
+            case ParserType.XML:
+                return new XMLParser();
         }
         return;
     }

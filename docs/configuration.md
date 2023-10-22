@@ -104,11 +104,17 @@ between the request that belong in the same source file.
 
 ### `axios`
 Axios' configuration that will be applied to the requests made by saffron.
+The method of the requests is by default `GET`, but it can be overridden here.
+
 It supports synchronous callback like:
 
 ```typescript
 axios: async (source: Source) => {
     return {
+        method: 'POST',
+        data: {
+            key: 'value'
+        },
         timeout: 3000
     };
 }
