@@ -199,7 +199,7 @@ export class WordpressV2Parser extends ParserClass {
 
             // Thumbnail
             const thumbnailSize = instructions.wp.articles!.thumbnail!;
-            article.thumbnail = p._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes[thumbnailSize]?.source_url;
+            article.thumbnail = p._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.[thumbnailSize]?.source_url;
 
             let include: string[] = instructions.wp.articles!.include!;
             // The date the object was last modified.
