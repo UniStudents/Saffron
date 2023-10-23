@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
+        "ignoreDeprecations": "5.0",
+        
         "target": "ES6",
         "module": "commonjs",
 
@@ -19,7 +21,7 @@
         "noImplicitThis": true,
         "strictPropertyInitialization": true,
         "noImplicitReturns": true,
-        "importsNotUsedAsValues": "error",
+        "importsNotUsedAsValues": "error"
     },
 //    "exclude": [
 //        "./test/*.ts",
