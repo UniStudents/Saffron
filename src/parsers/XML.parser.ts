@@ -112,7 +112,7 @@ export class XMLParser extends Parser {
             processEntities: true,
             removeNSPrefix: false,
             trimValues: true,
-            // unpairedTags: instructions.xml.unpairedTags // Like <br>
+            unpairedTags: instructions.xml.unpairedTags ?? [] // Like <br>
         }).parse(response.data);
 
         let root = data;
