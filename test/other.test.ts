@@ -1,4 +1,4 @@
-import {hashCodeUtil} from "../src/utils/hashCode.util";
+import {hashCode} from "../src/utils/hashCode.util.js";
 import {pack, Saffron, Source, unpack, Utils} from "../src";
 import {Job, JobStatus} from "../src/components/job";
 import {expect} from "chai";
@@ -28,7 +28,7 @@ describe('Other', function () {
             strings.push(randStr(i));
 
         for (const s of strings)
-            expect(hashCodeUtil(s)).to.equal(hashCodeUtil(s));
+            expect(hashCode(s)).to.equal(hashCode(s));
     });
 
     it('Serializer', function () {

@@ -2,7 +2,7 @@
  * Return the hash code of a string
  * @param str
  */
-export function hashCodeUtil(str: String): number {
+export function hashCode(str: String): number {
     let hash = 0, i, chr;
     if (str.length === 0) return hash;
     for (i = 0; i < str.length; i++) {

@@ -3,7 +3,7 @@ import {randomId} from "../utils/randomId.util";
 import type {Grid} from "./grid";
 import type {Article} from "../components/article";
 import {ParserLoader} from "../components/ParserLoader";
-import {hashCodeUtil} from "../utils/hashCode.util";
+import {hashCode} from "../utils/hashCode.util.js";
 import type {ParserResult} from "../components/types";
 import {Utils} from "../components/Utils";
 import type {Saffron} from "../index";
@@ -100,7 +100,7 @@ export class Worker {
         if (index != -1) workers.splice(index, 1);
 
         // From the remaining worker select one
-        return workers[Math.abs(hashCodeUtil(lastWorkerId)) % workers.length];
+        return workers[Math.abs(hashCode(lastWorkerId)) % workers.length];
     }
 
     start() {

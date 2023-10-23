@@ -94,7 +94,7 @@ export class Events {
                 console.log(e);
             });
 
-            this.antennae.on("utils.error", (mid: string, e: any) => {
+            this.antennae.on("middleware.error", (mid: string, e: any) => {
                 logger(LoggerTypes.INFO, `${chalk.red('Middleware')} - an error was caught at ${mid}.`);
                 console.log(e);
             });

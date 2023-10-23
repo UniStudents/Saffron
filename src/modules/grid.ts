@@ -190,7 +190,7 @@ export class Grid {
         this.saffron.events.emit("worker.articles.found", articles, tableName); // Can be empty array
         if (articles.length == 0) return;
 
-        this.saffron.events.emit("utils.before", articles);
+        this.saffron.events.emit("middleware.before", articles);
 
         const getExtPair = this.saffron.extensions.startPairCount('articles');
         let pair: ExtensionPair | null;
@@ -206,12 +206,12 @@ export class Grid {
                         break;
                 }
             } catch (e) {
-                this.saffron.events.emit("utils.error", pair.event, e);
+                this.saffron.events.emit("middleware.error", pair.event, e);
                 return;
             }
         }
 
-        this.saffron.events.emit("utils.after", articles);
+        this.saffron.events.emit("middleware.after", articles);
 
         try {
             await Config.getOption(ConfigOptions.NEW_ARTICLES, this.saffron.config)(tableName, articles);

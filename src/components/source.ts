@@ -93,7 +93,7 @@ export class Source {
 
         const parserType = ParserType.getFromString(source.type);
         if (parserType === ParserType.UNKNOWN)
-            throw new Error(`SourceException [${source.filename}] Field type is not valid, requirements(equals html, rss, dynamic, wordpress-v2, api).`);
+            throw new Error(`SourceException [${source.filename}] Field type is not valid, requirements(equals html, rss, dynamic, wordpress-v2, json, xml).`);
         instructions.parserType = parserType;
 
         try {
