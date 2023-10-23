@@ -107,7 +107,7 @@ export class Source {
 
         // Run at the end, so we can have access to all data defined above
         const axiosConfig = Config.getOption(ConfigOptions.AXIOS_REQUEST_CONFIG, config);
-        instructions.axios = source.axios ?? (typeof axiosConfig === 'function' ? await axiosConfig(source) : axiosConfig);
+        instructions.axios = source.axios ?? axiosConfig;
 
         return ret;
     }

@@ -91,7 +91,7 @@ export type SourceFile = {
     interval?: number;
     retryInterval?: number;
 
-    ignoreCertificates?: boolean;
+    ignoreCertificates?: boolean; // This is not removed, as we cannot mention https.Agent inside a json file
     delayBetweenRequests?: number;
     axios?: AxiosRequestConfig;
 

@@ -15,7 +15,7 @@ export class Instructions {
     declare url: InstructionUrl[];
     declare parserType: ParserType;
 
-    declare axios: AxiosRequestConfig;
+    declare axios: AxiosRequestConfig | ((source: Source) => Promise<AxiosRequestConfig>);
     declare preprocessor: (responses: RequestsResult, source: Source) => Promise<RequestsResult>;
     declare ignoreCertificates: boolean;
     declare delayBetweenRequests: number;

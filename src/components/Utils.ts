@@ -290,8 +290,13 @@ export class Utils {
                 rejectUnauthorized: false
             });
 
-        if(this.source.instructions.axios) {
-            options = {...options, ...this.source.instructions.axios} as AxiosRequestConfig
+        let axiosConfig = this.source.instructions.axios;
+        if(axiosConfig) {
+            if(typeof axiosConfig === 'function') {
+                axiosConfig = await axiosConfig(this.source);
+            }
+
+            options = {...options, ...axiosConfig} as AxiosRequestConfig
         }
 
         options.responseType = 'arraybuffer';

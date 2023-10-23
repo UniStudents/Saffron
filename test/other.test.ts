@@ -69,7 +69,7 @@ describe('Other', function () {
             expect(source.interval).to.equal(10000);
             expect(source.retryInterval).to.equal(5000);
             expect(source.extra).to.deep.equal(['random', 'data']);
-            expect(source.instructions.axios.timeout).to.equal(20000);
+            expect((source.instructions.axios as any).timeout).to.equal(20000);
             expect(source.instructions.amount).to.equal(100);
             expect(source.instructions.ignoreCertificates).to.equal(true);
 
@@ -211,8 +211,9 @@ describe('Other', function () {
             maxRedirects: 1000
         });
 
-        return Source.parseSourceFile(sourceFile, c).then(source => {
-            expect(source.instructions.axios).to.deep.equal({
+        return Source.parseSourceFile(sourceFile, c).then(async source => {
+            expect(source.instructions.axios).to.be.a('function');
+            expect(await (source.instructions.axios as any)(source)).to.deep.equal({
                 timeout: 12345,
                 maxRedirects: 1000
             });

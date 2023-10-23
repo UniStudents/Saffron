@@ -31,9 +31,9 @@ describe('Sources', function () {
             expect(source.interval).to.equal(10000);
             expect(source.retryInterval).to.equal(5000);
             expect(source.extra).to.deep.equal(['random', 'data']);
-            expect(source.instructions.axios.timeout).to.equal(20000);
+            expect((source.instructions.axios as any).timeout).to.equal(20000);
             expect(source.instructions.amount).to.equal(100);
-            expect(source.instructions.axios.headers!.test).to.equal('user-agent');
+            expect((source.instructions.axios as any).headers!.test).to.equal('user-agent');
             expect(source.instructions.ignoreCertificates).to.equal(true);
             expect(source.instructions.textDecoder.encoding).to.equal('iso-8859-7');
 
