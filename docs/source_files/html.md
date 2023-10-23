@@ -1,6 +1,6 @@
 # HTML parser
 
-The `html` parser has the most difficult source files after the `dynamic` parser.
+The `json`, `xml` and `html` parsers have the most difficult source files after the `dynamic` parser.
 It is a JSON file, and it can ΝΟΤ run only by providing an url, a lot of configuration is needed.
 
 It is a must to use tools such as the **inspect element tool** of the browser to find
@@ -165,6 +165,8 @@ will have the following options:
     }
 }
 ```
+
+The extra options `title-second` and `title-third` will also be added to the `extras` field of the article.
 
 ### `static`
 Assign a static string to the specified field. All the other options are omitted.

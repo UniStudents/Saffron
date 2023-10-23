@@ -1,14 +1,14 @@
-import {hashCode} from "../src/middleware/hashCode";
+import {hashCode} from "../src/utils/hashCode.util";
 import {pack, Saffron, Source, unpack, Utils} from "../src";
 import {Job, JobStatus} from "../src/components/job";
 import {expect} from "chai";
-import {ParserType} from "../src/components/ParserClass";
+import {ParserType} from "../src/components/Parser";
 import {Extensions} from "../src/modules/extensions";
-import {ParserLoader} from "../src/modules/parsers/ParserLoader";
-import {HTMLParser} from "../src/modules/parsers/html.parser";
-import {RssParser} from "../src/modules/parsers/rss.parser";
-import {WordpressV2Parser} from "../src/modules/parsers/wordpress.v2.parser";
-import {DynamicParser} from "../src/modules/parsers/dynamic.parser";
+import {ParserLoader} from "../src/components/ParserLoader";
+import {HTMLParser} from "../src/parsers/html.parser";
+import {RssParser} from "../src/parsers/rss.parser";
+import {WordpressV2Parser} from "../src/parsers/wordpress.v2.parser";
+import {DynamicParser} from "../src/parsers/dynamic.parser";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import {Config} from "../src/components/config";
@@ -69,7 +69,7 @@ describe('Other', function () {
             expect(source.interval).to.equal(10000);
             expect(source.retryInterval).to.equal(5000);
             expect(source.extra).to.deep.equal(['random', 'data']);
-            expect(source.instructions.axios.timeout).to.equal(20000);
+            expect((source.instructions.axios as any).timeout).to.equal(20000);
             expect(source.instructions.amount).to.equal(100);
             expect(source.instructions.ignoreCertificates).to.equal(true);
 
@@ -211,8 +211,9 @@ describe('Other', function () {
             maxRedirects: 1000
         });
 
-        return Source.parseSourceFile(sourceFile, c).then(source => {
-            expect(source.instructions.axios).to.deep.equal({
+        return Source.parseSourceFile(sourceFile, c).then(async source => {
+            expect(source.instructions.axios).to.be.a('function');
+            expect(await (source.instructions.axios as any)(source)).to.deep.equal({
                 timeout: 12345,
                 maxRedirects: 1000
             });
@@ -221,16 +222,16 @@ describe('Other', function () {
 
     it('Config - Preprocessor', function () {
         process.env.NODE_ENV = undefined;
-
         const sourceFile = JSON.parse(fs.readFileSync(path.join(__dirname, './sources/html/html1.json'), 'utf8'));
-        const c = new Config();
-        c.config.workers.preprocessor = async (r, s) => {
-            // Set response to html2 file
-            (r as AxiosResponse).data = (r as AxiosResponse).data.replace('Εις μνήμην Χρυσούλας Τόμπρου', 'saffron-test');
-            return r;
-        }
-
-        return Saffron.parse(sourceFile, c).then(result => {
+        return Saffron.parse(sourceFile, {
+            workers: {
+                preprocessor: async (r, s) => {
+                    // Set response to html2 file
+                    (r as AxiosResponse).data = (r as AxiosResponse).data.replace('Εις μνήμην Χρυσούλας Τόμπρου', 'saffron-test');
+                    return r;
+                }
+            }
+        }).then(result => {
             const article = result[0].articles[0];
             expect(article.title).to.equal('saffron-test');
             expect(article.content).to.equal('Στις 26 Αυγούστου έφυγε από κοντά μας,\n ύστερα από πολύμηνη ασθένεια, το εξαίρετο μέλος ΕΕΠ και εκλεκτή\n συνάδελφος Χρυσούλα Τόμπρου αφήνοντας ένα μεγάλο και δυσαναπλήρωτο κενό\n τόσο στον τομέα Ξένων Γλωσσών του Πανεπιστημίου μας, το οποίο με ζήλο\n υπηρέτησε για 36 συναπτά έτη, όσο και σε εμάς τις συναδέλφους της. Έφυγε\n αθόρυβα όπως αθόρυβη και διακριτική υπήρξε σε όλη της τη ζωή.\n \n Ως καθηγήτρια υπήρξε πάντοτε συνεπής και\n αφοσιωμένη στο καθήκον της με γνήσιο ενδιαφέρον για την επιστήμη της και\n βαθιά αγάπη για τον άνθρωπο. Ανήσυχο και δημιουργικό πνεύμα, πάντα\n ενημερωμένο γύρω από τις τελευταίες εξελίξεις. Ήταν άριστη παιδαγωγός,\n με υψηλό αίσθημα ευθύνης, δεκτική και ανοιχτή σε όλους με ιδιαίτερη\n ευαισθησία σε φοιτητές με δυσκολίες ή προβλήματα.\n \n Ως συνάδελφος ήταν αληθινή, ανιδιοτελής και\n δοτική. Αναλάμβανε αγόγγυστα μεγάλο φόρτο εργασίας πάντα σκεπτόμενη την\n διευκόλυνση του έργου των άλλων. Θα της είμαστε πάντα ευγνώμονες για την\n καθοδήγηση και ενθάρρυνση όλων μας στα πρώτα μας βήματα στο χώρο της\n τριτοβάθμιας εκπαίδευσης. Την ευχαριστούμε για την κατανόησή της, τις\n πολύτιμες συμβουλές και τη συμπαράστασή της στις δύσκολες στιγμές μας ως\n γνήσια φίλη, συνάδελφος και έμπειρη μητέρα. Υπήρξαμε τυχεροί που\n συνεργαστήκαμε μαζί της για πολλά χρόνια.\n \n Θα έχει πάντα τη θέση της στο Γραφείο Ξένων\n Γλωσσών και στην καρδιά μας. Την αποχαιρετούμε με θλίψη, πόνο και\n συγκίνηση αλλά και με την υπόσχεση ότι θα συνεχίσουμε το έργο της και θα\n αξιοποιήσουμε την ανεκτίμητη κληρονομιά που άφησε σε όλους μας.\n \n Στους οικείους της εκφράζουμε τα ειλικρινή\n μας συλλυπητήρια και τη συμμετοχή μας στο βαρύ πένθος τους. Να τη\n θυμούνται πάντα με αγάπη και υπερηφάνεια.\n \n Μέλη ΕΕΠ Γραφείου Ξένων Γλωσσών\n Όσοι επιθυμούν να προσφέρουν κάτι στη μνήμη της, μπορούν να καταθέσουν\n χρήματα στην Κιβωτό του Κόσμου. Παραθέτουμε τους λογαριασμού της\n Κιβωτού.\n \n EUROBANK: 0026 0178 870100 872073 IBAN : GR3702601780000870100872073\n SWIFT / BIC: ERBKGRAA (ΓΙΑ ΕΞΩΤΕΡΙΚΟ)\n ΤΡΑΠΕΖΑ ΠΕΙΡΑΙΩΣ: 5023 – 032595 - 870 IBAN:GR3801720230005023032595870\n \n ΕΘΝΙΚΗ ΤΡΑΠΕΖΑ: 100/296102-42 IBAN: GR6201101000000010029610242\n ALPHA BANK: 183002002003534 IBAN: GR4801401830183002002003534\n \n \n Σημείωση\n \n : Κατά την κατάθεση, στην αιτιολογία να συμπληρώσετε (υποχρεωτικά) ότι η\n δωρεά γίνεται εις μνήμην της ΧΡΥΣΟΥΛΑΣ ΤΟΜΠΡΟΥ.\n \n Μετά τη δωρεά σας, παρακαλούμε να επικοινωνήσετε με την Κιβωτό\n προκειμένου να κρατήσουμε τα στοιχεία της απόδειξης.\n \n Τηλ. Επικοινωνίας: 210 5141953 - 210 5141935');

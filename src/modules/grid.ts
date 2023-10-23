@@ -8,7 +8,7 @@ import {io as IOClient, Socket as IOSocket} from "socket.io-client";
 import * as http from "http";
 import * as https from "https";
 import type {ParserResult} from "../components/types";
-import {pack, unpack} from "../middleware/serializer";
+import {pack, unpack} from "../utils/serializer.util";
 import type {Saffron} from "../index";
 import type {ExtensionPair} from "./extensions";
 

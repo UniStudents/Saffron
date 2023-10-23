@@ -7,6 +7,8 @@ describe("Saffron", function () {
     require("./sources.test");
     require("./other.test");
     require("./parsers.wordpress.test");
+    require("./parsers.json.test");
+    require("./parsers.xml.test");
     require("./parsers.rss.test");
     require("./parsers.html.test");
     require("./parsers.dynamic.test");

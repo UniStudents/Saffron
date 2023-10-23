@@ -1,5 +1,6 @@
-import type {ParserType} from "./ParserClass";
-import type {InstructionUrl, ScrapeDynamic, ScrapeHTML, ScrapeRSS, ScrapeWordPressV2} from "./types";
+import type {ParserType} from "./Parser";
+import type {InstructionUrl} from "./types";
+import type {ScrapeJSON, ScrapeDynamic, ScrapeHTML, ScrapeRSS, ScrapeWordPressV2, ScrapeXML} from "./parser.type"
 import type {AxiosRequestConfig} from "axios";
 import type {RequestsResult} from "./types";
 import type {Source} from "./source";
@@ -14,7 +15,7 @@ export class Instructions {
     declare url: InstructionUrl[];
     declare parserType: ParserType;
 
-    declare axios: AxiosRequestConfig;
+    declare axios: AxiosRequestConfig | ((source: Source) => Promise<AxiosRequestConfig>);
     declare preprocessor: (responses: RequestsResult, source: Source) => Promise<RequestsResult>;
     declare ignoreCertificates: boolean;
     declare delayBetweenRequests: number;
@@ -27,7 +28,7 @@ export class Instructions {
     declare html: ScrapeHTML;
     declare rss: ScrapeRSS;
     declare wp: ScrapeWordPressV2;
-
+    declare json: ScrapeJSON;
+    declare xml: ScrapeXML;
     declare dynamic: ScrapeDynamic;
-    declare dynamicFuncStr: string;
 }

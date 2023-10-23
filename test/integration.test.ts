@@ -82,8 +82,8 @@ describe('Integration', function () {
         for (const tableName in _articles)
             count += _articles[tableName].length;
 
-        // times 5 articles per source (except dynamic which returns 1)
-        expect(count).to.equal((Object.keys(_articles).length - 1) * 5 + 1);
+        // times 5 articles per source
+        expect(count).to.equal((Object.keys(_articles).length) * 5);
     });
 
     it('Simple events', function () {

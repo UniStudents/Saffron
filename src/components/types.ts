@@ -1,7 +1,59 @@
 import type {Article} from "./article";
-import type {Utils} from "./Utils";
-import type {AxiosRequestConfig} from "axios";
-import type {AxiosResponse} from "axios";
+import type {AxiosRequestConfig, AxiosResponse} from "axios";
+import type {ScrapeDynamic, ScrapeHTML, ScrapeJSON, ScrapeRSS, ScrapeWordPressV2, ScrapeXML} from "./parser.type";
+import type {DynamicSourceFile} from "./DynamicSourceFile";
+import type {Source} from "./source";
+
+export type ConfigType = {
+    mode: 'main' | 'worker'; // TODO: Add mode debug - Will act as main, and will verbose a lot of data
+    newArticles: ((tableName: string, articles: Article[]) => void) | ((tableName: string, articles: Article[]) => Promise<void>);
+    sources: Partial<{
+        path: string;
+        scanSubFolders: boolean;
+        dynamicSourceFiles: DynamicSourceFile[];
+        loader: (filepath: string) => Promise<any>;
+        includeOnly: string[];
+        exclude: string[];
+    }>;
+    workers: Partial<{
+        nodes: number | string[];
+        delayBetweenRequests?: number;
+        axios: AxiosRequestConfig | ((source: Source) => Promise<AxiosRequestConfig>);
+        preprocessor: (responses: RequestsResult, source: Source) => Promise<RequestsResult>;
+        articles: Partial<{
+            amount: number;
+            includeContentAttachments: boolean;
+            includeCategoryUrlsIn: 'categories' | 'extras';
+        }>;
+    }>;
+    scheduler: Partial<{
+        jobsInterval: number,
+        // TODO: Add function to calculate retry interval
+        heavyJobFailureInterval: number,
+        noResponseThreshold: number;
+        randomizeInterval: () => number;
+    }>;
+    grid: Partial<{
+        distributed: boolean;
+        useHTTPS: boolean;
+
+        serverHost: string;
+        serverPort: number;
+        authToken: string;
+        key: any;
+        cert: any;
+    }>;
+    misc: Partial<{
+        log: 'all' | 'info' | 'errors' | 'none';
+        eventDelay: number;
+    }>;
+}
+
+export type MergedConfig = Partial<ConfigType> & {
+    production?: Partial<ConfigType>;
+    development?: Partial<ConfigType>
+    testing?: Partial<ConfigType>
+};
 
 export type InstructionUrl = {
     aliases: string[];
@@ -20,67 +72,14 @@ export type HTMLAttribute = {
     text: string;
 };
 
-export type ScrapeDynamic = (utils: Utils, Article: any) => Promise<Article[]>;
-
-export type ScrapeHTML = {
-    container: string;
-    scriptingEnabled?: boolean;
-    skip?: ({
-        selector?: string;
-        text?: string;
-        type?: 'exact' | 'contains'; // Default is 'exact'
-    } | {
-        position: number;
-    })[];
-    article: {
-        [field: 'title' | 'link' | 'content' | 'pubDate' | 'categories' | 'attachments' | 'thumbnail' | string]: {
-            parent?: string;
-
-            class?: string;
-            find?: string[];
-            attributes?: string[];
-            multiple?: boolean;
-
-            static?: string;
-        };
-    };
-};
-
-export type ScrapeRSS = {
-    extraFields: string[];
-    assignFields: { [assign: string]: string };
-};
-
-export type ScrapeWordPressV2 = {
-    paths?: {
-        posts?: string;
-        categories?: string;
-    };
-    articles?: {
-        include?: string[];
-        dates?: {
-            gmt?: boolean;
-            fallback?: boolean;
-        };
-        filter?: {
-            search?: string;
-            author?: string;
-            authorExclude?: string;
-            after?: string;
-            before?: string;
-            slug?: string;
-            status?: string;
-            categories?: string;
-            categoriesExclude?: string;
-            tags?: string;
-            tagsExclude?: string;
-            sticky?: boolean;
-        };
-        thumbnail?: string;
-    };
-};
-
-export type SourceScrape = ScrapeDynamic | ScrapeHTML | ScrapeRSS | ScrapeWordPressV2 | undefined;
+export type SourceScrape =
+    ScrapeDynamic
+    | ScrapeHTML
+    | ScrapeRSS
+    | ScrapeWordPressV2
+    | ScrapeJSON
+    | ScrapeXML
+    | undefined;
 
 export type SourceFile = {
     filename?: string;
@@ -92,7 +91,7 @@ export type SourceFile = {
     interval?: number;
     retryInterval?: number;
 
-    ignoreCertificates?: boolean;
+    ignoreCertificates?: boolean; // This is not removed, as we cannot mention https.Agent inside a json file
     delayBetweenRequests?: number;
     axios?: AxiosRequestConfig;
 
@@ -114,4 +113,10 @@ export type SourceFile = {
 } | {
     type: 'wordpress-v2'
     scrape?: ScrapeWordPressV2;
+} | {
+    type: 'json'
+    scrape?: ScrapeJSON;
+} | {
+    type: 'xml'
+    scrape?: ScrapeXML;
 });

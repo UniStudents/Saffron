@@ -1,45 +1,65 @@
 # Dynamic parser
 
-Unlike the others, the `dynamic` parser uses javascript files (instead of JSON).
-The general options described [here](./source_file.md) would be included at the top level
-of the `module.exports`inside the javascript file.
+Unlike the others, the `dynamic` parser requires more configuration. We have
+to initialize a `DynamicSourceFile` class and pass it to the configuration through the
+[`dynamicSourceFiles`](../configuration.md#dynamicsourcefiles) option.
 
-Below is a template for the dynamic parser source file. As you can see the scrape is a function
-instead of JSON options.
-```js
-module.exports = {
-    type: "dynamic",
+## DynamicSourceFile class
+First we are going to initialize a class and extend the DynamicSourceFile class:
+```ts
+class Custom extends DynamicSourceFile {
     // ...
-    scrape: async function (utils, Article) {
-        // Request and parse your articles...
-        const response = utils.get(utils.url);
-        
-        // Create articles
-        const article = new Article();
-        article.title = '';
+}
+```
+After that we are going to implement the `name` method. This method will 
+return a unique string that will help Saffron to identify of the implementation.
+```ts
+    class Custom extends DynamicSourceFile {
+    name(): string {
+        return "dynamic-1";
+    }
+    // ...
+}
+```
+Following, we will implement the `request` method, which is responsible to do
+all the network requests. The response should include one or multiple objects of
+type `AxiosResponse`.
+
+In cases where a login is required to the remote website, it can be done from here.
+
+```ts
+class Custom extends DynamicSourceFile {
+    // ...
+    request(utils: Utils): Promise<RequestsResult> {
+        // Request using utils.get to assign the axios config
+        // passed in the global and/or source configurations
+        return utils.get(utils.url);
+    }
+    // ...
+}
+```
+Lastly, we are going to implement the `parse` method, which is responsible to do
+all the parsing. It will receive the requests responses from the `request` method
+and must return an array of Articles.
+
+```ts
+class Custom extends DynamicSourceFile {
+    // ...
+    async parse(result: RequestsResult, utils: Utils): Promise<Article[]> {
+        const articles: Article[] = [];
         // ...
         
-        if(error)
-            throw new Error('Failed for source file [name]!');
-        
-        // Return an array of all the articles you want to be added
         return articles;
     }
 }
 ```
 
-# Scrape
+## Scrape
 
-Create the `scrape` asynchronous function to write down code needed for scraping.
-Saffron will ignore the rest of the file when it comes to scrapping so all code must
-be included inside the scrape function, such as imports, user-defined functions etc.
+### `implementation`
+The name of the implementation we have configured.
 
-The `scrape` function will be called for every url mentioned in the general option
-[`url`](./source_file.md#url). The categories mentioned here will be added automatically.
-
-Any other libraries used must be added to your `package.json` file.
-
-# Utils
+## Utils
 Utils provide a set of necessary functions and fields that are used by all scrappers.
 
 ### `isScrapeAfterError`
@@ -98,48 +118,23 @@ it will also remove any HTML tags.
 It will accept HTML as string and extract the text and links of the following tags:
 `a`, `img` and `link`.
 
-
-# Article
-
-Saffron offers the Article class to construct an Article object.
-
-# Writing code
-
-### Nested functions & Imports
-Saffron will ignore the rest of the file when it comes to scrapping,
-so all code must be included inside the scrape function,
-such as imports, user-defined functions etc.
-
-```js
-scrape: async (utils, Article) => {
-  const log = (message) => {
-    console.log(message);  
-  }
-  
-  const foo = require('foo');
-  other.foo('bar');
-  
-  log('Using a nested function.');
-  // ...
-}
-```
+## Writing code
 
 ### Callbacks
-Dynamic parser does not support callback response. If you want to use callbacks in your code you
-have to return a promise:
+Dynamic parser does not support callback response. In case the use of callbacks cannot be avoided
+you can return a promise:
 
 ```javascript
-scrape: (utils, Article) => {
-  return new Promise((resolve, reject) => {
-      utils.get(utils.url)
-          .then(response => {
-              // ...
-              
-              resolve(articles);
-          })
-          .catch(reject);
-  });
-}
+return new Promise((resolve, reject) => {
+    request(utils.url, (response, errpr) => {
+        if (error != null) {
+            return reject(error)
+        }
+
+        // ...
+        resolve(response);
+    });
+});
 ```
 
 ### Fail job
@@ -148,17 +143,12 @@ If you want to mark the current source scraping job as a failure and return no
 articles then you have to throw an `Error`:
 
 ```js
-scrape: async (utils, Article) => {
-    // ...
-    throw new Error("Parsing failed.");
-}
+throw new Error("Parsing failed.");
 ```
 or reject the promise:
 ```js
-scrape: async (utils, Article) => {
-    return new Promise((resolve, reject) => {
-        // ...
-        reject(new Error("Parsing failed."));
-    });
-}
+return new Promise((resolve, reject) => {
+    // ...
+    reject(new Error("Parsing failed."));
+});
 ```

@@ -68,6 +68,7 @@ The interval where a source scrapping job will be reissued in case of failure.
 
 ### `axios`
 Axios' configuration that will be applied to the requests made by saffron.
+The method of the requests is by default `GET`, but it can be overridden here.
 
 This option will override the configuration option [`requests.axios`](../configuration#requestsaxios).
 
@@ -131,4 +132,4 @@ if(extra) {
 ### `scrape`
 This field contains all the scrape options needed by the specified parser.
 You can check the scrape formats for each parser:
-[WordPress V2](./wordpress_v2.md), [RSS](./rss.md), [HTML](./html.md) or [Dynamic](./dynamic.md).
+[WordPress V2](./wordpress_v2.md), [RSS](./rss.md), [JSON](./json.md), [XML](./xml.md), [HTML](./html.md) or [Dynamic](./dynamic.md).

@@ -1,5 +1,6 @@
-import {Config, ConfigType} from "../src/components/config"
+import {Config} from "../src/components/config"
 import {expect} from "chai";
+import type {ConfigType, MergedConfig} from "../src/index";
 
 describe('Configuration', function () {
     it('Default configuration', function () {
@@ -115,13 +116,7 @@ describe('Configuration', function () {
         expect(c.misc?.eventDelay).to.equal(ec.misc.eventDelay);
     });
 
-    const _c: Partial<ConfigType> & {
-        production?: Partial<ConfigType>;
-    } & {
-        development?: Partial<ConfigType>;
-    } & {
-        testing?: Partial<ConfigType>;
-    } = {
+    const _c: MergedConfig = {
         ...ec,
         production: {
             mode: 'main',

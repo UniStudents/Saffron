@@ -1,53 +1,6 @@
-import _ from "lodash"
-import type {Article} from "./article";
-import type {AxiosRequestConfig} from "axios";
-import type {Source} from "./source";
 import fs from "fs";
-import type {RequestsResult} from "./types";
-
-export type ConfigType = {
-    mode: 'main' | 'worker'; // TODO: Add mode debug - Will act as main, and will verbose a lot of data
-    newArticles: ((tableName: string, articles: Article[]) => void) | ((tableName: string, articles: Article[]) => Promise<void>);
-    sources: Partial<{
-        path: string;
-        scanSubFolders: boolean;
-        loader: (filepath: string) => Promise<any>
-        includeOnly: string[];
-        exclude: string[];
-    }>;
-    workers: Partial<{
-        nodes: number | string[];
-        delayBetweenRequests?: number;
-        axios: AxiosRequestConfig | ((source: Source) => Promise<AxiosRequestConfig>);
-        preprocessor: (responses: RequestsResult, source: Source) => Promise<RequestsResult>;
-        articles: Partial<{
-            amount: number;
-            includeContentAttachments: boolean;
-            includeCategoryUrlsIn: 'categories' | 'extras';
-        }>;
-    }>;
-    scheduler: Partial<{
-        jobsInterval: number,
-        // TODO: Add function to calculate retry interval
-        heavyJobFailureInterval: number,
-        noResponseThreshold: number;
-        randomizeInterval: () => number;
-    }>;
-    grid: Partial<{
-        distributed: boolean;
-        useHTTPS: boolean;
-
-        serverHost: string;
-        serverPort: number;
-        authToken: string;
-        key: any;
-        cert: any;
-    }>;
-    misc: Partial<{
-        log: 'all' | 'info' | 'errors' | 'none';
-        eventDelay: number;
-    }>;
-}
+import type {ConfigType, MergedConfig} from "./types";
+import _ from "lodash"
 
 export enum ConfigOptions {
     SOURCES_PATH = 0,
@@ -77,6 +30,7 @@ export enum ConfigOptions {
     SCAN_SUB_FOLDERS = 26,
     SOURCE_LOADER = 27,
     DELAY_BETWEEN_REQUESTS = 29,
+    DYNAMIC_SOURCE_FILES = 30,
 }
 
 const defaultConfig: ConfigType = {
@@ -86,25 +40,8 @@ const defaultConfig: ConfigType = {
     sources: {
         path: "./sources",
         scanSubFolders: true,
-        loader: async (filepath: string) => {
-            let data: any;
-            if (filepath.endsWith(".json")) {
-                data = JSON.parse(fs.readFileSync(filepath, 'utf-8'));
-            } else {
-                try {
-                    data = await import(filepath);
-                    data = {...data.default};
-                } catch (e: any) {
-                    try {
-                        data = require(filepath);
-                    } catch (e: any) {
-                        throw e;
-                    }
-                }
-            }
-
-            return data;
-        },
+        dynamicSourceFiles: [],
+        loader: (filepath: string) => JSON.parse(fs.readFileSync(filepath, 'utf-8')),
         includeOnly: [],
         exclude: []
     },
@@ -153,13 +90,7 @@ const defaultConfig: ConfigType = {
 export class Config {
     config: ConfigType = _.cloneDeep(defaultConfig);
 
-    constructor(config?: Partial<ConfigType> & {
-        production?: Partial<ConfigType>;
-    } & {
-        development?: Partial<ConfigType>;
-    } & {
-        testing?: Partial<ConfigType>;
-    }) {
+    constructor(config?: MergedConfig) {
         this.initializeConfig(config);
     }
 
@@ -180,6 +111,8 @@ export class Config {
                 return conf.sources?.exclude;
             case ConfigOptions.SOURCE_LOADER:
                 return conf.sources?.loader;
+            case ConfigOptions.DYNAMIC_SOURCE_FILES:
+                return conf.sources?.dynamicSourceFiles;
 
             case ConfigOptions.WORKER_NODES:
                 return conf.workers?.nodes;
@@ -230,13 +163,7 @@ export class Config {
         }
     }
 
-    initializeConfig(config?: Partial<ConfigType> & {
-        production?: Partial<ConfigType>;
-    } & {
-        development?: Partial<ConfigType>;
-    } & {
-        testing?: Partial<ConfigType>;
-    }) {
+    initializeConfig(config?: MergedConfig) {
         // To avoid overriding user's object
         config = _.cloneDeep(config);
 
@@ -338,7 +265,7 @@ export class Config {
 
     private mergeObject(src: any, original: object): any {
         return _.mergeWith({}, original, src, (o, s) => {
-            if (typeof o == 'object' && !Array.isArray(o))
+            if (typeof o == 'object' && !Array.isArray(o) && typeof o != 'function' && typeof s != 'function')
                 return this.mergeObject(s, o);
             return s != null ? s : o;
         });

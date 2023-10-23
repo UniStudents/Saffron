@@ -1,37 +1,40 @@
-import {Saffron} from "../src/index";
+import {Saffron,} from "../src/index";
 import {expect} from "chai";
+import {Dynamic1} from "./abc_dynamics";
 
 describe("Dynamic parser", function () {
     it('Test 1', function () {
-        return Saffron.parse(require('./sources/dynamic/dynamic1'), null).then(result => {
+        return Saffron.parse({
+            url: 'http://127.0.0.1:3000/rss1',
+            name: 'dynamic1-source',
+            type: 'dynamic',
+            ignoreCertificates: true,
+            scrape: {
+                implementation: 'dynamic-1'
+            }
+        }, {
+            sources: {
+                dynamicSourceFiles: [new Dynamic1()]
+            }
+        }).then(result => {
             expect(result.length).to.equal(1);
             const obj = result[0];
-            expect(obj.aliases).to.deep.equal(['General']);
-            expect(obj.url).to.equal('http://127.0.0.1:3000/html');
-            expect(obj.articles.length).to.equal(1);
+            expect(obj.aliases.length).to.equal(0);
+            expect(obj.url).to.equal('http://127.0.0.1:3000/rss1');
+            expect(obj.articles.length).to.equal(7);
 
             for (const article of obj.articles) {
-                expect(article.source).to.equal('dynamic-source');
-
-                expect(article.title).to.equal('My title');
-                expect(article.content).to.equal('My content');
-                expect(article.link).to.equal('My link');
-                expect(article.pubDate).to.equal('My date');
-                expect(article.categories.length).to.equal(2);
-
-                expect(article.categories[0].name === 'Custom')
-                expect(article.categories[0].links).to.deep.equal(['link2', 'link3']);
-                expect(article.categories[1].name === 'General')
-                expect(article.categories[1].links).to.deep.equal(['http://127.0.0.1:3000/html']);
-
-                expect(article.attachments.length).to.equal(1);
-                expect(article.attachments[0]).to.deep.equal({
-                    text: 'My text',
-                    value: 'My value',
-                    attribute: 'href'
-                });
-                expect(article.thumbnail).to.equal('My thumbnail');
+                expect(article.source).to.equal('dynamic1-source');
             }
+
+            const article = obj.articles[0];
+            expect(article.title).to.equal('ΣΧΕΤΙΚΑ ΜΕ ΤΗΝ ΕΠΑΝΑΛΗΠΤΙΚΗ ΕΞΕΤΑΣΗ ΠΕΡΙΟΔΟΥ ΣΕΠΤΕΜΒΡΙΟΥ 2022');
+            expect(article.content).to.equal("<p>ΣΤΑ ΕΓΓΡΑΦΑ ΑΝΑΡΤΗΘΗΚΑΝ ΤΑ ΘΕΜΑΤΑ ΤΗΣ ΕΞΕΤΑΣΗΣ-ΕΡΓΑΣΙΑΣ ΠΕΡΙΟΔΟΥ ΣΕΠΤΕΜΒΡΙΟΥ 2022. ΝΑ\n ΤΑ ΕΧΕΤΕ ΤΥΠΩΜΕΝΑ ΜΑΖΙ ΣΑΣ ΔΙΟΤΙ ΔΕΝ ΘΑ ΔΙΑΝΕΜΗΘΟΥΝ ΦΩΤΟΤΥΠΙΕΣ. ΟΣΟΙ/ΕΣ ΧΡΕΙΑΖΟΝΤΑΙ ΒΕΒΑΙΩΣΗ ΣΥΜΜΕΤΟΧΗΣ\n ΣΤΗΝ ΕΞΕΤΑΣΗ ΚΑΤΕΒΑΖΟΥΝ ΚΑΙ ΣΥΜΠΛΗΡΩΝΟΥΝ ΤΟ ΣΧΕΤΙΚΟ ΑΡΧΕΙΟ ΠΟΥ ΥΠΑΡΧΕΙ ΣΤΑ ΕΓΓΡΑΦΑ.</p>\n <p>ΚΑΛΟ ΚΑΛΟΚΑΙΡΙ ΚΑΙ ΚΑΛΟ ΔΙΑΒΑΣΜΑ!</p>");
+            expect(article.link).to.equal('https://eclass.uoa.gr/modules/announcements/index.php?an_id=416759&course=AEROSPACE119');
+            expect(article.pubDate).to.equal('Sun, 31 Jul 2022 23:59:39 +0300');
+            expect(article.categories.length).to.equal(0);
+            expect(article.attachments.length).to.equal(0);
+            expect(article.thumbnail).to.be.undefined;
         });
     });
 });
