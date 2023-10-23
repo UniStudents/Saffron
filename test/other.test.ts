@@ -1,4 +1,4 @@
-import {hashCode} from "../src/utils/hashCode.util.js";
+import {hashCode} from "../src/utils/hashCode.util";
 import {pack, Saffron, Source, unpack, Utils} from "../src";
 import {Job, JobStatus} from "../src/components/job";
 import {expect} from "chai";

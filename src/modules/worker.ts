@@ -3,7 +3,7 @@ import {randomId} from "../utils/randomId.util";
 import type {Grid} from "./grid";
 import type {Article} from "../components/article";
 import {ParserLoader} from "../components/ParserLoader";
-import {hashCode} from "../utils/hashCode.util.js";
+import {hashCode} from "../utils/hashCode.util";
 import type {ParserResult} from "../components/types";
 import {Utils} from "../components/Utils";
 import type {Saffron} from "../index";
