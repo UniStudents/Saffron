@@ -37,7 +37,7 @@ export class Worker {
             utils.source = job.source;
 
             if (instructions.parserType === ParserType.DYNAMIC) {
-                const impName = instructions.dynamic.implementation;
+                const impName = instructions.dynamic.implementation ?? job.source.name;
                 const dsf = dynamicSourceFiles.find(dsf => dsf.name() === impName);
                 if(!dsf) {
                     throw new Error(`could not find any implementation with name ${impName}`);

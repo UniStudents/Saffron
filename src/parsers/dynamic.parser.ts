@@ -10,10 +10,10 @@ export class DynamicParser extends Parser {
         // This exists only for typescript, it is not valid and will not run at runtime.
         const scrape = s as ScrapeDynamic;
 
-        if (typeof scrape !== 'object' || Array.isArray(scrape))
+        if (typeof scrape !== 'undefined' && (typeof scrape !== 'object' || Array.isArray(scrape)))
             throw new Error("must be a JSON object");
 
-        if (typeof scrape.implementation !== 'string' || scrape.implementation.length === 0)
+        if (typeof scrape.implementation !== 'undefined' && (typeof scrape.implementation !== 'string' || scrape.implementation.length === 0))
             throw new Error(`implementation must be non empty string`);
     }
 

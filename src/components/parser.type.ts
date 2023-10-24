@@ -15,7 +15,7 @@ type JsonSkipOptions = {
 };
 
 export type ScrapeDynamic = {
-    implementation: string;
+    implementation?: string;
 };
 
 export type ScrapeHTML = {

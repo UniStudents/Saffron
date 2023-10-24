@@ -62,7 +62,7 @@ export type InstructionUrl = {
 
 export type ParserResult = InstructionUrl & { articles: Article[]; };
 
-export type RequestsResult = AxiosResponse | AxiosResponse[];
+export type RequestsResult = any;
 
 export type CallbackVoid = (...args: any[]) => void;
 
@@ -103,7 +103,7 @@ export type SourceFile = {
     extra?: any;
 } & ({
     type: 'dynamic'
-    scrape: ScrapeDynamic;
+    scrape?: ScrapeDynamic;
 } | {
     type: 'html'
     scrape: ScrapeHTML;

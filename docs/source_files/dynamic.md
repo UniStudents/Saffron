@@ -22,15 +22,14 @@ return a unique string that will help Saffron to identify of the implementation.
 }
 ```
 Following, we will implement the `request` method, which is responsible to do
-all the network requests. The response should include one or multiple objects of
-type `AxiosResponse`.
+all the network requests.
 
 In cases where a login is required to the remote website, it can be done from here.
 
 ```ts
 class Custom extends DynamicSourceFile {
     // ...
-    request(utils: Utils): Promise<RequestsResult> {
+    request(utils: Utils): Promise<any> {
         // Request using utils.get to assign the axios config
         // passed in the global and/or source configurations
         return utils.get(utils.url);
@@ -39,7 +38,7 @@ class Custom extends DynamicSourceFile {
 }
 ```
 Lastly, we are going to implement the `parse` method, which is responsible to do
-all the parsing. It will receive the requests responses from the `request` method
+all the parsing. It will receive the payload returned from the `request` method
 and must return an array of Articles.
 
 ```ts
@@ -57,6 +56,8 @@ class Custom extends DynamicSourceFile {
 ## Scrape
 
 ### `implementation`
+Default value: `<source name>`
+
 The name of the implementation we have configured.
 
 ## Utils
