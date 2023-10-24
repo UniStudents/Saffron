@@ -265,7 +265,7 @@ export class Config {
 
     private mergeObject(src: any, original: object): any {
         return _.mergeWith({}, original, src, (o, s) => {
-            if (typeof o == 'object' && !Array.isArray(o) && typeof o != 'function' && typeof s != 'function')
+            if (typeof o == 'object' && !Array.isArray(o) && typeof s != 'function' && typeof s != 'function')
                 return this.mergeObject(s, o);
             return s != null ? s : o;
         });

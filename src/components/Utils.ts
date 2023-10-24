@@ -8,6 +8,7 @@ import {Job} from "./job";
 import {Worker} from "../modules/worker";
 import striptags from "striptags";
 import type {DynamicSourceFile} from "./DynamicSourceFile";
+import {deepmerge} from "../utils/deepmerge.util";
 
 export class Utils {
 
@@ -296,7 +297,7 @@ export class Utils {
                 axiosConfig = await axiosConfig(this.source);
             }
 
-            options = {...options, ...axiosConfig} as AxiosRequestConfig
+            options = deepmerge(options, axiosConfig);
         }
 
         options.responseType = 'arraybuffer';

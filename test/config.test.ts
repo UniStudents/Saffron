@@ -56,6 +56,7 @@ describe('Configuration', function () {
                 headers: {
                     'User-Agent': 'saffron-'
                 },
+                validateStatus: (_) => true,
                 maxRedirects: 5
             },
             preprocessor: async (r, s) => r,
@@ -98,6 +99,7 @@ describe('Configuration', function () {
         expect((c.workers?.axios as any)?.timeout).to.equal((ec.workers?.axios as any)?.timeout);
         expect((c.workers?.axios as any)?.maxRedirects).to.equal((ec.workers?.axios as any)?.maxRedirects);
         expect((c.workers?.axios as any)?.headers).to.deep.equal((ec.workers?.axios as any)?.headers);
+        expect((c.workers?.axios as any)?.validateStatus).to.be.a('function');
         expect(c.workers?.preprocessor).to.equal(ec.workers?.preprocessor);
         expect(c.workers?.articles?.amount).to.equal(ec.workers.articles?.amount);
         expect(c.workers?.articles?.includeContentAttachments).to.equal(ec.workers.articles?.includeContentAttachments);
