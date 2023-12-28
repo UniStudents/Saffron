@@ -3,7 +3,8 @@ import {Source} from "../components/source";
 import {Job} from "../components/job";
 import {Instructions} from "../components/instructions";
 
-const types = [Article, Source, Job, Instructions, TextDecoder, Object, Array, Function, Error];
+const AsyncFunction = async function () {}.constructor;
+const types = [Article, Source, Job, Instructions, TextDecoder, Object, Array, Function, AsyncFunction, Error];
 
 export class Serializer {
     declare types: any[];
