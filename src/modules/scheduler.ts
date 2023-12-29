@@ -148,8 +148,8 @@ export class Scheduler {
         }
 
         // Exclude sources
-        excluded.forEach((ex_source: any) => {
-            const index = this.sources.findIndex((source: Source) => source.name === ex_source);
+        excluded.forEach((ex_source: string) => {
+            const index = parsedSources.findIndex((source: Source) => source.name === ex_source);
             if (index !== -1)
                 parsedSources.splice(index, 1);
         });

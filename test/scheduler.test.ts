@@ -1,11 +1,30 @@
 import {expect} from "chai";
 import {Job, Saffron, Source} from "../src/index";
 import {JobStatus} from "../src/components/job";
-import {Config} from "../src/components/config";
 import {Dynamic2} from "./abc_dynamics";
 
 describe('Scheduler', function () {
     const SOURCES_SIZE = 12;
+
+    it('Include only / Exclude', function () {
+        return new Promise(async (resolve) => {
+            const saffron = new Saffron();
+            saffron.initialize({
+                mode: 'main',
+                sources: {
+                    path: './test/sources',
+                    exclude: ['html1-source']
+                },
+                workers: {nodes: ['worker1']},
+                misc: {log: 'none'}
+            });
+
+            await saffron.scheduler.resetSources();
+            expect(saffron.scheduler.sources.length).to.equal(SOURCES_SIZE - 1);
+
+            resolve(undefined);
+        });
+    });
 
     const saffron = new Saffron();
     it('Initialization', function () {

@@ -1,5 +1,5 @@
 import {hashCode} from "../src/utils/hashCode.util";
-import {pack, Saffron, Source, unpack, Utils} from "../src";
+import {Instructions, pack, Saffron, Source, unpack, Utils} from "../src";
 import {Job, JobStatus} from "../src/components/job";
 import {expect} from "chai";
 import {ParserType} from "../src/components/Parser";
@@ -50,7 +50,7 @@ describe('Other', function () {
             ],
             type: 'wordpress-v2',
             scrape: {articles: {}}
-        }, null).then(jobSource => {
+        }, null).then(async jobSource => {
             const job = new Job(jobSource, 'worker-id', 25000, null);
 
             const packed = pack(job);
@@ -82,6 +82,18 @@ describe('Other', function () {
             }
 
             expect(source.instructions.parserType).to.equal(ParserType.WORDPRESS_V2);
+
+            // Async function test
+            const instructions = new Instructions();
+            instructions.axios = async (source) => {
+                return {
+                    timeout: 2000
+                };
+            };
+
+            const packed2 = pack(instructions);
+            const unpacked2: Instructions = unpack(packed2);
+            expect((await (unpacked2.axios as any)()).timeout).to.equal(2000);
         });
     });
 
