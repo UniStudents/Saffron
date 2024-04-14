@@ -18,7 +18,7 @@ export class DynamicParser extends Parser {
     }
 
     assignInstructions(instructions: Instructions, scrape?: SourceScrape): void {
-        instructions.dynamic = scrape as ScrapeDynamic;
+        instructions.dynamic = (scrape || {}) as ScrapeDynamic;
     }
 
     request(utils: Utils): Promise<RequestsResult> {
