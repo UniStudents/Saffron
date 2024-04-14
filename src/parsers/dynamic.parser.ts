@@ -13,7 +13,7 @@ export class DynamicParser extends Parser {
         if (typeof scrape !== 'undefined' && (typeof scrape !== 'object' || Array.isArray(scrape)))
             throw new Error("must be a JSON object");
 
-        if (typeof scrape.implementation !== 'undefined' && (typeof scrape.implementation !== 'string' || scrape.implementation.length === 0))
+        if (typeof scrape?.implementation !== 'undefined' && (typeof scrape.implementation !== 'string' || scrape.implementation.length === 0))
             throw new Error(`implementation must be non empty string`);
     }
 

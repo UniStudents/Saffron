@@ -13,7 +13,9 @@ export abstract class DynamicSourceFile {
      * @param utils The Utils class contains all the necessary information for the source file alongside the request functions
      * @return An instance of AxiosResponse (or an array of them).
      */
-    public abstract request(utils: Utils): Promise<RequestsResult>;
+    public request(utils: Utils): Promise<RequestsResult> {
+        return utils.get(utils.url);
+    }
 
     /**
      * This method will parse the result of the responses returned from the `request` method.

@@ -37,6 +37,11 @@ class Custom extends DynamicSourceFile {
     // ...
 }
 ```
+
+The request method is not mandatory and can be omitted. It will default to the
+above implementation.
+
+
 Lastly, we are going to implement the `parse` method, which is responsible to do
 all the parsing. It will receive the payload returned from the `request` method
 and must return an array of Articles.
