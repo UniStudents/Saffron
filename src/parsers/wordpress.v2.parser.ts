@@ -60,6 +60,12 @@ export class WordpressV2Parser extends Parser {
 
                 if (scrape.articles.thumbnail && typeof scrape.articles.thumbnail !== 'string')
                     throw new Error("articles.thumbnail must be a string");
+
+                if (typeof scrape.articles.disableThumbnail !== 'undefined' && typeof scrape.articles.disableThumbnail !== 'boolean')
+                    throw new Error("articles.disableThumbnail must be a boolean");
+
+                if(scrape.articles.disableThumbnail && scrape.articles.thumbnail)
+                    throw new Error("articles.thumbnail cannot be populated");
             }
         }
     }
@@ -120,7 +126,7 @@ export class WordpressV2Parser extends Parser {
         const instructions = utils.source.instructions;
 
         const categoriesUrl = `${utils.url}/${instructions.wp.paths!.categories}`;
-        let postsUrl = `${utils.url}/${instructions.wp.paths!.posts}?_embed&per_page=${instructions.amount}`;
+        let postsUrl = `${utils.url}/${instructions.wp.paths!.posts}?${instructions.wp.articles?.disableThumbnail ? '' : '_embed&'}per_page=${instructions.amount}`;
 
         const filters = instructions.wp.articles!.filter!;
         if (filters.search) postsUrl += `&search=${encodeURIComponent(filters.search)}`;
@@ -199,8 +205,10 @@ export class WordpressV2Parser extends Parser {
             }
 
             // Thumbnail
-            const thumbnailSize = instructions.wp.articles!.thumbnail!;
-            article.thumbnail = p._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.[thumbnailSize]?.source_url;
+            if(!instructions.wp.articles!.disableThumbnail) {
+                const thumbnailSize = instructions.wp.articles!.thumbnail!;
+                article.thumbnail = p._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.[thumbnailSize]?.source_url;
+            }
 
             let include: string[] = instructions.wp.articles!.include!;
             // The date the object was last modified.

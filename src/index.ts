@@ -11,4 +11,5 @@ export {RequestsResult, SourceFile, ParserResult, SourceScrape, MergedConfig, Co
 // TODO: Add source file templates
 //   A template folder, where a source file can extend to. Will contain the same fields
 //   as a source file, but not all fields are required.
+// TODO: Add debug mode, where file cache exists and if already fetched then do not repeat the request
 

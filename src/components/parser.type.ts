@@ -71,6 +71,7 @@ export type ScrapeWordPressV2 = {
             size?: number; // per_page
         };
         thumbnail?: string;
+        disableThumbnail?: boolean;
     };
 };
 
