@@ -2,7 +2,7 @@ import {Parser} from "../components/Parser";
 import type {Instructions} from "../components/instructions";
 import {Article} from "../components/article";
 import type {AxiosResponse} from "axios";
-import cheerio from "cheerio";
+import * as cheerio from 'cheerio';
 import type {Utils} from "../components/Utils";
 import type {HTMLAttribute, RequestsResult, SourceScrape} from "../components/types";
 import type {ScrapeHTML} from "../components/parser.type";

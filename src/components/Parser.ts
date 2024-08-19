@@ -1,7 +1,6 @@
 import type {Instructions} from "./instructions";
 import type {Article} from "./article";
 import type {Utils} from "./Utils";
-import cheerio from "cheerio";
 import type {RequestsResult, SourceScrape} from "./types";
 
 export abstract class Parser {

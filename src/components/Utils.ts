@@ -1,4 +1,4 @@
-import cheerio from "cheerio";
+import * as cheerio from 'cheerio';
 import type {Attachment} from "./article";
 import https from "https";
 import axios, {AxiosRequestConfig, AxiosResponse} from "axios";
